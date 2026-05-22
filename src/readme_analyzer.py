@@ -13,71 +13,55 @@
 # limitations under the License.
 
 import json
-import anthropic
-from config import ANTHROPIC_API_KEY, MODEL
+
 from prompts.system_prompts import SYSTEM_PROMPT_README
+from src.llm.provider import LLMProvider
 
 
 class AnalizadorReadme:
-    """Analiza el README o documentación técnica de un proyecto de IA contra los requisitos del AI Act."""
+    """Analiza documentación técnica de un proyecto de IA contra los requisitos del AI Act."""
 
-    def __init__(self):
-        self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    def __init__(self, provider: LLMProvider):
+        self.provider = provider
 
     def analizar(self, contenido_readme: str) -> dict:
         """Analiza el contenido de un README y devuelve un informe de gaps."""
-        respuesta = self.client.messages.create(
-            model=MODEL,
-            max_tokens=2048,
-            system=SYSTEM_PROMPT_README,
+        respuesta = self.provider.chat(
             messages=[
                 {
                     "role": "user",
                     "content": f"Analiza el siguiente README de un proyecto de IA:\n\n{contenido_readme}",
                 }
             ],
+            system_prompt=SYSTEM_PROMPT_README,
         )
-
-        texto = respuesta.content[0].text.strip()
-        texto = self._limpiar_json(texto)
-
-        try:
-            return json.loads(texto)
-        except json.JSONDecodeError:
-            return self._resultado_error()
+        return self._parsear_respuesta(respuesta)
 
     def analizar_con_contexto(self, contenido_readme: str, nivel_riesgo: str) -> dict:
-        """Analiza el README teniendo en cuenta el nivel de riesgo ya identificado en el chat."""
+        """Analiza el README considerando el nivel de riesgo ya identificado en el chat."""
         prompt = (
-            f"El sistema de IA ha sido clasificado previamente como nivel de riesgo: {nivel_riesgo}\n\n"
-            f"Analiza el siguiente README considerando específicamente las obligaciones del AI Act "
-            f"que aplican a sistemas de nivel {nivel_riesgo}:\n\n{contenido_readme}"
+            f"El sistema de IA ha sido clasificado como nivel de riesgo: {nivel_riesgo}\n\n"
+            f"Analiza el siguiente README considerando específicamente las obligaciones "
+            f"del AI Act que aplican a sistemas de nivel {nivel_riesgo}:\n\n{contenido_readme}"
         )
-
-        respuesta = self.client.messages.create(
-            model=MODEL,
-            max_tokens=2048,
-            system=SYSTEM_PROMPT_README,
+        respuesta = self.provider.chat(
             messages=[{"role": "user", "content": prompt}],
+            system_prompt=SYSTEM_PROMPT_README,
         )
+        return self._parsear_respuesta(respuesta)
 
-        texto = respuesta.content[0].text.strip()
-        texto = self._limpiar_json(texto)
-
-        try:
-            return json.loads(texto)
-        except json.JSONDecodeError:
-            return self._resultado_error()
-
-    def _limpiar_json(self, texto: str) -> str:
-        """Extrae el JSON puro de una respuesta que puede contener bloques de código markdown."""
+    def _parsear_respuesta(self, texto: str) -> dict:
+        texto = texto.strip()
         if texto.startswith("```"):
             partes = texto.split("```")
             if len(partes) >= 2:
                 texto = partes[1]
                 if texto.startswith("json"):
                     texto = texto[4:]
-        return texto.strip()
+        try:
+            return json.loads(texto.strip())
+        except json.JSONDecodeError:
+            return self._resultado_error()
 
     def _resultado_error(self) -> dict:
         return {
@@ -102,7 +86,7 @@ class AnalizadorReadme:
                 conteo[estado] += 1
 
         total = len(gaps)
-        puntos = conteo["cumple"] * 2 + conteo["parcial"] * 1
+        puntos = conteo["cumple"] * 2 + conteo["parcial"]
         puntos_max = total * 2
         porcentaje = round((puntos / puntos_max * 100) if puntos_max > 0 else 0)
 

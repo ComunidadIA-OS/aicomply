@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import anthropic
 from datetime import datetime
-from config import ANTHROPIC_API_KEY, MODEL, DISCLAIMER_CRITICO, NIVELES_RIESGO
+
+from config import DISCLAIMER_CRITICO, NIVELES_RIESGO
 
 
 class GeneradorInforme:
-    """Genera informes de cumplimiento del AI Act en Markdown y PDF."""
-
-    def __init__(self):
-        self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    """
+    Genera informes de cumplimiento del AI Act en Markdown y PDF.
+    No requiere llamadas al LLM: el informe se construye a partir
+    de los datos ya analizados por el chatbot y el analizador documental.
+    """
 
     def generar_markdown(
         self,
@@ -194,14 +195,14 @@ class GeneradorInforme:
                 "**Inmediato (0-3 meses):** Designar un responsable de cumplimiento AI Act",
                 "**Corto plazo (3-6 meses):** Desarrollar documentación técnica (Art. 11) y sistema de gestión de riesgos (Art. 9)",
                 "**Medio plazo (6-9 meses):** Implementar registro de actividad (Art. 12) y protocolo de supervisión humana (Art. 14)",
-                "**Antes del despliegue:** Completar evaluación de conformidad y registrar el sistema en la base de datos de la UE (Art. 71)",
+                "**Antes del despliegue:** Completar evaluación de conformidad y registrar en la base de datos de la UE (Art. 71)",
                 "**Continuo:** Supervisión poscomercialización y actualización de la documentación técnica",
             ]
         elif nivel == "LIMITADO":
             pasos = [
                 "**Inmediato:** Añadir aviso claro de que el sistema usa IA en la interfaz de usuario (Art. 52)",
-                "**Corto plazo:** Implementar marcado de contenido generado por IA si el sistema genera texto, imágenes o audio",
-                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y su impacto",
+                "**Corto plazo:** Implementar marcado de contenido generado por IA si aplica",
+                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act",
             ]
         else:
             pasos = [

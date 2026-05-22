@@ -12,65 +12,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import anthropic
 import json
 from typing import Generator
-from config import ANTHROPIC_API_KEY, MODEL
+
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
+from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
+
+_PROMPT_RESUMEN = """Basándote en la conversación anterior, genera un resumen estructurado en JSON con:
+{
+  "nombre_sistema": "nombre o descripción del sistema de IA",
+  "sector": "sector de la empresa",
+  "proposito": "propósito principal del sistema",
+  "nivel_riesgo": "PROHIBIDO|ALTO|LIMITADO|MINIMO",
+  "articulos_aplicables": ["Art. X", "Art. Y"],
+  "caracteristicas_clave": ["característica 1", "característica 2"],
+  "obligaciones_identificadas": ["obligación 1", "obligación 2"]
+}
+
+Devuelve únicamente el JSON, sin texto adicional ni bloques de código markdown."""
 
 
 class AIComplyChat:
-    """Gestiona la conversación con Claude para el análisis de cumplimiento del AI Act."""
+    """Gestiona la conversación con el LLM para el análisis de cumplimiento del AI Act."""
 
-    def __init__(self):
-        self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    def __init__(self, provider: LLMProvider):
+        self.provider = provider
         self.historial: list[dict] = []
-        self.contexto_empresa: dict = {}
         self.nivel_riesgo: str | None = None
 
-    def _construir_system_con_rag(self, mensaje: str) -> str:
-        """Añade contexto RAG de artículos relevantes al system prompt."""
-        contexto_rag = formatear_contexto_rag(mensaje, top_k=3)
-        if contexto_rag:
-            return f"{SYSTEM_PROMPT_CHATBOT}\n\n{contexto_rag}"
+    def _system_con_rag(self, mensaje: str) -> str:
+        """Enriquece el system prompt con artículos relevantes recuperados por RAG."""
+        contexto = formatear_contexto_rag(mensaje, top_k=3)
+        if contexto:
+            return f"{SYSTEM_PROMPT_CHATBOT}\n\n{contexto}"
         return SYSTEM_PROMPT_CHATBOT
 
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
-        """Envía un mensaje y recibe la respuesta en streaming con contexto RAG."""
+        """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
         self.historial.append({"role": "user", "content": mensaje_usuario})
-        system_con_rag = self._construir_system_con_rag(mensaje_usuario)
+        system = self._system_con_rag(mensaje_usuario)
 
-        with self.client.messages.stream(
-            model=MODEL,
-            max_tokens=2048,
-            system=system_con_rag,
-            messages=self.historial,
-        ) as stream:
-            respuesta_completa = ""
-            for texto in stream.text_stream:
-                respuesta_completa += texto
-                yield texto
+        respuesta_completa = ""
+        for fragmento in self.provider.chat_stream(self.historial, system_prompt=system):
+            respuesta_completa += fragmento
+            yield fragmento
 
         self.historial.append({"role": "assistant", "content": respuesta_completa})
         self._extraer_nivel_riesgo(respuesta_completa)
 
     def chat_completo(self, mensaje_usuario: str) -> str:
-        """Envía un mensaje y recibe la respuesta completa (sin streaming)."""
+        """Envía un mensaje y devuelve la respuesta completa (sin streaming)."""
         self.historial.append({"role": "user", "content": mensaje_usuario})
-        system_con_rag = self._construir_system_con_rag(mensaje_usuario)
+        system = self._system_con_rag(mensaje_usuario)
 
-        respuesta = self.client.messages.create(
-            model=MODEL,
-            max_tokens=2048,
-            system=system_con_rag,
-            messages=self.historial,
-        )
-
-        texto_respuesta = respuesta.content[0].text
-        self.historial.append({"role": "assistant", "content": texto_respuesta})
-        self._extraer_nivel_riesgo(texto_respuesta)
-        return texto_respuesta
+        respuesta = self.provider.chat(self.historial, system_prompt=system)
+        self.historial.append({"role": "assistant", "content": respuesta})
+        self._extraer_nivel_riesgo(respuesta)
+        return respuesta
 
     def _extraer_nivel_riesgo(self, texto: str) -> None:
         """Detecta el nivel de riesgo mencionado en la respuesta y lo persiste."""
@@ -89,39 +88,23 @@ class AIComplyChat:
         if len(self.historial) < 2:
             return "{}"
 
-        prompt_resumen = """Basándote en la conversación anterior, genera un resumen estructurado en JSON con:
-{
-  "nombre_sistema": "nombre o descripción del sistema de IA",
-  "sector": "sector de la empresa",
-  "proposito": "propósito principal del sistema",
-  "nivel_riesgo": "PROHIBIDO|ALTO|LIMITADO|MINIMO",
-  "articulos_aplicables": ["Art. X", "Art. Y"],
-  "caracteristicas_clave": ["característica 1", "característica 2"],
-  "obligaciones_identificadas": ["obligación 1", "obligación 2"]
-}
-
-Devuelve únicamente el JSON, sin texto adicional ni bloques de código markdown."""
-
-        respuesta = self.client.messages.create(
-            model=MODEL,
-            max_tokens=1024,
-            system=SYSTEM_PROMPT_CHATBOT,
-            messages=self.historial + [{"role": "user", "content": prompt_resumen}],
-        )
+        mensajes = self.historial + [{"role": "user", "content": _PROMPT_RESUMEN}]
+        texto = self.provider.chat(mensajes, system_prompt=SYSTEM_PROMPT_CHATBOT)
 
         try:
-            texto = respuesta.content[0].text.strip()
+            texto = texto.strip()
             if texto.startswith("```"):
-                texto = texto.split("```")[1]
+                partes = texto.split("```")
+                texto = partes[1]
                 if texto.startswith("json"):
                     texto = texto[4:]
+                texto = texto.strip()
             json.loads(texto)
             return texto
         except Exception:
             return "{}"
 
     def resetear(self) -> None:
-        """Reinicia la conversación y el estado de la sesión."""
+        """Reinicia la conversación manteniendo el provider configurado."""
         self.historial = []
-        self.contexto_empresa = {}
         self.nivel_riesgo = None

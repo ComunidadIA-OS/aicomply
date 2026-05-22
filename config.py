@@ -17,9 +17,25 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-MODEL = "claude-sonnet-4-6"
+# ── Selección de provider ──────────────────────────────────────────────────────
+# Si LLM_PROVIDER está vacío, la interfaz mostrará el selector interactivo.
+# Valores válidos: anthropic | ollama | openai_compatible
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "")
 
+# ── Anthropic Claude ───────────────────────────────────────────────────────────
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
+
+# ── Ollama (modelos locales) ───────────────────────────────────────────────────
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+
+# ── API compatible con OpenAI ──────────────────────────────────────────────────
+OPENAI_COMPATIBLE_BASE_URL = os.getenv("OPENAI_COMPATIBLE_BASE_URL", "http://localhost:1234/v1")
+OPENAI_COMPATIBLE_API_KEY = os.getenv("OPENAI_COMPATIBLE_API_KEY", "")
+OPENAI_COMPATIBLE_MODEL = os.getenv("OPENAI_COMPATIBLE_MODEL", "")
+
+# ── Textos de la interfaz ──────────────────────────────────────────────────────
 DISCLAIMER_INICIAL = """
 **AVISO LEGAL IMPORTANTE**
 
@@ -34,7 +50,7 @@ Al continuar, acepta estas condiciones.
 """
 
 DISCLAIMER_CRITICO = """
-> **Nota importante**: Este análisis es orientativo. Consulte con un experto legal antes de tomar
+> **Nota importante:** Este análisis es orientativo. Consulte con un experto legal antes de tomar
 > decisiones basadas en esta evaluación. AIComply es una herramienta auxiliar de orientación;
 > los resultados no constituyen asesoramiento legal.
 """

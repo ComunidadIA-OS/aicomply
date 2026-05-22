@@ -13,11 +13,10 @@
 # limitations under the License.
 
 import json
-import anthropic
-from config import ANTHROPIC_API_KEY, MODEL
 
+from src.llm.provider import LLMProvider
 
-PROMPT_CLASIFICACION = """Analiza el siguiente sistema de IA y clasifícalo según el AI Act europeo (Reglamento UE 2024/1689).
+_PROMPT_CLASIFICACION = """Analiza el siguiente sistema de IA y clasifícalo según el AI Act europeo (Reglamento UE 2024/1689).
 
 Sistema descrito: {descripcion}
 
@@ -31,35 +30,34 @@ Devuelve ÚNICAMENTE un JSON con este formato (sin texto adicional ni bloques de
   "obligaciones_clave": ["obligación 1 (Art. X)", "obligación 2 (Art. Y)", "obligación 3 (Art. Z)"]
 }}
 
-Criterios de clasificación del AI Act:
-- PROHIBIDO (Art. 5): Manipulación subliminal, scoring social gubernamental, identificación biométrica en tiempo real en espacios públicos, explotación de vulnerabilidades de grupos específicos
-- ALTO (Art. 6 + Anexo III): Infraestructura crítica, educación y formación, RRHH y empleo, servicios esenciales (crédito, seguros, emergencias), aplicación de la ley, migración y asilo, administración de justicia, biometría de identificación
-- LIMITADO (Art. 52): Chatbots e interfaces conversacionales, sistemas de generación de contenido (texto, imágenes, audio, video), sistemas de recomendación que interactúan con usuarios
-- MINIMO: Control de calidad en producción, optimización logística, mantenimiento predictivo en maquinaria sin impacto en personas, análisis de datos internos sin decisiones sobre personas"""
+Criterios del AI Act:
+- PROHIBIDO (Art. 5): Manipulación subliminal, scoring social gubernamental, biometría en tiempo real en espacios públicos
+- ALTO (Art. 6 + Anexo III): Infraestructura crítica, educación, RRHH/empleo, crédito/seguros/emergencias, aplicación de la ley, migración, justicia, biometría de identificación
+- LIMITADO (Art. 52): Chatbots, sistemas de generación de contenido, sistemas de recomendación con usuarios
+- MINIMO: Control de calidad industrial, optimización logística, mantenimiento predictivo sin impacto directo en personas"""
 
 
 class ClasificadorRiesgo:
     """Clasifica el nivel de riesgo de un sistema de IA según el AI Act."""
 
-    def __init__(self):
-        self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
+    def __init__(self, provider: LLMProvider):
+        self.provider = provider
 
     def clasificar(self, descripcion: str) -> dict:
-        """Clasifica el riesgo dado una descripción del sistema de IA."""
-        respuesta = self.client.messages.create(
-            model=MODEL,
-            max_tokens=512,
+        """Clasifica el riesgo a partir de una descripción del sistema de IA."""
+        respuesta = self.provider.chat(
             messages=[
                 {
                     "role": "user",
-                    "content": PROMPT_CLASIFICACION.format(descripcion=descripcion),
+                    "content": _PROMPT_CLASIFICACION.format(descripcion=descripcion),
                 }
-            ],
+            ]
         )
 
-        texto = respuesta.content[0].text.strip()
+        texto = respuesta.strip()
         if texto.startswith("```"):
-            texto = texto.split("```")[1]
+            partes = texto.split("```")
+            texto = partes[1]
             if texto.startswith("json"):
                 texto = texto[4:]
 
@@ -69,7 +67,7 @@ class ClasificadorRiesgo:
             return {
                 "nivel_riesgo": "DESCONOCIDO",
                 "confianza": "baja",
-                "justificacion": "No se pudo clasificar automáticamente. Por favor, proporcione más detalles.",
+                "justificacion": "No se pudo clasificar automáticamente. Proporcione más detalles.",
                 "articulos_principales": [],
                 "obligaciones_clave": [],
             }
