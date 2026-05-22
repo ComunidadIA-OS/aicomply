@@ -1,0 +1,213 @@
+{
+  "reglamento": "Reglamento (UE) 2024/1689 del Parlamento Europeo y del Consejo, de 13 de junio de 2024",
+  "fecha_publicacion": "2024-07-12",
+  "diario_oficial": "DO L, 2024/1689",
+  "fuente": "EUR-Lex — https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32024R1689",
+  "nota": "Extractos y resúmenes del texto oficial. Consulte el texto completo en EUR-Lex para decisiones de cumplimiento. Los artículos 52 y 69 siguen la numeración de la versión consolidada de amplia difusión; en la publicación final corresponden a los artículos 50 y 95 respectivamente.",
+  "articulos": {
+    "5": {
+      "titulo": "Prácticas de inteligencia artificial prohibidas",
+      "capitulo": "II",
+      "nivel_riesgo": "inaceptable",
+      "texto_oficial": "Quedan prohibidos los siguientes sistemas de IA:\na) Sistemas que utilizan técnicas subliminales que actúan sin que la persona sea consciente de ello o técnicas deliberadamente manipuladoras o engañosas con el objetivo de distorsionar el comportamiento de las personas, de un modo que pueda causarles un perjuicio significativo.\nb) Sistemas que explotan las vulnerabilidades de colectivos específicos de personas a causa de su edad, discapacidad u otras circunstancias sociales o económicas.\nc) Sistemas de puntuación social utilizados por autoridades públicas o en su nombre.\nd) Sistemas de evaluación del riesgo de que una persona física cometa un delito penal, basándose únicamente en la elaboración de perfiles.\ne) Sistemas que crean o amplían bases de datos de reconocimiento facial mediante la extracción no selectiva de imágenes faciales de internet o de imágenes de cámaras de televisión en circuito cerrado.\nf) Sistemas de IA utilizados para deducir emociones de personas físicas en el lugar de trabajo y en instituciones educativas, salvo por motivos médicos o de seguridad.\ng) Sistemas de categorización biométrica que clasifiquen a personas físicas individualmente basándose en sus datos biométricos para deducir características sensibles.\nh) Sistemas de identificación biométrica remota 'en tiempo real' en espacios de acceso público con fines de aplicación de la ley (con excepciones limitadas).",
+      "requisitos_clave": [
+        "Prohibición absoluta de desarrollo, comercialización y uso",
+        "Sanciones de hasta 35.000.000 EUR o el 7% de la facturación global anual",
+        "Los sistemas deben ser retirados del mercado inmediatamente",
+        "Notificación obligatoria a las autoridades competentes"
+      ],
+      "aplica_a": "Cualquier persona que desarrolle, comercialice, despliegue o use sistemas de IA que realicen las prácticas enumeradas",
+      "palabras_clave": ["prohibido", "manipulacion", "subliminal", "scoring social", "puntuacion social", "biometrico", "reconocimiento facial", "emociones", "vulnerabilidades", "tiempo real", "identificacion biometrica"]
+    },
+    "6": {
+      "titulo": "Normas de clasificación de los sistemas de IA de alto riesgo",
+      "capitulo": "III",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Con independencia de si se comercializa o se pone en servicio de forma independiente respecto de los productos mencionados en el presente párrafo, se considerará que un sistema de IA es de alto riesgo cuando se cumplan las dos condiciones siguientes:\na) el sistema de IA está destinado a ser utilizado como componente de seguridad de un producto, o el sistema de IA es en sí mismo un producto, contemplado en la legislación de armonización de la Unión que figura en el anexo I;\nb) el producto cuyo componente de seguridad es el sistema de IA, o el sistema de IA que es en sí mismo un producto, debe someterse a una evaluación de conformidad por terceros con arreglo a la legislación de armonización de la Unión que figura en el anexo I.\n2. Además de los sistemas de IA de alto riesgo a que se refiere el apartado 1, los sistemas de IA a que se refiere el anexo III se considerarán de alto riesgo.\n3. No obstante lo dispuesto en el apartado 2, un sistema de IA a que se refiere el anexo III no se considerará de alto riesgo cuando no plantee un riesgo significativo de perjuicio para la salud, la seguridad o los derechos fundamentales de las personas físicas.",
+      "categorias_anexo_III": [
+        "1. Identificación biométrica y categorización de personas físicas",
+        "2. Gestión y explotación de infraestructuras críticas (agua, gas, electricidad, transporte)",
+        "3. Educación y formación profesional (acceso, evaluación, admisión)",
+        "4. Empleo, gestión de trabajadores y acceso al autoempleo",
+        "5. Acceso y disfrute de servicios privados esenciales y servicios públicos (crédito, seguros, servicios de emergencia)",
+        "6. Aplicación de la ley (evaluación de riesgo, polígrafo, pruebas)",
+        "7. Gestión de la migración, el asilo y el control fronterizo",
+        "8. Administración de justicia y procesos democráticos"
+      ],
+      "requisitos_clave": [
+        "Aplicación del conjunto de obligaciones de los artículos 9-17",
+        "Evaluación de conformidad antes de la comercialización",
+        "Registro en la base de datos de la UE (artículo 71)",
+        "Declaración UE de conformidad",
+        "Marcado CE"
+      ],
+      "aplica_a": "Proveedores y desplegadores de sistemas de IA que cumplan los criterios de clasificación",
+      "palabras_clave": ["alto riesgo", "clasificacion", "componente de seguridad", "anexo I", "anexo III", "evaluacion de conformidad", "infraestructura critica", "empleo", "educacion", "credito", "seguridad", "migracion", "justicia", "biometrico", "maquinaria", "vehiculos", "equipos medicos", "productos sanitarios"]
+    },
+    "9": {
+      "titulo": "Sistema de gestión de riesgos",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. En relación con los sistemas de IA de alto riesgo se establecerá, aplicará, documentará y mantendrá un sistema de gestión de riesgos.\n2. El sistema de gestión de riesgos consistirá en un proceso continuo e iterativo planificado y ejecutado a lo largo de todo el ciclo de vida de un sistema de IA de alto riesgo. Comprenderá los siguientes pasos:\na) la identificación y el análisis de los riesgos conocidos y razonablemente previsibles que el sistema de IA de alto riesgo puede plantear para la salud, la seguridad o los derechos fundamentales;\nb) la estimación y evaluación de los riesgos que puedan surgir cuando el sistema de IA de alto riesgo se utilice de acuerdo con su finalidad prevista;\nc) la evaluación de otros riesgos posibles basándose en el análisis de los datos recabados del sistema de supervisión poscomercialización;\nd) la adopción de medidas adecuadas y específicas de gestión de riesgos diseñadas para hacer frente a los riesgos identificados.\n4. Las medidas de gestión de riesgos contemplarán los riesgos identificados y, en su caso, tendrán en cuenta los efectos e interacciones que pueden derivarse de la combinación de los requisitos.\n5. Los sistemas de IA de alto riesgo serán probados para identificar las medidas de gestión de riesgos más adecuadas. Las pruebas se realizarán antes de la comercialización o puesta en servicio.",
+      "requisitos_clave": [
+        "Proceso continuo e iterativo durante todo el ciclo de vida",
+        "Identificación y análisis de riesgos conocidos y previsibles",
+        "Estimación y evaluación de riesgos en uso previsto y uso indebido razonablemente previsible",
+        "Adopción de medidas de gestión de riesgos adecuadas y específicas",
+        "Pruebas de validación antes de la comercialización",
+        "Documentación completa del sistema de gestión de riesgos",
+        "Revisión y actualización periódicas durante el ciclo de vida"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": ["gestion de riesgos", "riesgos", "identificacion riesgos", "evaluacion riesgos", "ciclo de vida", "pruebas", "medidas de gestion", "documentacion", "riesgos fundamentales", "salud seguridad"]
+    },
+    "10": {
+      "titulo": "Datos y gobernanza de datos",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo que utilizan técnicas que implican el entrenamiento de modelos de IA con datos se desarrollarán sobre la base de conjuntos de datos de entrenamiento, validación y prueba que cumplan los criterios de calidad indicados en los apartados 2 a 5.\n2. Los conjuntos de datos de entrenamiento, validación y prueba estarán sujetos a prácticas de gobernanza y gestión de datos adecuadas a la finalidad prevista del sistema de IA de alto riesgo. En particular, comprenderán:\na) las decisiones de diseño pertinentes;\nb) los procesos de recopilación de datos y el origen de los datos;\nc) las operaciones de procesamiento pertinentes para la preparación de los datos, tales como anotación, etiquetado, depuración, enriquecimiento y agregación;\nd) la formulación de hipótesis pertinentes;\ne) una evaluación de la disponibilidad, la cantidad y la idoneidad de los conjuntos de datos necesarios;\nf) un examen de los posibles sesgos que podrían afectar a la salud y la seguridad de las personas o dar lugar a discriminación prohibida por el Derecho de la Unión.\n4. En la medida en que sea estrictamente necesario para la finalidad de detectar y corregir sesgos, los proveedores de sistemas de IA de alto riesgo podrán procesar categorías especiales de datos personales.",
+      "requisitos_clave": [
+        "Prácticas de gobernanza y gestión de datos documentadas",
+        "Datos de entrenamiento relevantes, representativos y sin errores",
+        "Análisis y corrección de posibles sesgos que afecten a la salud, seguridad o derechos",
+        "Documentación de origen, recopilación y procesamiento de datos",
+        "Evaluación de disponibilidad, cantidad e idoneidad de los conjuntos de datos",
+        "Cumplimiento del RGPD para datos personales",
+        "Medidas específicas para categorías especiales de datos (salud, biométricos, raciales)"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo que usan aprendizaje automático con datos de entrenamiento",
+      "palabras_clave": ["datos", "entrenamiento", "gobernanza de datos", "sesgo", "datos personales", "conjuntos de datos", "validacion", "prueba", "calidad datos", "RGPD", "anotacion", "etiquetado", "origen datos", "recopilacion", "categorias especiales"]
+    },
+    "13": {
+      "titulo": "Transparencia e información para los responsables del despliegue",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo se diseñarán y desarrollarán de tal manera que su funcionamiento sea suficientemente transparente para que los responsables del despliegue puedan interpretar los resultados del sistema y utilizarlo adecuadamente. Se facilitará un tipo y un nivel de transparencia adecuados para lograr el cumplimiento de las obligaciones pertinentes de los responsables del despliegue establecidas en el presente capítulo.\n2. Los sistemas de IA de alto riesgo irán acompañados de instrucciones de uso en un formato digital o no digital que incluirán información concisa, completa, exacta y clara que sea pertinente, accesible y comprensible para los responsables del despliegue.\n3. La información contemplada en el apartado 2 especificará:\na) la identidad y datos de contacto del proveedor;\nb) las características, capacidades y limitaciones de rendimiento del sistema de IA de alto riesgo;\nc) cualquier cambio conocido o previsible del sistema de IA de alto riesgo y su rendimiento;\nd) las medidas de supervisión humana, incluidas las instrucciones técnicas para capacitar al responsable del despliegue;\ne) las medidas de supervisión humana, incluidas las instrucciones técnicas y las medidas de mitigación de riesgos.",
+      "requisitos_clave": [
+        "Instrucciones de uso en formato digital o físico, claras y accesibles",
+        "Identidad y datos de contacto del proveedor",
+        "Descripción de capacidades, limitaciones y rendimiento del sistema",
+        "Niveles de exactitud y métricas de rendimiento declaradas",
+        "Información sobre cambios y actualizaciones del sistema",
+        "Instrucciones para la supervisión humana efectiva",
+        "Medidas de mitigación de riesgos para el responsable del despliegue",
+        "Información sobre condiciones de uso previsto y uso indebido previsible"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo (obligación de informar a los responsables del despliegue)",
+      "palabras_clave": ["transparencia", "instrucciones de uso", "informacion", "responsable del despliegue", "capacidades", "limitaciones", "rendimiento", "exactitud", "identidad proveedor", "cambios", "actualizaciones", "supervision humana"]
+    },
+    "14": {
+      "titulo": "Supervisión humana",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo se diseñarán y desarrollarán, incluidas las herramientas técnicas adecuadas para ello, de tal manera que durante el período de su uso puedan ser supervisados eficazmente por personas físicas.\n2. La supervisión humana tiene como objetivo prevenir o minimizar los riesgos para la salud, la seguridad o los derechos fundamentales que puedan producirse cuando un sistema de IA de alto riesgo se usa de conformidad con su finalidad prevista o en condiciones de uso indebido razonablemente previsibles.\n3. Las medidas de supervisión humana serán proporcionales a los riesgos, el nivel de autonomía y el contexto de uso del sistema de IA de alto riesgo. En particular, según proceda, dichas medidas:\na) identificarán y elaborarán las medidas de supervisión humana que sean técnicamente factibles, a fin de que los responsables del despliegue puedan supervisar el sistema;\nb) posibilitarán que los responsables del despliegue puedan detectar y hacer frente, cuando proceda, a las anomalías, disfunciones e rendimientos inesperados del sistema;\nc) posibilitarán que los responsables del despliegue interpreten el resultado del sistema de IA de alto riesgo;\nd) cuando proceda, posibilitarán que los responsables del despliegue ignoren, anulen o inviertan el resultado del sistema de IA de alto riesgo;\ne) cuando proceda, posibilitarán que los responsables del despliegue intervengan en el funcionamiento del sistema de IA de alto riesgo o interrumpan el sistema mediante un botón de parada o un procedimiento similar.",
+      "requisitos_clave": [
+        "Herramientas técnicas de supervisión humana integradas en el diseño",
+        "Capacidad de detectar anomalías, disfunciones y rendimiento inesperado",
+        "Capacidad de interpretar los resultados del sistema",
+        "Posibilidad de ignorar, anular o revertir los resultados del sistema",
+        "Posibilidad de intervenir o interrumpir el sistema (botón de parada)",
+        "Medidas proporcionales al nivel de autonomía y riesgo del sistema",
+        "Formación y capacitación de los responsables del despliegue"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo (diseño) y responsables del despliegue (implementación)",
+      "palabras_clave": ["supervision humana", "control humano", "intervencion", "deteccion anomalias", "parada emergencia", "anular sistema", "autonomia", "interpretar resultados", "responsable despliegue", "herramientas supervision", "oversight"]
+    },
+    "15": {
+      "titulo": "Exactitud, solidez y ciberseguridad",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo se diseñarán y desarrollarán de tal manera que alcancen un nivel apropiado de exactitud, solidez y ciberseguridad, y que funcionen de manera constante en relación con esos aspectos a lo largo de todo su ciclo de vida.\n2. Los niveles de exactitud y las métricas de exactitud de los sistemas de IA de alto riesgo se declararán en las instrucciones de uso que acompañen a dichos sistemas.\n3. Los sistemas de IA de alto riesgo serán resilientes en lo que respecta a los errores, los fallos o las incoherencias que puedan producirse en el sistema o en el entorno en que opera, en particular por lo que se refiere a su interacción con personas físicas o con otros sistemas. Se recurrirá para ello a medidas técnicas de redundancia.\n4. La solidez técnica de los sistemas de IA de alto riesgo puede lograrse a través de medidas de IA técnicas tales como soluciones de aprendizaje automático continuo, siempre que dichas medidas sean validadas antes de su comercialización o puesta en servicio.\n5. Los sistemas de IA de alto riesgo que continúan aprendiendo después de su comercialización o puesta en servicio se desarrollarán de tal manera que se puedan evitar o minimizar los posibles sesgos de retroalimentación o efectos de bucle que pudieran dar lugar a riesgos para la salud, la seguridad o los derechos fundamentales.\n6. Los sistemas de IA de alto riesgo serán resilientes frente a los intentos de terceros no autorizados de alterar su uso, resultados o rendimiento mediante la explotación de las vulnerabilidades del sistema.",
+      "requisitos_clave": [
+        "Nivel apropiado de exactitud declarado en las instrucciones de uso",
+        "Métricas de exactitud publicadas y verificables",
+        "Resiliencia frente a errores, fallos e incoherencias técnicas",
+        "Medidas de redundancia técnica",
+        "Resiliencia frente a intentos de manipulación y ataques adversariales",
+        "Control de sesgos de retroalimentación en sistemas de aprendizaje continuo",
+        "Medidas de ciberseguridad apropiadas al nivel de riesgo",
+        "Rendimiento constante a lo largo de todo el ciclo de vida"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": ["exactitud", "precision", "solidez", "robustez", "ciberseguridad", "resiliencia", "metricas", "rendimiento", "errores", "fallos", "ataques adversariales", "manipulacion", "redundancia", "aprendizaje continuo", "ciclo de vida", "vulnerabilidades"]
+    },
+    "52": {
+      "titulo": "Obligaciones de transparencia para ciertos sistemas de IA",
+      "capitulo": "IV",
+      "nivel_riesgo": "limitado",
+      "nota_numeracion": "Corresponde al Artículo 50 en la publicación final del Reglamento (UE) 2024/1689",
+      "texto_oficial": "1. Los proveedores garantizarán que los sistemas de IA destinados a interactuar directamente con personas físicas estén diseñados y desarrollados de tal manera que las personas físicas afectadas sean informadas de que interactúan con un sistema de IA, a menos que esto sea obvio por el contexto y las circunstancias de uso. Esta obligación no se aplicará a los sistemas de IA autorizados por ley para detectar, prevenir, investigar o enjuiciar delitos penales, sin perjuicio de los derechos y libertades de terceros.\n2. Los proveedores de sistemas de IA, incluidos los sistemas de IA de uso general, que generen contenidos de audio, imagen, video o texto sintéticos, garantizarán que los resultados del sistema de IA estén marcados en un formato legible por máquina y sean detectables como generados o manipulados artificialmente.\n3. Los responsables del despliegue de un sistema de reconocimiento de emociones o de un sistema de categorización biométrica informarán de su uso a las personas físicas expuestas a dicho sistema, de conformidad con el Reglamento (UE) 2016/679 y la Directiva 2002/58/CE.\n4. Los responsables del despliegue que utilicen un sistema de IA para generar o manipular imágenes, contenido de audio o vídeo que constituya un 'bientrenado' o 'vídeo deepfake' divulgarán que el contenido se ha generado o manipulado artificialmente.",
+      "requisitos_clave": [
+        "Informar al usuario cuando interactúa con un chatbot o sistema de IA conversacional",
+        "Marcar el contenido generado artificialmente (texto, imágenes, audio, video)",
+        "Informar sobre el uso de sistemas de reconocimiento de emociones",
+        "Informar sobre el uso de sistemas de categorización biométrica",
+        "Divulgar la creación de deepfakes o contenido manipulado",
+        "No aplicable cuando el contexto hace obvio que es una IA",
+        "Excepciones para sistemas autorizados por ley para aplicación de la ley"
+      ],
+      "aplica_a": "Proveedores y responsables del despliegue de chatbots, sistemas generativos, sistemas de reconocimiento de emociones y categorización biométrica",
+      "palabras_clave": ["transparencia", "chatbot", "asistente virtual", "interaccion con IA", "contenido sintetico", "deepfake", "reconocimiento emociones", "categorizacion biometrica", "marcado", "divulgacion", "generacion texto", "generacion imagen", "audio sintetico", "riesgo limitado", "obligaciones transparencia"]
+    },
+    "69": {
+      "titulo": "Códigos de conducta para sistemas de IA de riesgo no elevado",
+      "capitulo": "IX",
+      "nivel_riesgo": "minimo",
+      "nota_numeracion": "Corresponde al Artículo 95 en la publicación final del Reglamento (UE) 2024/1689",
+      "texto_oficial": "1. La Oficina de IA y los Estados miembros fomentarán y facilitarán la elaboración de códigos de conducta destinados a promover la aplicación voluntaria a los sistemas de IA de algunos o todos los requisitos establecidos en el capítulo III, sección 2, teniendo en cuenta las soluciones técnicas disponibles y las mejores prácticas de la industria, que permitan la aplicación de dichos requisitos.\n2. La Oficina de IA y los Estados miembros fomentarán y facilitarán la elaboración de códigos de conducta destinados a promover la aplicación voluntaria a los sistemas de IA de requisitos relativos, por ejemplo, a la sostenibilidad medioambiental, la accesibilidad para personas con discapacidad, la participación de las partes interesadas en el diseño y desarrollo de los sistemas de IA y la diversidad de los equipos de desarrollo.\n3. Los códigos de conducta podrán ser elaborados por proveedores individuales o responsables del despliegue de sistemas de IA o por organizaciones que los representen o por ambos, incluidos con la implicación de responsables del despliegue y otras partes interesadas relevantes.\n4. La Oficina de IA llevará un registro de los códigos de conducta y los pondrá a disposición del público a través de un sitio web específico.",
+      "requisitos_clave": [
+        "Participación voluntaria para sistemas de IA de riesgo mínimo",
+        "Posibilidad de adoptar voluntariamente requisitos del capítulo III (artículos 9-17)",
+        "Fomento de prácticas de sostenibilidad medioambiental",
+        "Fomento de la accesibilidad para personas con discapacidad",
+        "Fomento de la participación de partes interesadas en el diseño",
+        "Registro de códigos de conducta en la Oficina de IA",
+        "Pueden ser sectoriales o transversales"
+      ],
+      "aplica_a": "Proveedores y responsables del despliegue de sistemas de IA de riesgo mínimo que deseen adherirse voluntariamente",
+      "palabras_clave": ["codigos de conducta", "voluntario", "autorregulacion", "riesgo minimo", "sostenibilidad", "accesibilidad", "buenas practicas", "partes interesadas", "Oficina IA", "adhesion voluntaria", "mejores practicas"]
+    }
+  },
+  "categorias_alto_riesgo": {
+    "biometria": {
+      "descripcion": "Sistemas de identificación biométrica remota, verificación de autenticidad, categorización de personas físicas basada en datos biométricos sensibles",
+      "articulo": "Anexo III, punto 1",
+      "ejemplos": ["Reconocimiento facial en entornos de acceso controlado", "Verificación de identidad biométrica", "Análisis de voz con fines de identificación"]
+    },
+    "infraestructura_critica": {
+      "descripcion": "Sistemas de IA utilizados como componentes de seguridad en la gestión y explotación de infraestructuras críticas: redes eléctricas, suministro de agua, redes de gas, transporte",
+      "articulo": "Anexo III, punto 2",
+      "ejemplos": ["Control de redes eléctricas inteligentes", "Gestión de redes de distribución de agua", "Sistemas de control de tráfico ferroviario o aéreo"]
+    },
+    "educacion": {
+      "descripcion": "Sistemas de IA utilizados para determinar el acceso, admisión o asignación a instituciones educativas o formación profesional; evaluación de resultados de aprendizaje",
+      "articulo": "Anexo III, punto 3",
+      "ejemplos": ["Sistemas de admisión universitaria", "Evaluación automática de exámenes con impacto en la titulación", "Sistemas de detección de abandono escolar"]
+    },
+    "empleo_rrhh": {
+      "descripcion": "Sistemas de IA usados en contratación y selección de personal, toma de decisiones sobre promoción, evaluación del rendimiento y comportamiento, despido",
+      "articulo": "Anexo III, punto 4",
+      "ejemplos": ["Cribado automatizado de CVs con decisión vinculante", "Sistemas de evaluación del rendimiento de trabajadores", "Herramientas de detección de comportamientos en el trabajo"]
+    },
+    "servicios_esenciales": {
+      "descripcion": "Sistemas de IA para evaluar la solvencia o establecer el scoring de crédito; sistemas de evaluación de riesgos en seguros de salud y de vida; sistemas de emergencias",
+      "articulo": "Anexo III, punto 5",
+      "ejemplos": ["Scoring crediticio automatizado para concesión de préstamos", "Evaluación de riesgo para seguros de vida o salud", "Sistemas de priorización de llamadas de emergencia"]
+    },
+    "seguridad_publica": {
+      "descripcion": "Sistemas de IA utilizados por o en nombre de autoridades policiales para evaluar la probabilidad de que una persona cometa un delito o reincida",
+      "articulo": "Anexo III, punto 6",
+      "ejemplos": ["Sistemas predictivos de criminalidad", "Análisis de comportamiento para detección de amenazas", "Análisis forense de datos digitales"]
+    },
+    "migracion_asilo": {
+      "descripcion": "Sistemas de IA utilizados por o en nombre de autoridades competentes en procedimientos de asilo, visado y migración para evaluar riesgos o examinar solicitudes",
+      "articulo": "Anexo III, punto 7",
+      "ejemplos": ["Evaluación automatizada de solicitudes de asilo", "Detección de documentos fraudulentos en fronteras", "Evaluación de riesgo de inmigración irregular"]
+    },
+    "justicia": {
+      "descripcion": "Sistemas de IA destinados a asistir a las autoridades judiciales en la investigación y enjuiciamiento de infracciones penales y en la administración de justicia",
+      "articulo": "Anexo III, punto 8",
+      "ejemplos": ["Sistemas de apoyo a la decisión judicial", "Análisis de probabilidad de reincidencia para resoluciones judiciales", "Análisis automatizado de pruebas digitales"]
+    }
+  }
+}
