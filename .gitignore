@@ -40,3 +40,7 @@ htmlcov/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Documentos originales en texto plano (ingestar con scripts/ingest_txt.py)
+# Los JSON procesados sí se suben a data/docs/
+data/docs/*.txt

@@ -27,11 +27,15 @@ def formatear_contexto_rag(consulta: str, top_k: int = 3) -> str:
     if not documentos:
         return ""
 
-    partes = ["Artículos relevantes del AI Act (Reglamento UE 2024/1689) para el contexto:"]
+    partes = ["Documentos normativos relevantes para el contexto:"]
     for doc in documentos:
         meta = doc.get("metadata", {})
         articulo = meta.get("articulo", "")
         titulo = meta.get("titulo", "")
-        partes.append(f"\n--- {articulo}: {titulo} ---\n{doc['texto']}")
+        fuente = meta.get("fuente", "")
+        cabecera = f"{articulo}: {titulo}" if titulo and titulo != articulo else articulo
+        if fuente:
+            cabecera = f"{cabecera} [{fuente}]"
+        partes.append(f"\n--- {cabecera} ---\n{doc['texto']}")
 
     return "\n".join(partes)

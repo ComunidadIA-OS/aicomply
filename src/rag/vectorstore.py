@@ -22,6 +22,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 DATA_DIR = Path(__file__).parent.parent.parent / "data" / "ai_act"
 ARTICLES_FILE = DATA_DIR / "ai_act_articles.json"
+DATA_DOCS_DIR = Path(__file__).parent.parent.parent / "data" / "docs"
 
 
 def cargar_articulos_como_documentos() -> list[dict]:
@@ -83,6 +84,51 @@ def cargar_articulos_como_documentos() -> list[dict]:
     return documentos
 
 
+def cargar_documentos_adicionales() -> list[dict]:
+    """Carga fragmentos de documentos legales adicionales desde data/docs/*.json."""
+    documentos = []
+    if not DATA_DOCS_DIR.exists():
+        return documentos
+
+    for fichero in sorted(DATA_DOCS_DIR.glob("*.json")):
+        try:
+            with open(fichero, encoding="utf-8") as f:
+                datos = json.load(f)
+        except Exception:
+            continue
+
+        fuente = datos.get("fuente", fichero.stem)
+        tipo = datos.get("tipo", "documento_legal")
+        titulo_doc = datos.get("titulo", fichero.stem)
+
+        for fragmento in datos.get("documentos", []):
+            texto = fragmento.get("texto", "").strip()
+            if not texto:
+                continue
+
+            titulo_frag = fragmento.get("titulo", "")
+            capitulo = fragmento.get("capitulo", "")
+
+            # Enriquecer el texto con contexto para que TF-IDF lo indexe bien
+            texto_completo = f"{titulo_doc}\n{titulo_frag}\n{texto}"
+            if capitulo:
+                texto_completo = f"{capitulo}\n{texto_completo}"
+
+            documentos.append({
+                "texto": texto_completo,
+                "metadata": {
+                    "articulo": titulo_frag,
+                    "titulo": titulo_frag,
+                    "fuente": fuente,
+                    "tipo": tipo,
+                    "capitulo": capitulo,
+                    "fichero": fichero.name,
+                },
+            })
+
+    return documentos
+
+
 class VectorstoreSimple:
     """Vectorstore TF-IDF sin dependencias externas de bases de datos vectoriales."""
 
@@ -98,7 +144,7 @@ class VectorstoreSimple:
         self._construir()
 
     def _construir(self) -> None:
-        self.documentos = cargar_articulos_como_documentos()
+        self.documentos = cargar_articulos_como_documentos() + cargar_documentos_adicionales()
         corpus = [doc["texto"] for doc in self.documentos]
         if corpus:
             self.matriz_tfidf = self.vectorizer.fit_transform(corpus)
