@@ -23,7 +23,7 @@ from src.llm.provider import LLMProvider
 # a y=268 ancho=380 px, crecimiento lineal simétrico respecto a x=210.
 _SVG_PIRAMIDE = """
 <svg viewBox="0 0 420 330" xmlns="http://www.w3.org/2000/svg"
-     style="max-width:400px; margin:auto; display:block;">
+     width="100%" style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
   <polygon points="57,240 363,240 400,298 20,298"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
@@ -147,8 +147,9 @@ def _mostrar_intro() -> None:
         st.components.v1.html(
             "<!DOCTYPE html><html><head><style>"
             "html,body{margin:0;padding:0;overflow:hidden;background:transparent;}"
+            "body{padding-top:18px;box-sizing:border-box;}"
             "</style></head><body>" + _SVG_PIRAMIDE + "</body></html>",
-            height=330,
+            height=390,
         )
 
     with col_desc:
