@@ -12,11 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
 from typing import Generator
 
 import anthropic
 
 from .provider import LLMProvider
+
+_RETRY_WAIT = 35  # segundos de espera al recibir un 429
 
 
 class AnthropicProvider(LLMProvider):
@@ -41,7 +44,7 @@ class AnthropicProvider(LLMProvider):
         return "anthropic"
 
     def chat(self, messages: list[dict], system_prompt: str = "") -> str:
-        """Llamada síncrona sin streaming."""
+        """Llamada síncrona sin streaming. Reintenta una vez tras un error 429."""
         kwargs: dict = {
             "model": self._model,
             "max_tokens": self.max_tokens,
@@ -50,8 +53,15 @@ class AnthropicProvider(LLMProvider):
         if system_prompt:
             kwargs["system"] = system_prompt
 
-        response = self.client.messages.create(**kwargs)
-        return response.content[0].text
+        for intento in range(2):
+            try:
+                response = self.client.messages.create(**kwargs)
+                return response.content[0].text
+            except anthropic.RateLimitError:
+                if intento == 0:
+                    time.sleep(_RETRY_WAIT)
+                else:
+                    raise
 
     def chat_stream(
         self, messages: list[dict], system_prompt: str = ""

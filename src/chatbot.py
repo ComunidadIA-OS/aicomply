@@ -78,15 +78,13 @@ class AIComplyChat:
         return self._system_prompt_override or SYSTEM_PROMPT_CHATBOT
 
     def _system_con_rag(self, mensaje: str) -> str:
-        """Enriquece el system prompt base con artículos relevantes recuperados por RAG."""
-        if self._system_prompt_override:
-            # En el modo cumplimiento, el contexto de clasificación ya está embebido
-            # en el system prompt; añadir RAG duplicaría información y diluiría el foco.
-            return self._system_prompt_override
-        contexto = formatear_contexto_rag(mensaje, top_k=3)
-        if contexto:
-            return f"{SYSTEM_PROMPT_CHATBOT}\n\n{contexto}"
-        return SYSTEM_PROMPT_CHATBOT
+        """Devuelve el system prompt base sin RAG adicional.
+
+        El árbol de decisión ya contiene toda la información normativa necesaria
+        para la evaluación. Añadir artículos extra vía RAG duplica tokens sin
+        mejorar la calidad de las respuestas y provoca errores de límite de uso.
+        """
+        return self._system_prompt_override or SYSTEM_PROMPT_CHATBOT
 
     def _historial_truncado(self, max_mensajes: int = 10) -> list[dict]:
         """Recorta el historial para no superar el límite de tokens de la API.
@@ -105,13 +103,26 @@ class AIComplyChat:
 
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
+        import time
+
         self.historial.append({"role": "user", "content": mensaje_usuario})
         system = self._system_con_rag(mensaje_usuario)
 
         respuesta_completa = ""
-        for fragmento in self.provider.chat_stream(self._historial_truncado(), system_prompt=system):
-            respuesta_completa += fragmento
-            yield fragmento
+        try:
+            for fragmento in self.provider.chat_stream(self._historial_truncado(), system_prompt=system):
+                respuesta_completa += fragmento
+                yield fragmento
+        except Exception as exc:
+            # Retry automático tras 429 (rate limit): esperar 35 s y usar llamada síncrona.
+            if "429" in str(exc) or "rate_limit" in str(exc).lower():
+                time.sleep(35)
+                respuesta_completa = self.provider.chat(
+                    self._historial_truncado(), system_prompt=system
+                )
+                yield respuesta_completa
+            else:
+                raise
 
         # Detectar señal de evaluación completa y limpiarla del historial persistido.
         # Solo se acepta si va acompañada de un informe real (≥150 caracteres).
