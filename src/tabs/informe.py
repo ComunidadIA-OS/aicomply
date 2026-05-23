@@ -48,8 +48,8 @@ def _botones_descarga(informe_md: str, tipo: str) -> None:
                 )
             else:
                 st.caption("PDF no disponible. Instale fpdf2: pip install fpdf2")
-        except Exception:
-            st.caption("PDF no disponible. Instale fpdf2: pip install fpdf2")
+        except Exception as _pdf_exc:
+            st.caption(f"Error al generar PDF: {_pdf_exc}")
 
     with col_txt:
         generador = GeneradorInforme()

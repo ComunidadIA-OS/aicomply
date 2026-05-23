@@ -273,14 +273,42 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
         cubierta = sum(1 for o in obligaciones if o.get("estado") == "cubierta")
         parcial = sum(1 for o in obligaciones if o.get("estado") == "parcial")
         n_carencias = sum(1 for o in obligaciones if o.get("estado") == "carencia")
+        no_eval = sum(1 for o in obligaciones if o.get("estado") not in ("cubierta", "parcial", "carencia"))
 
-        col1, col2, col3 = st.columns(3)
+        col1, col2, col3, col4 = st.columns(4)
         col1.metric("Cubiertas", cubierta)
         col2.metric("Parciales", parcial)
         col3.metric("Áreas de mejora", n_carencias)
+        col4.metric("Sin evaluar", no_eval)
 
         if datos.get("resumen_cumplimiento"):
             st.info(datos["resumen_cumplimiento"])
+
+        # ── Trazabilidad de obligaciones ───────────────────────────────────────
+        if obligaciones:
+            _ESTADO_ESTILO: dict[str, tuple[str, str, str]] = {
+                "cubierta":    ("#388E3C", "#E8F5E9", "✓ Cubierta"),
+                "parcial":     ("#F9A825", "#FFF8E1", "⚠ Parcial"),
+                "carencia":    ("#C62828", "#FFEBEE", "✗ Área de mejora"),
+                "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+            }
+            with st.expander("Trazabilidad de obligaciones", expanded=True):
+                for o in obligaciones:
+                    estado = o.get("estado", "no_evaluada")
+                    color, bg, etiqueta = _ESTADO_ESTILO.get(estado, _ESTADO_ESTILO["no_evaluada"])
+                    articulo = o.get("articulo", "")
+                    titulo = o.get("titulo", "")
+                    descripcion = o.get("descripcion", "")
+                    st.markdown(
+                        f'<div style="background:{bg}; border-left:4px solid {color}; '
+                        f'border-radius:4px; padding:8px 14px; margin-bottom:8px;">'
+                        f'<strong>{articulo} — {titulo}</strong> '
+                        f'<span style="color:{color}; font-size:0.85em; font-weight:bold;">({etiqueta})</span>'
+                        + (f'<br/><span style="font-size:0.9em; color:#555;">{descripcion}</span>'
+                           if descripcion else "")
+                        + "</div>",
+                        unsafe_allow_html=True,
+                    )
 
         if carencias:
             with st.expander(f"Áreas de mejora identificadas ({len(carencias)})", expanded=False):
