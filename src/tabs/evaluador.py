@@ -42,10 +42,10 @@ _SVG_PIRAMIDE = """
   <text x="210" y="148" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Alto riesgo</text>
 
-  <!-- Prohibido — rojo oscuro, parte superior -->
-  <polygon points="180,50 240,50 282,115 138,115"
+  <!-- Prohibido — rojo oscuro, vértice superior -->
+  <polygon points="210,50 282,115 138,115"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
-  <text x="210" y="83" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="93" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="11" font-weight="bold">Prohibido</text>
 </svg>
 """
