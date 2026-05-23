@@ -18,33 +18,33 @@ from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.llm.provider import LLMProvider
 
 # ── Pirámide SVG de niveles de riesgo ─────────────────────────────────────────
-# Vértice: (210, 35). Base: (12, 308) — (408, 308). Pendiente: 198/273.
+# Vértice: (210, 20). Base: (6, 320) — (414, 320). Pendiente: 204/300.
 # Todos los vértices laterales son colineales en ambos lados.
 _SVG_PIRAMIDE = """
-<svg viewBox="0 0 420 330" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg"
      width="100%" style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
-  <polygon points="61,240 359,240 408,308 12,308"
+  <polygon points="57,245 363,245 414,320 6,320"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="274" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="283" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="15" font-weight="bold">Riesgo mínimo</text>
 
   <!-- Riesgo limitado — amarillo -->
-  <polygon points="111,172 309,172 359,240 61,240"
+  <polygon points="108,170 312,170 363,245 57,245"
            fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="206" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="208" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="15" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
-  <polygon points="161,103 259,103 309,172 111,172"
+  <polygon points="159,95 261,95 312,170 108,170"
            fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="138" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="133" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="15" font-weight="bold">Alto riesgo</text>
 
   <!-- Prohibido — rojo oscuro, vértice en pico -->
-  <polygon points="210,35 259,103 161,103"
+  <polygon points="210,20 261,95 159,95"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
-  <text x="210" y="82" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="70" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="15" font-weight="bold">Prohibido</text>
 </svg>
 """
