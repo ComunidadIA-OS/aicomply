@@ -1,0 +1,240 @@
+# Copyright 2025 AIComply Contributors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import streamlit as st
+
+from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
+from src.chatbot import AIComplyChat
+from src.llm.provider import LLMProvider
+
+
+def _formatear_contexto_evaluacion(datos: dict) -> str:
+    """Convierte el dict de clasificación en texto legible para el system prompt."""
+    clasificacion = datos.get("clasificacion", "DESCONOCIDO")
+    rol = datos.get("rol", "no especificado")
+    estados = datos.get("estados_adicionales", [])
+    descripcion = datos.get("descripcion_sistema", "No especificada")
+    sector = datos.get("sector", "No especificado")
+    obligaciones_prev = datos.get("obligaciones_preliminares", [])
+    indeterminados = datos.get("puntos_indeterminados", [])
+
+    lineas = [
+        "RESULTADO DE LA EVALUACIÓN DEL ÁRBOL DE DECISIÓN:",
+        f"- Clasificación: {clasificacion}",
+        f"- Rol de la entidad: {rol}",
+    ]
+    if estados:
+        lineas.append(f"- Estados adicionales: {', '.join(estados)}")
+    lineas += [
+        f"- Descripción del sistema: {descripcion}",
+        f"- Sector: {sector}",
+    ]
+    if obligaciones_prev:
+        lineas.append("- Obligaciones ya identificadas en la evaluación:")
+        for ob in obligaciones_prev:
+            lineas.append(f"  * {ob}")
+    if indeterminados:
+        lineas.append("- Puntos indeterminados (requieren revisión profesional):")
+        for p in indeterminados:
+            lineas.append(f"  * {p}")
+
+    return "\n".join(lineas)
+
+
+def _inicializar_chatbot_cumplimiento(provider: LLMProvider, clasificacion_data: dict) -> AIComplyChat:
+    """Crea el chatbot de cumplimiento con el prompt enriquecido con la clasificación."""
+    contexto = _formatear_contexto_evaluacion(clasificacion_data)
+    prompt = SYSTEM_PROMPT_CUMPLIMIENTO.format(contexto_evaluacion=contexto)
+    return AIComplyChat(provider=provider, system_prompt_override=prompt)
+
+
+def _inicializar_estado(provider: LLMProvider) -> None:
+    """Inicializa las claves de session_state de la pestaña Cumplimiento."""
+    if "mensajes_cumplimiento" not in st.session_state:
+        st.session_state.mensajes_cumplimiento = []
+    if "cumplimiento_completado" not in st.session_state:
+        st.session_state.cumplimiento_completado = False
+    if "cumplimiento_data" not in st.session_state:
+        st.session_state.cumplimiento_data = {}
+    # El chatbot se crea una sola vez con el contexto de clasificación
+    if "chatbot_cumplimiento" not in st.session_state or st.session_state.chatbot_cumplimiento is None:
+        st.session_state.chatbot_cumplimiento = _inicializar_chatbot_cumplimiento(
+            provider, st.session_state.clasificacion_data
+        )
+
+
+def _mostrar_resumen_clasificacion(datos: dict) -> None:
+    """Muestra un resumen de la clasificación obtenida en la pestaña anterior."""
+    clasificacion = datos.get("clasificacion", "?")
+    rol = datos.get("rol", "?")
+    descripcion = datos.get("descripcion_sistema", "")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Clasificación del sistema", clasificacion)
+    with col2:
+        st.metric("Rol de la entidad", rol.capitalize())
+
+    if descripcion:
+        st.caption(f"Sistema evaluado: {descripcion}")
+
+    estados = datos.get("estados_adicionales", [])
+    if estados:
+        st.info(f"Estados adicionales: {', '.join(estados)}")
+
+    indeterminados = datos.get("puntos_indeterminados", [])
+    if indeterminados:
+        with st.expander(f"Puntos indeterminados a revisar con un profesional ({len(indeterminados)})", expanded=False):
+            for p in indeterminados:
+                st.caption(f"- {p}")
+
+
+def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
+    """Renderiza el área de chat de cumplimiento y gestiona el input."""
+    chat_container = st.container(height=430)
+
+    with chat_container:
+        if not st.session_state.mensajes_cumplimiento:
+            clasificacion = st.session_state.clasificacion_data.get("clasificacion", "")
+            rol = st.session_state.clasificacion_data.get("rol", "")
+            with st.chat_message("assistant"):
+                st.markdown(
+                    f"Vamos a revisar sus obligaciones concretas según la clasificación obtenida: "
+                    f"**{clasificacion}** — Rol: **{rol}**.\n\n"
+                    "> **Aviso legal:** Esta guía es orientativa y no constituye asesoramiento jurídico. "
+                    "Contrástela con un profesional especializado.\n\n"
+                    "Le iré presentando cada obligación que aplica a su caso, explicándola en lenguaje claro, "
+                    "y le preguntaré si ya la tiene cubierta.\n\n"
+                    "¿Empezamos? Cuando esté listo, escríbame 'adelante' o hágame cualquier pregunta."
+                )
+
+        for msg in st.session_state.mensajes_cumplimiento:
+            with st.chat_message(msg["role"]):
+                st.markdown(msg["content"])
+
+    if st.session_state.cumplimiento_completado:
+        return
+
+    if prompt := st.chat_input("Escriba su respuesta o pregunta..."):
+        st.session_state.mensajes_cumplimiento.append({"role": "user", "content": prompt})
+
+        with chat_container:
+            with st.chat_message("user"):
+                st.markdown(prompt)
+
+            with st.chat_message("assistant"):
+                placeholder = st.empty()
+                texto = ""
+                try:
+                    for fragmento in chatbot.chat_stream(prompt):
+                        texto += fragmento
+                        placeholder.markdown(texto + "▌")
+                except Exception as exc:
+                    msg_err = str(exc)
+                    if "Connection refused" in msg_err or "ConnectError" in msg_err:
+                        texto = "_Error: no se puede conectar con el proveedor de IA. Compruebe la configuración._"
+                    else:
+                        texto = f"_Error al conectar con el modelo: {msg_err}_"
+                placeholder.markdown(texto)
+
+        st.session_state.mensajes_cumplimiento.append({"role": "assistant", "content": texto})
+        st.rerun()
+
+
+def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
+    """Renderiza la pestaña Cumplimiento (Pestaña 2)."""
+    st.header("Cumplimiento")
+
+    # ── Verificar que la evaluación está completada ────────────────────────────
+    if not st.session_state.get("evaluacion_completada", False):
+        st.info(
+            "Esta sección estará disponible una vez completada la evaluación en la pestaña "
+            "**Evaluador y clasificador**."
+        )
+        st.caption(
+            "Complete el árbol de decisión y pulse 'Completar evaluación y continuar a Cumplimiento' "
+            "para desbloquear esta pestaña."
+        )
+        return
+
+    _inicializar_estado(provider)
+    chatbot: AIComplyChat = st.session_state.chatbot_cumplimiento
+
+    st.caption(
+        "A continuación revisará sus obligaciones concretas según la clasificación obtenida. "
+        "El asistente le guiará por cada obligación y detectará qué ya tiene cubierto "
+        "y qué requiere atención."
+    )
+
+    # ── Aviso de roles múltiples ───────────────────────────────────────────────
+    roles_multiples = st.session_state.clasificacion_data.get("roles_multiples", [])
+    if roles_multiples and len(roles_multiples) > 1:
+        st.warning(
+            f"Su organización actúa en **varios roles** bajo el AI Act: "
+            f"**{', '.join(r.capitalize() for r in roles_multiples)}**. "
+            "El asistente revisará las obligaciones de cada rol por separado. "
+            "En el informe final dispondrá de una sección diferenciada por cada rol."
+        )
+
+    # ── Resumen de la clasificación ────────────────────────────────────────────
+    _mostrar_resumen_clasificacion(st.session_state.clasificacion_data)
+    st.divider()
+
+    # ── Estado completado ──────────────────────────────────────────────────────
+    if st.session_state.cumplimiento_completado:
+        datos = st.session_state.cumplimiento_data
+        carencias = datos.get("carencias_detectadas", datos.get("gaps_detectados", []))
+        obligaciones = datos.get("obligaciones", [])
+
+        cubierta = sum(1 for o in obligaciones if o.get("estado") == "cubierta")
+        parcial = sum(1 for o in obligaciones if o.get("estado") == "parcial")
+        n_carencias = sum(1 for o in obligaciones if o.get("estado") == "carencia")
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Cubiertas", cubierta)
+        col2.metric("Parciales", parcial)
+        col3.metric("Áreas de mejora", n_carencias)
+
+        if datos.get("resumen_cumplimiento"):
+            st.info(datos["resumen_cumplimiento"])
+
+        if carencias:
+            with st.expander(f"Áreas de mejora identificadas ({len(carencias)})", expanded=False):
+                for g in carencias:
+                    st.caption(f"- {g}")
+
+        st.success("Análisis de cumplimiento completado. Proceda a la pestaña **Informe** para generar el informe.")
+        return
+
+    # ── Área de chat ───────────────────────────────────────────────────────────
+    _mostrar_chat_cumplimiento(chatbot)
+
+    # ── Botón para finalizar el análisis de cumplimiento ──────────────────────
+    if len(st.session_state.mensajes_cumplimiento) >= 4:
+        st.divider()
+        st.caption(
+            "Cuando haya revisado todas sus obligaciones con el asistente, "
+            "pulse el botón para extraer los resultados y generar el informe."
+        )
+        if st.button(
+            "Finalizar análisis de cumplimiento y continuar a Informe",
+            type="primary",
+            use_container_width=True,
+        ):
+            with st.spinner("Extrayendo el análisis de cumplimiento..."):
+                datos = chatbot.extraer_cumplimiento()
+
+            st.session_state.cumplimiento_data = datos
+            st.session_state.cumplimiento_completado = True
+            st.rerun()

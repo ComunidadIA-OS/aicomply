@@ -12,28 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import json
-
 import streamlit as st
 
 from config import (
     ANTHROPIC_API_KEY,
     ANTHROPIC_MODEL,
-    DISCLAIMER_CRITICO,
     DISCLAIMER_INICIAL,
-    NIVELES_RIESGO,
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
     OPENAI_COMPATIBLE_API_KEY,
     OPENAI_COMPATIBLE_BASE_URL,
     OPENAI_COMPATIBLE_MODEL,
-    PREGUNTAS_EVALUACION,
 )
 from src.chatbot import AIComplyChat
 from src.llm.factory import crear_provider, crear_provider_desde_env
-from src.readme_analyzer import AnalizadorReadme
-from src.report_generator import GeneradorInforme
-from src.risk_classifier import ClasificadorRiesgo
+from src.tabs.cumplimiento import mostrar_tab_cumplimiento
+from src.tabs.evaluador import mostrar_tab_evaluador
+from src.tabs.informe import mostrar_tab_informe
 
 st.set_page_config(
     page_title="AIComply — Evaluación AI Act",
@@ -42,7 +37,7 @@ st.set_page_config(
 )
 
 # ── Avisos de privacidad por provider y plan ───────────────────────────────────
-_AVISOS = {
+_AVISOS: dict[str, tuple[str, str]] = {
     "anthropic_api": (
         "warning",
         "Sus datos se procesan en servidores de Anthropic (EE. UU.). "
@@ -84,8 +79,7 @@ _AVISOS = {
     "openai_compatible_local": (
         "success",
         "Si la API está en su propia infraestructura (LM Studio, vLLM, llama.cpp), "
-        "ningún dato sale de ella. "
-        "Recomendado para máxima privacidad y control.",
+        "ningún dato sale de ella. Recomendado para máxima privacidad y control.",
     ),
     "openai_compatible_external": (
         "warning",
@@ -102,7 +96,7 @@ def _mostrar_aviso(clave: str) -> None:
 
 
 # ── Inicialización del estado de sesión ───────────────────────────────────────
-def _init_session():
+def _init_session() -> None:
     if "provider_configurado" not in st.session_state:
         provider_env = crear_provider_desde_env()
         if provider_env:
@@ -115,22 +109,30 @@ def _init_session():
     if "disclaimer_aceptado" not in st.session_state:
         st.session_state.disclaimer_aceptado = False
 
-    if "chatbot" not in st.session_state:
-        if st.session_state.get("provider_configurado") and st.session_state.get("provider"):
-            st.session_state.chatbot = AIComplyChat(provider=st.session_state.provider)
-        else:
-            st.session_state.chatbot = None
-
-    for clave in ("mensajes_ui", ):
+    # Claves de las tres pestañas
+    for clave in ("mensajes_evaluador", "mensajes_cumplimiento"):
         if clave not in st.session_state:
             st.session_state[clave] = []
 
-    for clave in ("analisis_readme", "puntuacion", "informe_md"):
+    for clave in ("clasificacion_data", "cumplimiento_data"):
         if clave not in st.session_state:
-            st.session_state[clave] = None
+            st.session_state[clave] = {}
 
-    if "resumen_conversacion" not in st.session_state:
-        st.session_state.resumen_conversacion = {}
+    for clave in ("evaluacion_completada", "cumplimiento_completado"):
+        if clave not in st.session_state:
+            st.session_state[clave] = False
+
+    if "informe_md" not in st.session_state:
+        st.session_state.informe_md = None
+
+    if "chatbot_evaluador" not in st.session_state:
+        if st.session_state.get("provider_configurado") and st.session_state.get("provider"):
+            st.session_state.chatbot_evaluador = AIComplyChat(provider=st.session_state.provider)
+        else:
+            st.session_state.chatbot_evaluador = None
+
+    if "chatbot_cumplimiento" not in st.session_state:
+        st.session_state.chatbot_cumplimiento = None
 
 
 _init_session()
@@ -139,7 +141,7 @@ _init_session()
 # ════════════════════════════════════════════════════════════════════════════════
 # PANTALLA 1: CONFIGURACIÓN DEL PROVIDER
 # ════════════════════════════════════════════════════════════════════════════════
-def mostrar_selector_provider():
+def mostrar_selector_provider() -> None:
     st.title("AIComply")
     st.subheader("Configuración del modelo de lenguaje")
     st.markdown(
@@ -174,18 +176,16 @@ def mostrar_selector_provider():
         )
 
         col_modelo, col_btn = st.columns([3, 1])
-        modelos_disponibles: list[str] = []
-
         with col_btn:
             st.write("")
             if st.button("Detectar modelos"):
                 from src.llm.ollama_provider import OllamaProvider
                 tmp = OllamaProvider(base_url=base_url)
                 if tmp.verificar_conexion():
-                    modelos_disponibles = tmp.listar_modelos()
-                    st.session_state["_ollama_modelos"] = modelos_disponibles
-                    if modelos_disponibles:
-                        st.success(f"{len(modelos_disponibles)} modelos encontrados")
+                    modelos = tmp.listar_modelos()
+                    st.session_state["_ollama_modelos"] = modelos
+                    if modelos:
+                        st.success(f"{len(modelos)} modelos encontrados")
                     else:
                         st.warning("Ollama conectado pero sin modelos instalados")
                 else:
@@ -194,11 +194,7 @@ def mostrar_selector_provider():
         modelos_cache = st.session_state.get("_ollama_modelos", [])
         with col_modelo:
             if modelos_cache:
-                modelo = st.selectbox(
-                    "Modelo",
-                    options=modelos_cache,
-                    index=0,
-                )
+                modelo = st.selectbox("Modelo", options=modelos_cache, index=0)
             else:
                 modelo = st.text_input(
                     "Modelo",
@@ -240,7 +236,6 @@ def mostrar_selector_provider():
             "Plan / tipo de cuenta",
             ["Cuenta gratuita", "API de pago (Tier 1+)", "ChatGPT Enterprise"],
         )
-
         clave_aviso = {
             "Cuenta gratuita": "openai_free",
             "API de pago (Tier 1+)": "openai_paid",
@@ -310,12 +305,10 @@ def mostrar_selector_provider():
             "model": modelo,
         }
 
-    # ── Checkbox de aceptación ────────────────────────────────────────────────
     st.divider()
     privacidad_aceptada = st.checkbox(
         "He leído y entiendo las condiciones de privacidad descritas arriba"
     )
-
     puede_continuar = privacidad_valida and privacidad_aceptada
 
     if st.button(
@@ -328,10 +321,10 @@ def mostrar_selector_provider():
             provider = crear_provider(config_provider)
             st.session_state.provider = provider
             st.session_state.provider_configurado = True
-            st.session_state.chatbot = AIComplyChat(provider=provider)
+            st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
             st.rerun()
-        except Exception as e:
-            st.error(f"Error al configurar el provider: {e}")
+        except Exception as exc:
+            st.error(f"Error al configurar el proveedor: {exc}")
 
 
 if not st.session_state.provider_configurado:
@@ -340,9 +333,9 @@ if not st.session_state.provider_configurado:
 
 
 # ════════════════════════════════════════════════════════════════════════════════
-# PANTALLA 2: AVISO LEGAL DE AICOMPLY
+# PANTALLA 2: AVISO LEGAL
 # ════════════════════════════════════════════════════════════════════════════════
-def mostrar_disclaimer():
+def mostrar_disclaimer() -> None:
     st.title("AIComply")
     st.subheader("Evaluación de cumplimiento del AI Act europeo para PYMEs industriales")
     st.markdown(DISCLAIMER_INICIAL)
@@ -377,39 +370,44 @@ with st.sidebar:
     )
     st.divider()
 
-    nivel = st.session_state.chatbot.nivel_riesgo if st.session_state.chatbot else None
-    if nivel and nivel in NIVELES_RIESGO:
-        st.metric("Nivel de riesgo detectado", nivel)
-    else:
-        st.info("Nivel de riesgo: pendiente de análisis")
+    # Progreso de la evaluación
+    st.caption("**Progreso:**")
+    eval_ok = st.session_state.get("evaluacion_completada", False)
+    cumpl_ok = st.session_state.get("cumplimiento_completado", False)
+    informe_ok = bool(
+        st.session_state.get("informe_md_clasificacion")
+        or st.session_state.get("informe_md_cumplimiento")
+        or st.session_state.get("informe_md_completo")
+    )
+
+    st.caption(f"{'✓' if eval_ok else '○'} Evaluación y clasificación")
+    st.caption(f"{'✓' if cumpl_ok else '○'} Análisis de cumplimiento")
+    st.caption(f"{'✓' if informe_ok else '○'} Informe generado")
+
+    if eval_ok:
+        datos = st.session_state.clasificacion_data
+        clasificacion = datos.get("clasificacion", "?")
+        st.metric("Clasificación", clasificacion)
 
     st.divider()
 
     if st.button("Nueva evaluación", use_container_width=True):
-        if st.session_state.chatbot:
-            st.session_state.chatbot.resetear()
-        st.session_state.mensajes_ui = []
-        st.session_state.analisis_readme = None
-        st.session_state.puntuacion = None
-        st.session_state.informe_md = None
-        st.session_state.resumen_conversacion = {}
+        for clave in ("mensajes_evaluador", "mensajes_cumplimiento"):
+            st.session_state[clave] = []
+        for clave in ("clasificacion_data", "cumplimiento_data"):
+            st.session_state[clave] = {}
+        for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
+            st.session_state[clave] = None
+        st.session_state.evaluacion_completada = False
+        st.session_state.cumplimiento_completado = False
+        st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+        st.session_state.chatbot_cumplimiento = None
         st.rerun()
 
     if st.button("Cambiar proveedor de IA", use_container_width=True):
-        st.session_state.provider_configurado = False
-        st.session_state.disclaimer_aceptado = False
-        st.session_state.chatbot = None
-        st.session_state.mensajes_ui = []
-        st.session_state.analisis_readme = None
-        st.session_state.puntuacion = None
-        st.session_state.informe_md = None
-        st.session_state.resumen_conversacion = {}
+        for clave in list(st.session_state.keys()):
+            del st.session_state[clave]
         st.rerun()
-
-    st.divider()
-    st.caption("**Preguntas clave de la evaluación:**")
-    for i, pregunta in enumerate(PREGUNTAS_EVALUACION, 1):
-        st.caption(f"{i}. {pregunta}")
 
     st.divider()
     st.caption(
@@ -419,274 +417,17 @@ with st.sidebar:
 
 
 # ════════════════════════════════════════════════════════════════════════════════
-# TABS PRINCIPALES
+# PESTAÑAS PRINCIPALES
 # ════════════════════════════════════════════════════════════════════════════════
 tab1, tab2, tab3 = st.tabs(
-    ["Chatbot de evaluación", "Análisis documental", "Informe de cumplimiento"]
+    ["Evaluador y clasificador", "Cumplimiento", "Informe"]
 )
 
-chatbot: AIComplyChat = st.session_state.chatbot
-
-
-# ── TAB 1: CHATBOT ────────────────────────────────────────────────────────────
 with tab1:
-    st.header("Evaluación conversacional")
-    st.caption(
-        "Describa su sistema de IA y le ayudaré a determinar su nivel de cumplimiento "
-        "con el AI Act. Cada concepto técnico incluye su definición oficial con referencia al artículo."
-    )
+    mostrar_tab_evaluador(provider)
 
-    chat_container = st.container(height=500)
-
-    with chat_container:
-        if not st.session_state.mensajes_ui:
-            with st.chat_message("assistant"):
-                st.markdown(
-                    "Bienvenido a **AIComply**.\n\n"
-                    "> **Aviso legal:** AIComply es una herramienta auxiliar de orientación. "
-                    "Los resultados no constituyen asesoramiento legal. "
-                    "Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n"
-                    "Soy su asistente para evaluar el cumplimiento con el **AI Act europeo** "
-                    "(Reglamento UE 2024/1689).\n\n"
-                    "Para comenzar la evaluación, cuénteme sobre el sistema de IA de su empresa:\n\n"
-                    "1. ¿Cuál es su **propósito principal**?\n"
-                    "2. ¿En qué **sector** opera su empresa?\n"
-                    "3. ¿El sistema toma decisiones que afectan directamente a **personas**?"
-                )
-
-        for msg in st.session_state.mensajes_ui:
-            with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
-
-    if prompt := st.chat_input("Describa su sistema de IA..."):
-        st.session_state.mensajes_ui.append({"role": "user", "content": prompt})
-
-        with chat_container:
-            with st.chat_message("user"):
-                st.markdown(prompt)
-
-            with st.chat_message("assistant"):
-                respuesta_placeholder = st.empty()
-                texto_completo = ""
-
-                with st.spinner("Analizando..."):
-                    for fragmento in chatbot.chat_stream(prompt):
-                        texto_completo += fragmento
-                        respuesta_placeholder.markdown(texto_completo + "▌")
-
-                respuesta_placeholder.markdown(texto_completo)
-
-        st.session_state.mensajes_ui.append({"role": "assistant", "content": texto_completo})
-
-        if chatbot.nivel_riesgo in ("PROHIBIDO", "ALTO"):
-            st.warning(DISCLAIMER_CRITICO)
-
-        st.rerun()
-
-    col_a, col_b = st.columns(2)
-    with col_a:
-        if st.button("Clasificación rápida por descripción"):
-            st.session_state["mostrar_clasificador"] = True
-    with col_b:
-        if st.button("Generar resumen de la conversación") and len(st.session_state.mensajes_ui) >= 2:
-            with st.spinner("Generando resumen estructurado..."):
-                resumen_texto = chatbot.generar_resumen_conversacion()
-                try:
-                    st.session_state.resumen_conversacion = json.loads(resumen_texto)
-                    st.success("Resumen generado. Vaya a la pestaña Informe de cumplimiento.")
-                except Exception:
-                    st.error("No se pudo generar el resumen. Continúe la conversación con más detalles.")
-
-    if st.session_state.get("mostrar_clasificador"):
-        with st.form("form_clasificacion"):
-            descripcion = st.text_area(
-                "Describa brevemente su sistema de IA",
-                placeholder="Ejemplo: Sistema de visión artificial que detecta defectos en piezas industriales en la línea de producción",
-                height=100,
-            )
-            submitted = st.form_submit_button("Clasificar", type="primary")
-
-        if submitted and descripcion:
-            with st.spinner("Clasificando según el AI Act..."):
-                clasificador = ClasificadorRiesgo(provider=st.session_state.provider)
-                resultado = clasificador.clasificar(descripcion)
-
-            nivel_r = resultado.get("nivel_riesgo", "DESCONOCIDO")
-            st.success(f"**Nivel de riesgo:** {nivel_r}")
-            st.info(f"**Justificación:** {resultado.get('justificacion', '')}")
-
-            col1, col2 = st.columns(2)
-            with col1:
-                arts = resultado.get("articulos_principales", [])
-                if arts:
-                    st.write("**Artículos principales:**")
-                    for a in arts:
-                        st.write(f"- {a}")
-            with col2:
-                obls = resultado.get("obligaciones_clave", [])
-                if obls:
-                    st.write("**Obligaciones clave:**")
-                    for o in obls:
-                        st.write(f"- {o}")
-
-
-# ── TAB 2: ANÁLISIS DOCUMENTAL ────────────────────────────────────────────────
 with tab2:
-    st.header("Análisis documental")
-    st.caption(
-        "Suba o pegue el README o la documentación técnica de su proyecto para detectar "
-        "gaps de cumplimiento con el AI Act con referencias concretas a artículos."
-    )
+    mostrar_tab_cumplimiento(provider)
 
-    col_upload, col_paste = st.columns([1, 1])
-
-    with col_upload:
-        archivo = st.file_uploader("Subir archivo de documentación", type=["md", "txt", "rst"])
-
-    with col_paste:
-        texto_pegado = st.text_area(
-            "O pegue el contenido aquí",
-            height=200,
-            placeholder="Pegue el contenido de su README o documentación técnica...",
-        )
-
-    contenido_readme = ""
-    if archivo:
-        contenido_readme = archivo.read().decode("utf-8", errors="replace")
-        st.success(f"Archivo cargado: {archivo.name} ({len(contenido_readme)} caracteres)")
-    elif texto_pegado:
-        contenido_readme = texto_pegado
-
-    if contenido_readme:
-        nivel_previo = chatbot.nivel_riesgo
-        if nivel_previo:
-            st.info(f"Se analizará considerando el nivel de riesgo del chat: **{nivel_previo}**")
-
-        if st.button("Analizar documentación", type="primary", use_container_width=True):
-            with st.spinner("Analizando contra los requisitos del AI Act..."):
-                analizador = AnalizadorReadme(provider=st.session_state.provider)
-                if nivel_previo:
-                    resultado = analizador.analizar_con_contexto(contenido_readme, nivel_previo)
-                else:
-                    resultado = analizador.analizar(contenido_readme)
-                puntuacion = analizador.calcular_puntuacion_cumplimiento(resultado)
-
-            st.session_state.analisis_readme = resultado
-            st.session_state.puntuacion = puntuacion
-            st.rerun()
-
-    if st.session_state.analisis_readme:
-        analisis = st.session_state.analisis_readme
-        punt = st.session_state.puntuacion
-
-        col_nivel, col_score = st.columns(2)
-        with col_nivel:
-            st.metric("Nivel de riesgo detectado", analisis.get("nivel_riesgo", "DESCONOCIDO"))
-        with col_score:
-            if punt:
-                st.metric(
-                    "Puntuación de cumplimiento",
-                    f"{punt.get('porcentaje', 0)}%",
-                    delta=f"Cumple: {punt.get('cumple', 0)} | Parcial: {punt.get('parcial', 0)} | Gap: {punt.get('gap', 0)}",
-                )
-
-        if analisis.get("justificacion_riesgo"):
-            st.info(analisis["justificacion_riesgo"])
-
-        if analisis.get("fortalezas"):
-            with st.expander("Fortalezas identificadas", expanded=False):
-                for f in analisis["fortalezas"]:
-                    st.write(f"- {f}")
-
-        gaps = analisis.get("gaps", [])
-        if gaps:
-            st.subheader("Análisis detallado por artículo")
-            for gap in gaps:
-                estado = gap.get("estado", "gap")
-                etiqueta = {"cumple": "CUMPLE", "parcial": "PARCIAL", "gap": "GAP"}.get(
-                    estado, estado.upper()
-                )
-                color = {"cumple": "green", "parcial": "orange", "gap": "red"}.get(estado, "gray")
-                with st.expander(f"[{etiqueta}] {gap.get('articulo', '')} — {gap.get('titulo', '')}"):
-                    st.markdown(f"**Estado:** :{color}[{etiqueta}]")
-                    st.markdown(f"**Situación:** {gap.get('descripcion', '')}")
-                    if estado != "cumple" and gap.get("recomendacion"):
-                        st.warning(f"**Recomendación:** {gap.get('recomendacion', '')}")
-
-        st.info("Vaya a la pestaña **Informe de cumplimiento** para generar y exportar el informe completo.")
-
-
-# ── TAB 3: INFORME ────────────────────────────────────────────────────────────
 with tab3:
-    st.header("Informe de cumplimiento")
-    st.caption("Genera y exporta el informe de cumplimiento con el AI Act.")
-
-    st.warning(
-        "AIComply es una herramienta auxiliar de orientación. "
-        "Los resultados no constituyen asesoramiento legal. "
-        "Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo."
-    )
-
-    tiene_datos = bool(st.session_state.resumen_conversacion or st.session_state.analisis_readme)
-
-    if not tiene_datos:
-        st.info(
-            "Para generar el informe necesita:\n"
-            "1. Completar la evaluación en el chatbot y pulsar **Generar resumen de la conversación**, o\n"
-            "2. Analizar su documentación en la pestaña **Análisis documental**"
-        )
-    else:
-        resumen = st.session_state.resumen_conversacion
-        analisis = st.session_state.analisis_readme
-        puntuacion = st.session_state.puntuacion
-
-        if not resumen and analisis:
-            nivel_r = analisis.get("nivel_riesgo", "DESCONOCIDO")
-            resumen = {
-                "nombre_sistema": "Sistema analizado via documentación",
-                "sector": "No especificado",
-                "proposito": analisis.get("justificacion_riesgo", ""),
-                "nivel_riesgo": nivel_r,
-                "articulos_aplicables": analisis.get("articulos_aplicables", []),
-                "caracteristicas_clave": analisis.get("fortalezas", []),
-                "obligaciones_identificadas": [],
-            }
-
-        if st.button("Generar informe", type="primary", use_container_width=True):
-            with st.spinner("Generando informe de cumplimiento..."):
-                generador = GeneradorInforme()
-                informe_md = generador.generar_markdown(resumen, analisis, puntuacion)
-                st.session_state.informe_md = informe_md
-
-        if st.session_state.informe_md:
-            st.markdown("---")
-            st.markdown(st.session_state.informe_md)
-            st.markdown("---")
-
-            col_md, col_pdf = st.columns(2)
-
-            with col_md:
-                st.download_button(
-                    label="Descargar Markdown",
-                    data=st.session_state.informe_md.encode("utf-8"),
-                    file_name="informe_aicomply.md",
-                    mime="text/markdown",
-                    use_container_width=True,
-                )
-
-            with col_pdf:
-                try:
-                    generador = GeneradorInforme()
-                    pdf_bytes = generador.exportar_pdf(st.session_state.informe_md)
-                    if pdf_bytes:
-                        st.download_button(
-                            label="Descargar PDF",
-                            data=pdf_bytes,
-                            file_name="informe_aicomply.pdf",
-                            mime="application/pdf",
-                            use_container_width=True,
-                        )
-                    else:
-                        st.caption("PDF no disponible. Instale fpdf2: pip install fpdf2")
-                except Exception:
-                    st.caption("PDF no disponible. Instale fpdf2: pip install fpdf2")
+    mostrar_tab_informe()
