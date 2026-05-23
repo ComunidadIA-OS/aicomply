@@ -51,3 +51,8 @@ class LLMProvider(ABC):
     def nombre_provider(self) -> str:
         """Nombre del provider: 'anthropic', 'ollama' u 'openai_compatible'."""
         ...
+
+    @property
+    def es_local(self) -> bool:
+        """True si el modelo corre en local (Ollama). Usado para seleccionar el prompt compacto."""
+        return False

@@ -17,6 +17,7 @@ import re
 from typing import Generator
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
+from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
 
@@ -78,13 +79,17 @@ class AIComplyChat:
         return self._system_prompt_override or SYSTEM_PROMPT_CHATBOT
 
     def _system_con_rag(self, mensaje: str) -> str:
-        """Devuelve el system prompt base sin RAG adicional.
+        """Devuelve el system prompt adecuado al provider.
 
-        El árbol de decisión ya contiene toda la información normativa necesaria
-        para la evaluación. Añadir artículos extra vía RAG duplica tokens sin
-        mejorar la calidad de las respuestas y provoca errores de límite de uso.
+        - Con override (cumplimiento): usa el override siempre.
+        - Con Ollama (local): usa el prompt compacto para reducir tokens.
+        - Con APIs en la nube: usa el prompt completo.
         """
-        return self._system_prompt_override or SYSTEM_PROMPT_CHATBOT
+        if self._system_prompt_override:
+            return self._system_prompt_override
+        if self.provider.es_local:
+            return SYSTEM_PROMPT_CHATBOT_LOCAL
+        return SYSTEM_PROMPT_CHATBOT
 
     def _historial_truncado(self, max_mensajes: int = 10) -> list[dict]:
         """Recorta el historial para no superar el límite de tokens de la API.

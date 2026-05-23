@@ -47,6 +47,10 @@ class OllamaProvider(LLMProvider):
     def nombre_provider(self) -> str:
         return "ollama"
 
+    @property
+    def es_local(self) -> bool:
+        return True
+
     def _preparar_messages(
         self, messages: list[dict], system_prompt: str
     ) -> list[dict]:
