@@ -92,10 +92,15 @@ class AIComplyChat:
             respuesta_completa += fragmento
             yield fragmento
 
-        # Detectar señal de evaluación completa y limpiarla del historial persistido
+        # Detectar señal de evaluación completa y limpiarla del historial persistido.
+        # Solo se acepta si va acompañada de un informe real (≥150 caracteres).
+        # Si llega sola o con texto insignificante, se descarta para evitar
+        # que el LLM "congele" el chat al emitirla prematuramente en mitad del árbol.
         if _SENAL_COMPLETA in respuesta_completa:
-            self.evaluacion_completa = True
-            respuesta_completa = respuesta_completa.replace(_SENAL_COMPLETA, "").strip()
+            texto_sin_senal = respuesta_completa.replace(_SENAL_COMPLETA, "").strip()
+            if len(texto_sin_senal) >= 150:
+                self.evaluacion_completa = True
+            respuesta_completa = texto_sin_senal
 
         self.historial.append({"role": "assistant", "content": respuesta_completa})
         self._extraer_nivel_riesgo(respuesta_completa)
