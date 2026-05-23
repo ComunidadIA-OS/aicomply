@@ -71,7 +71,8 @@ def _seccion_informe_clasificacion(eval_ok: bool) -> None:
     if not eval_ok:
         st.info(
             "Este informe se desbloqueará cuando complete la evaluación en la pestaña "
-            "**Evaluador y clasificador** y pulse 'Completar evaluación y continuar a Cumplimiento'."
+            "**Evaluador y clasificador**, o cuando inicie el cumplimiento directamente "
+            "desde la pestaña **Cumplimiento** con una clasificación manual."
         )
         return
 
@@ -102,8 +103,12 @@ def _seccion_informe_cumplimiento(cumpl_ok: bool) -> None:
 
     if not cumpl_ok:
         pasos_faltantes = []
-        if not st.session_state.get("evaluacion_completada", False):
-            pasos_faltantes.append("la evaluación (Pestaña 1)")
+        tiene_clasificacion = (
+            st.session_state.get("evaluacion_completada", False)
+            or st.session_state.get("acceso_directo_cumplimiento", False)
+        )
+        if not tiene_clasificacion:
+            pasos_faltantes.append("la clasificación del sistema (Pestaña 1 o formulario de Pestaña 2)")
         pasos_faltantes.append("el análisis de cumplimiento (Pestaña 2)")
         st.info(
             f"Este informe se desbloqueará cuando complete: {' y '.join(pasos_faltantes)}."
@@ -141,7 +146,7 @@ def _seccion_informe_completo(eval_ok: bool, cumpl_ok: bool) -> None:
     if not (eval_ok and cumpl_ok):
         faltantes = []
         if not eval_ok:
-            faltantes.append("la evaluación (Pestaña 1)")
+            faltantes.append("la clasificación del sistema (Pestaña 1 o formulario de Pestaña 2)")
         if not cumpl_ok:
             faltantes.append("el análisis de cumplimiento (Pestaña 2)")
         st.info(
@@ -182,7 +187,11 @@ def mostrar_tab_informe() -> None:
         "de cumplimiento normativo."
     )
 
-    eval_ok = st.session_state.get("evaluacion_completada", False)
+    # El acceso directo al cumplimiento también cuenta como clasificación válida
+    eval_ok = (
+        st.session_state.get("evaluacion_completada", False)
+        or st.session_state.get("acceso_directo_cumplimiento", False)
+    )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
 
     # Indicadores de progreso

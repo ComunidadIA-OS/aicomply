@@ -118,7 +118,7 @@ def _init_session() -> None:
         if clave not in st.session_state:
             st.session_state[clave] = {}
 
-    for clave in ("evaluacion_completada", "cumplimiento_completado"):
+    for clave in ("evaluacion_completada", "cumplimiento_completado", "acceso_directo_cumplimiento"):
         if clave not in st.session_state:
             st.session_state[clave] = False
 
@@ -372,7 +372,10 @@ with st.sidebar:
 
     # Progreso de la evaluación
     st.caption("**Progreso:**")
-    eval_ok = st.session_state.get("evaluacion_completada", False)
+    eval_ok = (
+        st.session_state.get("evaluacion_completada", False)
+        or st.session_state.get("acceso_directo_cumplimiento", False)
+    )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
     informe_ok = bool(
         st.session_state.get("informe_md_clasificacion")
@@ -400,6 +403,7 @@ with st.sidebar:
             st.session_state[clave] = None
         st.session_state.evaluacion_completada = False
         st.session_state.cumplimiento_completado = False
+        st.session_state.acceso_directo_cumplimiento = False
         st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
         st.session_state.chatbot_cumplimiento = None
         st.rerun()

@@ -18,28 +18,35 @@ from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.llm.provider import LLMProvider
 
 # ── Pirámide SVG de niveles de riesgo ─────────────────────────────────────────
+# Cuatro bandas trapezoidales de altura uniforme (~65 px cada una).
+# Coordenadas x calculadas con pendiente constante: a y=20 ancho=60 px,
+# a y=268 ancho=380 px, crecimiento lineal simétrico respecto a x=210.
 _SVG_PIRAMIDE = """
-<svg viewBox="0 0 420 280" xmlns="http://www.w3.org/2000/svg"
-     style="max-width:380px; margin:auto; display:block;">
-  <!-- Riesgo mínimo — verde, base más ancha -->
-  <polygon points="15,268 405,268 345,205 75,205" fill="#388E3C" opacity="0.92"/>
-  <text x="210" y="242" text-anchor="middle" fill="white"
+<svg viewBox="0 0 420 290" xmlns="http://www.w3.org/2000/svg"
+     style="max-width:400px; margin:auto; display:block;">
+  <!-- Riesgo mínimo — verde, base -->
+  <polygon points="57,210 363,210 400,268 20,268"
+           fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
+  <text x="210" y="239" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo mínimo</text>
 
   <!-- Riesgo limitado — amarillo -->
-  <polygon points="75,205 345,205 285,142 135,142" fill="#F9A825" opacity="0.92"/>
-  <text x="210" y="179" text-anchor="middle" fill="#333"
+  <polygon points="96,150 324,150 363,210 57,210"
+           fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
+  <text x="210" y="180" text-anchor="middle" dominant-baseline="middle" fill="#333"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
-  <polygon points="135,142 285,142 225,79 195,79" fill="#E64A19" opacity="0.92"/>
-  <text x="210" y="116" text-anchor="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="12" font-weight="bold">Alto riesgo</text>
+  <polygon points="138,85 282,85 324,150 96,150"
+           fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
+  <text x="210" y="118" text-anchor="middle" dominant-baseline="middle" fill="white"
+        font-family="Arial,sans-serif" font-size="13" font-weight="bold">Alto riesgo</text>
 
-  <!-- Prohibido — rojo, vértice -->
-  <polygon points="195,79 225,79 210,28" fill="#B71C1C" opacity="0.95"/>
-  <text x="210" y="62" text-anchor="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="10" font-weight="bold">Prohibido</text>
+  <!-- Prohibido — rojo oscuro, parte superior -->
+  <polygon points="180,20 240,20 282,85 138,85"
+           fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
+  <text x="210" y="53" text-anchor="middle" dominant-baseline="middle" fill="white"
+        font-family="Arial,sans-serif" font-size="11" font-weight="bold">Prohibido</text>
 </svg>
 """
 
@@ -312,9 +319,11 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                 st.session_state[clave] = []
             for clave in ("clasificacion_data", "cumplimiento_data"):
                 st.session_state[clave] = {}
+            for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
+                st.session_state[clave] = None
             st.session_state.evaluacion_completada = False
             st.session_state.cumplimiento_completado = False
-            st.session_state.informe_md = None
+            st.session_state.acceso_directo_cumplimiento = False
             st.session_state.intro_vista = False
             st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
             st.session_state.chatbot_cumplimiento = None
