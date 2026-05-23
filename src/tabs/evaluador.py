@@ -27,25 +27,25 @@ _SVG_PIRAMIDE = """
   <polygon points="57,245 363,245 414,320 6,320"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="283" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Riesgo mínimo</text>
+        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo mínimo</text>
 
   <!-- Riesgo limitado — amarillo -->
   <polygon points="108,170 312,170 363,245 57,245"
            fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="208" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Riesgo limitado</text>
+        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
   <polygon points="159,95 261,95 312,170 108,170"
            fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="133" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Alto riesgo</text>
+        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Alto riesgo</text>
 
   <!-- Prohibido — rojo oscuro, vértice en pico -->
   <polygon points="210,20 261,95 159,95"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
   <text x="210" y="70" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Prohibido</text>
+        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Prohibido</text>
 </svg>
 """
 
