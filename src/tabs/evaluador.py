@@ -33,19 +33,19 @@ _SVG_PIRAMIDE = """
   <polygon points="111,172 309,172 359,240 61,240"
            fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="206" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo limitado</text>
+        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
   <polygon points="161,103 259,103 309,172 111,172"
            fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="138" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="14" font-weight="bold">Alto riesgo</text>
+        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Alto riesgo</text>
 
   <!-- Prohibido — rojo oscuro, vértice en pico -->
   <polygon points="210,35 259,103 161,103"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
   <text x="210" y="82" text-anchor="middle" dominant-baseline="middle" fill="white"
-        font-family="Arial,sans-serif" font-size="12" font-weight="bold">Prohibido</text>
+        font-family="Arial,sans-serif" font-size="15" font-weight="bold">Prohibido</text>
 </svg>
 """
 
