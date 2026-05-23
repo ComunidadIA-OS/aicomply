@@ -16,13 +16,58 @@ Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y 
 
 ## Descripción
 
-AIComply ayuda a PYMEs industriales a evaluar si sus sistemas de IA cumplen con el AI Act europeo. El sistema consta de tres fases:
+AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 
-1. **Chatbot conversacional:** Conversa con la empresa para entender su sistema de IA, determina el nivel de riesgo e identifica los artículos aplicables con sus definiciones oficiales.
+1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que determina el nivel de riesgo del sistema (PROHIBIDO, ALTO, LIMITADO o MÍNIMO) y el rol de la organización (proveedor, implementador, distribuidor, importador). Soporta múltiples roles simultáneos.
 
-2. **Análisis documental:** El usuario sube o pega su README o documentación técnica. El sistema detecta gaps con referencias concretas a artículos.
+2. **Análisis de cumplimiento** — Una vez clasificado el sistema, el asistente recorre las obligaciones concretas aplicables según el nivel de riesgo y el rol, detectando cuáles están cubiertas, cuáles parcialmente y cuáles son áreas de mejora pendientes.
 
-3. **Informe de cumplimiento:** Exportable en Markdown y PDF. Tres niveles por artículo: cumple, parcial, gap. Incluye recomendaciones concretas.
+3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional.
+
+## Corpus normativo
+
+El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **280 fragmentos** indexados:
+
+| Fuente | Documentos |
+|--------|-----------|
+| Reglamento (UE) 2024/1689 — AI Act completo | 1 |
+| Reglamento Ómnibus (modificaciones sectoriales) | 1 |
+| Anteproyecto de Ley española de IA (gobernanza y régimen sancionador) | 1 |
+| Guías oficiales de la AESIA (16 guías + checklist) | 17 |
+| GDPR / AEPD — adecuación, IA agéntica, auditorías | 4 |
+| Directrices de la Comisión Europea sobre alto riesgo — borrador 19 mayo 2026 (principios generales, Anexo I, Anexo III) | 3 |
+
+Para añadir nuevos documentos al corpus, consulte la sección [Ingesta de documentos](#ingesta-de-documentos).
+
+## Artículos del AI Act cubiertos
+
+| Artículo | Título | Aplica a |
+|----------|--------|----------|
+| Art. 4 | Alfabetización en materia de IA | Todos |
+| Art. 5 | Prácticas prohibidas | Todos |
+| Art. 6 | Clasificación de sistemas de alto riesgo | Todos |
+| Art. 9 | Sistema de gestión de riesgos | Alto riesgo |
+| Art. 10 | Datos y gobernanza de datos | Alto riesgo |
+| Art. 11 | Documentación técnica (Anexo IV) | Alto riesgo |
+| Art. 12 | Conservación de registros (logs) | Alto riesgo |
+| Art. 13 | Transparencia e instrucciones de uso | Alto riesgo |
+| Art. 14 | Supervisión humana | Alto riesgo |
+| Art. 15 | Exactitud, solidez y ciberseguridad | Alto riesgo |
+| Art. 16 | Obligaciones del proveedor | Alto riesgo — Proveedor |
+| Art. 17 | Sistema de gestión de la calidad | Alto riesgo — Proveedor |
+| Art. 22 | Representantes autorizados | Alto riesgo — Proveedor no-UE |
+| Art. 23 | Obligaciones de los importadores | Alto riesgo — Importador |
+| Art. 24 | Obligaciones de los distribuidores | Alto riesgo — Distribuidor |
+| Art. 25 | Responsabilidades en la cadena de valor | Alto riesgo |
+| Art. 26 | Obligaciones del responsable del despliegue | Alto riesgo — Implementador |
+| Art. 27 | Evaluación de impacto sobre derechos fundamentales | Alto riesgo — Sector público |
+| Art. 43 | Evaluación de conformidad | Alto riesgo — Proveedor |
+| Art. 47 | Declaración UE de conformidad | Alto riesgo — Proveedor |
+| Art. 48 | Marcado CE | Alto riesgo — Proveedor |
+| Art. 49 | Registro en la base de datos de la UE | Alto riesgo |
+| Art. 50 | Obligaciones de transparencia (chatbots, deepfakes) | Riesgo limitado |
+| Art. 72 | Supervisión poscomercialización | Alto riesgo — Proveedor |
+| Art. 95 | Códigos de conducta voluntarios | Riesgo mínimo |
 
 ## Configuración del modelo de lenguaje
 
@@ -34,12 +79,12 @@ AIComply incluye una pantalla de configuración inicial donde puede elegir su pr
 |----------|------|---------------------------------|------------------------|------------------|
 | Ollama (local) | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
 | LM Studio / vLLM | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
-| Anthropic Claude | API Enterprise | Si (EE. UU.) | No | Documentación empresarial confidencial |
-| Anthropic Claude | API de pago | Si (EE. UU.) | No | Uso empresarial general |
-| OpenAI | ChatGPT Enterprise | Si (EE. UU.) | No | Documentación empresarial confidencial |
-| OpenAI | API de pago Tier 1+ | Si (EE. UU.) | No por defecto | Uso empresarial, revisar DPA |
-| Groq / Together AI | API externa | Si (terceros) | Revisar política | Uso general sin datos sensibles |
-| OpenAI | Cuenta gratuita | Si (EE. UU.) | **Si** | **No recomendado para datos confidenciales** |
+| Anthropic Claude | API Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
+| Anthropic Claude | API de pago | Sí (EE. UU.) | No | Uso empresarial general |
+| OpenAI | ChatGPT Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
+| OpenAI | API de pago Tier 1+ | Sí (EE. UU.) | No por defecto | Uso empresarial, revisar DPA |
+| Groq / Together AI | API externa | Sí (terceros) | Revisar política | Uso general sin datos sensibles |
+| OpenAI | Cuenta gratuita | Sí (EE. UU.) | **Sí** | **No recomendado para datos confidenciales** |
 
 ### Configuración via .env (despliegues fijos)
 
@@ -76,52 +121,6 @@ OPENAI_COMPATIBLE_MODEL=llama-3.1-70b-versatile
 
 Si `LLM_PROVIDER` está vacío, la interfaz mostrará el selector interactivo en cada inicio.
 
-### Ejemplos de modelos compatibles
-
-| Modelo | Provider | Comando de instalación |
-|--------|----------|------------------------|
-| Llama 3.1 8B | Ollama | `ollama pull llama3.1` |
-| Llama 3.1 70B | Ollama | `ollama pull llama3.1:70b` |
-| Mistral 7B | Ollama | `ollama pull mistral` |
-| Qwen2.5 7B | Ollama | `ollama pull qwen2.5` |
-| DeepSeek-R1 | Ollama | `ollama pull deepseek-r1` |
-| Gemma 2 9B | Ollama | `ollama pull gemma2` |
-| Llama 3.1 8B | LM Studio | Descargar desde la interfaz de LM Studio |
-| Mistral 7B Instruct | LM Studio | Descargar desde la interfaz de LM Studio |
-
-## Estructura del proyecto
-
-```
-aicomply/
-├── app.py                          # Aplicación principal Streamlit
-├── config.py                       # Configuración y constantes
-├── src/
-│   ├── chatbot.py                  # Chatbot conversacional con RAG
-│   ├── readme_analyzer.py          # Análisis de documentación técnica
-│   ├── report_generator.py         # Generación del informe (sin API)
-│   ├── risk_classifier.py          # Clasificación rápida de riesgo
-│   └── llm/
-│       ├── provider.py             # Clase abstracta LLMProvider
-│       ├── anthropic_provider.py   # Implementación Anthropic Claude
-│       ├── ollama_provider.py      # Implementación Ollama (local)
-│       ├── openai_provider.py      # Implementación OpenAI-compatible
-│       └── factory.py             # Fábrica de providers
-│   └── rag/
-│       ├── vectorstore.py          # Vectorstore TF-IDF (sin FAISS)
-│       └── retriever.py            # Recuperador de artículos relevantes
-├── data/
-│   └── ai_act/
-│       └── ai_act_articles.json   # Artículos reales del AI Act en español
-├── prompts/
-│   └── system_prompts.py          # Prompts del sistema
-├── LICENSE                         # Licencia Apache 2.0
-├── README.md
-├── CONTRIBUTING.md
-├── requirements.txt
-├── .env.example
-└── .gitignore
-```
-
 ## Instalación
 
 ### Requisitos previos
@@ -133,7 +132,7 @@ aicomply/
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/aicomply.git
+   git clone https://github.com/ComunidadIA-OS/aicomply.git
    cd aicomply
    ```
 
@@ -146,6 +145,8 @@ aicomply/
 
 3. **Instalar las dependencias:**
    ```bash
+   pip install -e .
+   # o alternativamente:
    pip install -r requirements.txt
    ```
 
@@ -170,31 +171,74 @@ curl -fsSL https://ollama.ai/install.sh | sh   # Linux/macOS
 # 2. Descargar un modelo
 ollama pull llama3.1
 
-# 3. Ejecutar AIComply (sin .env — usará el selector interactivo)
+# 3. Ejecutar AIComply
 streamlit run app.py
 ```
 
 ## Uso
 
-1. **Elija su provider:** En la pantalla inicial, seleccione el modelo de IA y lea las condiciones de privacidad.
-2. **Acepte el aviso legal** de AIComply.
-3. **Chatbot:** Describa su sistema de IA respondiendo las preguntas del asistente.
-4. **Análisis documental:** Suba o pegue su README para detectar gaps.
-5. **Informe:** Genere y descargue el informe en Markdown o PDF.
+1. **Elija su provider** en la pantalla inicial y lea las condiciones de privacidad.
+2. **Acepte el aviso legal.**
+3. **Pestaña Evaluador:** Describa su sistema de IA respondiendo las preguntas del asistente. Cuando el árbol de decisión concluya, pulse "Completar evaluación".
+4. **Pestaña Cumplimiento:** El asistente recorre las obligaciones aplicables. Indique qué tiene implementado y qué no. Cuando termine, pulse "Finalizar análisis".
+5. **Pestaña Informe:** Genere y descargue el informe en PDF o texto plano (clasificación, cumplimiento, o completo).
 
-## Artículos del AI Act cubiertos
+## Ingesta de documentos
 
-| Artículo | Título | Nivel de riesgo |
-|----------|--------|-----------------|
-| Art. 5   | Prácticas prohibidas | Inaceptable |
-| Art. 6   | Clasificación de sistemas de alto riesgo | Alto |
-| Art. 9   | Sistema de gestión de riesgos | Alto |
-| Art. 10  | Datos y gobernanza de datos | Alto |
-| Art. 13  | Transparencia e información | Alto |
-| Art. 14  | Supervisión humana | Alto |
-| Art. 15  | Exactitud, solidez y ciberseguridad | Alto |
-| Art. 52  | Obligaciones de transparencia (chatbots, deepfakes) | Limitado |
-| Art. 69  | Códigos de conducta voluntarios | Mínimo |
+Para añadir nuevos documentos legales al corpus del RAG, use el script incluido:
+
+```bash
+python scripts/ingest_txt.py ruta/al/documento.txt \
+  --titulo "Título del documento" \
+  --fuente "Organismo emisor" \
+  --tipo guia_oficial \
+  --fecha "2025-01-01" \
+  --url "https://..."
+```
+
+Los tipos disponibles son: `ley_nacional`, `reglamento_ue`, `guia_oficial`, `directriz`, `documento_legal`.
+
+El JSON resultante se guarda en `data/docs/` y es cargado automáticamente por el vectorstore en el próximo arranque. Los ficheros `.txt` originales no se suben al repositorio.
+
+## Estructura del proyecto
+
+```
+aicomply/
+├── app.py                              # Aplicación principal Streamlit
+├── config.py                           # Configuración y constantes
+├── pyproject.toml                      # Metadatos y dependencias del paquete
+├── src/
+│   ├── chatbot.py                      # Lógica de conversación con el LLM
+│   ├── report_generator.py             # Generación de informes (PDF + texto)
+│   ├── tabs/
+│   │   ├── evaluador.py                # Pestaña 1: árbol de decisión
+│   │   ├── cumplimiento.py             # Pestaña 2: análisis de obligaciones
+│   │   └── informe.py                  # Pestaña 3: generación y descarga
+│   ├── llm/
+│   │   ├── provider.py                 # Clase abstracta LLMProvider
+│   │   ├── anthropic_provider.py       # Implementación Anthropic Claude
+│   │   ├── ollama_provider.py          # Implementación Ollama (local)
+│   │   ├── openai_provider.py          # Implementación OpenAI-compatible
+│   │   └── factory.py                  # Fábrica de providers
+│   └── rag/
+│       ├── vectorstore.py              # Vectorstore TF-IDF (sin FAISS)
+│       └── retriever.py                # Recuperador de fragmentos relevantes
+├── prompts/
+│   ├── system_prompts.py               # Prompt del evaluador (árbol de decisión)
+│   └── system_prompt_cumplimiento.py   # Prompt del análisis de cumplimiento
+├── data/
+│   ├── ai_act/
+│   │   └── ai_act_articles.json        # 25 artículos del AI Act estructurados
+│   └── docs/                           # Corpus adicional (27 documentos JSON)
+├── scripts/
+│   └── ingest_txt.py                   # Convierte .txt legales a JSON para el RAG
+├── LICENSE
+├── README.md
+├── CONTRIBUTING.md
+├── requirements.txt
+├── .env.example
+└── .gitignore
+```
 
 ## Stack tecnológico
 
@@ -211,14 +255,22 @@ streamlit run app.py
 
 ## Hoja de ruta
 
-### v1.x
-- [ ] Soporte para artículos 11, 12, 16-17, 71 del AI Act
-- [ ] Plantillas de documentación técnica (Art. 11) descargables
-- [ ] Comparación entre versiones del sistema a lo largo del tiempo
+### v1.x (en curso)
+- [x] Árbol de decisión conversacional completo (Art. 5, 6, Anexo III)
+- [x] Soporte multi-provider (Anthropic, OpenAI, Ollama, API compatible)
+- [x] Arquitectura de tres pestañas con desbloqueo secuencial
+- [x] Tres tipos de informe exportables (PDF + texto plano)
+- [x] Soporte de múltiples roles simultáneos
+- [x] 25 artículos del AI Act estructurados en el RAG
+- [x] Corpus normativo completo: AESIA, Anteproyecto de Ley ES, GDPR/AEPD, directrices Comisión Europea
+- [ ] Tests unitarios para el árbol de decisión y el chatbot
+- [ ] Flujo guiado para la Evaluación de Impacto sobre Derechos Fundamentales (Art. 27)
+- [ ] Persistencia de evaluaciones — guardar y reanudar sesiones
+- [ ] Mejora exportación PDF con fuente Unicode completa
 
 ### v2.x
 - [ ] API REST para integración con CI/CD
-- [ ] Modo autoevaluación con listas de verificación por artículo
+- [ ] Soporte multiidioma (inglés, francés, alemán)
 - [ ] Integración con el AI Office de la UE para actualizaciones normativas
 
 ## Contribuir
