@@ -5,6 +5,29 @@
   "fuente": "EUR-Lex — https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32024R1689",
   "nota": "Extractos y resúmenes del texto oficial. Consulte el texto completo en EUR-Lex para decisiones de cumplimiento. Los artículos 52 y 69 siguen la numeración de la versión consolidada de amplia difusión; en la publicación final corresponden a los artículos 50 y 95 respectivamente.",
   "articulos": {
+    "4": {
+      "titulo": "Alfabetización en materia de IA",
+      "capitulo": "I",
+      "nivel_riesgo": "todos",
+      "texto_oficial": "Los proveedores y los responsables del despliegue de sistemas de IA adoptarán medidas para garantizar, en la medida de lo posible, un nivel suficiente de alfabetización en materia de IA de su personal y de otras personas que se ocupen del funcionamiento y el uso de sistemas de IA en su nombre, teniendo en cuenta sus conocimientos, experiencia, formación y educación, así como el contexto en que van a utilizarse los sistemas de IA.",
+      "requisitos_clave": [
+        "Garantizar alfabetización en IA del personal que opera o usa sistemas de IA",
+        "Adaptar la formación al rol, contexto y nivel de autonomía del sistema",
+        "Aplicable a proveedores y responsables del despliegue",
+        "Medidas proporcionales a los conocimientos previos del personal"
+      ],
+      "aplica_a": "Proveedores y responsables del despliegue de sistemas de IA",
+      "palabras_clave": [
+        "alfabetizacion IA",
+        "formacion",
+        "capacitacion",
+        "conocimientos IA",
+        "personal",
+        "competencias",
+        "educacion IA",
+        "literacy"
+      ]
+    },
     "5": {
       "titulo": "Prácticas de inteligencia artificial prohibidas",
       "capitulo": "II",
@@ -17,7 +40,19 @@
         "Notificación obligatoria a las autoridades competentes"
       ],
       "aplica_a": "Cualquier persona que desarrolle, comercialice, despliegue o use sistemas de IA que realicen las prácticas enumeradas",
-      "palabras_clave": ["prohibido", "manipulacion", "subliminal", "scoring social", "puntuacion social", "biometrico", "reconocimiento facial", "emociones", "vulnerabilidades", "tiempo real", "identificacion biometrica"]
+      "palabras_clave": [
+        "prohibido",
+        "manipulacion",
+        "subliminal",
+        "scoring social",
+        "puntuacion social",
+        "biometrico",
+        "reconocimiento facial",
+        "emociones",
+        "vulnerabilidades",
+        "tiempo real",
+        "identificacion biometrica"
+      ]
     },
     "6": {
       "titulo": "Normas de clasificación de los sistemas de IA de alto riesgo",
@@ -42,7 +77,26 @@
         "Marcado CE"
       ],
       "aplica_a": "Proveedores y desplegadores de sistemas de IA que cumplan los criterios de clasificación",
-      "palabras_clave": ["alto riesgo", "clasificacion", "componente de seguridad", "anexo I", "anexo III", "evaluacion de conformidad", "infraestructura critica", "empleo", "educacion", "credito", "seguridad", "migracion", "justicia", "biometrico", "maquinaria", "vehiculos", "equipos medicos", "productos sanitarios"]
+      "palabras_clave": [
+        "alto riesgo",
+        "clasificacion",
+        "componente de seguridad",
+        "anexo I",
+        "anexo III",
+        "evaluacion de conformidad",
+        "infraestructura critica",
+        "empleo",
+        "educacion",
+        "credito",
+        "seguridad",
+        "migracion",
+        "justicia",
+        "biometrico",
+        "maquinaria",
+        "vehiculos",
+        "equipos medicos",
+        "productos sanitarios"
+      ]
     },
     "9": {
       "titulo": "Sistema de gestión de riesgos",
@@ -59,7 +113,18 @@
         "Revisión y actualización periódicas durante el ciclo de vida"
       ],
       "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
-      "palabras_clave": ["gestion de riesgos", "riesgos", "identificacion riesgos", "evaluacion riesgos", "ciclo de vida", "pruebas", "medidas de gestion", "documentacion", "riesgos fundamentales", "salud seguridad"]
+      "palabras_clave": [
+        "gestion de riesgos",
+        "riesgos",
+        "identificacion riesgos",
+        "evaluacion riesgos",
+        "ciclo de vida",
+        "pruebas",
+        "medidas de gestion",
+        "documentacion",
+        "riesgos fundamentales",
+        "salud seguridad"
+      ]
     },
     "10": {
       "titulo": "Datos y gobernanza de datos",
@@ -76,7 +141,74 @@
         "Medidas específicas para categorías especiales de datos (salud, biométricos, raciales)"
       ],
       "aplica_a": "Proveedores de sistemas de IA de alto riesgo que usan aprendizaje automático con datos de entrenamiento",
-      "palabras_clave": ["datos", "entrenamiento", "gobernanza de datos", "sesgo", "datos personales", "conjuntos de datos", "validacion", "prueba", "calidad datos", "RGPD", "anotacion", "etiquetado", "origen datos", "recopilacion", "categorias especiales"]
+      "palabras_clave": [
+        "datos",
+        "entrenamiento",
+        "gobernanza de datos",
+        "sesgo",
+        "datos personales",
+        "conjuntos de datos",
+        "validacion",
+        "prueba",
+        "calidad datos",
+        "RGPD",
+        "anotacion",
+        "etiquetado",
+        "origen datos",
+        "recopilacion",
+        "categorias especiales"
+      ]
+    },
+    "11": {
+      "titulo": "Documentación técnica",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. La documentación técnica de un sistema de IA de alto riesgo se elaborará antes de que dicho sistema se introduzca en el mercado o se ponga en servicio y se mantendrá actualizada.\n2. La documentación técnica se redactará de manera que demuestre que el sistema de IA de alto riesgo cumple los requisitos establecidos en el presente capítulo y facilite a las autoridades nacionales competentes y a los organismos notificados la información necesaria para evaluar el cumplimiento del sistema de IA de los requisitos pertinentes.\n3. La documentación técnica contendrá, como mínimo, los elementos indicados en el anexo IV.",
+      "requisitos_clave": [
+        "Elaborar documentación técnica antes de la comercialización o puesta en servicio",
+        "Mantener la documentación técnica actualizada durante el ciclo de vida",
+        "Incluir todos los elementos del Anexo IV del Reglamento",
+        "Facilitar el acceso a autoridades de vigilancia y organismos notificados",
+        "Demostrar cumplimiento de los requisitos del Capítulo III"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "documentacion tecnica",
+        "anexo IV",
+        "conformidad",
+        "autoridades vigilancia",
+        "organismos notificados",
+        "ciclo de vida",
+        "registro tecnico",
+        "documentacion",
+        "evidencia conformidad"
+      ]
+    },
+    "12": {
+      "titulo": "Conservación de registros",
+      "capitulo": "III, Sección 2",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo serán técnicamente capaces de registrar automáticamente los eventos (en lo sucesivo, 'registros') durante su funcionamiento durante todo el ciclo de vida del sistema.\n2. Con el fin de garantizar un nivel de trazabilidad del funcionamiento del sistema de IA durante todo su ciclo de vida que sea apropiado para la finalidad prevista del sistema, las capacidades de registro garantizarán un nivel de trazabilidad que sea adecuado al nivel de riesgo.\n3. Las capacidades de registro garantizarán, como mínimo:\na) el registro de cada período durante el cual se utiliza el sistema de IA;\nb) la base de datos de referencia utilizada por el sistema para verificar los datos de entrada;\nc) los datos de entrada para los que la búsqueda haya dado lugar a una coincidencia.",
+      "requisitos_clave": [
+        "Capacidad técnica de registro automático de eventos durante el funcionamiento",
+        "Trazabilidad adecuada al nivel de riesgo del sistema",
+        "Registro de períodos de uso, bases de datos de referencia y datos de entrada",
+        "Los registros se conservan por el proveedor o el responsable del despliegue según control",
+        "Registros accesibles para autoridades de vigilancia del mercado"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo (diseño); responsables del despliegue (conservación si tienen control)",
+      "palabras_clave": [
+        "registros",
+        "logs",
+        "trazabilidad",
+        "registro automatico",
+        "eventos",
+        "auditoria",
+        "ciclo de vida",
+        "datos entrada",
+        "conservacion registros",
+        "logging"
+      ]
     },
     "13": {
       "titulo": "Transparencia e información para los responsables del despliegue",
@@ -94,7 +226,20 @@
         "Información sobre condiciones de uso previsto y uso indebido previsible"
       ],
       "aplica_a": "Proveedores de sistemas de IA de alto riesgo (obligación de informar a los responsables del despliegue)",
-      "palabras_clave": ["transparencia", "instrucciones de uso", "informacion", "responsable del despliegue", "capacidades", "limitaciones", "rendimiento", "exactitud", "identidad proveedor", "cambios", "actualizaciones", "supervision humana"]
+      "palabras_clave": [
+        "transparencia",
+        "instrucciones de uso",
+        "informacion",
+        "responsable del despliegue",
+        "capacidades",
+        "limitaciones",
+        "rendimiento",
+        "exactitud",
+        "identidad proveedor",
+        "cambios",
+        "actualizaciones",
+        "supervision humana"
+      ]
     },
     "14": {
       "titulo": "Supervisión humana",
@@ -111,7 +256,19 @@
         "Formación y capacitación de los responsables del despliegue"
       ],
       "aplica_a": "Proveedores de sistemas de IA de alto riesgo (diseño) y responsables del despliegue (implementación)",
-      "palabras_clave": ["supervision humana", "control humano", "intervencion", "deteccion anomalias", "parada emergencia", "anular sistema", "autonomia", "interpretar resultados", "responsable despliegue", "herramientas supervision", "oversight"]
+      "palabras_clave": [
+        "supervision humana",
+        "control humano",
+        "intervencion",
+        "deteccion anomalias",
+        "parada emergencia",
+        "anular sistema",
+        "autonomia",
+        "interpretar resultados",
+        "responsable despliegue",
+        "herramientas supervision",
+        "oversight"
+      ]
     },
     "15": {
       "titulo": "Exactitud, solidez y ciberseguridad",
@@ -129,7 +286,344 @@
         "Rendimiento constante a lo largo de todo el ciclo de vida"
       ],
       "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
-      "palabras_clave": ["exactitud", "precision", "solidez", "robustez", "ciberseguridad", "resiliencia", "metricas", "rendimiento", "errores", "fallos", "ataques adversariales", "manipulacion", "redundancia", "aprendizaje continuo", "ciclo de vida", "vulnerabilidades"]
+      "palabras_clave": [
+        "exactitud",
+        "precision",
+        "solidez",
+        "robustez",
+        "ciberseguridad",
+        "resiliencia",
+        "metricas",
+        "rendimiento",
+        "errores",
+        "fallos",
+        "ataques adversariales",
+        "manipulacion",
+        "redundancia",
+        "aprendizaje continuo",
+        "ciclo de vida",
+        "vulnerabilidades"
+      ]
+    },
+    "16": {
+      "titulo": "Obligaciones de los proveedores de sistemas de IA de alto riesgo",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "Los proveedores de sistemas de IA de alto riesgo deberán:\na) garantizar que sus sistemas de IA de alto riesgo cumplen los requisitos establecidos en la sección 2;\nb) indicar su nombre, nombre comercial registrado o marca registrada y la dirección de contacto en el sistema de IA de alto riesgo;\nc) establecer un sistema de gestión de la calidad de conformidad con el artículo 17;\nd) conservar la documentación;\ne) cuando sea de aplicación, garantizar que los organismos notificados pertinentes llevan a cabo la evaluación de conformidad;\nf) cumplir las obligaciones de registro;\ng) adoptar las medidas correctoras necesarias y facilitar información conforme al artículo 20;\nh) demostrar la conformidad del sistema de IA de alto riesgo a petición motivada de las autoridades nacionales competentes;\ni) adjuntar una declaración UE de conformidad al sistema y aponer el marcado CE;\nj) cumplir las obligaciones de registro del artículo 49;\nk) poner en marcha un sistema de supervisión poscomercialización.",
+      "requisitos_clave": [
+        "Garantizar cumplimiento de todos los requisitos técnicos (Art. 9-15)",
+        "Identificación del proveedor en el sistema (nombre, marca, contacto)",
+        "Sistema de gestión de la calidad (Art. 17)",
+        "Evaluación de conformidad por organismo notificado si procede (Art. 43)",
+        "Declaración UE de conformidad y marcado CE (Art. 47-48)",
+        "Registro en la base de datos de la UE (Art. 49)",
+        "Sistema de supervisión poscomercialización (Art. 72)",
+        "Adopción de medidas correctoras ante no conformidades (Art. 20)"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "obligaciones proveedor",
+        "proveedor",
+        "gestion calidad",
+        "evaluacion conformidad",
+        "marcado CE",
+        "declaracion conformidad",
+        "registro",
+        "supervision poscomercializacion",
+        "medidas correctoras",
+        "identificacion"
+      ]
+    },
+    "17": {
+      "titulo": "Sistema de gestión de la calidad",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los proveedores de sistemas de IA de alto riesgo establecerán un sistema de gestión de la calidad que garantice el cumplimiento del presente Reglamento. Dicho sistema se documentará de forma sistemática y ordenada en forma de estrategias, procedimientos e instrucciones escritos, y abarcará al menos los aspectos siguientes:\na) la estrategia de cumplimiento de la normativa, incluido el cumplimiento de los procedimientos de evaluación de conformidad y los procedimientos de gestión de modificaciones del sistema;\nb) las técnicas, procedimientos y acciones sistemáticas que vayan a utilizarse en materia de diseño, control del diseño y verificación del diseño;\nc) las técnicas, procedimientos y acciones sistemáticas que vayan a utilizarse en materia de producción y control y aseguramiento de la calidad de la producción;\nd) los procedimientos de examen, prueba y validación que vayan a realizarse antes, durante y después del desarrollo del sistema de IA de alto riesgo;\ne) las especificaciones técnicas, incluidas las normas, que vayan a aplicarse y, cuando las normas pertinentes no se apliquen en su totalidad, los medios que se utilicen para garantizar que el sistema de IA de alto riesgo cumpla los requisitos;\nf) los sistemas y procedimientos de gestión de datos;\ng) el sistema de gestión de riesgos contemplado en el artículo 9;\nh) el establecimiento, aplicación y mantenimiento de un sistema de supervisión poscomercialización;\ni) los procedimientos relacionados con la notificación de incidentes graves.",
+      "requisitos_clave": [
+        "Sistema documentado de gestión de la calidad (políticas, procedimientos, instrucciones)",
+        "Estrategia de cumplimiento normativo y gestión de cambios",
+        "Procedimientos de diseño, verificación y validación",
+        "Procedimientos de prueba antes, durante y después del desarrollo",
+        "Gestión de datos integrada en el sistema de calidad",
+        "Sistema de gestión de riesgos integrado (Art. 9)",
+        "Procedimientos de notificación de incidentes graves",
+        "Supervisión poscomercialización integrada"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "gestion calidad",
+        "calidad",
+        "procedimientos",
+        "ISO",
+        "documentacion",
+        "validacion",
+        "verificacion",
+        "pruebas",
+        "gestion cambios",
+        "incidentes",
+        "poscomercializacion",
+        "estrategia cumplimiento"
+      ]
+    },
+    "22": {
+      "titulo": "Representantes autorizados de los proveedores de sistemas de IA de alto riesgo",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Antes de poner sus sistemas de IA de alto riesgo a disposición en el mercado de la Unión, los proveedores establecidos en terceros países designarán, mediante mandato escrito, a un representante autorizado establecido en la Unión.\n2. El representante autorizado llevará a cabo las tareas especificadas en el mandato recibido del proveedor.\n3. El representante autorizado actuará con el debido cuidado al desempeñar las tareas especificadas en el mandato del proveedor.\n4. El representante autorizado podrá poner fin al mandato si considera que el proveedor contraviene las obligaciones que le incumben en virtud del presente Reglamento.",
+      "requisitos_clave": [
+        "Obligatorio para proveedores establecidos fuera de la UE",
+        "Designación mediante mandato escrito antes de comercializar en la UE",
+        "El representante actúa con plena responsabilidad ante las autoridades de la UE",
+        "Puede rescindir el mandato si el proveedor incumple el Reglamento",
+        "Debe estar establecido en un Estado miembro de la UE"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo establecidos en terceros países",
+      "palabras_clave": [
+        "representante autorizado",
+        "terceros paises",
+        "proveedor no UE",
+        "mandato",
+        "establecimiento UE",
+        "responsabilidad",
+        "importacion",
+        "mercado UE"
+      ]
+    },
+    "23": {
+      "titulo": "Obligaciones de los importadores",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Antes de introducir en el mercado un sistema de IA de alto riesgo, los importadores se asegurarán de que dicho sistema sea conforme con el presente Reglamento verificando que:\na) el proveedor establecido en un tercer país ha llevado a cabo el procedimiento de evaluación de conformidad pertinente;\nb) el proveedor ha elaborado la documentación técnica;\nc) el sistema lleva el marcado CE requerido y va acompañado de la declaración UE de conformidad y de las instrucciones de uso.\n2. Cuando un importador tenga razones suficientes para creer que un sistema de IA de alto riesgo no es conforme con el presente Reglamento, no introducirá dicho sistema en el mercado hasta que no se haya obtenido la conformidad.",
+      "requisitos_clave": [
+        "Verificar que el proveedor no-UE ha completado la evaluación de conformidad",
+        "Verificar existencia de documentación técnica, marcado CE y declaración de conformidad",
+        "No comercializar si hay dudas fundadas sobre la conformidad",
+        "Conservar copia de la declaración UE de conformidad y documentación técnica",
+        "Indicar nombre, marca y datos de contacto en el sistema",
+        "Informar al proveedor y autoridades si se detecta riesgo"
+      ],
+      "aplica_a": "Importadores de sistemas de IA de alto riesgo de proveedores de terceros países",
+      "palabras_clave": [
+        "importador",
+        "importacion",
+        "verificacion conformidad",
+        "marcado CE",
+        "documentacion tecnica",
+        "proveedor tercer pais",
+        "distribucion",
+        "mercado UE",
+        "no conformidad"
+      ]
+    },
+    "24": {
+      "titulo": "Obligaciones de los distribuidores",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Antes de comercializar un sistema de IA de alto riesgo, los distribuidores verificarán que lleva el marcado CE requerido y va acompañado de la documentación e instrucciones de uso necesarias en una lengua que puedan entender los responsables del despliegue en el Estado miembro en que se vaya a comercializar el sistema.\n2. Cuando un distribuidor considere o tenga razones para considerar, sobre la base de la información en su posesión, que un sistema de IA de alto riesgo no es conforme con los requisitos del presente Reglamento, no comercializará el sistema de IA de alto riesgo hasta que se haya obtenido la conformidad con dichos requisitos.",
+      "requisitos_clave": [
+        "Verificar marcado CE, documentación e instrucciones de uso antes de comercializar",
+        "No comercializar si hay indicios de no conformidad",
+        "Garantizar condiciones de almacenamiento y transporte que no comprometan la conformidad",
+        "Informar al proveedor o importador de los riesgos identificados",
+        "Cooperar con las autoridades competentes en las medidas adoptadas"
+      ],
+      "aplica_a": "Distribuidores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "distribuidor",
+        "distribucion",
+        "comercializacion",
+        "marcado CE",
+        "verificacion",
+        "almacenamiento",
+        "transporte",
+        "no conformidad",
+        "instrucciones uso"
+      ]
+    },
+    "25": {
+      "titulo": "Responsabilidades a lo largo de la cadena de valor de la IA",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Un responsable del despliegue que ponga su nombre o marca en un sistema de IA de alto riesgo ya introducido en el mercado o puesto en servicio, sin perjuicio de los acuerdos contractuales que obliguen al proveedor inicial a asumir tales responsabilidades, pasará a ser proveedor a los efectos del presente Reglamento.\n2. Un responsable del despliegue o cualquier otro operador de terceros que modifique sustancialmente un sistema de IA de alto riesgo ya introducido en el mercado o puesto en servicio pasará a ser considerado proveedor del sistema de IA de alto riesgo resultante.",
+      "requisitos_clave": [
+        "Quien ponga su nombre/marca en un sistema de IA de alto riesgo asume todas las obligaciones del proveedor",
+        "Quien realice una modificación sustancial del sistema asume todas las obligaciones del proveedor",
+        "El proveedor original debe facilitar información, documentación y acceso necesarios",
+        "La cadena de responsabilidades debe estar documentada contractualmente"
+      ],
+      "aplica_a": "Responsables del despliegue, distribuidores o importadores que modifiquen sustancialmente el sistema o pongan su marca",
+      "palabras_clave": [
+        "convertirse en proveedor",
+        "modificacion sustancial",
+        "responsabilidad",
+        "cadena valor",
+        "marca propia",
+        "proveedor delegado",
+        "white label",
+        "reetiquetado",
+        "modificacion sistema"
+      ]
+    },
+    "26": {
+      "titulo": "Obligaciones de los responsables del despliegue de sistemas de IA de alto riesgo",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los responsables del despliegue de sistemas de IA de alto riesgo adoptarán las medidas técnicas y organizativas adecuadas para garantizar que utilizan dichos sistemas de conformidad con las instrucciones de uso que los acompañan.\n2. Los responsables del despliegue asignarán la supervisión humana a personas físicas que tengan la competencia, la formación y la autoridad necesarias, así como los recursos necesarios.\n4. Los responsables del despliegue adoptarán las medidas apropiadas para garantizar que los datos de entrada son pertinentes y suficientemente representativos en vista de la finalidad prevista del sistema de IA de alto riesgo.\n5. Los responsables del despliegue vigilarán el funcionamiento del sistema de IA de alto riesgo sobre la base de las instrucciones de uso pertinentes.\n6. Los responsables del despliegue conservarán los registros generados automáticamente por el sistema de IA de alto riesgo en la medida en que dichos registros estén bajo su control.\n7. Los responsables del despliegue de sistemas de IA de alto riesgo informarán a los representantes de los trabajadores y a los propios trabajadores afectados.",
+      "requisitos_clave": [
+        "Usar el sistema conforme a las instrucciones del proveedor",
+        "Asignar supervisión humana a personas con competencia, formación y autoridad suficientes",
+        "Garantizar que los datos de entrada son pertinentes y representativos",
+        "Vigilar el funcionamiento del sistema durante su uso",
+        "Conservar los registros de actividad (logs) bajo su control",
+        "Informar a trabajadores y representantes sindicales si el sistema afecta al lugar de trabajo",
+        "Notificar al proveedor y autoridades incidentes graves o comportamientos inesperados",
+        "Realizar evaluación de impacto sobre derechos fundamentales si es organismo público (Art. 27)"
+      ],
+      "aplica_a": "Responsables del despliegue (implementadores) de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "responsable despliegue",
+        "implementador",
+        "deployer",
+        "instrucciones uso",
+        "supervision humana",
+        "datos entrada",
+        "vigilancia",
+        "logs registros",
+        "trabajadores",
+        "incidentes",
+        "notificacion",
+        "conformidad uso"
+      ]
+    },
+    "27": {
+      "titulo": "Evaluación del impacto sobre los derechos fundamentales de los sistemas de IA de alto riesgo",
+      "capitulo": "III, Sección 3",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Antes de poner en servicio o utilizar un sistema de IA de alto riesgo enumerado en el anexo III, con excepción de los sistemas de IA enumerados en el punto 2 del mismo, los responsables del despliegue que sean organismos del sector público, o entidades privadas que presten servicios públicos, y los responsables del despliegue de sistemas de IA de alto riesgo a que se refiere el anexo III, punto 5, letras b) y c), llevarán a cabo una evaluación del impacto sobre los derechos fundamentales.\n2. La evaluación del impacto sobre los derechos fundamentales cubrirá:\na) la descripción de los procesos del responsable del despliegue en los que se utilizará el sistema de IA de alto riesgo;\nb) el período de tiempo durante el cual está previsto utilizar el sistema;\nc) las categorías de personas físicas y grupos afectados;\nd) los riesgos específicos de perjuicio para los derechos fundamentales;\ne) las medidas previstas para hacer frente a dichos riesgos.",
+      "requisitos_clave": [
+        "Obligatorio para organismos del sector público antes de desplegar sistemas de alto riesgo del Anexo III",
+        "También obligatorio para entidades privadas que presten servicios públicos",
+        "Describir el proceso en que se usa el sistema, período, personas afectadas y riesgos",
+        "Identificar riesgos específicos para derechos fundamentales y medidas de mitigación",
+        "Notificar la evaluación a la autoridad de vigilancia del mercado competente",
+        "Registrar la evaluación en la base de datos de la UE"
+      ],
+      "aplica_a": "Responsables del despliegue que sean organismos públicos o presten servicios públicos; también para sistemas del Anexo III punto 5(b) y 5(c)",
+      "palabras_clave": [
+        "evaluacion impacto",
+        "derechos fundamentales",
+        "EIDF",
+        "sector publico",
+        "servicios publicos",
+        "personas afectadas",
+        "riesgos fundamentales",
+        "impacto social",
+        "mitigacion riesgos",
+        "organismos publicos",
+        "FRIA"
+      ]
+    },
+    "43": {
+      "titulo": "Evaluación de conformidad",
+      "capitulo": "IV",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los sistemas de IA de alto riesgo enumerados en el punto 1 del anexo III se someterán a los procedimientos de evaluación de conformidad contemplados en los artículos 43 bis y 43 ter.\n2. Para los sistemas de IA de alto riesgo no contemplados en el apartado 1, el proveedor seguirá el procedimiento de evaluación de conformidad basado en el control interno contemplado en el anexo VI, que no requiere la intervención de un organismo notificado.\n3. Para los sistemas de IA de alto riesgo contemplados en el punto 1 del anexo III, distintos de los relacionados con la identificación biométrica remota, el proveedor podrá elegir:\na) el procedimiento de evaluación de conformidad basado en el control interno;\nb) el procedimiento de evaluación de conformidad con participación de un organismo notificado.",
+      "requisitos_clave": [
+        "Evaluación de conformidad obligatoria antes de la comercialización",
+        "Sistemas biométricos del Anexo III.1: requieren organismo notificado",
+        "Resto del Anexo III: control interno o con organismo notificado (elección del proveedor)",
+        "Annexo I (productos regulados): según la legislación sectorial aplicable",
+        "La evaluación debe demostrar cumplimiento de los Art. 9-15",
+        "Resultado documentado en el expediente técnico"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo antes de comercializar o poner en servicio",
+      "palabras_clave": [
+        "evaluacion conformidad",
+        "organismo notificado",
+        "control interno",
+        "certificacion",
+        "anexo VI",
+        "auditoria conformidad",
+        "tercera parte",
+        "acreditacion",
+        "biometria conformidad"
+      ]
+    },
+    "47": {
+      "titulo": "Declaración UE de conformidad",
+      "capitulo": "IV",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. El proveedor elaborará una declaración UE de conformidad escrita para cada sistema de IA de alto riesgo y la mantendrá a disposición de las autoridades nacionales competentes durante diez años después de que el sistema de IA de alto riesgo se haya introducido en el mercado o puesto en servicio.\n2. La declaración UE de conformidad indicará que el sistema de IA de alto riesgo en cuestión cumple los requisitos establecidos en el capítulo III, sección 2.\n3. La declaración UE de conformidad contendrá la información indicada en el anexo V y se traducirá a la lengua o lenguas requeridas por el Estado miembro o los Estados miembros en que se comercialice o se ponga en servicio el sistema de IA de alto riesgo.",
+      "requisitos_clave": [
+        "Declaración escrita elaborada por el proveedor antes de comercializar",
+        "Conservada durante 10 años tras la comercialización",
+        "Debe incluir todos los elementos del Anexo V del Reglamento",
+        "Traducida al idioma del Estado miembro donde se comercialice",
+        "Disponible para las autoridades nacionales competentes a petición"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "declaracion conformidad",
+        "declaracion UE",
+        "DoC",
+        "anexo V",
+        "conformidad escrita",
+        "10 años",
+        "proveedor declaracion",
+        "certificado conformidad"
+      ]
+    },
+    "48": {
+      "titulo": "Marcado CE",
+      "capitulo": "IV",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. El marcado CE se apondrá de forma visible, legible e indeleble en el sistema de IA de alto riesgo. Cuando ello no sea posible o no esté justificado por la naturaleza del sistema, se apondrá en el embalaje o en la documentación que lo acompañe, según proceda.\n2. El marcado CE contemplado en el apartado 1 del presente artículo estará sujeto a los principios generales establecidos en el artículo 30 del Reglamento (CE) n.o 765/2008.\n3. Cuando proceda, el marcado CE irá seguido del número de identificación del organismo notificado responsable de los procedimientos de conformidad contemplados en el artículo 43.",
+      "requisitos_clave": [
+        "Marcado CE visible, legible e indeleble en el sistema o su embalaje",
+        "Seguido del número de identificación del organismo notificado si intervino",
+        "Obligatorio antes de comercializar en el mercado de la UE",
+        "Declaración de conformidad debe estar disponible junto al marcado CE",
+        "Sujeto a los principios del Reglamento (CE) 765/2008"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo que comercializan en la UE",
+      "palabras_clave": [
+        "marcado CE",
+        "CE marking",
+        "conformidad UE",
+        "etiquetado",
+        "comercializacion UE",
+        "organismo notificado",
+        "numero identificacion",
+        "embalaje",
+        "documentacion"
+      ]
+    },
+    "49": {
+      "titulo": "Registro de los sistemas de IA de alto riesgo",
+      "capitulo": "V",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Antes de introducir en el mercado o poner en servicio un sistema de IA de alto riesgo enumerado en el anexo III, el proveedor o, en su caso, el representante autorizado, registrará dicho sistema en la base de datos de la UE contemplada en el artículo 71.\n2. Antes de poner en servicio o utilizar un sistema de IA de alto riesgo enumerado en el anexo III, los responsables del despliegue que sean organismos del sector público o estén actuando en su nombre registrarán el uso del sistema en la base de datos de la UE.\n4. Para los sistemas de IA de alto riesgo enumerados en el anexo III, puntos 1, 6 y 7, el registro se efectuará en una base de datos nacional específica.",
+      "requisitos_clave": [
+        "Registro en la base de datos de la UE (EUDB) obligatorio antes de comercializar sistemas del Anexo III",
+        "El proveedor o representante autorizado realiza el registro",
+        "Los responsables del despliegue que sean organismos públicos también deben registrar el uso",
+        "Sistemas del Anexo III puntos 1, 6 y 7 se registran en base de datos nacional específica",
+        "El registro debe incluir la información del Anexo VIII del Reglamento",
+        "El registro es público salvo información confidencial"
+      ],
+      "aplica_a": "Proveedores y responsables del despliegue (organismos públicos) de sistemas de IA de alto riesgo del Anexo III",
+      "palabras_clave": [
+        "registro",
+        "base de datos UE",
+        "EUDB",
+        "registro obligatorio",
+        "base de datos nacional",
+        "organismos publicos",
+        "Anexo III",
+        "publicidad",
+        "transparencia registro",
+        "notificacion"
+      ]
     },
     "52": {
       "titulo": "Obligaciones de transparencia para ciertos sistemas de IA",
@@ -147,7 +641,23 @@
         "Excepciones para sistemas autorizados por ley para aplicación de la ley"
       ],
       "aplica_a": "Proveedores y responsables del despliegue de chatbots, sistemas generativos, sistemas de reconocimiento de emociones y categorización biométrica",
-      "palabras_clave": ["transparencia", "chatbot", "asistente virtual", "interaccion con IA", "contenido sintetico", "deepfake", "reconocimiento emociones", "categorizacion biometrica", "marcado", "divulgacion", "generacion texto", "generacion imagen", "audio sintetico", "riesgo limitado", "obligaciones transparencia"]
+      "palabras_clave": [
+        "transparencia",
+        "chatbot",
+        "asistente virtual",
+        "interaccion con IA",
+        "contenido sintetico",
+        "deepfake",
+        "reconocimiento emociones",
+        "categorizacion biometrica",
+        "marcado",
+        "divulgacion",
+        "generacion texto",
+        "generacion imagen",
+        "audio sintetico",
+        "riesgo limitado",
+        "obligaciones transparencia"
+      ]
     },
     "69": {
       "titulo": "Códigos de conducta para sistemas de IA de riesgo no elevado",
@@ -165,49 +675,121 @@
         "Pueden ser sectoriales o transversales"
       ],
       "aplica_a": "Proveedores y responsables del despliegue de sistemas de IA de riesgo mínimo que deseen adherirse voluntariamente",
-      "palabras_clave": ["codigos de conducta", "voluntario", "autorregulacion", "riesgo minimo", "sostenibilidad", "accesibilidad", "buenas practicas", "partes interesadas", "Oficina IA", "adhesion voluntaria", "mejores practicas"]
+      "palabras_clave": [
+        "codigos de conducta",
+        "voluntario",
+        "autorregulacion",
+        "riesgo minimo",
+        "sostenibilidad",
+        "accesibilidad",
+        "buenas practicas",
+        "partes interesadas",
+        "Oficina IA",
+        "adhesion voluntaria",
+        "mejores practicas"
+      ]
+    },
+    "72": {
+      "titulo": "Supervisión poscomercialización por parte de los proveedores y plan de supervisión poscomercialización",
+      "capitulo": "IX",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los proveedores de sistemas de IA de alto riesgo pondrán en marcha y documentarán un sistema de supervisión poscomercialización de manera proporcional a la naturaleza de las tecnologías de IA y a los riesgos del sistema de IA de alto riesgo.\n2. El sistema de supervisión poscomercialización recogerá, documentará y analizará activamente los datos pertinentes que puedan aportar los responsables del despliegue o que puedan ser obtenidos de otras fuentes sobre el rendimiento de los sistemas de IA de alto riesgo a lo largo de todo su ciclo de vida.\n3. El sistema de supervisión poscomercialización se basará en un plan de supervisión poscomercialización que forme parte de la documentación técnica del Anexo IV.",
+      "requisitos_clave": [
+        "Sistema de supervisión poscomercialización documentado y proporcional al riesgo",
+        "Recoger y analizar datos sobre el rendimiento del sistema durante todo su ciclo de vida",
+        "Plan de supervisión poscomercialización integrado en la documentación técnica (Anexo IV)",
+        "Notificar incidentes graves a la autoridad de vigilancia del mercado",
+        "Adoptar medidas correctoras cuando se detecten no conformidades o riesgos",
+        "Informar a los responsables del despliegue y usuarios de los riesgos detectados"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "poscomercializacion",
+        "post-market",
+        "supervision poscomercializacion",
+        "vigilancia mercado",
+        "incidentes graves",
+        "rendimiento",
+        "ciclo de vida",
+        "datos rendimiento",
+        "medidas correctoras",
+        "plan supervision",
+        "monitoreo"
+      ]
     }
   },
   "categorias_alto_riesgo": {
     "biometria": {
       "descripcion": "Sistemas de identificación biométrica remota, verificación de autenticidad, categorización de personas físicas basada en datos biométricos sensibles",
       "articulo": "Anexo III, punto 1",
-      "ejemplos": ["Reconocimiento facial en entornos de acceso controlado", "Verificación de identidad biométrica", "Análisis de voz con fines de identificación"]
+      "ejemplos": [
+        "Reconocimiento facial en entornos de acceso controlado",
+        "Verificación de identidad biométrica",
+        "Análisis de voz con fines de identificación"
+      ]
     },
     "infraestructura_critica": {
       "descripcion": "Sistemas de IA utilizados como componentes de seguridad en la gestión y explotación de infraestructuras críticas: redes eléctricas, suministro de agua, redes de gas, transporte",
       "articulo": "Anexo III, punto 2",
-      "ejemplos": ["Control de redes eléctricas inteligentes", "Gestión de redes de distribución de agua", "Sistemas de control de tráfico ferroviario o aéreo"]
+      "ejemplos": [
+        "Control de redes eléctricas inteligentes",
+        "Gestión de redes de distribución de agua",
+        "Sistemas de control de tráfico ferroviario o aéreo"
+      ]
     },
     "educacion": {
       "descripcion": "Sistemas de IA utilizados para determinar el acceso, admisión o asignación a instituciones educativas o formación profesional; evaluación de resultados de aprendizaje",
       "articulo": "Anexo III, punto 3",
-      "ejemplos": ["Sistemas de admisión universitaria", "Evaluación automática de exámenes con impacto en la titulación", "Sistemas de detección de abandono escolar"]
+      "ejemplos": [
+        "Sistemas de admisión universitaria",
+        "Evaluación automática de exámenes con impacto en la titulación",
+        "Sistemas de detección de abandono escolar"
+      ]
     },
     "empleo_rrhh": {
       "descripcion": "Sistemas de IA usados en contratación y selección de personal, toma de decisiones sobre promoción, evaluación del rendimiento y comportamiento, despido",
       "articulo": "Anexo III, punto 4",
-      "ejemplos": ["Cribado automatizado de CVs con decisión vinculante", "Sistemas de evaluación del rendimiento de trabajadores", "Herramientas de detección de comportamientos en el trabajo"]
+      "ejemplos": [
+        "Cribado automatizado de CVs con decisión vinculante",
+        "Sistemas de evaluación del rendimiento de trabajadores",
+        "Herramientas de detección de comportamientos en el trabajo"
+      ]
     },
     "servicios_esenciales": {
       "descripcion": "Sistemas de IA para evaluar la solvencia o establecer el scoring de crédito; sistemas de evaluación de riesgos en seguros de salud y de vida; sistemas de emergencias",
       "articulo": "Anexo III, punto 5",
-      "ejemplos": ["Scoring crediticio automatizado para concesión de préstamos", "Evaluación de riesgo para seguros de vida o salud", "Sistemas de priorización de llamadas de emergencia"]
+      "ejemplos": [
+        "Scoring crediticio automatizado para concesión de préstamos",
+        "Evaluación de riesgo para seguros de vida o salud",
+        "Sistemas de priorización de llamadas de emergencia"
+      ]
     },
     "seguridad_publica": {
       "descripcion": "Sistemas de IA utilizados por o en nombre de autoridades policiales para evaluar la probabilidad de que una persona cometa un delito o reincida",
       "articulo": "Anexo III, punto 6",
-      "ejemplos": ["Sistemas predictivos de criminalidad", "Análisis de comportamiento para detección de amenazas", "Análisis forense de datos digitales"]
+      "ejemplos": [
+        "Sistemas predictivos de criminalidad",
+        "Análisis de comportamiento para detección de amenazas",
+        "Análisis forense de datos digitales"
+      ]
     },
     "migracion_asilo": {
       "descripcion": "Sistemas de IA utilizados por o en nombre de autoridades competentes en procedimientos de asilo, visado y migración para evaluar riesgos o examinar solicitudes",
       "articulo": "Anexo III, punto 7",
-      "ejemplos": ["Evaluación automatizada de solicitudes de asilo", "Detección de documentos fraudulentos en fronteras", "Evaluación de riesgo de inmigración irregular"]
+      "ejemplos": [
+        "Evaluación automatizada de solicitudes de asilo",
+        "Detección de documentos fraudulentos en fronteras",
+        "Evaluación de riesgo de inmigración irregular"
+      ]
     },
     "justicia": {
       "descripcion": "Sistemas de IA destinados a asistir a las autoridades judiciales en la investigación y enjuiciamiento de infracciones penales y en la administración de justicia",
       "articulo": "Anexo III, punto 8",
-      "ejemplos": ["Sistemas de apoyo a la decisión judicial", "Análisis de probabilidad de reincidencia para resoluciones judiciales", "Análisis automatizado de pruebas digitales"]
+      "ejemplos": [
+        "Sistemas de apoyo a la decisión judicial",
+        "Análisis de probabilidad de reincidencia para resoluciones judiciales",
+        "Análisis automatizado de pruebas digitales"
+      ]
     }
   }
 }
