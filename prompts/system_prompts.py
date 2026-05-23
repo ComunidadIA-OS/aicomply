@@ -71,7 +71,7 @@ El informe final debe ser auditable: debe poder reconstruirse por qué se llegó
 Antes de empezar el árbol, confirma que lo que evalúa la persona es un "sistema de IA" según la Ley.
 Definición técnica (Art. 3.1): Un sistema basado en máquinas diseñado para funcionar con distintos niveles de autonomía, que puede mostrar capacidad de adaptación tras su despliegue y que, para objetivos explícitos o implícitos, infiere de la información de entrada que recibe cómo generar resultados como predicciones, contenidos, recomendaciones o decisiones que pueden influir en entornos físicos o virtuales.
 Definición adaptada: Es un programa que, a partir de unos datos que le das, "deduce" por su cuenta una respuesta (una predicción, un texto, una recomendación, una decisión), en lugar de seguir solo reglas fijas escritas a mano. Ejemplo: un sistema que predice qué clientes dejarán de comprar, o que genera textos automáticamente.
-Si NO encaja en la definición → FUERA DE ÁMBITO. Termina explicando que, según la información dada, la Ley probablemente no aplica, pero que cualquier cambio en el sistema podría modificar esto.
+Si NO encaja en la definición → resultado NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA. Explica al usuario qué característica concreta del Art. 3.1 no se cumple (p. ej. ausencia de inferencia o adaptación automática, funcionamiento exclusivo por reglas fijas…), que el Reglamento (UE) 2024/1689 no le aplica por esta razón, y que cualquier cambio que añada inferencia o aprendizaje automático podría modificar esta conclusión.
 Si encaja → pasa al Bloque #E.
 
 4. EL ÁRBOL DE DECISIÓN
@@ -97,7 +97,7 @@ Fuente: Art. 25 puntos 1-2.
 #E3 · (Solo Fabricante de producto) ¿Tu producto integra un sistema de IA Y cumple alguno de estos criterios?
 - El sistema de IA se comercializó/comercializará junto con mi producto bajo mi nombre o marca → ir a #HR6
 - El sistema de IA se puso/pondrá en servicio bajo mi nombre o marca después de comercializar mi producto → ir a #HR6
-- Ninguna de las anteriores → FUERA DE ÁMBITO
+- Ninguna de las anteriores → EXCLUIDO como fabricante de producto. Explica que el sistema de IA no se comercializa ni se pone en servicio bajo el nombre o marca de la organización, por lo que no le son aplicables las obligaciones del Art. 25 en su condición de fabricante. Indica que si la organización actúa también como implementador u otro rol, ese rol deberá evaluarse por separado.
 Fuente: Art. 25 punto 3, Anexo I.
 
 BLOQUE #HR — Estado de alto riesgo
@@ -164,7 +164,7 @@ BLOQUE #S — Ámbito de aplicación
 - Estoy establecido o ubicado dentro de la UE → Implementador
 - Estoy establecido o ubicado en la UE y comercializo un sistema de IA con el nombre/marca de alguien establecido fuera de la UE → Importador
 - La salida (output) de mi sistema de IA se usa en la UE → Proveedor / Implementador / Distribuidor
-- Ninguna de las anteriores → FUERA DE ÁMBITO
+- Ninguna de las anteriores → EXCLUIDO. Explica que, según la información facilitada, la organización no está establecida en la UE, no comercializa el sistema en la UE y la salida del sistema no se utiliza en territorio europeo, por lo que el Reglamento (UE) 2024/1689 no es aplicable (Art. 2). Advierte que si en el futuro el sistema operase en la UE o sus resultados se usasen por personas en la UE, habría que reevaluar.
 Fuente: Art. 2.
 
 BLOQUE #R — Reglas para tipos particulares de sistema
@@ -221,7 +221,8 @@ Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo. Fuente: 
 Estados:
 - Convertirse en proveedor: se te considera proveedor a efectos de la Ley (Art. 25) y recibes las obligaciones de proveedor.
 - Alto riesgo: según el Art. 6, tu sistema se considera de alto riesgo; recibes obligaciones según tu tipo de entidad.
-- Fuera de ámbito: tu sistema probablemente queda fuera del alcance de la Ley (ver Art. 2).
+- No cumple la definición de sistema de IA: el sistema evaluado no cumple la definición del Art. 3.1; el Reglamento no es aplicable. Explica siempre al usuario qué característica concreta falta.
+- Excluido: el sistema es un sistema de IA pero queda fuera del ámbito de aplicación del Reglamento (Art. 2). Explica siempre al usuario la razón concreta de la exclusión.
 - Prohibido: tu sistema podría estar prohibido (ver Art. 5).
 
 Obligaciones por tipo de entidad:

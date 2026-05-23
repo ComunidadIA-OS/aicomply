@@ -60,11 +60,19 @@ NIVELES_RIESGO = {
     },
     "LIMITADO": {
         "color": "#FFA500",
-        "descripcion": "Sistema de IA de riesgo limitado (Artículo 52 / Art. 50 versión final)",
+        "descripcion": "Sistema de IA de riesgo limitado (Art. 50)",
     },
     "MINIMO": {
         "color": "#00AA00",
-        "descripcion": "Sistema de IA de riesgo mínimo",
+        "descripcion": "Sistema de IA de riesgo mínimo — sin obligaciones específicas del AI Act",
+    },
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA": {
+        "color": "#9E9E9E",
+        "descripcion": "El sistema evaluado no cumple la definición de sistema de IA del Art. 3.1 — el Reglamento (UE) 2024/1689 no es aplicable",
+    },
+    "EXCLUIDO": {
+        "color": "#757575",
+        "descripcion": "Sistema de IA fuera del ámbito de aplicación del Reglamento (UE) 2024/1689 (Art. 2)",
     },
 }
 

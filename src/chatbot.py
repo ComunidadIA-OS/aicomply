@@ -31,7 +31,7 @@ _SYSTEM_EXTRACTION = (
 
 _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evaluación anterior, extrae la información estructurada. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional ni bloques de código markdown:
 {
-  "clasificacion": "ALTO|LIMITADO|MINIMO|PROHIBIDO|FUERA_AMBITO|PENDIENTE",
+  "clasificacion": "ALTO|LIMITADO|MINIMO|PROHIBIDO|NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA|EXCLUIDO|PENDIENTE",
   "estados_adicionales": ["Notificar a la NCA", "Convertirse en proveedor", "GPAI con Riesgo Sistémico"],
   "rol": "proveedor|implementador|distribuidor|importador|fabricante|representante_autorizado",
   "roles_multiples": [],
