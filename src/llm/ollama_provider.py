@@ -55,10 +55,19 @@ class OllamaProvider(LLMProvider):
             return [{"role": "system", "content": system_prompt}] + messages
         return messages
 
+    # num_ctx debe ser mayor que el system prompt (~5.000 tokens) + historial.
+    # num_predict limita la longitud de respuesta para reducir uso de RAM.
+    _OPTIONS = {"num_ctx": 8192, "num_predict": 1500}
+
     def chat(self, messages: list[dict], system_prompt: str = "") -> str:
         """Llamada síncrona sin streaming."""
         msgs = self._preparar_messages(messages, system_prompt)
-        payload = {"model": self._model, "messages": msgs, "stream": False}
+        payload = {
+            "model": self._model,
+            "messages": msgs,
+            "stream": False,
+            "options": self._OPTIONS,
+        }
 
         respuesta = httpx.post(
             f"{self.base_url}/api/chat",
@@ -73,7 +82,12 @@ class OllamaProvider(LLMProvider):
     ) -> Generator[str, None, None]:
         """Llamada con streaming NDJSON; produce fragmentos de texto."""
         msgs = self._preparar_messages(messages, system_prompt)
-        payload = {"model": self._model, "messages": msgs, "stream": True}
+        payload = {
+            "model": self._model,
+            "messages": msgs,
+            "stream": True,
+            "options": self._OPTIONS,
+        }
 
         with httpx.stream(
             "POST",
