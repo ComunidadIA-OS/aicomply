@@ -49,12 +49,6 @@ AIComply es una herramienta de apoyo para la autoevaluación de cumplimiento con
 Al continuar, acepta estas condiciones.
 """
 
-DISCLAIMER_CRITICO = """
-> **Nota importante:** Este análisis es orientativo. Consulte con un experto legal antes de tomar
-> decisiones basadas en esta evaluación. AIComply es una herramienta auxiliar de orientación;
-> los resultados no constituyen asesoramiento legal.
-"""
-
 NIVELES_RIESGO = {
     "PROHIBIDO": {
         "color": "#FF0000",
@@ -74,11 +68,3 @@ NIVELES_RIESGO = {
     },
 }
 
-PREGUNTAS_EVALUACION = [
-    "¿Cuál es el propósito principal de tu sistema de IA?",
-    "¿En qué sector opera tu empresa? (salud, educación, RRHH, seguridad, finanzas, otro)",
-    "¿El sistema toma decisiones que afectan directamente a personas?",
-    "¿Procesa datos biométricos o categorías especiales de datos personales?",
-    "¿Se usa en procesos de selección de personal, crédito o acceso a servicios esenciales?",
-    "¿Interactúa directamente con usuarios finales como chatbot o asistente?",
-]
