@@ -468,7 +468,7 @@ class GeneradorInforme:
                     self_pdf.set_text_color(120, 120, 120)
                     self_pdf.cell(
                         0, 8,
-                        f"Pág. {self_pdf.page_no()} — {_TEXTO_PIE}",
+                        _limpiar(f"Pág. {self_pdf.page_no()} - {_TEXTO_PIE}"),
                         align="C",
                     )
 
@@ -484,9 +484,11 @@ class GeneradorInforme:
             pdf.set_text_color(80, 60, 0)
             pdf.multi_cell(
                 0, 6,
-                "AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. "
-                "Los resultados no constituyen asesoramiento juridico vinculante. "
-                "Consulte con especialistas antes de tomar decisiones de cumplimiento normativo.",
+                _limpiar(
+                    "AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. "
+                    "Los resultados no constituyen asesoramiento jurídico vinculante. "
+                    "Consulte con especialistas antes de tomar decisiones de cumplimiento normativo."
+                ),
                 border=1,
                 fill=True,
                 new_x="LMARGIN",
@@ -525,7 +527,7 @@ class GeneradorInforme:
                     pdf.set_text_color(30, 30, 30)
                 elif linea_limpia.startswith(("- ", "* ")):
                     pdf.set_font("Helvetica", size=10)
-                    pdf.multi_cell(0, 5, "  •  " + _limpiar(linea_limpia[2:]))
+                    pdf.multi_cell(0, 5, _limpiar("  •  " + linea_limpia[2:]))
                 elif linea_limpia.startswith("|"):
                     pdf.set_font("Helvetica", size=9)
                     pdf.multi_cell(0, 5, _limpiar(linea_limpia))
@@ -563,8 +565,26 @@ class GeneradorInforme:
         return self.generar_informe_completo(clasificacion_data, cumplimiento_data)
 
 
+_UNICODE_A_LATIN1 = str.maketrans({
+    "•": "-",    # bullet •
+    "–": "-",    # en dash –
+    "—": "-",    # em dash —
+    "‘": "'",    # comilla simple izquierda '
+    "’": "'",    # comilla simple derecha '
+    "“": '"',    # comilla doble izquierda "
+    "”": '"',    # comilla doble derecha "
+    "…": "...",  # puntos suspensivos …
+    "«": '"',    # «
+    "»": '"',    # »
+})
+
+
 def _limpiar(texto: str) -> str:
     """Convierte el texto a latin-1 para fpdf2.
-    fpdf2 con la fuente Helvetica integrada no admite el plano Unicode completo;
-    los caracteres fuera de latin-1 se sustituyen por '?' en lugar de lanzar excepción."""
-    return texto.encode("latin-1", "replace").decode("latin-1")
+
+    Primero transliterada los caracteres tipográficos comunes que están fuera de
+    ISO-8859-1 (bullets, guiones tipográficos, comillas tipográficas) por sus
+    equivalentes ASCII. El resto de caracteres fuera de latin-1 se sustituyen
+    por '?' como salvaguarda final.
+    """
+    return texto.translate(_UNICODE_A_LATIN1).encode("latin-1", "replace").decode("latin-1")
