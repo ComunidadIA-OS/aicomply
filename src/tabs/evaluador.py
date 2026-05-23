@@ -22,30 +22,30 @@ from src.llm.provider import LLMProvider
 # Coordenadas x calculadas con pendiente constante: a y=20 ancho=60 px,
 # a y=268 ancho=380 px, crecimiento lineal simétrico respecto a x=210.
 _SVG_PIRAMIDE = """
-<svg viewBox="0 -20 420 310" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 0 420 330" xmlns="http://www.w3.org/2000/svg"
      style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
-  <polygon points="57,210 363,210 400,268 20,268"
+  <polygon points="57,240 363,240 400,298 20,298"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="239" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="269" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo mínimo</text>
 
   <!-- Riesgo limitado — amarillo -->
-  <polygon points="96,150 324,150 363,210 57,210"
+  <polygon points="96,180 324,180 363,240 57,240"
            fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="180" text-anchor="middle" dominant-baseline="middle" fill="#333"
+  <text x="210" y="210" text-anchor="middle" dominant-baseline="middle" fill="#333"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
-  <polygon points="138,85 282,85 324,150 96,150"
+  <polygon points="138,115 282,115 324,180 96,180"
            fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
-  <text x="210" y="118" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="148" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Alto riesgo</text>
 
   <!-- Prohibido — rojo oscuro, parte superior -->
-  <polygon points="180,20 240,20 282,85 138,85"
+  <polygon points="180,50 240,50 282,115 138,115"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
-  <text x="210" y="53" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="83" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="11" font-weight="bold">Prohibido</text>
 </svg>
 """
@@ -144,7 +144,7 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.components.v1.html(_SVG_PIRAMIDE, height=310)
+        st.components.v1.html(_SVG_PIRAMIDE, height=340)
 
     with col_desc:
         for nombre, color, descripcion in _NIVELES_DESCRIPCION:
