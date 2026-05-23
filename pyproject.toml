@@ -71,6 +71,7 @@ strict_optional     = true
 
 # ── Pytest ────────────────────────────────────────────────────────────────────
 [tool.pytest.ini_options]
-testpaths   = ["tests"]
+testpaths    = ["tests"]
 python_files = ["test_*.py"]
-addopts     = "-v --tb=short"
+addopts      = "-v --tb=short"
+pythonpath   = ["."]
