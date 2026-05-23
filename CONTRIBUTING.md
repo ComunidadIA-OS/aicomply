@@ -20,12 +20,12 @@ Al contribuir, acepta que sus contribuciones se publicarán bajo la [Licencia Ap
 ## Configuración del entorno de desarrollo
 
 ```bash
-git clone https://github.com/tu-usuario/aicomply.git
+git clone https://github.com/ComunidadIA-OS/aicomply.git
 cd aicomply
 python -m venv .venv
 source .venv/bin/activate   # Linux/macOS
-pip install -r requirements.txt
-cp .env.example .env        # Configure su provider preferido
+pip install -e ".[dev]"     # instala el paquete + herramientas de desarrollo
+cp .env.example .env        # configure su provider preferido
 ```
 
 ## Proceso de contribución
@@ -202,6 +202,23 @@ El AI Act es una normativa viva. Si detecta que algún artículo en `data/ai_act
 1. Consulte el texto oficial en [EUR-Lex](https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32024R1689)
 2. Actualice el JSON manteniendo la estructura existente
 3. Indique en el PR el número de artículo y la referencia oficial
+
+## Añadir documentos al corpus normativo
+
+Para incorporar nuevos documentos legales (guías, directrices, leyes nacionales) al RAG:
+
+```bash
+python scripts/ingest_txt.py ruta/al/documento.txt \
+  --titulo "Título del documento" \
+  --fuente "Organismo emisor" \
+  --tipo guia_oficial \
+  --fecha "2025-01-01" \
+  --url "https://fuente-oficial.es/documento"
+```
+
+Los tipos disponibles son: `ley_nacional`, `reglamento_ue`, `guia_oficial`, `directriz`, `documento_legal`.
+
+El JSON resultante se guarda en `data/docs/` y es cargado automáticamente. Incluya el JSON generado en su PR. No incluya el fichero `.txt` original.
 
 ---
 
