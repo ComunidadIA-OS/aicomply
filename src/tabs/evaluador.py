@@ -25,27 +25,27 @@ _SVG_PIRAMIDE = """
 <svg viewBox="0 0 420 330" xmlns="http://www.w3.org/2000/svg"
      width="100%" style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
-  <polygon points="57,240 363,240 400,298 20,298"
+  <polygon points="64,240 356,240 400,298 20,298"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="269" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="14" font-weight="bold">Riesgo mínimo</text>
 
   <!-- Riesgo limitado — amarillo -->
-  <polygon points="96,180 324,180 363,240 57,240"
+  <polygon points="110,180 310,180 356,240 64,240"
            fill="#F9A825" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="210" text-anchor="middle" dominant-baseline="middle" fill="#333"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Riesgo limitado</text>
 
   <!-- Alto riesgo — naranja -->
-  <polygon points="138,115 282,115 324,180 96,180"
+  <polygon points="160,115 260,115 310,180 110,180"
            fill="#E64A19" opacity="0.92" stroke="white" stroke-width="1"/>
   <text x="210" y="148" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="13" font-weight="bold">Alto riesgo</text>
 
-  <!-- Prohibido — rojo oscuro, vértice superior -->
-  <polygon points="210,50 282,115 138,115"
+  <!-- Prohibido — rojo oscuro, vértice en pico -->
+  <polygon points="210,50 260,115 160,115"
            fill="#B71C1C" opacity="0.95" stroke="white" stroke-width="1"/>
-  <text x="210" y="93" text-anchor="middle" dominant-baseline="middle" fill="white"
+  <text x="210" y="95" text-anchor="middle" dominant-baseline="middle" fill="white"
         font-family="Arial,sans-serif" font-size="11" font-weight="bold">Prohibido</text>
 </svg>
 """
