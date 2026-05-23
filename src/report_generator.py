@@ -63,9 +63,9 @@ class GeneradorInforme:
             self._cabecera("Informe de clasificación", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_clasificacion(descripcion, clasificacion, rol, roles_multiples, estados),
-            self._seccion_clasificacion(clasificacion, rol, roles_multiples, estados, info_nivel),
-            self._seccion_obligaciones_preliminares(obligaciones_prev, clasificacion),
-            self._seccion_revision_profesional(indeterminados),
+            self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
+            self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
+            self._seccion_revision_profesional(4, indeterminados),
             self._pie(),
         ]
         return "\n\n".join(secciones)
@@ -94,10 +94,10 @@ class GeneradorInforme:
             self._cabecera("Informe de cumplimiento", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol),
-            self._seccion_obligaciones_detalladas(obligaciones, roles_multiples),
-            self._seccion_carencias(carencias),
-            self._seccion_plan_accion(clasificacion, carencias),
-            self._seccion_revision_profesional(indeterminados + puntos_revision),
+            self._seccion_obligaciones_detalladas(2, obligaciones, roles_multiples),
+            self._seccion_carencias(3, carencias),
+            self._seccion_plan_accion(4, clasificacion, carencias),
+            self._seccion_revision_profesional(5, indeterminados + puntos_revision),
             self._pie(),
         ]
         return "\n\n".join(secciones)
@@ -129,12 +129,12 @@ class GeneradorInforme:
             self._cabecera("Informe completo", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_completo(descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl),
-            self._seccion_clasificacion(clasificacion, rol, roles_multiples, estados, info_nivel),
-            self._seccion_obligaciones_preliminares(obligaciones_prev, clasificacion),
-            self._seccion_obligaciones_detalladas(obligaciones, roles_multiples),
-            self._seccion_carencias(carencias),
-            self._seccion_plan_accion(clasificacion, carencias),
-            self._seccion_revision_profesional(indeterminados + puntos_revision),
+            self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
+            self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
+            self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples),
+            self._seccion_carencias(5, carencias),
+            self._seccion_plan_accion(6, clasificacion, carencias),
+            self._seccion_revision_profesional(7, indeterminados + puntos_revision),
             self._pie(),
         ]
         return "\n\n".join(secciones)
@@ -221,6 +221,7 @@ class GeneradorInforme:
 
     def _seccion_clasificacion(
         self,
+        num: int,
         clasificacion: str,
         rol: str,
         roles_multiples: list[str],
@@ -228,7 +229,7 @@ class GeneradorInforme:
         info_nivel: dict,
     ) -> str:
         descripcion_nivel = info_nivel.get("descripcion", "")
-        texto = f"## 2. Clasificación del sistema\n\n"
+        texto = f"## {num}. Clasificación del sistema\n\n"
         texto += f"**Nivel de riesgo:** {clasificacion}"
         if descripcion_nivel:
             texto += f"  \n**Descripción:** {descripcion_nivel}"
@@ -252,9 +253,9 @@ class GeneradorInforme:
         return texto
 
     def _seccion_obligaciones_preliminares(
-        self, obligaciones: list[str], clasificacion: str
+        self, num: int, obligaciones: list[str], clasificacion: str
     ) -> str:
-        texto = "## 3. Obligaciones identificadas durante la evaluación\n"
+        texto = f"## {num}. Obligaciones identificadas durante la evaluación\n"
 
         _OBLIGACIONES_POR_NIVEL = {
             "PROHIBIDO": [
@@ -292,11 +293,11 @@ class GeneradorInforme:
         return texto
 
     def _seccion_obligaciones_detalladas(
-        self, obligaciones: list[dict], roles_multiples: list[str]
+        self, num: int, obligaciones: list[dict], roles_multiples: list[str]
     ) -> str:
         if not obligaciones:
             return (
-                "## 3. Análisis de obligaciones\n\n"
+                f"## {num}. Análisis de obligaciones\n\n"
                 "No se dispone del detalle de obligaciones. Consulte el análisis en la pestaña Cumplimiento."
             )
 
@@ -310,7 +311,7 @@ class GeneradorInforme:
             ((len(cubiertas) * 2 + len(parciales)) / (total * 2) * 100) if total else 0
         )
 
-        texto = f"## 3. Análisis de obligaciones\n\n"
+        texto = f"## {num}. Análisis de obligaciones\n\n"
         texto += (
             f"**Grado de cumplimiento estimado:** {pct} %  \n"
             f"Cubiertas: {len(cubiertas)} | Parciales: {len(parciales)} | "
@@ -342,16 +343,17 @@ class GeneradorInforme:
 
         return texto
 
-    def _seccion_carencias(self, carencias: list[str]) -> str:
+    def _seccion_carencias(self, num: int, carencias: list[str]) -> str:
+        texto = f"## {num}. Áreas de mejora identificadas\n"
         if not carencias:
-            return ""
-        texto = "## 4. Áreas de mejora identificadas\n"
+            texto += "\nNo se identificaron áreas de mejora pendientes."
+            return texto
         for c in carencias:
             texto += f"\n- {c}"
         return texto
 
-    def _seccion_plan_accion(self, clasificacion: str, carencias: list[str]) -> str:
-        texto = "## 5. Plan de acción recomendado\n"
+    def _seccion_plan_accion(self, num: int, clasificacion: str, carencias: list[str]) -> str:
+        texto = f"## {num}. Plan de acción recomendado\n"
 
         if clasificacion == "PROHIBIDO":
             texto += (
@@ -396,12 +398,12 @@ class GeneradorInforme:
             texto += f"\n- {paso}"
         return texto
 
-    def _seccion_revision_profesional(self, puntos: list[str]) -> str:
+    def _seccion_revision_profesional(self, num: int, puntos: list[str]) -> str:
         # Eliminar duplicados manteniendo orden
         vistos: set[str] = set()
         puntos_unicos = [p for p in puntos if p not in vistos and not vistos.add(p)]  # type: ignore[func-returns-value]
 
-        texto = "## 6. Puntos que requieren revisión profesional\n"
+        texto = f"## {num}. Puntos que requieren revisión profesional\n"
         if not puntos_unicos:
             texto += "\nNo se identificaron puntos específicos que requieran revisión profesional."
             return texto
