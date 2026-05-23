@@ -338,10 +338,6 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
     # ── Botón de completar: SOLO aparece cuando el LLM emitió [EVALUACION_COMPLETA] ──
     if chatbot.evaluacion_completa:
         st.divider()
-        st.info(
-            "El árbol de decisión ha llegado a su conclusión. "
-            "Pulse el botón para registrar la clasificación y continuar al análisis de obligaciones."
-        )
         if st.button(
             "Completar evaluación y continuar a Cumplimiento",
             type="primary",

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import re
 from typing import Generator
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
@@ -23,6 +24,11 @@ from src.rag.retriever import formatear_contexto_rag
 # La app la detecta para mostrar el botón de completar evaluación. Se elimina del historial
 # persistido para que no contamine futuras llamadas al modelo.
 
+_SYSTEM_EXTRACTION = (
+    "Eres un extractor de información estructurada. "
+    "Lee la conversación y devuelve ÚNICAMENTE JSON válido, sin texto adicional ni bloques de código markdown."
+)
+
 _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evaluación anterior, extrae la información estructurada. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional ni bloques de código markdown:
 {
   "clasificacion": "ALTO|LIMITADO|MINIMO|PROHIBIDO|FUERA_AMBITO|PENDIENTE",
@@ -30,9 +36,9 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
   "rol": "proveedor|implementador|distribuidor|importador|fabricante|representante_autorizado",
   "roles_multiples": [],
   "nodos_recorridos": [
-    {"nodo": "#E1", "respuesta": "Implementador", "origen": "respuesta directa|inferencia confirmada|INDETERMINADO"}
+    {"pregunta": "Tipo de entidad", "respuesta": "Implementador", "origen": "respuesta directa|inferencia confirmada|INDETERMINADO"}
   ],
-  "puntos_indeterminados": ["descripción del nodo indeterminado y qué cambiaría según la respuesta"],
+  "puntos_indeterminados": ["descripción del punto indeterminado y qué cambiaría según la respuesta"],
   "descripcion_sistema": "descripción del sistema evaluado en 2-3 frases",
   "sector": "sector de la empresa",
   "obligaciones_preliminares": ["obligación ya identificada (Art. X)"]
@@ -82,13 +88,28 @@ class AIComplyChat:
             return f"{SYSTEM_PROMPT_CHATBOT}\n\n{contexto}"
         return SYSTEM_PROMPT_CHATBOT
 
+    def _historial_truncado(self, max_mensajes: int = 10) -> list[dict]:
+        """Recorta el historial para no superar el límite de tokens de la API.
+
+        Conserva siempre los dos primeros mensajes (descripción inicial del sistema)
+        y los (max_mensajes-2) más recientes para mantener el contexto inmediato.
+        """
+        if len(self.historial) <= max_mensajes:
+            return self.historial
+        primeros = self.historial[:2]
+        resto = self.historial[-(max_mensajes - 2):]
+        # Garantizar que el primer mensaje del bloque reciente sea del usuario
+        while resto and resto[0]["role"] != "user":
+            resto = resto[1:]
+        return primeros + resto
+
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
         self.historial.append({"role": "user", "content": mensaje_usuario})
         system = self._system_con_rag(mensaje_usuario)
 
         respuesta_completa = ""
-        for fragmento in self.provider.chat_stream(self.historial, system_prompt=system):
+        for fragmento in self.provider.chat_stream(self._historial_truncado(), system_prompt=system):
             respuesta_completa += fragmento
             yield fragmento
 
@@ -110,7 +131,7 @@ class AIComplyChat:
         self.historial.append({"role": "user", "content": mensaje_usuario})
         system = self._system_con_rag(mensaje_usuario)
 
-        respuesta = self.provider.chat(self.historial, system_prompt=system)
+        respuesta = self.provider.chat(self._historial_truncado(), system_prompt=system)
 
         if _SENAL_COMPLETA in respuesta:
             self.evaluacion_completa = True
@@ -138,7 +159,7 @@ class AIComplyChat:
             return {"clasificacion": "PENDIENTE"}
 
         mensajes = self.historial + [{"role": "user", "content": _PROMPT_EXTRAER_CLASIFICACION}]
-        texto = self.provider.chat(mensajes, system_prompt=SYSTEM_PROMPT_CHATBOT)
+        texto = self.provider.chat(mensajes, system_prompt=_SYSTEM_EXTRACTION)
         return self._parsear_json(texto, {"clasificacion": "PENDIENTE"})
 
     def extraer_cumplimiento(self) -> dict:
@@ -147,20 +168,29 @@ class AIComplyChat:
             return {"obligaciones": [], "gaps_detectados": [], "puntos_revision_profesional": []}
 
         mensajes = self.historial + [{"role": "user", "content": _PROMPT_EXTRAER_CUMPLIMIENTO}]
-        texto = self.provider.chat(mensajes, system_prompt=self._system_base)
+        texto = self.provider.chat(mensajes, system_prompt=_SYSTEM_EXTRACTION)
         return self._parsear_json(texto, {"obligaciones": [], "gaps_detectados": []})
 
     def _parsear_json(self, texto: str, fallback: dict) -> dict:
         texto = texto.strip()
+        # Strip markdown code fences
         if texto.startswith("```"):
             partes = texto.split("```")
             if len(partes) >= 2:
                 texto = partes[1]
                 if texto.startswith("json"):
                     texto = texto[4:]
+        texto = texto.strip()
         try:
-            return json.loads(texto.strip())
+            return json.loads(texto)
         except Exception:
+            # Last resort: find the first JSON object anywhere in the response
+            match = re.search(r"\{[\s\S]*\}", texto)
+            if match:
+                try:
+                    return json.loads(match.group())
+                except Exception:
+                    pass
             return fallback
 
     def resetear(self) -> None:
