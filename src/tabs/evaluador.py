@@ -22,7 +22,7 @@ from src.llm.provider import LLMProvider
 # Coordenadas x calculadas con pendiente constante: a y=20 ancho=60 px,
 # a y=268 ancho=380 px, crecimiento lineal simétrico respecto a x=210.
 _SVG_PIRAMIDE = """
-<svg viewBox="0 0 420 290" xmlns="http://www.w3.org/2000/svg"
+<svg viewBox="0 -20 420 310" xmlns="http://www.w3.org/2000/svg"
      style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
   <polygon points="57,210 363,210 400,268 20,268"
@@ -144,7 +144,7 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.components.v1.html(_SVG_PIRAMIDE, height=290)
+        st.components.v1.html(_SVG_PIRAMIDE, height=310)
 
     with col_desc:
         for nombre, color, descripcion in _NIVELES_DESCRIPCION:
