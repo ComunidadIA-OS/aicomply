@@ -144,7 +144,7 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.components.v1.html(_SVG_PIRAMIDE, height=340)
+        st.markdown(_SVG_PIRAMIDE, unsafe_allow_html=True)
 
     with col_desc:
         for nombre, color, descripcion in _NIVELES_DESCRIPCION:
