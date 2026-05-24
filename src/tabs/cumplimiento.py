@@ -70,7 +70,7 @@ def _inicializar_chatbot_cumplimiento(provider: LLMProvider, clasificacion_data:
     """Crea el chatbot de cumplimiento con el prompt enriquecido con la clasificación."""
     contexto = _formatear_contexto_evaluacion(clasificacion_data)
     prompt = SYSTEM_PROMPT_CUMPLIMIENTO.format(contexto_evaluacion=contexto)
-    return AIComplyChat(provider=provider, system_prompt_override=prompt)
+    return AIComplyChat(provider=provider, system_prompt_override=prompt, max_historial=50)
 
 
 def _inicializar_estado(provider: LLMProvider) -> None:

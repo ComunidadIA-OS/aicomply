@@ -67,12 +67,18 @@ _SENAL_COMPLETA = "[EVALUACION_COMPLETA]"
 class AIComplyChat:
     """Gestiona la conversación con el LLM para el árbol de decisión o el análisis de cumplimiento."""
 
-    def __init__(self, provider: LLMProvider, system_prompt_override: str | None = None):
+    def __init__(
+        self,
+        provider: LLMProvider,
+        system_prompt_override: str | None = None,
+        max_historial: int = 10,
+    ):
         self.provider = provider
         self.historial: list[dict] = []
         self.nivel_riesgo: str | None = None
         self.evaluacion_completa: bool = False
         self._system_prompt_override = system_prompt_override
+        self._max_historial = max_historial
 
     @property
     def _system_base(self) -> str:
@@ -91,16 +97,17 @@ class AIComplyChat:
             return SYSTEM_PROMPT_CHATBOT_LOCAL
         return SYSTEM_PROMPT_CHATBOT
 
-    def _historial_truncado(self, max_mensajes: int = 10) -> list[dict]:
+    def _historial_truncado(self, max_mensajes: int | None = None) -> list[dict]:
         """Recorta el historial para no superar el límite de tokens de la API.
 
         Conserva siempre los dos primeros mensajes (descripción inicial del sistema)
         y los (max_mensajes-2) más recientes para mantener el contexto inmediato.
         """
-        if len(self.historial) <= max_mensajes:
+        limite = max_mensajes if max_mensajes is not None else self._max_historial
+        if len(self.historial) <= limite:
             return self.historial
         primeros = self.historial[:2]
-        resto = self.historial[-(max_mensajes - 2):]
+        resto = self.historial[-(limite - 2):]
         # Garantizar que el primer mensaje del bloque reciente sea del usuario
         while resto and resto[0]["role"] != "user":
             resto = resto[1:]
