@@ -392,9 +392,13 @@ Adicionalmente, el fichero incluye `categorias_alto_riesgo` con la taxonomía co
 
 Este dataset es, que sepamos, el primer corpus estructurado y reutilizable del AI Act disponible en español bajo licencia abierta.
 
+### Corpus normativo reutilizable
+
+El conjunto de datos legales procesados por AIComply ([`data/`](data/README.md)) es reutilizable por terceros sin necesidad de instalar la aplicación: 25 artículos clave del AI Act + 27 documentos complementarios (273 fragmentos) en JSON estructurado, bajo licencia Apache 2.0. Detalles y ejemplo de uso en [`data/README.md`](data/README.md).
+
 ### Corpus legal normalizado para RAG (`data/docs/`)
 
-27 documentos legales (AI Act completo, guías AESIA, GDPR/AEPD, anteproyecto de Ley ES, directrices Comisión Europea) convertidos a JSON con metadatos homogéneos (`titulo`, `fuente`, `tipo`, `fecha`, `url`, `fragmentos`). Formato listo para indexar con cualquier vectorstore.
+27 documentos legales (AI Act completo, guías AESIA, GDPR/AEPD, anteproyecto de Ley ES, directrices Comisión Europea) convertidos a JSON con metadatos homogéneos (`titulo`, `fuente`, `tipo`, `fecha`, `url`, `documentos`). Formato listo para indexar con cualquier vectorstore.
 
 ### Herramienta de ingesta de documentos legales (`scripts/ingest_txt.py`)
 
