@@ -69,19 +69,6 @@ _AVISOS: dict[str, tuple[str, str]] = {
         "Sus datos no se usan para entrenamiento. "
         "Recomendado para documentación confidencial empresarial.",
     ),
-    "groq": (
-        "warning",
-        "Sus datos se procesan en servidores de Groq (EE. UU.). "
-        "Groq no usa los datos de API para entrenar modelos. "
-        "Nivel gratuito con límites de velocidad. "
-        "No recomendado para documentación confidencial o sensible.",
-    ),
-    "gemini": (
-        "warning",
-        "Sus datos se procesan en servidores de Google (EE. UU. / UE). "
-        "Revise la política de privacidad de Google AI Studio antes de enviar datos sensibles. "
-        "Nivel gratuito con límites de uso diario.",
-    ),
     "ollama": (
         "success",
         "El modelo se ejecuta completamente en su ordenador. "
@@ -166,12 +153,10 @@ def mostrar_selector_provider() -> None:
     proveedor = st.radio(
         "Proveedor de IA",
         [
-            "Groq (gratuito, nube)",
-            "Google Gemini (gratuito, nube)",
+            "Ollama (local, gratuito, sin envío de datos)",
             "Anthropic Claude (API)",
             "OpenAI",
-            "Ollama (local, gratuito, sin envío de datos)",
-            "API compatible con OpenAI (LM Studio, vLLM, Together AI...)",
+            "API compatible con OpenAI (LM Studio, vLLM, Groq, Together AI...)",
         ],
         index=0,
     )
@@ -179,71 +164,8 @@ def mostrar_selector_provider() -> None:
     config_provider: dict = {}
     privacidad_valida = True
 
-    # ── Groq ─────────────────────────────────────────────────────────────────
-    if proveedor.startswith("Groq"):
-        _mostrar_aviso("groq")
-        st.markdown(
-            "Obtenga su API key gratuita en **console.groq.com** → API Keys."
-        )
-        api_key = st.text_input(
-            "API Key de Groq",
-            type="password",
-            help="Se obtiene en console.groq.com",
-        )
-        modelo = st.selectbox(
-            "Modelo",
-            [
-                "llama-3.3-70b-versatile",
-                "llama-3.1-8b-instant",
-                "gemma2-9b-it",
-                "llama3-70b-8192",
-            ],
-            index=0,
-            help="llama-3.3-70b-versatile ofrece los mejores resultados",
-        )
-        if not api_key:
-            st.warning("Introduzca su API key de Groq para continuar.")
-            privacidad_valida = False
-        config_provider = {
-            "provider": "openai_compatible",
-            "api_key": api_key,
-            "base_url": "https://api.groq.com/openai/v1",
-            "model": modelo,
-        }
-
-    # ── Google Gemini ─────────────────────────────────────────────────────────
-    elif proveedor.startswith("Google"):
-        _mostrar_aviso("gemini")
-        st.markdown(
-            "Obtenga su API key gratuita en **aistudio.google.com** → Get API key."
-        )
-        api_key = st.text_input(
-            "API Key de Google AI Studio",
-            type="password",
-            help="Se obtiene en aistudio.google.com",
-        )
-        modelo = st.selectbox(
-            "Modelo",
-            [
-                "gemini-2.0-flash",
-                "gemini-1.5-flash",
-                "gemini-1.5-pro",
-            ],
-            index=0,
-            help="gemini-2.0-flash es el más rápido y capaz del nivel gratuito",
-        )
-        if not api_key:
-            st.warning("Introduzca su API key de Google AI Studio para continuar.")
-            privacidad_valida = False
-        config_provider = {
-            "provider": "openai_compatible",
-            "api_key": api_key,
-            "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/",
-            "model": modelo,
-        }
-
     # ── Ollama ────────────────────────────────────────────────────────────────
-    elif proveedor.startswith("Ollama"):
+    if proveedor.startswith("Ollama"):
         _mostrar_aviso("ollama")
         st.markdown("**Configuración de Ollama:**")
 
@@ -283,7 +205,7 @@ def mostrar_selector_provider() -> None:
         config_provider = {"provider": "ollama", "model": modelo, "base_url": base_url}
 
     # ── Anthropic ─────────────────────────────────────────────────────────────
-    elif proveedor.startswith("Anthropic Claude"):
+    elif proveedor.startswith("Anthropic"):
         plan = st.radio(
             "Plan / tipo de cuenta",
             ["API de pago (individual / empresa)", "Claude for Business / Enterprise"],
