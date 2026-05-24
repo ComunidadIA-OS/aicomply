@@ -444,13 +444,16 @@ class GeneradorInforme:
 
             class _PDF(FPDF):
                 def header(self_pdf):
+                    if self_pdf.page_no() == 1:
+                        return  # portada sin cabecera corrida
                     ancho = self_pdf.w - self_pdf.l_margin - self_pdf.r_margin
-                    self_pdf.set_font("Helvetica", "B", 13)
+                    self_pdf.set_font("Helvetica", "B", 11)
                     self_pdf.set_text_color(30, 30, 30)
-                    self_pdf.cell(ancho / 2, 8, "AIComply", align="L")
+                    self_pdf.cell(ancho / 2, 7, "AIComply", align="L")
                     self_pdf.set_font("Helvetica", size=8)
                     self_pdf.set_text_color(100, 100, 100)
-                    self_pdf.cell(ancho / 2, 8, fecha_hoy, align="R", new_x="LMARGIN", new_y="NEXT")
+                    self_pdf.cell(ancho / 2, 7, fecha_hoy, align="R",
+                                  new_x="LMARGIN", new_y="NEXT")
                     self_pdf.set_draw_color(180, 180, 180)
                     self_pdf.line(
                         self_pdf.l_margin, self_pdf.get_y(),
@@ -477,15 +480,28 @@ class GeneradorInforme:
             H_BODY  = 6    # altura de línea para texto normal
             H_SMALL = 5    # altura de línea para texto secundario (listas, notas)
             H_LIST  = 6    # altura de línea para items de lista
-            SP_SEC  = 4    # espacio entre secciones (ln)
-            SP_PAR  = 2    # espacio entre párrafos (ln)
+            SP_SEC  = 5    # espacio entre secciones (ln)
+            SP_PAR  = 3    # espacio entre párrafos (ln)
 
             pdf = _PDF()
-            pdf.set_margins(18, 22, 18)
+            pdf.set_margins(18, 10, 18)   # margen superior 10 mm para portada limpia
             pdf.set_auto_page_break(auto=True, margin=18)
             pdf.add_page()
 
-            # Recuadro amarillo: aviso legal
+            # ── Portada (página 1): título + fecha + línea ────────────────────
+            pdf.set_font("Helvetica", "B", 20)
+            pdf.set_text_color(30, 30, 30)
+            pdf.multi_cell(0, 11, _limpiar(titulo), align="L",
+                           new_x="LMARGIN", new_y="NEXT")
+            pdf.set_font("Helvetica", "", 9)
+            pdf.set_text_color(120, 120, 120)
+            pdf.cell(0, 6, fecha_hoy, align="R", new_x="LMARGIN", new_y="NEXT")
+            pdf.set_draw_color(180, 180, 180)
+            pdf.line(pdf.l_margin, pdf.get_y(),
+                     pdf.w - pdf.r_margin, pdf.get_y())
+            pdf.ln(SP_SEC)
+
+            # ── Recuadro amarillo: aviso legal ────────────────────────────────
             pdf.set_fill_color(255, 243, 205)
             pdf.set_draw_color(200, 160, 0)
             pdf.set_font("Helvetica", "B", 8)
@@ -503,22 +519,45 @@ class GeneradorInforme:
             pdf.set_text_color(30, 30, 30)
             pdf.set_draw_color(180, 180, 180)
 
+            _PATRON_ETIQUETA = re.compile(r"^(\*\*[^*]+\*\*:?\s*)(.*)", re.DOTALL)
+
             def _escribir_con_negrita(texto: str, h: float = H_BODY, size: int = 10) -> None:
+                """Renderiza texto con **negrita** inline de forma estable y justificada."""
                 if "**" not in texto:
-                    # Sin negrita inline → multi_cell justificado
                     pdf.set_font("Helvetica", "", size)
                     pdf.multi_cell(0, h, _limpiar(texto), align="J",
                                    new_x="LMARGIN", new_y="NEXT")
                     return
-                # Con negrita inline → write() segmento a segmento
-                partes = re.split(r"\*\*(.+?)\*\*", texto)
-                for i, parte in enumerate(partes):
-                    if not parte:
-                        continue
-                    pdf.set_font("Helvetica", "B" if i % 2 == 1 else "", size)
-                    pdf.write(h, _limpiar(parte))
-                pdf.set_font("Helvetica", "", size)
-                pdf.ln(h)
+                m = _PATRON_ETIQUETA.match(texto)
+                if m:
+                    # Patrón **Etiqueta:** valor → etiqueta en negrita, resto justificado
+                    label = _limpiar(re.sub(r"\*\*", "", m.group(1)))
+                    resto = _limpiar(m.group(2).strip())
+                    pdf.set_font("Helvetica", "B", size)
+                    lw = pdf.get_string_width(label) + 0.5
+                    avail = pdf.w - pdf.r_margin - pdf.x
+                    if lw >= avail:
+                        pdf.multi_cell(0, h, label, align="L",
+                                       new_x="LMARGIN", new_y="NEXT")
+                        if resto:
+                            pdf.set_font("Helvetica", "", size)
+                            pdf.multi_cell(0, h, resto, align="J",
+                                           new_x="LMARGIN", new_y="NEXT")
+                    else:
+                        pdf.cell(lw, h, label)
+                        pdf.set_font("Helvetica", "", size)
+                        if resto:
+                            rw = pdf.w - pdf.r_margin - pdf.x
+                            pdf.multi_cell(rw, h, resto, align="J",
+                                           new_x="LMARGIN", new_y="NEXT")
+                        else:
+                            pdf.ln(h)
+                else:
+                    # Negrita inline en medio de párrafo → eliminar marcadores y justificar
+                    sin_md = re.sub(r"\*\*([^*]+)\*\*", r"\1", texto)
+                    pdf.set_font("Helvetica", "", size)
+                    pdf.multi_cell(0, h, _limpiar(sin_md), align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
 
             # Estado para cajas de colores por obligación
             _COLORES_OBL: dict[str, tuple[tuple[int, int, int], tuple[int, int, int], str]] = {
@@ -558,14 +597,16 @@ class GeneradorInforme:
                 _obl_art = ""
                 _obl_desc = []
 
-            _linea_vacia_anterior = False  # evitar espaciado doble por blancos consecutivos
+            _linea_vacia_anterior = False
+            _primer_h1_saltado = False   # el H1 ya aparece como título de portada
 
             for linea in contenido_markdown.split("\n"):
                 pdf.set_x(pdf.l_margin)
                 linea_limpia = linea.strip()
 
-                # Saltar pie de página (se añadirá en caja roja al final)
-                if linea_limpia.startswith("*Generado por AIComply"):
+                # Saltar pie (caja roja al final) y aviso legal del Markdown (ya está en recuadro)
+                if (linea_limpia.startswith("*Generado por AIComply")
+                        or linea_limpia.startswith("> **AVISO LEGAL")):
                     continue
 
                 if not linea_limpia or linea_limpia == "---":
@@ -577,6 +618,9 @@ class GeneradorInforme:
                 _linea_vacia_anterior = False
 
                 if linea_limpia.startswith("# "):
+                    if not _primer_h1_saltado:
+                        _primer_h1_saltado = True
+                        continue  # ya mostrado como título de portada
                     _volcar_obl(); _obl_estado = None
                     pdf.set_font("Helvetica", "B", 15)
                     pdf.multi_cell(0, 9, _limpiar(linea_limpia[2:]), align="L",
