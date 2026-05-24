@@ -1,5 +1,8 @@
 # Variables de entorno — NUNCA subir a GitHub
 .env
+.env.save
+.env.local
+.env.*.local
 
 # Entornos virtuales
 .venv/

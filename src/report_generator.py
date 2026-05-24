@@ -444,12 +444,13 @@ class GeneradorInforme:
 
             class _PDF(FPDF):
                 def header(self_pdf):
+                    ancho = self_pdf.w - self_pdf.l_margin - self_pdf.r_margin
                     self_pdf.set_font("Helvetica", "B", 13)
                     self_pdf.set_text_color(30, 30, 30)
-                    self_pdf.cell(0, 8, "AIComply", align="L")
+                    self_pdf.cell(ancho / 2, 8, "AIComply", align="L")
                     self_pdf.set_font("Helvetica", size=8)
                     self_pdf.set_text_color(100, 100, 100)
-                    self_pdf.cell(0, 8, fecha_hoy, align="R", new_x="LMARGIN", new_y="NEXT")
+                    self_pdf.cell(ancho / 2, 8, fecha_hoy, align="R", new_x="LMARGIN", new_y="NEXT")
                     self_pdf.set_draw_color(180, 180, 180)
                     self_pdf.line(
                         self_pdf.l_margin, self_pdf.get_y(),
@@ -473,9 +474,9 @@ class GeneradorInforme:
                     )
 
             pdf = _PDF()
+            pdf.set_margins(18, 22, 18)
             pdf.set_auto_page_break(auto=True, margin=18)
             pdf.add_page()
-            pdf.set_margins(18, 22, 18)
 
             # Aviso legal en recuadro al inicio
             pdf.set_fill_color(255, 243, 205)
@@ -498,6 +499,7 @@ class GeneradorInforme:
             pdf.set_text_color(30, 30, 30)
 
             for linea in contenido_markdown.split("\n"):
+                pdf.set_x(pdf.l_margin)
                 linea_limpia = linea.strip()
                 if not linea_limpia or linea_limpia == "---":
                     pdf.ln(3)
