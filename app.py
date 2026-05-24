@@ -411,6 +411,9 @@ with st.sidebar:
     if st.button("Cambiar proveedor de IA", use_container_width=True):
         for clave in list(st.session_state.keys()):
             del st.session_state[clave]
+        # Evita que _init_session() reconfigure automáticamente desde las variables
+        # de entorno (ANTHROPIC_API_KEY etc.) y salte el selector de proveedor.
+        st.session_state["provider_configurado"] = False
         st.rerun()
 
     st.divider()
