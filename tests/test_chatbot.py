@@ -21,6 +21,24 @@ from src.chatbot import AIComplyChat
 _SYSTEM = "system prompt de prueba"
 
 
+class SpyProvider:
+    """Provider de test (duck typing) que captura el system_prompt recibido."""
+
+    es_local = False
+
+    def __init__(self, respuesta: str = "respuesta de prueba"):
+        self.respuesta = respuesta
+        self.ultimo_system_prompt: str = ""
+
+    def chat(self, _messages, system_prompt: str = "") -> str:
+        self.ultimo_system_prompt = system_prompt
+        return self.respuesta
+
+    def chat_stream(self, _messages, system_prompt: str = ""):
+        self.ultimo_system_prompt = system_prompt
+        yield self.respuesta
+
+
 class TestParsearJson:
     def _chat(self, respuesta: str = "") -> AIComplyChat:
         from tests.conftest import MockProvider
@@ -147,3 +165,52 @@ class TestExtraccionNivelRiesgo:
     def test_sin_mencion_nivel_es_none(self):
         chat = self._chat_con("Necesito más información para clasificar el sistema")
         assert chat.nivel_riesgo is None
+
+
+class TestRAGIntegration:
+    def test_rag_inyectado_cuando_no_hay_override(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "fragmento normativo de prueba")
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy)  # sin override → RAG activo
+        chat.chat_completo("¿qué dice el art. 5?")
+
+        assert "fragmento normativo de prueba" in spy.ultimo_system_prompt
+        assert "CONTEXTO NORMATIVO RECUPERADO" in spy.ultimo_system_prompt
+
+    def test_rag_no_inyectado_con_override(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "fragmento inyectado")
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=_SYSTEM)
+        chat.chat_completo("mensaje")
+
+        assert spy.ultimo_system_prompt == _SYSTEM
+        assert "fragmento inyectado" not in spy.ultimo_system_prompt
+
+    def test_rag_vacio_no_anade_bloque(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy)
+        chat.chat_completo("mensaje")
+
+        assert "CONTEXTO NORMATIVO RECUPERADO" not in spy.ultimo_system_prompt
+
+    def test_rag_excepcion_no_rompe_chat(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+
+        def rag_roto(_q, top_k=3):
+            raise Exception("vectorstore corrupto")
+
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", rag_roto)
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy)
+        respuesta = chat.chat_completo("mensaje")
+
+        assert respuesta == "respuesta"
+        assert "CONTEXTO NORMATIVO RECUPERADO" not in spy.ultimo_system_prompt

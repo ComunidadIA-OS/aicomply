@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import json
+import logging
 import re
 from typing import Generator
 
@@ -20,6 +21,8 @@ from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
+
+logger = logging.getLogger(__name__)
 
 # El LLM emite esta cadena al final de su respuesta cuando el árbol de decisión llega a FIN.
 # La app la detecta para mostrar el botón de completar evaluación. Se elimina del historial
@@ -87,15 +90,35 @@ class AIComplyChat:
     def _system_con_rag(self, mensaje: str) -> str:
         """Devuelve el system prompt adecuado al provider.
 
-        - Con override (cumplimiento): usa el override siempre.
+        - Con override (cumplimiento): usa el override siempre, sin RAG.
+        - Sin override (evaluador): enriquece el prompt base con el contexto
+          RAG recuperado para el mensaje actual. Si el RAG devuelve vacío o
+          lanza una excepción, usa el prompt base sin modificar.
         - Con Ollama (local): usa el prompt compacto para reducir tokens.
         - Con APIs en la nube: usa el prompt completo.
         """
         if self._system_prompt_override:
             return self._system_prompt_override
-        if self.provider.es_local:
-            return SYSTEM_PROMPT_CHATBOT_LOCAL
-        return SYSTEM_PROMPT_CHATBOT
+
+        base = SYSTEM_PROMPT_CHATBOT_LOCAL if self.provider.es_local else SYSTEM_PROMPT_CHATBOT
+
+        try:
+            contexto = formatear_contexto_rag(mensaje, top_k=3)
+        except Exception:
+            logger.warning("Error al recuperar contexto RAG; continuando sin él.", exc_info=True)
+            return base
+
+        if not contexto:
+            return base
+
+        return (
+            base
+            + "\n\n---\nCONTEXTO NORMATIVO RECUPERADO PARA ESTA CONSULTA:\n"
+            + contexto
+            + "\n---\nUsa este contexto cuando respondas sobre artículos concretos, "
+            "pero NO copies literalmente: cítalo como referencia y mantén el "
+            "lenguaje accesible para PYME."
+        )
 
     def _historial_truncado(self, max_mensajes: int | None = None) -> list[dict]:
         """Recorta el historial para no superar el límite de tokens de la API.
