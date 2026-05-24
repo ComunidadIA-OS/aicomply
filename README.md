@@ -298,6 +298,35 @@ aicomply/
 
 Las contribuciones son bienvenidas. Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para las directrices de contribución, incluyendo cómo añadir nuevos providers de LLM.
 
+## Recursos reutilizables para la comunidad
+
+AIComply pone a disposición de la comunidad varios recursos que pueden reutilizarse de forma independiente en otros proyectos de cumplimiento normativo de IA:
+
+### Corpus estructurado del AI Act (`data/ai_act/ai_act_articles.json`)
+
+25 artículos del Reglamento (UE) 2024/1689 estructurados en JSON bajo licencia Apache 2.0, listos para ser consumidos por cualquier aplicación RAG, chatbot o motor de cumplimiento. Cada artículo incluye:
+
+- `titulo`, `capitulo`, `nivel_riesgo`, `aplica_a`
+- `texto_oficial` — texto íntegro del artículo
+- `requisitos_clave` — lista de obligaciones concretas
+- `palabras_clave` — etiquetas para recuperación semántica
+
+Adicionalmente, el fichero incluye `categorias_alto_riesgo` con la taxonomía completa del Anexo III (sistemas de alto riesgo por sector).
+
+Este dataset es, que sepamos, el primer corpus estructurado y reutilizable del AI Act disponible en español bajo licencia abierta.
+
+### Corpus legal normalizado para RAG (`data/docs/`)
+
+27 documentos legales (AI Act completo, guías AESIA, GDPR/AEPD, anteproyecto de Ley ES, directrices Comisión Europea) convertidos a JSON con metadatos homogéneos (`titulo`, `fuente`, `tipo`, `fecha`, `url`, `fragmentos`). Formato listo para indexar con cualquier vectorstore.
+
+### Herramienta de ingesta de documentos legales (`scripts/ingest_txt.py`)
+
+Script CLI reutilizable para convertir documentos legales en texto plano (.txt) al formato JSON normalizado del corpus. Útil para extender el corpus con nuevas guías, reglamentos o directrices sin modificar el código de la aplicación.
+
+### Abstracción multi-provider de LLM (`src/llm/`)
+
+Clase abstracta `LLMProvider` con implementaciones para Anthropic Claude, OpenAI y APIs compatibles (Groq, Mistral, LM Studio, vLLM) y Ollama (modelos locales). Permite cambiar de provider sin modificar la lógica de negocio. Reutilizable en cualquier aplicación Python que necesite independencia del proveedor de LLM.
+
 ## Licencia
 
 Este proyecto está licenciado bajo la [Licencia Apache 2.0](LICENSE).
