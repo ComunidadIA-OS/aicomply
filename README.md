@@ -261,6 +261,28 @@ aicomply/
 └── .gitignore
 ```
 
+## Software preexistente y aportación original
+
+AIComply se construye sobre librerías de código abierto preexistentes. La siguiente tabla distingue las dependencias externas de los componentes desarrollados específicamente para este proyecto:
+
+| Componente | Origen | Descripción |
+|-----------|--------|-------------|
+| `streamlit` | Preexistente | Framework de interfaz web |
+| `anthropic` SDK | Preexistente | Cliente oficial de la API de Anthropic |
+| `openai` SDK | Preexistente | Cliente para APIs compatibles con OpenAI |
+| `httpx` | Preexistente | Cliente HTTP para la API REST de Ollama |
+| `scikit-learn` | Preexistente | Motor TF-IDF para el vectorstore |
+| `fpdf2` | Preexistente | Generación de PDF |
+| `python-dotenv` | Preexistente | Gestión de variables de entorno |
+| Lógica de conversación (`src/chatbot.py`) | **Original** | Orquestación del flujo multi-fase con el LLM |
+| Árbol de decisión AI Act (`src/tabs/evaluador.py`) | **Original** | Evaluación de riesgo basada en Art. 5, 6 y Anexo III |
+| Análisis de cumplimiento (`src/tabs/cumplimiento.py`) | **Original** | Recorrido de obligaciones por rol y nivel de riesgo |
+| Abstracción multi-provider (`src/llm/`) | **Original** | Clase abstracta + 4 implementaciones intercambiables |
+| Vectorstore TF-IDF (`src/rag/`) | **Original** | Recuperación semántica sin dependencias de FAISS |
+| Prompts de sistema (`prompts/`) | **Original** | Instrucciones especializadas para evaluador y cumplimiento |
+| Corpus JSON del AI Act (`data/ai_act/`) | **Original** | 25 artículos estructurados con metadatos normativos |
+| Corpus legal normalizado (`data/docs/`) | **Original** | 27 documentos legales convertidos a formato RAG |
+
 ## Stack tecnológico
 
 | Componente | Tecnología |
