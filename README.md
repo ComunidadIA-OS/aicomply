@@ -17,21 +17,42 @@ Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y 
 
 ## El problema
 
-El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente. Las obligaciones para sistemas de alto riesgo entran en plena aplicación en **agosto de 2026** — quedan semanas. La AESIA, autoridad supervisora española, opera con 120 inspectores, un presupuesto de 42 M€ y tiene abiertas 23 investigaciones preliminares. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
+El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente. Las obligaciones para sistemas de alto riesgo entran en plena aplicación en **agosto de 2026** — quedan semanas. La AESIA, autoridad supervisora española, cuenta, según fuentes públicas, con un equipo inspector propio y un presupuesto reforzado para 2026, y tiene abiertas 23 investigaciones preliminares. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
 
 El problema es que el **41% de las PYMEs españolas ya usa IA de forma regular** (IONOS/YouGov, 2026) — la tasa más alta de Europa — pero la mayoría no sabe si sus sistemas están sujetos al reglamento, qué nivel de riesgo tienen ni qué obligaciones concretas les aplican. La asesoría legal especializada en AI Act tiene un coste prohibitivo para una PYME. Las herramientas existentes están en inglés, son cuestionarios estáticos o están diseñadas para grandes corporaciones.
 
-**Escenario real:** MECALSA S.L., fabricante industrial con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y el primer agosto que pase sin haberlas respondido, la exposición regulatoria es real.
+**Escenario ilustrativo:** MECALSA S.L. (empresa representativa de PYME industrial), fabricante con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y el primer agosto que pase sin haberlas respondido, la exposición regulatoria es real.
 
 ## Descripción
 
 AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 
-1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que determina el nivel de riesgo del sistema (PROHIBIDO, ALTO, LIMITADO o MÍNIMO) y el rol de la organización (proveedor, implementador, distribuidor, importador). Soporta múltiples roles simultáneos.
+1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que emite una de las siguientes **seis clasificaciones**: PROHIBIDO, ALTO, LIMITADO, MÍNIMO, NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA o EXCLUIDO. Identifica también el rol de la organización (proveedor, implementador, distribuidor, importador) y detecta **roles múltiples simultáneos** (Considerando 83).
 
 2. **Análisis de cumplimiento** — Una vez clasificado el sistema, el asistente recorre las obligaciones concretas aplicables según el nivel de riesgo y el rol, detectando cuáles están cubiertas, cuáles parcialmente y cuáles son áreas de mejora pendientes.
 
 3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional.
+
+AIComply emite una de las **siguientes seis clasificaciones**, según el árbol de decisión del Reglamento (UE) 2024/1689:
+
+- **PROHIBIDO** — el sistema entra en alguna práctica del Art. 5 y no puede desarrollarse ni desplegarse.
+- **ALTO** — sujeto a las obligaciones exhaustivas del Capítulo III (Arts. 9–17, 43, 47–49, 72).
+- **LIMITADO** — sujeto a obligaciones de transparencia (Art. 50).
+- **MÍNIMO** — sin obligaciones específicas del AI Act; se recomiendan buenas prácticas voluntarias (Art. 95).
+- **NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA** — el objeto evaluado no encaja en el Art. 3.1 y el Reglamento no le aplica; el informe indica qué característica falta.
+- **EXCLUIDO** — el sistema sí es IA pero queda fuera del ámbito del Art. 2 (uso militar, investigación, código abierto no comercializado como parte de un sistema de alto riesgo, uso personal no profesional, etc.); el informe indica la razón concreta de la exclusión.
+
+Además, el evaluador detecta y gestiona **roles múltiples** (Considerando 83): una misma entidad puede actuar simultáneamente como Proveedor e Implementador, y AIComply recorre la evaluación una vez por cada rol con obligaciones diferenciadas.
+
+## Características destacadas
+
+**Entrada por documentación técnica.** Además de describir el sistema en lenguaje natural, el evaluador acepta subir el README o ficha técnica del sistema a evaluar (formatos .md, .txt, .rst). AIComply extrae automáticamente una descripción estructurada del propósito, sector, decisiones que toma el sistema y tipo de datos que procesa, y la presenta al usuario para confirmación antes de iniciar el árbol de decisión.
+
+**Trazabilidad auditable.** Cada respuesta del informe final indica si provino de una respuesta directa del usuario, de una inferencia confirmada por el modelo, o de un nodo marcado como [INDETERMINADO]. Esto permite reconstruir por qué se llegó a la clasificación final y facilita la revisión por un asesor jurídico.
+
+**Roles múltiples diferenciados.** Cuando la entidad evaluada actúa simultáneamente como Proveedor, Implementador, Distribuidor o Importador (Considerando 83 del AI Act), el sistema recorre la evaluación una vez por cada rol y entrega un informe con las obligaciones de cada uno por separado, sin mezclarlas.
+
+**Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), grado de cumplimiento estimado y plan de acción priorizado por horizonte temporal.
 
 ## Comparativa con otras herramientas
 
@@ -44,6 +65,8 @@ AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 | **AIComply** | **App web** | **ES** | **Sí** | **Sí — AESIA, Ley ES, GDPR/AEPD** | **Sí — industrial** | **Open source, gratuita** |
 
 AIComply es, que sepamos, la única herramienta open source conversacional en español que cubre clasificación de riesgo, análisis de obligaciones y generación de informe con corpus normativo español (AESIA, anteproyecto de Ley de IA española, directrices de la Comisión Europea de mayo de 2026).
+
+> **Nota sobre COMPL-AI:** COMPL-AI (ETH Zurich, INSAIT y LatticeFlow AI) es un *benchmark* de evaluación de modelos de lenguaje frente a criterios del AI Act: mide si modelos generales como GPT-4, Claude o Llama cumplen requisitos técnicos del Reglamento. **AIComply opera en una capa diferente:** no evalúa modelos, sino que clasifica el *sistema de IA* del usuario y le entrega sus obligaciones concretas como organización. Los dos proyectos son complementarios — COMPL-AI ayuda a un proveedor de modelos a validar su modelo; AIComply ayuda a una PYME a determinar si su sistema entra en el ámbito del AI Act y qué tiene que hacer. Se incluye en la tabla para situar el ecosistema, no como competidor directo.
 
 ## Capturas de pantalla
 
@@ -73,7 +96,7 @@ Puede descargar un [informe de ejemplo generado con AIComply](examples/informe-e
 
 ## Corpus normativo
 
-El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **280 fragmentos** indexados:
+El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **273 fragmentos** indexados:
 
 | Fuente | Documentos |
 |--------|-----------|
@@ -107,7 +130,7 @@ Para añadir nuevos documentos al corpus, consulte la sección [Ingesta de docum
 | Art. 24 | Obligaciones de los distribuidores | Alto riesgo — Distribuidor |
 | Art. 25 | Responsabilidades en la cadena de valor | Alto riesgo |
 | Art. 26 | Obligaciones del responsable del despliegue | Alto riesgo — Implementador |
-| Art. 27 | Evaluación de impacto sobre derechos fundamentales | Alto riesgo — Sector público |
+| Art. 27 | Evaluación de impacto sobre derechos fundamentales | Alto riesgo — organismos del sector público, entidades privadas que presten servicios públicos, y responsables del despliegue de los sistemas del Anexo III punto 5(b) y 5(c) |
 | Art. 43 | Evaluación de conformidad | Alto riesgo — Proveedor |
 | Art. 47 | Declaración UE de conformidad | Alto riesgo — Proveedor |
 | Art. 48 | Marcado CE | Alto riesgo — Proveedor |
