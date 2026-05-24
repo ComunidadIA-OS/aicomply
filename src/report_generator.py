@@ -689,8 +689,15 @@ class GeneradorInforme:
                     pdf.set_text_color(30, 30, 30)
                 elif linea_limpia.startswith(("- ", "* ")):
                     pdf.set_font("Helvetica", "", 10)
-                    pdf.write(H_LIST, "  -  ")
+                    bullet_w = pdf.get_string_width("  -  ")
+                    pdf.cell(bullet_w, H_LIST, "  -  ")
+                    # Sangría colgante: l_margin temporal = inicio del texto del item
+                    _old_lm = pdf.l_margin
+                    pdf.set_left_margin(pdf.l_margin + bullet_w)
+                    pdf.set_x(pdf.l_margin)
                     _escribir_con_negrita(linea_limpia[2:], h=H_LIST)
+                    pdf.set_left_margin(_old_lm)
+                    pdf.set_x(_old_lm)
                 elif linea_limpia.startswith("|"):
                     pdf.set_font("Helvetica", size=9)
                     pdf.multi_cell(0, H_SMALL, _limpiar(linea_limpia), align="J",
