@@ -38,18 +38,15 @@ def _botones_descarga(informe_md: str, tipo: str) -> None:
         try:
             generador = GeneradorInforme()
             pdf_bytes = generador.exportar_pdf(informe_md, titulo=f"AIComply — Informe de {tipo.capitalize()}")
-            if pdf_bytes:
-                st.download_button(
-                    label="Descargar en PDF",
-                    data=pdf_bytes,
-                    file_name=_nombre_fichero(tipo, "pdf"),
-                    mime="application/pdf",
-                    use_container_width=True,
-                )
-            else:
-                st.caption("PDF no disponible. Instale fpdf2: pip install fpdf2")
+            st.download_button(
+                label="Descargar en PDF",
+                data=pdf_bytes,
+                file_name=_nombre_fichero(tipo, "pdf"),
+                mime="application/pdf",
+                use_container_width=True,
+            )
         except Exception as _pdf_exc:
-            st.caption(f"Error al generar PDF: {_pdf_exc}")
+            st.error(f"Error al generar PDF: {_pdf_exc}")
 
     with col_txt:
         generador = GeneradorInforme()

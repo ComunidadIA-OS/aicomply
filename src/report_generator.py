@@ -537,8 +537,10 @@ class GeneradorInforme:
                     pdf.multi_cell(0, 5, _limpiar(linea_limpia))
 
             return bytes(pdf.output())
-        except ImportError:
-            return b""
+        except ImportError as exc:
+            raise RuntimeError(
+                "fpdf2 no está instalado en este entorno. Ejecute: pip install fpdf2"
+            ) from exc
 
     # ══════════════════════════════════════════════════════════════════════════
     # COMPATIBILIDAD CON ARQUITECTURA ANTERIOR

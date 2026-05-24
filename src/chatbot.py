@@ -181,11 +181,11 @@ class AIComplyChat:
     def extraer_cumplimiento(self) -> dict:
         """Extrae las obligaciones y gaps de la conversación de cumplimiento."""
         if len(self.historial) < 2:
-            return {"obligaciones": [], "gaps_detectados": [], "puntos_revision_profesional": []}
+            return {"obligaciones": [], "carencias_detectadas": [], "puntos_revision_profesional": []}
 
         mensajes = self.historial + [{"role": "user", "content": _PROMPT_EXTRAER_CUMPLIMIENTO}]
         texto = self.provider.chat(mensajes, system_prompt=_SYSTEM_EXTRACTION)
-        return self._parsear_json(texto, {"obligaciones": [], "gaps_detectados": []})
+        return self._parsear_json(texto, {"obligaciones": [], "carencias_detectadas": []})
 
     def _parsear_json(self, texto: str, fallback: dict) -> dict:
         texto = texto.strip()
