@@ -1,5 +1,6 @@
 # AIComply
 
+[![Tests](https://github.com/ComunidadIA-OS/aicomply/actions/workflows/tests.yml/badge.svg)](https://github.com/ComunidadIA-OS/aicomply/actions/workflows/tests.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-FF4B4B)](https://streamlit.io/)
@@ -23,6 +24,26 @@ AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 2. **Análisis de cumplimiento** — Una vez clasificado el sistema, el asistente recorre las obligaciones concretas aplicables según el nivel de riesgo y el rol, detectando cuáles están cubiertas, cuáles parcialmente y cuáles son áreas de mejora pendientes.
 
 3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional.
+
+## Capturas de pantalla
+
+### Pantalla de configuración y selección de provider
+
+![Selector de provider con avisos de privacidad](assets/01-selector-provider.png)
+
+### Pestaña Evaluador — árbol de decisión conversacional
+
+![Conversación con el evaluador de riesgo](assets/02-evaluador.png)
+
+### Resultado de la clasificación
+
+![Resultado clasificación con nivel de riesgo y rol](assets/03-clasificacion.png)
+
+### Informe de cumplimiento exportado en PDF
+
+![Informe PDF con plan de acción y referencias al AI Act](assets/04-informe-pdf.png)
+
+---
 
 ## Corpus normativo
 
@@ -263,7 +284,7 @@ aicomply/
 - [x] Soporte de múltiples roles simultáneos
 - [x] 25 artículos del AI Act estructurados en el RAG
 - [x] Corpus normativo completo: AESIA, Anteproyecto de Ley ES, GDPR/AEPD, directrices Comisión Europea
-- [ ] Tests unitarios para el árbol de decisión y el chatbot
+- [x] Tests unitarios para el árbol de decisión y el chatbot
 - [ ] Flujo guiado para la Evaluación de Impacto sobre Derechos Fundamentales (Art. 27)
 - [ ] Persistencia de evaluaciones — guardar y reanudar sesiones
 - [ ] Mejora exportación PDF con fuente Unicode completa
