@@ -143,8 +143,9 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.html(
-            "<div style='padding-top:18px;'>" + _SVG_PIRAMIDE + "</div>"
+        st.markdown(
+            "<div style='padding-top:18px;'>" + _SVG_PIRAMIDE + "</div>",
+            unsafe_allow_html=True,
         )
 
     with col_desc:
