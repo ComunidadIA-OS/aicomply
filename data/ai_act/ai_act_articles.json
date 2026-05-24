@@ -3,7 +3,7 @@
   "fecha_publicacion": "2024-07-12",
   "diario_oficial": "DO L, 2024/1689",
   "fuente": "EUR-Lex — https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:32024R1689",
-  "nota": "Extractos y resúmenes del texto oficial. Consulte el texto completo en EUR-Lex para decisiones de cumplimiento. Los artículos 52 y 69 siguen la numeración de la versión consolidada de amplia difusión; en la publicación final corresponden a los artículos 50 y 95 respectivamente.",
+  "nota": "Extractos y resúmenes del texto oficial. Consulte el texto completo en EUR-Lex para decisiones de cumplimiento. La numeración utilizada corresponde a la publicación oficial en el Diario Oficial de la UE (DOUE). Los artículos 50 y 95 aparecen numerados como 52 y 69 respectivamente en la versión consolidada de amplia difusión (información de trazabilidad en el campo nota_numeracion de cada artículo).",
   "articulos": {
     "4": {
       "titulo": "Alfabetización en materia de IA",
@@ -625,11 +625,39 @@
         "notificacion"
       ]
     },
-    "52": {
+    "72": {
+      "titulo": "Supervisión poscomercialización por parte de los proveedores y plan de supervisión poscomercialización",
+      "capitulo": "IX",
+      "nivel_riesgo": "alto",
+      "texto_oficial": "1. Los proveedores de sistemas de IA de alto riesgo pondrán en marcha y documentarán un sistema de supervisión poscomercialización de manera proporcional a la naturaleza de las tecnologías de IA y a los riesgos del sistema de IA de alto riesgo.\n2. El sistema de supervisión poscomercialización recogerá, documentará y analizará activamente los datos pertinentes que puedan aportar los responsables del despliegue o que puedan ser obtenidos de otras fuentes sobre el rendimiento de los sistemas de IA de alto riesgo a lo largo de todo su ciclo de vida.\n3. El sistema de supervisión poscomercialización se basará en un plan de supervisión poscomercialización que forme parte de la documentación técnica del Anexo IV.",
+      "requisitos_clave": [
+        "Sistema de supervisión poscomercialización documentado y proporcional al riesgo",
+        "Recoger y analizar datos sobre el rendimiento del sistema durante todo su ciclo de vida",
+        "Plan de supervisión poscomercialización integrado en la documentación técnica (Anexo IV)",
+        "Notificar incidentes graves a la autoridad de vigilancia del mercado",
+        "Adoptar medidas correctoras cuando se detecten no conformidades o riesgos",
+        "Informar a los responsables del despliegue y usuarios de los riesgos detectados"
+      ],
+      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
+      "palabras_clave": [
+        "poscomercializacion",
+        "post-market",
+        "supervision poscomercializacion",
+        "vigilancia mercado",
+        "incidentes graves",
+        "rendimiento",
+        "ciclo de vida",
+        "datos rendimiento",
+        "medidas correctoras",
+        "plan supervision",
+        "monitoreo"
+      ]
+    },
+    "50": {
       "titulo": "Obligaciones de transparencia para ciertos sistemas de IA",
       "capitulo": "IV",
       "nivel_riesgo": "limitado",
-      "nota_numeracion": "Corresponde al Artículo 50 en la publicación final del Reglamento (UE) 2024/1689",
+      "nota_numeracion": "En la versión consolidada de amplia difusión este artículo aparece numerado como 52",
       "texto_oficial": "1. Los proveedores garantizarán que los sistemas de IA destinados a interactuar directamente con personas físicas estén diseñados y desarrollados de tal manera que las personas físicas afectadas sean informadas de que interactúan con un sistema de IA, a menos que esto sea obvio por el contexto y las circunstancias de uso. Esta obligación no se aplicará a los sistemas de IA autorizados por ley para detectar, prevenir, investigar o enjuiciar delitos penales, sin perjuicio de los derechos y libertades de terceros.\n2. Los proveedores de sistemas de IA, incluidos los sistemas de IA de uso general, que generen contenidos de audio, imagen, video o texto sintéticos, garantizarán que los resultados del sistema de IA estén marcados en un formato legible por máquina y sean detectables como generados o manipulados artificialmente.\n3. Los responsables del despliegue de un sistema de reconocimiento de emociones o de un sistema de categorización biométrica informarán de su uso a las personas físicas expuestas a dicho sistema, de conformidad con el Reglamento (UE) 2016/679 y la Directiva 2002/58/CE.\n4. Los responsables del despliegue que utilicen un sistema de IA para generar o manipular imágenes, contenido de audio o vídeo que constituya un 'bientrenado' o 'vídeo deepfake' divulgarán que el contenido se ha generado o manipulado artificialmente.",
       "requisitos_clave": [
         "Informar al usuario cuando interactúa con un chatbot o sistema de IA conversacional",
@@ -659,11 +687,11 @@
         "obligaciones transparencia"
       ]
     },
-    "69": {
+    "95": {
       "titulo": "Códigos de conducta para sistemas de IA de riesgo no elevado",
       "capitulo": "IX",
       "nivel_riesgo": "minimo",
-      "nota_numeracion": "Corresponde al Artículo 95 en la publicación final del Reglamento (UE) 2024/1689",
+      "nota_numeracion": "En la versión consolidada de amplia difusión este artículo aparece numerado como 69",
       "texto_oficial": "1. La Oficina de IA y los Estados miembros fomentarán y facilitarán la elaboración de códigos de conducta destinados a promover la aplicación voluntaria a los sistemas de IA de algunos o todos los requisitos establecidos en el capítulo III, sección 2, teniendo en cuenta las soluciones técnicas disponibles y las mejores prácticas de la industria, que permitan la aplicación de dichos requisitos.\n2. La Oficina de IA y los Estados miembros fomentarán y facilitarán la elaboración de códigos de conducta destinados a promover la aplicación voluntaria a los sistemas de IA de requisitos relativos, por ejemplo, a la sostenibilidad medioambiental, la accesibilidad para personas con discapacidad, la participación de las partes interesadas en el diseño y desarrollo de los sistemas de IA y la diversidad de los equipos de desarrollo.\n3. Los códigos de conducta podrán ser elaborados por proveedores individuales o responsables del despliegue de sistemas de IA o por organizaciones que los representen o por ambos, incluidos con la implicación de responsables del despliegue y otras partes interesadas relevantes.\n4. La Oficina de IA llevará un registro de los códigos de conducta y los pondrá a disposición del público a través de un sitio web específico.",
       "requisitos_clave": [
         "Participación voluntaria para sistemas de IA de riesgo mínimo",
@@ -687,34 +715,6 @@
         "Oficina IA",
         "adhesion voluntaria",
         "mejores practicas"
-      ]
-    },
-    "72": {
-      "titulo": "Supervisión poscomercialización por parte de los proveedores y plan de supervisión poscomercialización",
-      "capitulo": "IX",
-      "nivel_riesgo": "alto",
-      "texto_oficial": "1. Los proveedores de sistemas de IA de alto riesgo pondrán en marcha y documentarán un sistema de supervisión poscomercialización de manera proporcional a la naturaleza de las tecnologías de IA y a los riesgos del sistema de IA de alto riesgo.\n2. El sistema de supervisión poscomercialización recogerá, documentará y analizará activamente los datos pertinentes que puedan aportar los responsables del despliegue o que puedan ser obtenidos de otras fuentes sobre el rendimiento de los sistemas de IA de alto riesgo a lo largo de todo su ciclo de vida.\n3. El sistema de supervisión poscomercialización se basará en un plan de supervisión poscomercialización que forme parte de la documentación técnica del Anexo IV.",
-      "requisitos_clave": [
-        "Sistema de supervisión poscomercialización documentado y proporcional al riesgo",
-        "Recoger y analizar datos sobre el rendimiento del sistema durante todo su ciclo de vida",
-        "Plan de supervisión poscomercialización integrado en la documentación técnica (Anexo IV)",
-        "Notificar incidentes graves a la autoridad de vigilancia del mercado",
-        "Adoptar medidas correctoras cuando se detecten no conformidades o riesgos",
-        "Informar a los responsables del despliegue y usuarios de los riesgos detectados"
-      ],
-      "aplica_a": "Proveedores de sistemas de IA de alto riesgo",
-      "palabras_clave": [
-        "poscomercializacion",
-        "post-market",
-        "supervision poscomercializacion",
-        "vigilancia mercado",
-        "incidentes graves",
-        "rendimiento",
-        "ciclo de vida",
-        "datos rendimiento",
-        "medidas correctoras",
-        "plan supervision",
-        "monitoreo"
       ]
     }
   },
