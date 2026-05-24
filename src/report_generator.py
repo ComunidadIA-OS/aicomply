@@ -498,6 +498,17 @@ class GeneradorInforme:
             pdf.ln(4)
             pdf.set_text_color(30, 30, 30)
 
+            def _escribir_con_negrita(texto: str, h: float = 5, size: int = 10) -> None:
+                """Renderiza texto con **negrita** inline alternando fuente."""
+                partes = re.split(r"\*\*(.+?)\*\*", texto)
+                for i, parte in enumerate(partes):
+                    if not parte:
+                        continue
+                    pdf.set_font("Helvetica", "B" if i % 2 == 1 else "", size)
+                    pdf.write(h, _limpiar(parte))
+                pdf.set_font("Helvetica", "", size)
+                pdf.ln(h)
+
             for linea in contenido_markdown.split("\n"):
                 pdf.set_x(pdf.l_margin)
                 linea_limpia = linea.strip()
@@ -524,19 +535,17 @@ class GeneradorInforme:
                 elif linea_limpia.startswith("> "):
                     pdf.set_font("Helvetica", "I", 9)
                     pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, 5, _limpiar(linea_limpia[2:]))
-                    pdf.set_font("Helvetica", size=10)
+                    _escribir_con_negrita(linea_limpia[2:], h=5, size=9)
                     pdf.set_text_color(30, 30, 30)
                 elif linea_limpia.startswith(("- ", "* ")):
-                    pdf.set_font("Helvetica", size=10)
-                    pdf.multi_cell(0, 5, _limpiar("  •  " + linea_limpia[2:]))
+                    pdf.write(5, _limpiar("  •  "))
+                    _escribir_con_negrita(linea_limpia[2:])
                 elif linea_limpia.startswith("|"):
                     pdf.set_font("Helvetica", size=9)
                     pdf.multi_cell(0, 5, _limpiar(linea_limpia))
                     pdf.set_font("Helvetica", size=10)
                 else:
-                    pdf.set_font("Helvetica", size=10)
-                    pdf.multi_cell(0, 5, _limpiar(linea_limpia))
+                    _escribir_con_negrita(linea_limpia)
 
             return bytes(pdf.output())
         except ImportError as exc:
