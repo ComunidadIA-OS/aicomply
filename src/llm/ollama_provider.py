@@ -59,9 +59,11 @@ class OllamaProvider(LLMProvider):
             return [{"role": "system", "content": system_prompt}] + messages
         return messages
 
-    # num_ctx debe ser mayor que el system prompt (~5.000 tokens) + historial.
-    # num_predict limita la longitud de respuesta para reducir uso de RAM.
-    _OPTIONS = {"num_ctx": 8192, "num_predict": 1500}
+    # num_ctx=6144: suficiente para el system prompt del árbol (~2.000-3.000 tokens)
+    # más el historial de conversación, con margen. Reduce el uso de memoria unificada
+    # en ~300-400 MB respecto a 8192, necesario en equipos con 8 GB RAM (ej. M2 8 GB).
+    # num_predict limita la longitud de respuesta para evitar generaciones interminables.
+    _OPTIONS = {"num_ctx": 6144, "num_predict": 1500}
 
     def chat(self, messages: list[dict], system_prompt: str = "") -> str:
         """Llamada síncrona sin streaming."""
