@@ -86,7 +86,7 @@ class GeneradorInforme:
         indeterminados = clasificacion_data.get("puntos_indeterminados", [])
 
         obligaciones = cumplimiento_data.get("obligaciones", [])
-        carencias = cumplimiento_data.get("carencias_detectadas", cumplimiento_data.get("gaps_detectados", []))
+        carencias = cumplimiento_data.get("carencias_detectadas", [])
         puntos_revision = cumplimiento_data.get("puntos_revision_profesional", [])
         resumen = cumplimiento_data.get("resumen_cumplimiento", "")
 
@@ -121,7 +121,7 @@ class GeneradorInforme:
         info_nivel = NIVELES_RIESGO.get(clasificacion, {})
 
         obligaciones = cumplimiento_data.get("obligaciones", [])
-        carencias = cumplimiento_data.get("carencias_detectadas", cumplimiento_data.get("gaps_detectados", []))
+        carencias = cumplimiento_data.get("carencias_detectadas", [])
         puntos_revision = cumplimiento_data.get("puntos_revision_profesional", [])
         resumen_cumpl = cumplimiento_data.get("resumen_cumplimiento", "")
 

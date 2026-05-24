@@ -260,10 +260,15 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     key="readme_paste",
                 )
 
+            _MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
+
             contenido_readme = ""
             if archivo:
-                contenido_readme = archivo.read().decode("utf-8", errors="replace")
-                st.caption(f"Archivo cargado: {archivo.name} ({len(contenido_readme)} caracteres)")
+                if archivo.size > _MAX_UPLOAD_BYTES:
+                    st.error(f"El archivo supera el límite de 500 KB ({archivo.size // 1024} KB). Pegue el contenido relevante directamente en el área de texto.")
+                else:
+                    contenido_readme = archivo.read().decode("utf-8", errors="replace")
+                    st.caption(f"Archivo cargado: {archivo.name} ({len(contenido_readme)} caracteres)")
             elif texto_pegado:
                 contenido_readme = texto_pegado
 

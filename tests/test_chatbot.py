@@ -109,6 +109,22 @@ class TestSenalEvaluacionCompleta:
         list(chat.chat_stream("pregunta"))  # consumir el generador
         assert chat.evaluacion_completa is True
 
+    def test_senal_en_streaming_no_queda_en_historial(self, make_provider):
+        informe = "A" * 150
+        provider = make_provider(f"{informe} [EVALUACION_COMPLETA]")
+        chat = AIComplyChat(provider, system_prompt_override=_SYSTEM)
+        list(chat.chat_stream("pregunta"))
+        contenido_asistente = chat.historial[-1]["content"]
+        assert "[EVALUACION_COMPLETA]" not in contenido_asistente
+        assert len(contenido_asistente) >= 150
+
+    def test_senal_corta_ignorada_en_streaming(self, make_provider):
+        # Si el texto sin señal tiene <150 chars, la señal se descarta (prematura).
+        provider = make_provider("texto corto [EVALUACION_COMPLETA]")
+        chat = AIComplyChat(provider, system_prompt_override=_SYSTEM)
+        list(chat.chat_stream("pregunta"))
+        assert chat.evaluacion_completa is False
+
 
 class TestHistorialYResetear:
     def test_historial_acumula_mensajes(self, make_provider):
