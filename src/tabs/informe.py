@@ -1,4 +1,4 @@
-# Copyright 2025 AIComply Contributors
+# Copyright 2026 AIComply Contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,12 @@ from src.report_generator import GeneradorInforme
 
 _FECHA_HOY = date.today().strftime("%Y-%m-%d")
 
+_TITULOS_INFORME = {
+    "clasificacion": "Informe de clasificación",
+    "cumplimiento": "Informe de cumplimiento",
+    "completo": "Informe completo",
+}
+
 
 def _nombre_fichero(tipo: str, extension: str) -> str:
     slugs = {
@@ -37,7 +43,7 @@ def _botones_descarga(informe_md: str, tipo: str) -> None:
     with col_pdf:
         try:
             generador = GeneradorInforme()
-            pdf_bytes = generador.exportar_pdf(informe_md, titulo=f"AIComply — Informe de {tipo.capitalize()}")
+            pdf_bytes = generador.exportar_pdf(informe_md, titulo=f"AIComply — {_TITULOS_INFORME.get(tipo, 'Informe')}")
             st.download_button(
                 label="Descargar en PDF",
                 data=pdf_bytes,

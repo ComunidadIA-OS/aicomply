@@ -43,7 +43,7 @@ git checkout -b provider/nombre-nuevo-provider
 ### 2. Cabecera obligatoria en ficheros `.py` nuevos
 
 ```python
-# Copyright 2025 AIComply Contributors
+# Copyright 2026 AIComply Contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ La arquitectura de AIComply hace que añadir soporte para un nuevo proveedor de 
 Cree `src/llm/mi_provider.py` implementando la clase abstracta `LLMProvider`:
 
 ```python
-# Copyright 2025 AIComply Contributors
+# Copyright 2026 AIComply Contributors
 # [cabecera Apache 2.0 completa]
 
 from typing import Generator

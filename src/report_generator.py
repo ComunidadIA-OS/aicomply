@@ -1,4 +1,4 @@
-# Copyright 2025 AIComply Contributors
+# Copyright 2026 AIComply Contributors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -772,10 +772,11 @@ _UNICODE_A_LATIN1 = str.maketrans({
     "•": "-",    # bullet •
     "–": "-",    # en dash –
     "—": "-",    # em dash —
-    "‘": "'",    # comilla simple izquierda '
-    "’": "'",    # comilla simple derecha '
-    "“": '"',    # comilla doble izquierda "
-    "”": '"',    # comilla doble derecha "
+    "€": "EUR",  # € (no está en ISO-8859-1)
+    "‘": "'",    # comilla simple izquierda ‘
+    "’": "'",    # comilla simple derecha ’
+    "“": '"',    # comilla doble izquierda “
+    "”": '"',    # comilla doble derecha ”
     "…": "...",  # puntos suspensivos …
     "«": '"',    # «
     "»": '"',    # »
