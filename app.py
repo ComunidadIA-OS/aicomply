@@ -127,8 +127,9 @@ def _init_session() -> None:
         if clave not in st.session_state:
             st.session_state[clave] = False
 
-    if "informe_md" not in st.session_state:
-        st.session_state.informe_md = None
+    for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
+        if clave not in st.session_state:
+            st.session_state[clave] = None
 
     if "chatbot_evaluador" not in st.session_state:
         if st.session_state.get("provider_configurado") and st.session_state.get("provider"):
