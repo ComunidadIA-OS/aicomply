@@ -31,17 +31,25 @@ AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 
 ![Selector de provider con avisos de privacidad](assets/01-selector-provider.png)
 
+### Pestaña Evaluador — niveles de riesgo del AI Act
+
+![Pirámide de niveles de riesgo con descripción de cada nivel](assets/02-evaluador-piramide.png)
+
 ### Pestaña Evaluador — árbol de decisión conversacional
 
-![Conversación con el evaluador de riesgo](assets/02-evaluador.png)
+![Conversación con el evaluador de riesgo](assets/03-evaluador-chat.png)
 
-### Resultado de la clasificación
+### Resultado de la clasificación y análisis de cumplimiento
 
-![Resultado clasificación con nivel de riesgo y rol](assets/03-clasificacion.png)
+![Resultado clasificación con nivel de riesgo, rol y trazabilidad de obligaciones](assets/04-clasificacion.png)
+
+### Pestaña Informe — generación y descarga
+
+![Pantalla de informe con evaluación completada y opciones de descarga](assets/05-informe.png)
 
 ### Informe de cumplimiento exportado en PDF
 
-![Informe PDF con plan de acción y referencias al AI Act](assets/04-informe-pdf.png)
+Puede descargar un [informe de ejemplo generado con AIComply](examples/informe-ejemplo.pdf) para ver el output real antes de instalar la herramienta.
 
 ---
 
