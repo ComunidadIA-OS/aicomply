@@ -22,7 +22,7 @@ from src.llm.provider import LLMProvider
 # Todos los vértices laterales son colineales en ambos lados.
 _SVG_PIRAMIDE = """
 <svg viewBox="0 0 420 340" xmlns="http://www.w3.org/2000/svg"
-     width="100%" style="max-width:400px; margin:auto; display:block;">
+     width="100%" height="340" style="max-width:400px; margin:auto; display:block;">
   <!-- Riesgo mínimo — verde, base -->
   <polygon points="57,245 363,245 414,320 6,320"
            fill="#388E3C" opacity="0.92" stroke="white" stroke-width="1"/>
@@ -143,9 +143,10 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.markdown(
-            "<div style='padding-top:18px;'>" + _SVG_PIRAMIDE + "</div>",
-            unsafe_allow_html=True,
+        st.html(
+            "<div style='padding-top:18px; height:360px; overflow:visible;'>"
+            + _SVG_PIRAMIDE
+            + "</div>"
         )
 
     with col_desc:
