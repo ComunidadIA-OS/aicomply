@@ -127,6 +127,8 @@ class AIComplyChat:
                 )
                 yield respuesta_completa
             else:
+                # Rollback: el historial no debe quedar con un user sin assistant.
+                self.historial.pop()
                 raise
 
         # Detectar señal de evaluación completa y limpiarla del historial persistido.
@@ -147,7 +149,11 @@ class AIComplyChat:
         self.historial.append({"role": "user", "content": mensaje_usuario})
         system = self._system_con_rag(mensaje_usuario)
 
-        respuesta = self.provider.chat(self._historial_truncado(), system_prompt=system)
+        try:
+            respuesta = self.provider.chat(self._historial_truncado(), system_prompt=system)
+        except Exception:
+            self.historial.pop()
+            raise
 
         if _SENAL_COMPLETA in respuesta:
             self.evaluacion_completa = True
