@@ -164,11 +164,6 @@ def _mostrar_intro() -> None:
             )
 
     st.divider()
-    st.caption(
-        "La evaluación sigue el árbol de decisión oficial del Reglamento (UE) 2024/1689 "
-        "nodo a nodo. Al final obtendrá su clasificación, el rol de su organización "
-        "y las obligaciones concretas que le aplican."
-    )
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
