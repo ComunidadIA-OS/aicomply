@@ -68,7 +68,7 @@ ALTO RIESGO — Rol Implementador (Art. 26):
 - Garantizar que los operadores tengan competencia, formación y autoridad para supervisar
 - Informar al proveedor de incidentes graves o comportamientos inesperados
 - Conservar los registros de actividad generados automáticamente (si tiene control sobre ellos)
-- Evaluación de impacto sobre derechos fundamentales, si es organismo público o presta servicios públicos (Art. 27)
+- Evaluación de impacto sobre derechos fundamentales (Art. 27), si: (a) es organismo público, (b) es entidad privada que presta servicios públicos, o (c) es responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud]
 - Registro en la base de datos de la UE antes del despliegue (Art. 49)
 
 ALTO RIESGO — Rol Distribuidor (Art. 24):

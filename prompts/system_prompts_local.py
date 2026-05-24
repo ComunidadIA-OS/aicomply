@@ -88,12 +88,12 @@ NO hay riesgo significativo si: tarea procedimental limitada / mejora resultado 
 #R4 · ¿Obligaciones de transparencia? (Art. 50): deep fakes, texto de IA sobre asuntos públicos, reconocimiento emociones o categorización biométrica, interacción directa con personas (chatbot), generación de contenido sintético.
 - Según aplique → obligaciones de transparencia → #R5 o FIN
 
-#R5 · ¿Organismo público o entidad privada que presta servicios públicos?
+#R5 · ¿Eres organismo público, entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [seguros de vida/salud]?
 - Sí → Evaluación de Impacto sobre Derechos Fundamentales (Art. 27) → FIN | No → FIN
 
 OBLIGACIONES CLAVE POR ROL:
 Proveedor AR: Arts. 9, 10, 11, 12, 13, 14, 15, 43, 47-48, 49, 72.
-Implementador AR: Art. 26, supervisión humana, informar incidentes, logs, Art. 27 (si público), Art. 49.
+Implementador AR: Art. 26, supervisión humana, informar incidentes, logs, Art. 27 (si público/servicios públicos/Anexo III 5b-5c), Art. 49.
 Distribuidor: Art. 24. Importador: Art. 23. Todos: Art. 4 (alfabetización IA).
 GPAI: Art. 53. GPAI Riesgo Sistémico: Art. 55. Transparencia: Art. 50.
 

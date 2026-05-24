@@ -211,10 +211,13 @@ CONDICIONES:
   Para "Generar contenido sintético": si es de alto riesgo → Transparencia: Parecido del Contenido → ir a #R5; si no → FIN.
 Fuente: Art. 50.
 
-#R5 · ¿Eres un organismo regido por el 'derecho público', o una entidad privada que presta servicios públicos?
-- Sí → obligación Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27) → FIN
-- No → FIN
-Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo. Fuente: Considerando 96.
+#R5 · ¿Se cumple alguno de estos criterios?
+- Eres un organismo regido por el 'derecho público'.
+- Eres una entidad privada que presta servicios públicos.
+- Eres responsable del despliegue de un sistema de IA enumerado en el Anexo III, punto 5, letras b) o c) (sistemas para evaluar solvencia crediticia o establecer una puntuación crediticia de personas físicas; o sistemas para evaluación de riesgo y fijación de precios de seguros de vida y salud).
+- Si se marca alguno → obligación Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27) → FIN
+- Ninguna → FIN
+Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo. Fuente: Art. 27.1, Considerando 96.
 
 5. CATÁLOGO DE RESULTADOS, ESTADOS Y OBLIGACIONES
 
@@ -240,7 +243,7 @@ Obligaciones por tipo de sistema:
 - GPAI con Riesgo Sistémico (Art. 55): obligaciones para proveedores de modelos GPAI con riesgo sistémico.
 - Notificar a la NCA (Art. 49.2, Art. 6.4): si consideras que tu sistema NO plantea riesgo significativo, debes registrarlo en la base de datos de la UE antes de comercializarlo/ponerlo en servicio.
 - Transparencia: Personas Físicas (Art. 50.1) / Contenido Sintético (Art. 50.2) / Emoción y Biometría (Art. 50.3) / Parecido del Contenido (Art. 50.4).
-- Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27): antes de desplegar un sistema de alto riesgo (solo para organismos públicos o privados que prestan servicios públicos).
+- Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27): antes de desplegar un sistema de alto riesgo, si: (a) eres organismo público, (b) eres entidad privada que presta servicios públicos, o (c) despliegas un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud].
 
 Excepciones y exclusiones:
 - Excepción de alto riesgo: solo aplica Art. 112 (vigilar revisiones de la Comisión).
