@@ -47,8 +47,6 @@ AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 
 ![Pantalla de informe con evaluación completada y opciones de descarga](assets/05-informe.png)
 
-### Informe de cumplimiento exportado en PDF
-
 Puede descargar un [informe de ejemplo generado con AIComply](examples/informe-ejemplo.pdf) para ver el output real antes de instalar la herramienta.
 
 ---
@@ -112,7 +110,9 @@ AIComply incluye una pantalla de configuración inicial donde puede elegir su pr
 | Anthropic Claude | API de pago | Sí (EE. UU.) | No | Uso empresarial general |
 | OpenAI | ChatGPT Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
 | OpenAI | API de pago Tier 1+ | Sí (EE. UU.) | No por defecto | Uso empresarial, revisar DPA |
-| Groq / Together AI | API externa | Sí (terceros) | Revisar política | Uso general sin datos sensibles |
+| Groq | API externa | Sí (EE. UU.) | No | Uso general sin datos sensibles |
+| Mistral API | API externa | Sí (Francia, UE) | No por defecto | Uso general, datos dentro de la UE |
+| Together AI | API externa | Sí (EE. UU.) | Revisar política | Uso general sin datos sensibles |
 | OpenAI | Cuenta gratuita | Sí (EE. UU.) | **Sí** | **No recomendado para datos confidenciales** |
 
 ### Configuración via .env (despliegues fijos)
@@ -261,9 +261,13 @@ aicomply/
 │   └── docs/                           # Corpus adicional (27 documentos JSON)
 ├── scripts/
 │   └── ingest_txt.py                   # Convierte .txt legales a JSON para el RAG
+├── assets/                             # Capturas de pantalla para el README
+├── examples/
+│   └── informe-ejemplo.pdf             # Informe de ejemplo generado con AIComply
 ├── LICENSE
 ├── README.md
 ├── CONTRIBUTING.md
+├── SECURITY.md
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
