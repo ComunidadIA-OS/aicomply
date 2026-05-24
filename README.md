@@ -15,6 +15,14 @@ Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y 
 
 ---
 
+## El problema
+
+El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente. Las obligaciones para sistemas de alto riesgo entran en plena aplicación en **agosto de 2026** — quedan semanas. La AESIA, autoridad supervisora española, opera con 120 inspectores, un presupuesto de 42 M€ y tiene abiertas 23 investigaciones preliminares. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
+
+El problema es que el **41% de las PYMEs españolas ya usa IA de forma regular** (IONOS/YouGov, 2026) — la tasa más alta de Europa — pero la mayoría no sabe si sus sistemas están sujetos al reglamento, qué nivel de riesgo tienen ni qué obligaciones concretas les aplican. La asesoría legal especializada en AI Act tiene un coste prohibitivo para una PYME. Las herramientas existentes están en inglés, son cuestionarios estáticos o están diseñadas para grandes corporaciones.
+
+**Escenario real:** MECALSA S.L., fabricante industrial con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y el primer agosto que pase sin haberlas respondido, la exposición regulatoria es real.
+
 ## Descripción
 
 AIComply guía a PYMEs industriales a través de tres fases secuenciales:
@@ -24,6 +32,18 @@ AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 2. **Análisis de cumplimiento** — Una vez clasificado el sistema, el asistente recorre las obligaciones concretas aplicables según el nivel de riesgo y el rol, detectando cuáles están cubiertas, cuáles parcialmente y cuáles son áreas de mejora pendientes.
 
 3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional.
+
+## Comparativa con otras herramientas
+
+| Herramienta | Tipo | Idioma | Conversacional con LLM | Corpus normativo en español | Orientada a PYMEs | Precio |
+|-------------|------|--------|------------------------|---------------------------|--------------------|--------|
+| [EU AI Act Compliance Checker](https://artificialintelligenceact.eu/assessment/eu-ai-act-compliance-checker/) (Future of Life Institute) | Web interactiva | Multilingüe | No | No | Parcialmente | Gratuita |
+| [Audlex](https://www.audlex.com/) | SaaS | ES / EN | No — cuestionario estático | No | Sí | Desde 69 €/mes |
+| [COMPL-AI](https://github.com/compl-ai/compl-ai) (ETH Zurich) | CLI Python | EN | No | No | No — investigadores | Open source |
+| [Systima Comply](https://dev.to/systima/open-source-eu-ai-act-compliance-scanning-for-cicd-4ogj) | CLI / GitHub Action | EN | No | No | No — equipos dev | Open source |
+| **AIComply** | **App web** | **ES** | **Sí** | **Sí — AESIA, Ley ES, GDPR/AEPD** | **Sí — industrial** | **Open source, gratuita** |
+
+AIComply es, que sepamos, la única herramienta open source conversacional en español que cubre clasificación de riesgo, análisis de obligaciones y generación de informe con corpus normativo español (AESIA, anteproyecto de Ley de IA española, directrices de la Comisión Europea de mayo de 2026).
 
 ## Capturas de pantalla
 
