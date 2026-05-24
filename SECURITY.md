@@ -10,7 +10,7 @@
 
 Si descubre una vulnerabilidad de seguridad en AIComply, le pedimos que **no abra un issue público**.
 
-Envíe un correo a **request@aicomply.com** con:
+Envíe un correo a **aicomply.request@gmail.com** con:
 
 - Descripción de la vulnerabilidad
 - Pasos para reproducirla
