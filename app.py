@@ -18,8 +18,6 @@ from config import (
     ANTHROPIC_API_KEY,
     ANTHROPIC_MODEL,
     DISCLAIMER_INICIAL,
-    OLLAMA_BASE_URL,
-    OLLAMA_MODEL,
     OPENAI_COMPATIBLE_API_KEY,
     OPENAI_COMPATIBLE_BASE_URL,
     OPENAI_COMPATIBLE_MODEL,
@@ -38,6 +36,20 @@ st.set_page_config(
 
 # ── Avisos de privacidad por provider y plan ───────────────────────────────────
 _AVISOS: dict[str, tuple[str, str]] = {
+    "groq": (
+        "warning",
+        "Sus datos se procesan en servidores de Groq (EE. UU.). "
+        "Groq NO entrena sus modelos con los datos de los usuarios. "
+        "Los modelos disponibles son de código abierto (Meta Llama). "
+        "Límite gratuito: ~1.000 req/día. Obtenga su clave en console.groq.com.",
+    ),
+    "mistral_free": (
+        "error",
+        "Sus datos se procesan en servidores de Mistral AI (Francia, UE). "
+        "ATENCIÓN: el plan gratuito PUEDE usar sus conversaciones para entrenar modelos. "
+        "NO recomendado para información confidencial o sensible. "
+        "Límite gratuito: ~1.000 M tokens/mes. Clave gratuita en console.mistral.ai.",
+    ),
     "anthropic_api": (
         "warning",
         "Sus datos se procesan en servidores de Anthropic (EE. UU.). "
@@ -68,13 +80,6 @@ _AVISOS: dict[str, tuple[str, str]] = {
         "Máxima privacidad. Acuerdo DPA incluido en el contrato. "
         "Sus datos no se usan para entrenamiento. "
         "Recomendado para documentación confidencial empresarial.",
-    ),
-    "ollama": (
-        "success",
-        "El modelo se ejecuta completamente en su ordenador. "
-        "Ningún dato sale de su infraestructura. "
-        "Totalmente gratuito. Recomendado para documentación confidencial o datos sensibles. "
-        "Requiere instalación previa de Ollama (https://ollama.ai).",
     ),
     "openai_compatible_local": (
         "success",
@@ -153,10 +158,11 @@ def mostrar_selector_provider() -> None:
     proveedor = st.radio(
         "Proveedor de IA",
         [
-            "Ollama (local, gratuito, sin envío de datos)",
-            "Anthropic Claude (API)",
-            "OpenAI",
-            "API compatible con OpenAI (LM Studio, vLLM, Groq, Together AI...)",
+            "Groq (gratuito, modelos open source, nube EE. UU.)",
+            "Mistral (gratuito con límites, nube Francia)",
+            "Anthropic Claude (API de pago)",
+            "OpenAI (API de pago)",
+            "API compatible con OpenAI (LM Studio, vLLM...)",
         ],
         index=0,
     )
@@ -164,45 +170,61 @@ def mostrar_selector_provider() -> None:
     config_provider: dict = {}
     privacidad_valida = True
 
-    # ── Ollama ────────────────────────────────────────────────────────────────
-    if proveedor.startswith("Ollama"):
-        _mostrar_aviso("ollama")
-        st.markdown("**Configuración de Ollama:**")
+    # ── Groq ──────────────────────────────────────────────────────────────────
+    if proveedor.startswith("Groq"):
+        _mostrar_aviso("groq")
+        st.markdown("**Configuración de Groq:**")
 
-        base_url = st.text_input(
-            "URL de Ollama",
-            value=OLLAMA_BASE_URL,
-            help="Por defecto: http://localhost:11434",
+        api_key = st.text_input(
+            "API Key de Groq",
+            type="password",
+            help="Clave gratuita en https://console.groq.com/keys",
+        )
+        modelo = st.selectbox(
+            "Modelo",
+            ["llama-3.3-70b-versatile", "llama-4-scout-17b-16e-instruct", "mixtral-8x7b-32768"],
+            index=0,
+            help="llama-3.3-70b-versatile ofrece la mejor calidad para el árbol de decisión.",
         )
 
-        col_modelo, col_btn = st.columns([3, 1])
-        with col_btn:
-            st.write("")
-            if st.button("Detectar modelos"):
-                from src.llm.ollama_provider import OllamaProvider
-                tmp = OllamaProvider(base_url=base_url)
-                if tmp.verificar_conexion():
-                    modelos = tmp.listar_modelos()
-                    st.session_state["_ollama_modelos"] = modelos
-                    if modelos:
-                        st.success(f"{len(modelos)} modelos encontrados")
-                    else:
-                        st.warning("Ollama conectado pero sin modelos instalados")
-                else:
-                    st.error("No se puede conectar con Ollama. Verifique que esté en ejecución.")
+        if not api_key:
+            st.warning("Introduzca su API key de Groq para continuar.")
+            privacidad_valida = False
 
-        modelos_cache = st.session_state.get("_ollama_modelos", [])
-        with col_modelo:
-            if modelos_cache:
-                modelo = st.selectbox("Modelo", options=modelos_cache, index=0)
-            else:
-                modelo = st.text_input(
-                    "Modelo",
-                    value=OLLAMA_MODEL,
-                    help="Ejemplo: llama3, mistral, qwen2, deepseek-r1",
-                )
+        config_provider = {
+            "provider": "openai_compatible",
+            "api_key": api_key,
+            "base_url": "https://api.groq.com/openai/v1",
+            "model": modelo,
+        }
 
-        config_provider = {"provider": "ollama", "model": modelo, "base_url": base_url}
+    # ── Mistral ───────────────────────────────────────────────────────────────
+    elif proveedor.startswith("Mistral"):
+        _mostrar_aviso("mistral_free")
+        st.markdown("**Configuración de Mistral:**")
+
+        api_key = st.text_input(
+            "API Key de Mistral",
+            type="password",
+            help="Clave gratuita en https://console.mistral.ai/",
+        )
+        modelo = st.selectbox(
+            "Modelo",
+            ["mistral-small-latest", "mistral-large-latest"],
+            index=0,
+            help="mistral-small-latest es suficiente para la mayoría de evaluaciones.",
+        )
+
+        if not api_key:
+            st.warning("Introduzca su API key de Mistral para continuar.")
+            privacidad_valida = False
+
+        config_provider = {
+            "provider": "openai_compatible",
+            "api_key": api_key,
+            "base_url": "https://api.mistral.ai/v1",
+            "model": modelo,
+        }
 
     # ── Anthropic ─────────────────────────────────────────────────────────────
     elif proveedor.startswith("Anthropic"):
