@@ -688,16 +688,24 @@ class GeneradorInforme:
                     _escribir_con_negrita(linea_limpia[2:], h=H_SMALL, size=9)
                     pdf.set_text_color(30, 30, 30)
                 elif linea_limpia.startswith(("- ", "* ")):
+                    # Bullet + texto con write() → wrapping vuelve al l_margin de página
+                    texto_item = linea_limpia[2:]
+                    m_item = _PATRON_ETIQUETA.match(texto_item)
                     pdf.set_font("Helvetica", "", 10)
-                    bullet_w = pdf.get_string_width("  -  ")
-                    pdf.cell(bullet_w, H_LIST, "  -  ")
-                    # Sangría colgante: l_margin temporal = inicio del texto del item
-                    _old_lm = pdf.l_margin
-                    pdf.set_left_margin(pdf.l_margin + bullet_w)
-                    pdf.set_x(pdf.l_margin)
-                    _escribir_con_negrita(linea_limpia[2:], h=H_LIST)
-                    pdf.set_left_margin(_old_lm)
-                    pdf.set_x(_old_lm)
+                    pdf.write(H_LIST, "  -  ")
+                    if m_item:
+                        label_i = _limpiar(re.sub(r"\*\*", "", m_item.group(1)))
+                        resto_i = _limpiar(m_item.group(2).strip())
+                        pdf.set_font("Helvetica", "B", 10)
+                        pdf.write(H_LIST, label_i)
+                        if resto_i:
+                            pdf.set_font("Helvetica", "", 10)
+                            pdf.write(H_LIST, " " + resto_i)
+                    else:
+                        sin_md = re.sub(r"\*\*([^*]+)\*\*", r"\1", texto_item)
+                        pdf.write(H_LIST, _limpiar(sin_md))
+                    pdf.set_font("Helvetica", "", 10)
+                    pdf.ln(H_LIST)
                 elif linea_limpia.startswith("|"):
                     pdf.set_font("Helvetica", size=9)
                     pdf.multi_cell(0, H_SMALL, _limpiar(linea_limpia), align="J",
