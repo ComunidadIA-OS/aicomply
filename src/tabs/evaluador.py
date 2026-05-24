@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
+
 import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
@@ -143,10 +145,12 @@ def _mostrar_intro() -> None:
     col_svg, col_desc = st.columns([1, 1], gap="large")
 
     with col_svg:
-        st.html(
-            "<div style='padding-top:18px; height:360px; overflow:visible;'>"
-            + _SVG_PIRAMIDE
-            + "</div>"
+        _svg_b64 = base64.b64encode(_SVG_PIRAMIDE.strip().encode()).decode()
+        st.markdown(
+            f'<div style="padding-top:18px;">'
+            f'<img src="data:image/svg+xml;base64,{_svg_b64}"'
+            f' style="width:100%; max-width:400px; display:block; margin:auto;" /></div>',
+            unsafe_allow_html=True,
         )
 
     with col_desc:
