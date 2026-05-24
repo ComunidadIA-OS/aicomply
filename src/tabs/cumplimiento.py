@@ -36,7 +36,11 @@ _ROLES_OPCIONES: dict[str, str] = {
 def _formatear_contexto_evaluacion(datos: dict) -> str:
     """Convierte el dict de clasificación en texto legible para el system prompt."""
     clasificacion = datos.get("clasificacion", "DESCONOCIDO")
+    roles_multiples = datos.get("roles_multiples", [])
     rol = datos.get("rol", "no especificado")
+    rol_texto = (
+        ", ".join(roles_multiples) if len(roles_multiples) > 1 else rol
+    )
     estados = datos.get("estados_adicionales", [])
     descripcion = datos.get("descripcion_sistema", "No especificada")
     sector = datos.get("sector", "No especificado")
@@ -46,7 +50,7 @@ def _formatear_contexto_evaluacion(datos: dict) -> str:
     lineas = [
         "RESULTADO DE LA EVALUACIÓN DEL ÁRBOL DE DECISIÓN:",
         f"- Clasificación: {clasificacion}",
-        f"- Rol de la entidad: {rol}",
+        f"- Rol de la entidad: {rol_texto}",
     ]
     if estados:
         lineas.append(f"- Estados adicionales: {', '.join(estados)}")
@@ -91,14 +95,20 @@ def _inicializar_estado(provider: LLMProvider) -> None:
 def _mostrar_resumen_clasificacion(datos: dict) -> None:
     """Muestra un resumen de la clasificación obtenida en la pestaña anterior."""
     clasificacion = datos.get("clasificacion", "?")
+    roles_multiples = datos.get("roles_multiples", [])
     rol = datos.get("rol", "?")
+    roles_str = (
+        " / ".join(r.capitalize() for r in roles_multiples)
+        if len(roles_multiples) > 1
+        else rol.capitalize()
+    )
     descripcion = datos.get("descripcion_sistema", "")
 
     col1, col2 = st.columns(2)
     with col1:
         st.metric("Clasificación del sistema", clasificacion)
     with col2:
-        st.metric("Rol de la entidad", rol.capitalize())
+        st.metric("Rol de la entidad", roles_str)
 
     if descripcion:
         st.caption(f"Sistema evaluado: {descripcion}")
@@ -121,11 +131,17 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
     with chat_container:
         if not st.session_state.mensajes_cumplimiento:
             clasificacion = st.session_state.clasificacion_data.get("clasificacion", "")
-            rol = st.session_state.clasificacion_data.get("rol", "")
+            _roles_m = st.session_state.clasificacion_data.get("roles_multiples", [])
+            _rol_single = st.session_state.clasificacion_data.get("rol", "")
+            rol_display = (
+                " / ".join(r.capitalize() for r in _roles_m)
+                if len(_roles_m) > 1
+                else _rol_single.capitalize()
+            )
             with st.chat_message("assistant"):
                 st.markdown(
                     f"Vamos a revisar sus obligaciones concretas según la clasificación obtenida: "
-                    f"**{clasificacion}** — Rol: **{rol}**.\n\n"
+                    f"**{clasificacion}** — Rol: **{rol_display}**.\n\n"
                     "> **Aviso legal:** Esta guía es orientativa y no constituye asesoramiento jurídico. "
                     "Contrástela con un profesional especializado.\n\n"
                     "Le iré presentando cada obligación que aplica a su caso, explicándola en lenguaje claro, "
