@@ -187,3 +187,48 @@ class TestSeccionCarenciasContenido:
         resultado = g._seccion_carencias(5, ["Carencia A", "Carencia B"])
         assert "Carencia A" in resultado
         assert "Carencia B" in resultado
+
+
+# ── Tests de exportar_pdf() ───────────────────────────────────────────────────
+
+class TestExportarPdf:
+    def _informe(self) -> str:
+        return GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
+
+    def test_pdf_devuelve_bytes(self):
+        pdf = GeneradorInforme().exportar_pdf(self._informe())
+        assert isinstance(pdf, bytes)
+
+    def test_pdf_no_vacio(self):
+        pdf = GeneradorInforme().exportar_pdf(self._informe())
+        assert len(pdf) > 500
+
+    def test_pdf_empieza_con_cabecera_pdf(self):
+        pdf = GeneradorInforme().exportar_pdf(self._informe())
+        assert pdf[:4] == b"%PDF"
+
+    def test_pdf_con_titulo_personalizado(self):
+        pdf = GeneradorInforme().exportar_pdf(self._informe(), titulo="Informe de Prueba")
+        assert isinstance(pdf, bytes) and len(pdf) > 500
+
+    def test_pdf_markdown_con_todos_los_formatos(self):
+        md = (
+            "# Título H1\n## Sección H2\n### Subsección H3\n#### Sub-sub H4\n"
+            "> Blockquote de aviso\n"
+            "- item de lista\n"
+            "**negrita** y texto normal\n"
+            "---\n"
+            "Párrafo final.\n"
+        )
+        pdf = GeneradorInforme().exportar_pdf(md)
+        assert pdf[:4] == b"%PDF"
+
+    def test_pdf_informe_clasificacion(self):
+        md = GeneradorInforme().generar_informe_clasificacion(_CLASIFICACION)
+        pdf = GeneradorInforme().exportar_pdf(md)
+        assert pdf[:4] == b"%PDF"
+
+    def test_pdf_informe_cumplimiento(self):
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, _CUMPLIMIENTO)
+        pdf = GeneradorInforme().exportar_pdf(md)
+        assert pdf[:4] == b"%PDF"
