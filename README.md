@@ -147,8 +147,7 @@ AIComply incluye una pantalla de configuración inicial donde puede elegir su pr
 
 | Provider | Plan | Datos en servidores de terceros | Uso para entrenamiento | Recomendado para |
 |----------|------|---------------------------------|------------------------|------------------|
-| Ollama (local) | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
-| LM Studio / vLLM | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
+| Ollama / LM Studio / vLLM (local, vía API compatible) | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
 | Anthropic Claude | API Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
 | Anthropic Claude | API de pago | Sí (EE. UU.) | No | Uso empresarial general |
 | OpenAI | ChatGPT Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
@@ -163,10 +162,13 @@ AIComply incluye una pantalla de configuración inicial donde puede elegir su pr
 Copie `.env.example` a `.env` y configure el provider deseado:
 
 **Ollama (recomendado para demo y datos sensibles):**
+
+Ollama expone un endpoint compatible con OpenAI en `http://localhost:11434/v1`:
+
 ```bash
-LLM_PROVIDER=ollama
-OLLAMA_MODEL=llama3
-OLLAMA_BASE_URL=http://localhost:11434
+LLM_PROVIDER=openai_compatible
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:11434/v1
+OPENAI_COMPATIBLE_MODEL=llama3.3
 ```
 
 **Anthropic Claude:**
@@ -236,16 +238,23 @@ Si `LLM_PROVIDER` está vacío, la interfaz mostrará el selector interactivo en
 
 ### Inicio rápido con Ollama
 
+Ollama expone un endpoint compatible con OpenAI en `http://localhost:11434/v1` — no requiere configuración especial:
+
 ```bash
 # 1. Instalar Ollama
 curl -fsSL https://ollama.ai/install.sh | sh   # Linux/macOS
 
-# 2. Descargar un modelo
-ollama pull llama3.1
+# 2. Descargar un modelo (se recomienda 70B+ para uso serio)
+ollama pull llama3.3
 
-# 3. Ejecutar AIComply
+# 3. Ejecutar AIComply apuntando al endpoint compatible de Ollama
+LLM_PROVIDER=openai_compatible \
+OPENAI_COMPATIBLE_BASE_URL=http://localhost:11434/v1 \
+OPENAI_COMPATIBLE_MODEL=llama3.3 \
 streamlit run app.py
 ```
+
+O bien configure estas variables en su fichero `.env`.
 
 ## Uso
 
@@ -289,8 +298,7 @@ aicomply/
 │   ├── llm/
 │   │   ├── provider.py                 # Clase abstracta LLMProvider
 │   │   ├── anthropic_provider.py       # Implementación Anthropic Claude
-│   │   ├── ollama_provider.py          # Implementación Ollama (local)
-│   │   ├── openai_provider.py          # Implementación OpenAI-compatible
+│   │   ├── openai_provider.py          # Implementación OpenAI-compatible (Ollama, LM Studio, Groq...)
 │   │   └── factory.py                  # Fábrica de providers
 │   └── rag/
 │       ├── vectorstore.py              # Vectorstore TF-IDF (sin FAISS)
@@ -345,8 +353,7 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 | Interfaz | Streamlit |
 | Abstracción LLM | `LLMProvider` (clase abstracta propia) |
 | Anthropic Claude | `anthropic` SDK |
-| Ollama / modelos locales | `httpx` (API REST de Ollama) |
-| OpenAI y compatibles | `openai` SDK |
+| Ollama / LM Studio / vLLM / Groq / ... | `openai` SDK (vía endpoint compatible) |
 | RAG (recuperación) | TF-IDF con `scikit-learn` (sin FAISS) |
 | Exportación PDF | `fpdf2` |
 | Variables de entorno | `python-dotenv` |
@@ -355,7 +362,7 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 
 ### v1.x (en curso)
 - [x] Árbol de decisión conversacional completo (Art. 5, 6, Anexo III)
-- [x] Soporte multi-provider (Anthropic, OpenAI, Ollama, API compatible)
+- [x] Soporte multi-provider (Anthropic, APIs compatibles con OpenAI — incluido Ollama vía endpoint `/v1`)
 - [x] Arquitectura de tres pestañas con desbloqueo secuencial
 - [x] Tres tipos de informe exportables (PDF + texto plano)
 - [x] Soporte de múltiples roles simultáneos
@@ -406,7 +413,7 @@ Script CLI reutilizable para convertir documentos legales en texto plano (.txt) 
 
 ### Abstracción multi-provider de LLM (`src/llm/`)
 
-Clase abstracta `LLMProvider` con implementaciones para Anthropic Claude, OpenAI y APIs compatibles (Groq, Mistral, LM Studio, vLLM) y Ollama (modelos locales). Permite cambiar de provider sin modificar la lógica de negocio. Reutilizable en cualquier aplicación Python que necesite independencia del proveedor de LLM.
+Clase abstracta `LLMProvider` con implementaciones para Anthropic Claude y cualquier API compatible con OpenAI (Groq, Mistral, LM Studio, vLLM, Ollama). Permite cambiar de provider sin modificar la lógica de negocio. Reutilizable en cualquier aplicación Python que necesite independencia del proveedor de LLM.
 
 ## Licencia
 

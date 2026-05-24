@@ -83,8 +83,10 @@ _AVISOS: dict[str, tuple[str, str]] = {
     ),
     "openai_compatible_local": (
         "success",
-        "Si la API está en su propia infraestructura (LM Studio, vLLM, llama.cpp), "
-        "ningún dato sale de ella. Recomendado para máxima privacidad y control.",
+        "Máxima privacidad: ningún dato sale de su infraestructura (LM Studio, vLLM, llama.cpp, Ollama). "
+        "Aviso de capacidad: los modelos locales pequeños (7-8B parámetros) ofrecen una calidad de "
+        "razonamiento jurídico limitada. Para uso serio se recomienda un modelo de 70B o superior, "
+        "o cuantizaciones de calidad (Q5_K_M+) con hardware adecuado.",
     ),
     "openai_compatible_external": (
         "warning",
