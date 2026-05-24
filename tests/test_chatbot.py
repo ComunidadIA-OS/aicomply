@@ -84,7 +84,9 @@ class TestSenalEvaluacionCompleta:
         assert chat.evaluacion_completa is False
 
     def test_senal_en_streaming(self, make_provider):
-        provider = make_provider("Respuesta [EVALUACION_COMPLETA]")
+        # El informe debe tener ≥150 caracteres para que la señal sea aceptada.
+        informe = "A" * 150
+        provider = make_provider(f"{informe} [EVALUACION_COMPLETA]")
         chat = AIComplyChat(provider, system_prompt_override=_SYSTEM)
         list(chat.chat_stream("pregunta"))  # consumir el generador
         assert chat.evaluacion_completa is True
