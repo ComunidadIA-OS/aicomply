@@ -19,16 +19,13 @@ load_dotenv()
 
 # ── Selección de provider ──────────────────────────────────────────────────────
 # Si LLM_PROVIDER está vacío, la interfaz mostrará el selector interactivo.
-# Valores válidos: anthropic | ollama | openai_compatible
+# Valores válidos: anthropic | openai_compatible
+# Para Ollama: use openai_compatible con OPENAI_COMPATIBLE_BASE_URL=http://localhost:11434/v1
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "")
 
 # ── Anthropic Claude ───────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")
-
-# ── Ollama (modelos locales) ───────────────────────────────────────────────────
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 
 # ── API compatible con OpenAI ──────────────────────────────────────────────────
 OPENAI_COMPATIBLE_BASE_URL = os.getenv("OPENAI_COMPATIBLE_BASE_URL", "http://localhost:1234/v1")

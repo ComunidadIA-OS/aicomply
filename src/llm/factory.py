@@ -15,7 +15,6 @@
 import os
 
 from .anthropic_provider import AnthropicProvider
-from .ollama_provider import OllamaProvider
 from .openai_provider import OpenAICompatibleProvider
 from .provider import LLMProvider
 
@@ -29,11 +28,9 @@ def crear_provider(config: dict) -> LLMProvider:
     Anthropic:
       {"provider": "anthropic", "api_key": "sk-ant-...", "model": "claude-sonnet-4-6"}
 
-    Ollama:
-      {"provider": "ollama", "model": "llama3", "base_url": "http://localhost:11434"}
-
-    OpenAI-compatible:
+    OpenAI-compatible (incluye Ollama, LM Studio, vLLM, Groq, Mistral API...):
       {"provider": "openai_compatible", "api_key": "...", "base_url": "...", "model": "..."}
+      Para Ollama: base_url="http://localhost:11434/v1"
     """
     tipo = config.get("provider", "anthropic")
 
@@ -43,12 +40,6 @@ def crear_provider(config: dict) -> LLMProvider:
             model=config.get("model", "claude-sonnet-4-6"),
         )
 
-    if tipo == "ollama":
-        return OllamaProvider(
-            model=config.get("model", "llama3"),
-            base_url=config.get("base_url", "http://localhost:11434"),
-        )
-
     if tipo == "openai_compatible":
         return OpenAICompatibleProvider(
             api_key=config.get("api_key", "dummy"),
@@ -56,7 +47,7 @@ def crear_provider(config: dict) -> LLMProvider:
             model=config.get("model", "gpt-4o"),
         )
 
-    raise ValueError(f"Provider no soportado: '{tipo}'. Use 'anthropic', 'ollama' u 'openai_compatible'.")
+    raise ValueError(f"Provider no soportado: '{tipo}'. Use 'anthropic' u 'openai_compatible'.")
 
 
 def crear_provider_desde_env() -> LLMProvider | None:
@@ -67,12 +58,10 @@ def crear_provider_desde_env() -> LLMProvider | None:
     muestre el selector interactivo).
 
     Variables de entorno reconocidas:
-      LLM_PROVIDER       = anthropic | ollama | openai_compatible
+      LLM_PROVIDER       = anthropic | openai_compatible
       ANTHROPIC_API_KEY  = sk-ant-...
       ANTHROPIC_MODEL    = claude-sonnet-4-6
-      OLLAMA_MODEL       = llama3
-      OLLAMA_BASE_URL    = http://localhost:11434
-      OPENAI_COMPATIBLE_BASE_URL = http://localhost:1234/v1
+      OPENAI_COMPATIBLE_BASE_URL = http://localhost:11434/v1  (Ollama, LM Studio, vLLM...)
       OPENAI_COMPATIBLE_API_KEY  = (opcional para APIs locales)
       OPENAI_COMPATIBLE_MODEL    = nombre-del-modelo
     """
@@ -95,12 +84,6 @@ def crear_provider_desde_env() -> LLMProvider | None:
         return AnthropicProvider(
             api_key=api_key,
             model=os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6"),
-        )
-
-    if provider_type == "ollama":
-        return OllamaProvider(
-            model=os.getenv("OLLAMA_MODEL", "llama3"),
-            base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
         )
 
     if provider_type == "openai_compatible":

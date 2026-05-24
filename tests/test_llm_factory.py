@@ -33,20 +33,6 @@ class TestCrearProvider:
             _, kwargs = mock_cls.call_args
             assert kwargs["model"] == "claude-sonnet-4-6"
 
-    def test_ollama_instancia_clase_correcta(self):
-        with patch("src.llm.factory.OllamaProvider") as mock_cls:
-            mock_cls.return_value = MagicMock()
-            crear_provider({"provider": "ollama", "model": "llama3", "base_url": "http://localhost:11434"})
-            mock_cls.assert_called_once_with(model="llama3", base_url="http://localhost:11434")
-
-    def test_ollama_modelo_por_defecto(self):
-        with patch("src.llm.factory.OllamaProvider") as mock_cls:
-            mock_cls.return_value = MagicMock()
-            crear_provider({"provider": "ollama"})
-            _, kwargs = mock_cls.call_args
-            assert kwargs["model"] == "llama3"
-            assert kwargs["base_url"] == "http://localhost:11434"
-
     def test_openai_compatible_instancia_clase_correcta(self):
         with patch("src.llm.factory.OpenAICompatibleProvider") as mock_cls:
             mock_cls.return_value = MagicMock()
@@ -100,15 +86,17 @@ class TestCrearProviderDesdeEnv:
         resultado = crear_provider_desde_env()
         assert resultado is None
 
-    def test_llm_provider_ollama_crea_ollama(self, monkeypatch):
-        monkeypatch.setenv("LLM_PROVIDER", "ollama")
-        monkeypatch.setenv("OLLAMA_MODEL", "llama3")
-        monkeypatch.setenv("OLLAMA_BASE_URL", "http://localhost:11434")
-        with patch("src.llm.factory.OllamaProvider") as mock_cls:
+    def test_openai_compatible_con_url_ollama_crea_provider(self, monkeypatch):
+        monkeypatch.setenv("LLM_PROVIDER", "openai_compatible")
+        monkeypatch.setenv("OPENAI_COMPATIBLE_BASE_URL", "http://localhost:11434/v1")
+        monkeypatch.setenv("OPENAI_COMPATIBLE_MODEL", "llama3.1")
+        with patch("src.llm.factory.OpenAICompatibleProvider") as mock_cls:
             mock_cls.return_value = MagicMock()
             resultado = crear_provider_desde_env()
             assert resultado is not None
-            mock_cls.assert_called_once()
+            _, kwargs = mock_cls.call_args
+            assert kwargs["base_url"] == "http://localhost:11434/v1"
+            assert kwargs["model"] == "llama3.1"
 
     def test_openai_compatible_sin_base_url_devuelve_none(self, monkeypatch):
         monkeypatch.setenv("LLM_PROVIDER", "openai_compatible")
