@@ -478,7 +478,20 @@ class GeneradorInforme:
             pdf.set_auto_page_break(auto=True, margin=18)
             pdf.add_page()
 
-            # Aviso legal en recuadro al inicio
+            # Recuadro rojo: información de generación
+            _texto_gen = _limpiar(
+                f"{_TEXTO_PIE} "
+                f"Fecha de generacion: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
+            )
+            pdf.set_fill_color(255, 235, 238)
+            pdf.set_draw_color(198, 40, 40)
+            pdf.set_font("Helvetica", "I", 8)
+            pdf.set_text_color(130, 20, 20)
+            pdf.multi_cell(0, 5, _texto_gen, border=1, fill=True, align="J",
+                           new_x="LMARGIN", new_y="NEXT")
+            pdf.ln(3)
+
+            # Recuadro amarillo: aviso legal
             pdf.set_fill_color(255, 243, 205)
             pdf.set_draw_color(200, 160, 0)
             pdf.set_font("Helvetica", "B", 8)
@@ -486,20 +499,17 @@ class GeneradorInforme:
             pdf.multi_cell(
                 0, 6,
                 _limpiar(
-                    "AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. "
-                    "Los resultados no constituyen asesoramiento jurídico vinculante. "
+                    "AVISO LEGAL: Este informe es una herramienta auxiliar de orientacion. "
+                    "Los resultados no constituyen asesoramiento juridico vinculante. "
                     "Consulte con especialistas antes de tomar decisiones de cumplimiento normativo."
                 ),
-                border=1,
-                fill=True,
-                new_x="LMARGIN",
-                new_y="NEXT",
+                border=1, fill=True, align="J", new_x="LMARGIN", new_y="NEXT",
             )
             pdf.ln(4)
             pdf.set_text_color(30, 30, 30)
+            pdf.set_draw_color(180, 180, 180)
 
             def _escribir_con_negrita(texto: str, h: float = 5, size: int = 10) -> None:
-                """Renderiza texto con **negrita** inline alternando fuente."""
                 partes = re.split(r"\*\*(.+?)\*\*", texto)
                 for i, parte in enumerate(partes):
                     if not parte:
@@ -509,43 +519,135 @@ class GeneradorInforme:
                 pdf.set_font("Helvetica", "", size)
                 pdf.ln(h)
 
+            # Estado para cajas de colores por obligación
+            _COLORES_OBL: dict[str, tuple[tuple[int, int, int], tuple[int, int, int], str]] = {
+                "cubierta":    ((56, 142, 60),   (232, 245, 233), "Cubierta"),
+                "parcial":     ((249, 168, 37),  (255, 248, 225), "Parcial"),
+                "carencia":    ((198, 40, 40),   (255, 235, 238), "Mejora"),
+                "no_evaluada": ((117, 117, 117), (245, 245, 245), "Sin evaluar"),
+            }
+            _obl_estado: str | None = None
+            _obl_art: str = ""
+            _obl_desc: list[str] = []
+
+            def _volcar_obl() -> None:
+                nonlocal _obl_art, _obl_desc
+                if not _obl_estado or not _obl_art:
+                    _obl_art = ""
+                    _obl_desc = []
+                    return
+                fg, bg, etiqueta = _COLORES_OBL[_obl_estado]
+                pdf.set_fill_color(*bg)
+                pdf.set_draw_color(*fg)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(*fg)
+                art_texto = _limpiar(re.sub(r"\*\*(.+?)\*\*", r"\1", _obl_art))
+                pdf.multi_cell(0, 6, f"{art_texto}  [{etiqueta}]",
+                               border="LB", fill=True, align="J",
+                               new_x="LMARGIN", new_y="NEXT")
+                if _obl_desc:
+                    pdf.set_font("Helvetica", "", 9)
+                    pdf.set_text_color(60, 60, 60)
+                    pdf.multi_cell(0, 5, _limpiar(" ".join(_obl_desc)),
+                                   fill=True, align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
+                pdf.set_draw_color(180, 180, 180)
+                pdf.set_text_color(30, 30, 30)
+                pdf.ln(2)
+                _obl_art = ""
+                _obl_desc = []
+
             for linea in contenido_markdown.split("\n"):
                 pdf.set_x(pdf.l_margin)
                 linea_limpia = linea.strip()
+
+                # Saltar pie de página (ya aparece en la caja roja del inicio)
+                if linea_limpia.startswith("*Generado por AIComply"):
+                    continue
+
                 if not linea_limpia or linea_limpia == "---":
-                    pdf.ln(3)
+                    if not (_obl_estado and _obl_art):
+                        pdf.ln(3)
                 elif linea_limpia.startswith("# "):
+                    _volcar_obl(); _obl_estado = None
                     pdf.set_font("Helvetica", "B", 15)
-                    pdf.multi_cell(0, 8, _limpiar(linea_limpia[2:]))
+                    pdf.multi_cell(0, 8, _limpiar(linea_limpia[2:]), align="J")
                     pdf.set_font("Helvetica", size=10)
                     pdf.ln(2)
                 elif linea_limpia.startswith("## "):
+                    _volcar_obl(); _obl_estado = None
                     pdf.set_font("Helvetica", "B", 12)
-                    pdf.multi_cell(0, 7, _limpiar(linea_limpia[3:]))
+                    pdf.multi_cell(0, 7, _limpiar(linea_limpia[3:]), align="J")
                     pdf.set_font("Helvetica", size=10)
                     pdf.ln(1)
-                elif linea_limpia.startswith("### "):
+                elif linea_limpia.startswith("### Obligaciones cubiertas"):
+                    _volcar_obl(); _obl_estado = "cubierta"
                     pdf.set_font("Helvetica", "B", 10)
-                    pdf.multi_cell(0, 6, _limpiar(linea_limpia[4:]))
+                    pdf.set_text_color(56, 142, 60)
+                    pdf.multi_cell(0, 6, "Obligaciones cubiertas", align="L")
+                    pdf.set_text_color(30, 30, 30)
+                    pdf.set_font("Helvetica", size=10)
+                elif linea_limpia.startswith("### Obligaciones parcialmente"):
+                    _volcar_obl(); _obl_estado = "parcial"
+                    pdf.set_font("Helvetica", "B", 10)
+                    pdf.set_text_color(249, 168, 37)
+                    pdf.multi_cell(0, 6, "Obligaciones parcialmente cubiertas", align="L")
+                    pdf.set_text_color(30, 30, 30)
+                    pdf.set_font("Helvetica", size=10)
+                elif "reas de mejora" in linea_limpia and linea_limpia.startswith("### "):
+                    _volcar_obl(); _obl_estado = "carencia"
+                    pdf.set_font("Helvetica", "B", 10)
+                    pdf.set_text_color(198, 40, 40)
+                    pdf.multi_cell(0, 6, "Areas de mejora", align="L")
+                    pdf.set_text_color(30, 30, 30)
+                    pdf.set_font("Helvetica", size=10)
+                elif linea_limpia.startswith("### Obligaciones no evaluadas"):
+                    _volcar_obl(); _obl_estado = "no_evaluada"
+                    pdf.set_font("Helvetica", "B", 10)
+                    pdf.set_text_color(117, 117, 117)
+                    pdf.multi_cell(0, 6, "Obligaciones no evaluadas", align="L")
+                    pdf.set_text_color(30, 30, 30)
+                    pdf.set_font("Helvetica", size=10)
+                elif linea_limpia.startswith("### "):
+                    _volcar_obl(); _obl_estado = None
+                    pdf.set_font("Helvetica", "B", 10)
+                    pdf.multi_cell(0, 6, _limpiar(linea_limpia[4:]), align="J")
                     pdf.set_font("Helvetica", size=10)
                 elif linea_limpia.startswith("#### "):
+                    _volcar_obl(); _obl_estado = None
                     pdf.set_font("Helvetica", "BI", 10)
-                    pdf.multi_cell(0, 6, _limpiar(linea_limpia[5:]))
+                    pdf.multi_cell(0, 6, _limpiar(linea_limpia[5:]), align="J")
                     pdf.set_font("Helvetica", size=10)
+                elif _obl_estado is not None and linea_limpia.startswith("**"):
+                    _volcar_obl()
+                    _obl_art = linea_limpia
+                elif _obl_estado is not None and _obl_art and linea_limpia:
+                    _obl_desc.append(linea_limpia)
+                elif _obl_estado is not None:
+                    pass  # líneas vacías dentro de sección de obligaciones
                 elif linea_limpia.startswith("> "):
                     pdf.set_font("Helvetica", "I", 9)
                     pdf.set_text_color(80, 80, 80)
                     _escribir_con_negrita(linea_limpia[2:], h=5, size=9)
                     pdf.set_text_color(30, 30, 30)
                 elif linea_limpia.startswith(("- ", "* ")):
-                    pdf.write(5, _limpiar("  •  "))
+                    pdf.write(5, _limpiar("  -  "))
                     _escribir_con_negrita(linea_limpia[2:])
                 elif linea_limpia.startswith("|"):
                     pdf.set_font("Helvetica", size=9)
-                    pdf.multi_cell(0, 5, _limpiar(linea_limpia))
+                    pdf.multi_cell(0, 5, _limpiar(linea_limpia), align="J")
                     pdf.set_font("Helvetica", size=10)
+                elif (linea_limpia.startswith("*") and linea_limpia.endswith("*")
+                      and not linea_limpia.startswith("**")):
+                    pdf.set_font("Helvetica", "I", 9)
+                    pdf.set_text_color(80, 80, 80)
+                    pdf.multi_cell(0, 5, _limpiar(linea_limpia[1:-1]), align="J")
+                    pdf.set_font("Helvetica", size=10)
+                    pdf.set_text_color(30, 30, 30)
                 else:
                     _escribir_con_negrita(linea_limpia)
+
+            _volcar_obl()  # volcar último bloque si quedó pendiente
 
             return bytes(pdf.output())
         except ImportError as exc:
