@@ -280,8 +280,12 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     if not rate_limiter.consumir(sid, coste=2):
                         st.warning("Ha alcanzado el límite de peticiones. Espere un momento.")
                         st.stop()
-                    with st.spinner("Analizando documentación..."):
-                        descripcion = _analizar_readme(provider, contenido_readme)
+                    try:
+                        with st.spinner("Analizando documentación..."):
+                            descripcion = _analizar_readme(provider, contenido_readme)
+                    except Exception as exc:
+                        st.error(mensaje_error_seguro(exc))
+                        st.stop()
 
                     mensaje_inicio = (
                         "He analizado la documentación técnica proporcionada. "
