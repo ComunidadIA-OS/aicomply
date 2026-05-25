@@ -1,0 +1,25 @@
+{
+  "obligaciones": [
+    {
+      "articulo": "Art. 4",
+      "titulo": "Alfabetización en IA del personal",
+      "descripcion": "El personal que trabaja con el sistema de optimización de hornos industriales (operadores, supervisores de turno, responsables de planta) debe tener conocimientos suficientes para entender qué hace el sistema, cuáles son sus límites y cómo supervisarlo correctamente.",
+      "estado": "parcial"
+    }
+  ],
+  "carencias_detectadas": [
+    "La formación actual (manual y visita técnica puntual) no está formalizada con registro de asistencia ni evaluación de comprensión",
+    "No existe una periodicidad establecida para la actualización de la formación",
+    "No se garantiza la cobertura formativa ante rotación de personal o cambios en el sistema",
+    "El personal puede saber operar el sistema sin comprender sus limitaciones, cuándo no fiarse de sus recomendaciones o cómo actuar ante comportamientos inesperados"
+  ],
+  "puntos_revision_profesional": [
+    "Si el sistema se amplía para tomar decisiones que afecten a trabajadores (turnos, rendimiento, acceso a recursos), podría entrar en la categoría de Empleo y gestión de trabajadores del Anexo III y pasar a clasificarse como alto riesgo",
+    "Si el sistema se comercializa o cede a terceras empresas, la organización pasaría a tener obligaciones plenas de Proveedor externo con requisitos adicionales significativos",
+    "Si se incorporan capacidades de procesamiento de datos personales o biométricos, la clasificación de riesgo podría cambiar",
+    "Posible reclasificación como sistema de alto riesgo si el sistema se amplía para afectar a decisiones sobre trabajadores",
+    "Posible reclasificación como sistema de alto riesgo si el sistema se comercializa a terceros",
+    "Posible reclasificación como sistema de alto riesgo si el sistema incorpora procesamiento de datos personales"
+  ],
+  "resumen_cumplimiento": "El sistema de optimización de hornos industriales ha sido clasificado como riesgo mínimo bajo el AI Act, con una única obligación activa: la alfabetización en IA del personal (Art. 4). Esta obligación se encuentra en cumplimiento parcial, ya que existe un manual y una sesión técnica inicial, pero falta formalización, evaluación y continuidad en la formación. Se identifican tres escenarios futuros que podrían requerir una reclasificación a alto riesgo y una revisión profesional especializada."
+}
