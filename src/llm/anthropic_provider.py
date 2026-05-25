@@ -42,7 +42,7 @@ class AnthropicProvider(LLMProvider):
         model: str = "claude-sonnet-4-6",
         max_tokens: int = 2048,
     ):
-        self.client = anthropic.Anthropic(api_key=api_key)
+        self.client = anthropic.Anthropic(api_key=api_key, timeout=60.0)
         self._model = model
         self.max_tokens = max_tokens
 

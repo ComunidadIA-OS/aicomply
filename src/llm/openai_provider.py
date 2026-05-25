@@ -45,6 +45,7 @@ class OpenAICompatibleProvider(LLMProvider):
         self.client = OpenAI(
             api_key=api_key or "dummy",
             base_url=base_url,
+            timeout=60.0,
         )
         self._model = model
         self.max_tokens = max_tokens
