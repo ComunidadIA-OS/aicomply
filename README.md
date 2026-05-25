@@ -54,6 +54,26 @@ Además, el evaluador detecta y gestiona **roles múltiples** (Considerando 83):
 
 **Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), grado de cumplimiento estimado y plan de acción priorizado por horizonte temporal.
 
+## Seguridad por diseño
+
+AIComply sigue un modelo de seguridad mínimo viable adecuado para una herramienta de demostración y evaluación que no persiste datos ni gestiona autenticación. Los principios aplicados son:
+
+**Sin persistencia de datos.** Ninguna conversación ni documento analizado se almacena entre sesiones. Todo ocurre en memoria durante la sesión activa.
+
+**Modelo BYOK (Bring Your Own Key).** La herramienta no incluye claves de API propias. El usuario aporta su propia clave mediante variables de entorno o el selector interactivo de la interfaz. Las claves nunca se incluyen en el código fuente.
+
+**Modelos locales — privacidad total.** Ollama, LM Studio y otros servidores compatibles con OpenAI se configuran apuntando al endpoint `/v1/chat/completions` local. En este modo ningún dato abandona la infraestructura del usuario.
+
+**Control de destinos de red (SSRF).** La variable `AICOMPLY_MODE=hosted` activa la validación de la URL base del provider antes de establecer la conexión, bloqueando loopback (127.x, ::1), rangos RFC1918 (10.x, 172.16–31.x, 192.168.x) y la dirección de metadata de instancia (169.254.169.254). Por defecto (`local`) no hay restricciones, lo que facilita el uso con Ollama en localhost durante el desarrollo.
+
+**Rate limiting por sesión.** Cada sesión dispone de un token bucket en memoria de proceso (burst de 30 mensajes, recarga de 0,5 tokens/s). Evita el abuso en despliegues expuestos sin necesidad de autenticación.
+
+**Validación de entradas.** Los campos de texto tienen límites de longitud (`max_chars`). La interpolación de contenido de usuario en prompts usa `.replace()` en lugar de `.format()`, evitando `KeyError` por llaves literales. La salida del LLM se escapa con `html.escape()` antes de inyectarse en HTML con `unsafe_allow_html=True`.
+
+**Errores seguros.** Los mensajes mostrados al usuario son genéricos y no filtran detalles internos. El detalle completo queda en el log del servidor.
+
+Para más detalle, consulte [SECURITY.md](SECURITY.md).
+
 ## Comparativa con otras herramientas
 
 | Herramienta | Tipo | Idioma | Conversacional con LLM | Corpus normativo en español | Orientada a PYMEs | Precio |
@@ -290,6 +310,7 @@ aicomply/
 ├── pyproject.toml                      # Metadatos y dependencias del paquete
 ├── src/
 │   ├── chatbot.py                      # Lógica de conversación con el LLM
+│   ├── security.py                     # Errores seguros, rate limiting, validación SSRF
 │   ├── report_generator.py             # Generación de informes (PDF + texto)
 │   ├── tabs/
 │   │   ├── evaluador.py                # Pestaña 1: árbol de decisión
@@ -332,15 +353,15 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 |-----------|--------|-------------|
 | `streamlit` | Preexistente | Framework de interfaz web |
 | `anthropic` SDK | Preexistente | Cliente oficial de la API de Anthropic |
-| `openai` SDK | Preexistente | Cliente para APIs compatibles con OpenAI |
-| `httpx` | Preexistente | Cliente HTTP para la API REST de Ollama |
+| `openai` SDK | Preexistente | Cliente para APIs compatibles con OpenAI (Ollama, LM Studio, Groq…) |
 | `scikit-learn` | Preexistente | Motor TF-IDF para el vectorstore |
 | `fpdf2` | Preexistente | Generación de PDF |
 | `python-dotenv` | Preexistente | Gestión de variables de entorno |
 | Lógica de conversación (`src/chatbot.py`) | **Original** | Orquestación del flujo multi-fase con el LLM |
 | Árbol de decisión AI Act (`src/tabs/evaluador.py`) | **Original** | Evaluación de riesgo basada en Art. 5, 6 y Anexo III |
 | Análisis de cumplimiento (`src/tabs/cumplimiento.py`) | **Original** | Recorrido de obligaciones por rol y nivel de riesgo |
-| Abstracción multi-provider (`src/llm/`) | **Original** | Clase abstracta + 4 implementaciones intercambiables |
+| Abstracción multi-provider (`src/llm/`) | **Original** | Clase abstracta + implementaciones intercambiables |
+| Seguridad (`src/security.py`) | **Original** | Errores seguros, validación SSRF, rate limiting por sesión |
 | Vectorstore TF-IDF (`src/rag/`) | **Original** | Recuperación semántica sin dependencias de FAISS |
 | Prompts de sistema (`prompts/`) | **Original** | Instrucciones especializadas para evaluador y cumplimiento |
 | Corpus JSON del AI Act (`data/ai_act/`) | **Original** | 25 artículos estructurados con metadatos normativos |
