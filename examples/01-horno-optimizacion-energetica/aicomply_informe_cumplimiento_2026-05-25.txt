@@ -1,0 +1,59 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: Sistema de apoyo a la decisión operativa que optimiza ciclos de calentamiento de un horno industrial combinando reglas deterministas y un modelo de regresión estadística multivariable. Su objetivo es reducir el coste energético por lote producido en función del precio horario de la electricidad y los costes de materias primas. Requiere validación explícita del supervisor de turno antes de cualquier acción y no procesa datos de personas físicas.  
+Sector: Industria manufacturera — fundición y tratamiento térmico de aleaciones metálicas  
+Clasificación: MINIMO  
+Rol de la entidad: Proveedor  
+Fecha: 25/05/2026 a las 23:32  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como MINIMO con rol proveedor.
+
+El sistema de optimización de hornos industriales ha sido clasificado como riesgo mínimo bajo el AI Act, con una única obligación activa: la alfabetización en IA del personal (Art. 4). Esta obligación se encuentra en cumplimiento parcial, ya que existe un manual y una sesión técnica inicial, pero falta formalización, evaluación y continuidad en la formación. Se identifican tres escenarios futuros que podrían requerir una reclasificación a alto riesgo y una revisión profesional especializada.
+
+2. Análisis de obligaciones
+
+Grado de cumplimiento estimado: 50 %  
+Cubiertas: 0   Parciales: 1   Áreas de mejora: 0   Sin evaluar: 0
+
+Las obligaciones se presentan agrupadas. El rol específico de cada una se indica en la descripción.
+
+Obligaciones parcialmente cubiertas
+
+Art. 4 — Alfabetización en IA  
+El personal que trabaja con el sistema de optimización de hornos industriales (operadores, supervisores de turno, responsables de planta) debe tener conocimientos suficientes para entender qué hace el sistema, cuáles son sus límites y cómo supervisarlo correctamente.  
+
+3. Áreas de mejora identificadas
+
+- La formación actual (manual y visita técnica puntual) no está formalizada con registro de asistencia ni evaluación de comprensión
+- No existe una periodicidad establecida para la actualización de la formación
+- No se garantiza la cobertura formativa ante rotación de personal o cambios en el sistema
+- El personal puede saber operar el sistema sin comprender sus limitaciones, cuándo no fiarse de sus recomendaciones o cómo actuar ante comportamientos inesperados
+
+4. Plan de acción recomendado
+
+- Recomendado: Documentar internamente las capacidades y limitaciones del sistema.
+- Opcional: Considerar la adhesión a códigos de conducta voluntarios (Art. 95).
+- Vigilancia: Supervisar cambios en el uso que puedan elevar el nivel de riesgo.
+- Áreas de mejora prioritarias: 4 área(s) identificada(s) en el análisis de cumplimiento que requieren atención.
+
+5. Puntos que requieren revisión profesional
+
+- Si el sistema se amplía para tomar decisiones que afecten a trabajadores (turnos, rendimiento, acceso a recursos), podría entrar en la categoría de Empleo y gestión de trabajadores del Anexo III y pasar a clasificarse como alto riesgo
+- Si el sistema se comercializa o cede a terceras empresas, la organización pasaría a tener obligaciones plenas de Proveedor externo con requisitos adicionales significativos
+- Si se incorporan capacidades de procesamiento de datos personales o biométricos, la clasificación de riesgo podría cambiar
+- Posible reclasificación como sistema de alto riesgo si el sistema se amplía para afectar a decisiones sobre trabajadores
+- Posible reclasificación como sistema de alto riesgo si el sistema se comercializa a terceros
+- Posible reclasificación como sistema de alto riesgo si el sistema incorpora procesamiento de datos personales
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Reglamento de referencia: Reglamento (UE) 2024/1689. Fecha de generación: 25/05/2026 a las 23:32.
