@@ -1,0 +1,76 @@
+{
+  "clasificacion": "LIMITADO",
+  "estados_adicionales": [],
+  "rol": "proveedor",
+  "roles_multiples": ["proveedor", "implementador"],
+  "nodos_recorridos": [
+    {
+      "pregunta": "¿El sistema cumple la definición de sistema de IA según el Art. 3.1?",
+      "respuesta": "Sí — el sistema recibe texto en lenguaje natural, infiere qué tratamientos corresponden a la descripción del cliente y genera una recomendación de fecha y hora; hay inferencia automática a partir de la entrada",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "Tipo de entidad",
+      "respuesta": "Proveedor e Implementador — la entidad desarrolló el sistema y lo opera en su propio local",
+      "origen": "respuesta directa"
+    },
+    {
+      "pregunta": "¿Se han realizado modificaciones relevantes sobre el sistema por un agente externo (Art. 25)?",
+      "respuesta": "No aplica — la entidad es el propio desarrollador, sin proveedor original distinto",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿El sistema entra en alguna categoría de alto riesgo del Anexo I, Sección B (transporte y aviación)?",
+      "respuesta": "No aplica — sistema de gestión de citas para peluquería, sin relación con el sector del transporte",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿El sistema entra en alguna categoría de alto riesgo del Anexo I, Sección A (productos regulados)?",
+      "respuesta": "No aplica — el sistema no es componente de ningún producto físico regulado",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿El sistema entra en alguna categoría de alto riesgo del Anexo III?",
+      "respuesta": "No aplica — el sistema no procesa biometría, no gestiona infraestructuras críticas, no toma decisiones sobre acceso a servicios esenciales ni sobre empleo, y no interviene en aplicación de la ley, migración o justicia",
+      "origen": "respuesta directa"
+    },
+    {
+      "pregunta": "Ámbito territorial de aplicación (Art. 2)",
+      "respuesta": "Aplicable — local operativo en la UE",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿El sistema es un modelo de IA de propósito general (GPAI)?",
+      "respuesta": "No — propósito único y delimitado (gestión de citas para peluquería)",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿Aplica alguna exclusión del ámbito de aplicación (Art. 2)?",
+      "respuesta": "Ninguna aplicable — sistema en uso productivo real",
+      "origen": "inferencia confirmada"
+    },
+    {
+      "pregunta": "¿El sistema realiza alguna práctica prohibida (Art. 5)?",
+      "respuesta": "Ninguna — no manipula, no categoriza biométricamente, no puntúa socialmente ni realiza ninguna de las prácticas del Art. 5",
+      "origen": "respuesta directa"
+    },
+    {
+      "pregunta": "¿El sistema tiene obligaciones de transparencia (Art. 50)?",
+      "respuesta": "Sí — el sistema interactúa directamente con clientes a través de una interfaz conversacional; aplica Art. 50.1",
+      "origen": "respuesta directa"
+    },
+    {
+      "pregunta": "¿La entidad es un organismo público o presta servicios públicos como implementador (Art. 27)?",
+      "respuesta": "No — peluquería privada; no aplica evaluación de impacto sobre derechos fundamentales",
+      "origen": "inferencia confirmada"
+    }
+  ],
+  "puntos_indeterminados": [],
+  "descripcion_sistema": "Sistema de gestión de citas para peluquería que interpreta descripciones en lenguaje natural de los clientes, identifica los tratamientos solicitados, estima su duración y recomienda los huecos horarios disponibles compatibles con la agenda del profesional. El sistema interactúa directamente con los clientes a través de una interfaz conversacional. Ha sido desarrollado y es utilizado por la misma entidad en su propio local.",
+  "sector": "Servicios de peluquería y estética",
+  "obligaciones_preliminares": [
+    "Alfabetización en IA para las personas de la organización que trabajan con el sistema (Art. 4)",
+    "Informar a los clientes de que están interactuando con un sistema de IA al inicio de la interacción (Art. 50.1)",
+    "Usar el sistema dentro de los límites de su finalidad prevista como Implementador (Art. 26)"
+  ]
+}

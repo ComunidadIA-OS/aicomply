@@ -1,0 +1,66 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: Sistema de gestión de citas para peluquería que interpreta descripciones en lenguaje natural de los clientes, identifica los tratamientos solicitados, estima su duración y recomienda los huecos horarios disponibles compatibles con la agenda del profesional. El sistema interactúa directamente con los clientes a través de una interfaz conversacional. Ha sido desarrollado y es utilizado por la misma entidad en su propio local.  
+Sector: Servicios de peluquería y estética  
+Clasificación: LIMITADO  
+Rol de la entidad: Proveedor  
+Fecha: 26/05/2026 a las 00:26  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como LIMITADO con rol proveedor.
+
+El sistema de gestión de citas para peluquería presenta un nivel de cumplimiento generalmente sólido, con cuatro de las cinco obligaciones evaluadas en estado conforme o inaplicable. La única carencia identificada se localiza en el artículo 4, relativo a la alfabetización en IA, dado que el responsable del sistema reconoce no tener conocimiento estructurado sobre su propio funcionamiento. Esta carencia deberá subsanarse mediante formación específica proporcional al rol de proveedor e implementador.
+
+2. Análisis de obligaciones
+
+Grado de cumplimiento estimado: 80 %  
+Cubiertas: 4   Parciales: 0   Áreas de mejora: 1   Sin evaluar: 0
+
+Las obligaciones se presentan agrupadas. El rol específico de cada una se indica en la descripción.
+
+Obligaciones cubiertas
+
+Art. 50.1 — Información al usuario sobre interacción con IA  
+Al inicio de cada conversación aparece un recuadro en rojo que informa al cliente de que está interactuando con un sistema de inteligencia artificial.  
+
+Art. 50.2 — Marcado de contenido sintético  
+El sistema no genera imágenes, audio ni vídeo producidos por IA, únicamente texto conversacional, por lo que esta obligación no resulta aplicable.  
+
+Art. 50.3 — Información sobre análisis biométrico o emocional  
+El sistema no analiza emociones, tonos de voz, expresiones faciales ni ningún otro dato biométrico de los clientes, por lo que esta obligación no resulta aplicable.  
+
+Art. 26 — Uso del sistema dentro de su finalidad prevista  
+El sistema se utiliza exclusivamente para la gestión de citas de peluquería, sin haberse ampliado a funciones no previstas en su diseño original.  
+
+Áreas de mejora
+
+Art. 4 — Alfabetización en IA del personal  
+El único responsable del sistema es su propio desarrollador, quien reconoce no tener un conocimiento estructurado sobre el funcionamiento, capacidades y limitaciones del sistema que desarrolla y opera.  
+
+3. Áreas de mejora identificadas
+
+- El responsable del sistema, que actúa simultáneamente como desarrollador e implementador, no dispone de un conocimiento suficiente y estructurado sobre el funcionamiento, capacidades y limitaciones del sistema de IA, incumpliendo la obligación de alfabetización en IA exigida por el artículo 4 del AI Act.
+
+4. Plan de acción recomendado
+
+- Inmediato: Añadir aviso claro en la interfaz de que el sistema usa IA (Art. 50.1).
+- Corto plazo: Implementar el marcado de contenido generado por IA si aplica (Art. 50.2).
+- Recomendado: Revisar anualmente las actualizaciones del AI Act.
+- Áreas de mejora prioritarias: 1 área(s) identificada(s) en el análisis de cumplimiento que requieren atención.
+
+5. Puntos que requieren revisión profesional
+
+- Verificar que el aviso mostrado al usuario mediante el recuadro en rojo cumple con todos los requisitos formales y de contenido exigidos por el artículo 50.1 del AI Act, incluyendo su legibilidad, comprensibilidad y momento de aparición.
+- Determinar qué nivel concreto de conocimiento sobre IA es exigible al responsable en su doble rol de proveedor e implementador, y diseñar un plan de formación proporcional a dicho rol.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Reglamento de referencia: Reglamento (UE) 2024/1689. Fecha de generación: 26/05/2026 a las 00:26.

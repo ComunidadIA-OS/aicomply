@@ -1,0 +1,45 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: Sistema de gestión de citas para peluquería que interpreta descripciones en lenguaje natural de los clientes, identifica los tratamientos solicitados, estima su duración y recomienda los huecos horarios disponibles compatibles con la agenda del profesional. El sistema interactúa directamente con los clientes a través de una interfaz conversacional. Ha sido desarrollado y es utilizado por la misma entidad en su propio local.  
+Sector: Servicios de peluquería y estética  
+Clasificación: LIMITADO  
+Rol de la entidad: Proveedor  
+Fecha: 26/05/2026 a las 00:26  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como LIMITADO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como proveedor. Se han identificado además los siguientes roles adicionales: Proveedor, Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: LIMITADO  
+Descripción: Sistema de IA de riesgo limitado (Art. 50)
+
+Rol principal de la entidad: Proveedor
+
+Roles adicionales identificados:
+- Proveedor
+- Implementador
+
+Su organización actúa en varios roles bajo el AI Act. Las obligaciones de cada rol se detallan en la sección correspondiente.
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA para las personas de la organización que trabajan con el sistema (Art. 4)
+- Informar a los clientes de que están interactuando con un sistema de IA al inicio de la interacción (Art. 50.1)
+- Usar el sistema dentro de los límites de su finalidad prevista como Implementador (Art. 26)
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Reglamento de referencia: Reglamento (UE) 2024/1689. Fecha de generación: 26/05/2026 a las 00:26.
