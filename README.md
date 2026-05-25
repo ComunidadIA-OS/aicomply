@@ -102,6 +102,10 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ![Conversación con el evaluador de riesgo](assets/03-evaluador-chat.png)
 
+### Pestaña Evaluador — evaluación completada
+
+![Evaluación completada con clasificación y rol identificados](assets/034-evaluador-final.jpeg)
+
 ### Resultado de la clasificación y análisis de cumplimiento
 
 ![Resultado clasificación con nivel de riesgo, rol y trazabilidad de obligaciones](assets/04-clasificacion.png)
