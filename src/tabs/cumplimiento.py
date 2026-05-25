@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import html
 import streamlit as st
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.chatbot import AIComplyChat
 from src.llm.provider import LLMProvider
+from src.security import mensaje_error_seguro
 
 _NIVELES_OPCIONES: dict[str, str] = {
     "Mínimo — Sin obligaciones específicas del AI Act": "MINIMO",
@@ -171,11 +173,7 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
                         texto += fragmento
                         placeholder.markdown(texto + "▌")
                 except Exception as exc:
-                    msg_err = str(exc)
-                    if "Connection refused" in msg_err or "ConnectError" in msg_err:
-                        texto = "_Error: no se puede conectar con el proveedor de IA. Compruebe la configuración._"
-                    else:
-                        texto = f"_Error al conectar con el modelo: {msg_err}_"
+                    texto = f"_{mensaje_error_seguro(exc)}_"
                 placeholder.markdown(texto)
 
         st.session_state.mensajes_cumplimiento.append({"role": "assistant", "content": texto})
@@ -313,9 +311,9 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
                 for o in obligaciones:
                     estado = o.get("estado", "no_evaluada")
                     color, bg, etiqueta = _ESTADO_ESTILO.get(estado, _ESTADO_ESTILO["no_evaluada"])
-                    articulo = o.get("articulo", "")
-                    titulo = o.get("titulo", "")
-                    descripcion = o.get("descripcion", "")
+                    articulo = html.escape(o.get("articulo", ""))
+                    titulo = html.escape(o.get("titulo", ""))
+                    descripcion = html.escape(o.get("descripcion", ""))
                     st.markdown(
                         f'<div style="background:{bg}; border-left:4px solid {color}; '
                         f'border-radius:4px; padding:8px 14px; margin-bottom:8px;">'

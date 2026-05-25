@@ -18,6 +18,7 @@ import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.llm.provider import LLMProvider
+from src.security import mensaje_error_seguro
 
 # ── Pirámide SVG de niveles de riesgo ─────────────────────────────────────────
 # Vértice: (210, 20). Base: (6, 320) — (414, 320). Pendiente: 204/300.
@@ -206,11 +207,7 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
                             texto_raw.replace(_SENAL_COMPLETA, "").strip() + "▌"
                         )
                 except Exception as exc:
-                    msg_err = str(exc)
-                    if "Connection refused" in msg_err or "ConnectError" in msg_err:
-                        texto_raw = "_Error: no se puede conectar con el proveedor de IA. Compruebe la configuración en la barra lateral._"
-                    else:
-                        texto_raw = f"_Error al conectar con el modelo: {msg_err}_"
+                    texto_raw = f"_{mensaje_error_seguro(exc)}_"
 
                 texto_visible = texto_raw.replace(_SENAL_COMPLETA, "").strip()
                 placeholder.markdown(texto_visible)

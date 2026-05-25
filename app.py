@@ -24,6 +24,7 @@ from config import (
 )
 from src.chatbot import AIComplyChat
 from src.llm.factory import crear_provider, crear_provider_desde_env
+from src.security import mensaje_error_seguro
 from src.tabs.cumplimiento import mostrar_tab_cumplimiento
 from src.tabs.evaluador import mostrar_tab_evaluador
 from src.tabs.informe import mostrar_tab_informe
@@ -349,7 +350,7 @@ def mostrar_selector_provider() -> None:
             st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
             st.rerun()
         except Exception as exc:
-            st.error(f"Error al configurar el proveedor: {exc}")
+            st.error(mensaje_error_seguro(exc))
 
 
 if not st.session_state.provider_configurado:
