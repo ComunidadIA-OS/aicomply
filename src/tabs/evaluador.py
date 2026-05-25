@@ -113,7 +113,7 @@ def _analizar_readme(provider: LLMProvider, contenido: str) -> str:
         messages=[
             {
                 "role": "user",
-                "content": _PROMPT_README_A_DESCRIPCION.format(contenido=contenido[:8000]),
+                "content": _PROMPT_README_A_DESCRIPCION.replace("{contenido}", contenido[:8000]),
             }
         ]
     )
@@ -188,7 +188,7 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
     if st.session_state.evaluacion_completada:
         return
 
-    if prompt := st.chat_input("Escriba su respuesta aquí..."):
+    if prompt := st.chat_input("Escriba su respuesta aquí...", max_chars=4000):
         st.session_state.mensajes_evaluador.append({"role": "user", "content": prompt})
 
         with chat_container:
@@ -258,6 +258,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     height=120,
                     placeholder="Pegue el contenido de su README o documentación técnica...",
                     key="readme_paste",
+                    max_chars=8000,
                 )
 
             _MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico

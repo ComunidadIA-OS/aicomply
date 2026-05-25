@@ -73,7 +73,7 @@ def _formatear_contexto_evaluacion(datos: dict) -> str:
 def _inicializar_chatbot_cumplimiento(provider: LLMProvider, clasificacion_data: dict) -> AIComplyChat:
     """Crea el chatbot de cumplimiento con el prompt enriquecido con la clasificación."""
     contexto = _formatear_contexto_evaluacion(clasificacion_data)
-    prompt = SYSTEM_PROMPT_CUMPLIMIENTO.format(contexto_evaluacion=contexto)
+    prompt = SYSTEM_PROMPT_CUMPLIMIENTO.replace("{contexto_evaluacion}", contexto)
     return AIComplyChat(provider=provider, system_prompt_override=prompt, max_historial=50)
 
 
@@ -156,7 +156,7 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
     if st.session_state.cumplimiento_completado:
         return
 
-    if prompt := st.chat_input("Escriba su respuesta o pregunta..."):
+    if prompt := st.chat_input("Escriba su respuesta o pregunta...", max_chars=4000):
         st.session_state.mensajes_cumplimiento.append({"role": "user", "content": prompt})
 
         with chat_container:
@@ -196,6 +196,7 @@ def _mostrar_formulario_acceso_directo() -> None:
         placeholder="¿Qué hace el sistema? ¿En qué sector opera? ¿Cómo toma decisiones que afectan a personas?",
         height=110,
         key="form_acceso_descripcion",
+        max_chars=4000,
     )
 
     nivel_label = st.selectbox(
@@ -283,7 +284,7 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
     # ── Estado completado ──────────────────────────────────────────────────────
     if st.session_state.cumplimiento_completado:
         datos = st.session_state.cumplimiento_data
-        carencias = datos.get("carencias_detectadas", datos.get("gaps_detectados", []))
+        carencias = datos.get("carencias_detectadas", [])
         obligaciones = datos.get("obligaciones", [])
 
         cubierta = sum(1 for o in obligaciones if o.get("estado") == "cubierta")
