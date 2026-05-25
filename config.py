@@ -23,6 +23,11 @@ load_dotenv()
 # Para Ollama: use openai_compatible con OPENAI_COMPATIBLE_BASE_URL=http://localhost:11434/v1
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "")
 
+# ── Modo de despliegue ─────────────────────────────────────────────────────────
+# "local"  — sin restricciones de red (por defecto; apto para demos y desarrollo)
+# "hosted" — bloquea URLs internas (loopback, RFC1918, metadata) para prevenir SSRF
+AICOMPLY_MODE = os.getenv("AICOMPLY_MODE", "local")
+
 # ── Anthropic Claude ───────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")

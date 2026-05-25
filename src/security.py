@@ -149,3 +149,8 @@ class TokenBucketSesion:
                 bucket["tokens"] -= coste
                 return True
             return False
+
+
+# Instancia compartida: burst de 30 mensajes, recarga 1 token/2 s (30/min en steady state).
+# Para producción multiusuario real, sustituir por almacén compartido (Redis/Upstash).
+rate_limiter = TokenBucketSesion(capacidad=30, tasa_recarga=0.5)

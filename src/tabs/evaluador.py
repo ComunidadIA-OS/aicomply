@@ -18,7 +18,7 @@ import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.llm.provider import LLMProvider
-from src.security import mensaje_error_seguro
+from src.security import mensaje_error_seguro, rate_limiter
 
 # ── Pirámide SVG de niveles de riesgo ─────────────────────────────────────────
 # Vértice: (210, 20). Base: (6, 320) — (414, 320). Pendiente: 204/300.
@@ -199,15 +199,19 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
             with st.chat_message("assistant"):
                 placeholder = st.empty()
                 texto_raw = ""
-                try:
-                    for fragmento in chatbot.chat_stream(prompt):
-                        texto_raw += fragmento
-                        # Mostrar sin la señal técnica
-                        placeholder.markdown(
-                            texto_raw.replace(_SENAL_COMPLETA, "").strip() + "▌"
-                        )
-                except Exception as exc:
-                    texto_raw = f"_{mensaje_error_seguro(exc)}_"
+                sid = st.session_state.get("session_id", "anon")
+                if not rate_limiter.consumir(sid):
+                    texto_raw = "_Ha alcanzado el límite de mensajes. Espere un momento antes de continuar._"
+                else:
+                    try:
+                        for fragmento in chatbot.chat_stream(prompt):
+                            texto_raw += fragmento
+                            # Mostrar sin la señal técnica
+                            placeholder.markdown(
+                                texto_raw.replace(_SENAL_COMPLETA, "").strip() + "▌"
+                            )
+                    except Exception as exc:
+                        texto_raw = f"_{mensaje_error_seguro(exc)}_"
 
                 texto_visible = texto_raw.replace(_SENAL_COMPLETA, "").strip()
                 placeholder.markdown(texto_visible)
@@ -272,6 +276,10 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
 
             if contenido_readme:
                 if st.button("Analizar documentación e iniciar evaluación", type="primary"):
+                    sid = st.session_state.get("session_id", "anon")
+                    if not rate_limiter.consumir(sid, coste=2):
+                        st.warning("Ha alcanzado el límite de peticiones. Espere un momento.")
+                        st.stop()
                     with st.spinner("Analizando documentación..."):
                         descripcion = _analizar_readme(provider, contenido_readme)
 

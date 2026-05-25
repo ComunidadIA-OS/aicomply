@@ -14,7 +14,10 @@
 
 import streamlit as st
 
+import uuid
+
 from config import (
+    AICOMPLY_MODE,
     ANTHROPIC_API_KEY,
     ANTHROPIC_MODEL,
     DISCLAIMER_INICIAL,
@@ -24,7 +27,7 @@ from config import (
 )
 from src.chatbot import AIComplyChat
 from src.llm.factory import crear_provider, crear_provider_desde_env
-from src.security import mensaje_error_seguro
+from src.security import mensaje_error_seguro, validar_base_url
 from src.tabs.cumplimiento import mostrar_tab_cumplimiento
 from src.tabs.evaluador import mostrar_tab_evaluador
 from src.tabs.informe import mostrar_tab_informe
@@ -142,6 +145,9 @@ def _init_session() -> None:
 
     if "chatbot_cumplimiento" not in st.session_state:
         st.session_state.chatbot_cumplimiento = None
+
+    if "session_id" not in st.session_state:
+        st.session_state.session_id = str(uuid.uuid4())
 
 
 _init_session()
@@ -322,6 +328,9 @@ def mostrar_selector_provider() -> None:
 
         if not base_url or not modelo:
             st.warning("Introduzca la URL base y el nombre del modelo para continuar.")
+            privacidad_valida = False
+        elif error_url := validar_base_url(base_url, AICOMPLY_MODE):
+            st.error(error_url)
             privacidad_valida = False
 
         config_provider = {

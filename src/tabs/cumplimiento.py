@@ -18,7 +18,7 @@ import streamlit as st
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.chatbot import AIComplyChat
 from src.llm.provider import LLMProvider
-from src.security import mensaje_error_seguro
+from src.security import mensaje_error_seguro, rate_limiter
 
 _NIVELES_OPCIONES: dict[str, str] = {
     "Mínimo — Sin obligaciones específicas del AI Act": "MINIMO",
@@ -168,12 +168,16 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
             with st.chat_message("assistant"):
                 placeholder = st.empty()
                 texto = ""
-                try:
-                    for fragmento in chatbot.chat_stream(prompt):
-                        texto += fragmento
-                        placeholder.markdown(texto + "▌")
-                except Exception as exc:
-                    texto = f"_{mensaje_error_seguro(exc)}_"
+                sid = st.session_state.get("session_id", "anon")
+                if not rate_limiter.consumir(sid):
+                    texto = "_Ha alcanzado el límite de mensajes. Espere un momento antes de continuar._"
+                else:
+                    try:
+                        for fragmento in chatbot.chat_stream(prompt):
+                            texto += fragmento
+                            placeholder.markdown(texto + "▌")
+                    except Exception as exc:
+                        texto = f"_{mensaje_error_seguro(exc)}_"
                 placeholder.markdown(texto)
 
         st.session_state.mensajes_cumplimiento.append({"role": "assistant", "content": texto})
