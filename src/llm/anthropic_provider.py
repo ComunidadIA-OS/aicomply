@@ -19,7 +19,18 @@ import anthropic
 
 from .provider import LLMProvider
 
-_RETRY_WAIT = 35  # segundos de espera al recibir un 429
+_RETRY_WAIT_MAX = 5.0  # backoff máximo en segundos; respeta Retry-After si la API lo devuelve
+
+
+def _leer_retry_after(exc: anthropic.RateLimitError, maximo: float = _RETRY_WAIT_MAX) -> float:
+    """Lee el header Retry-After de la excepción; si no viene, devuelve maximo."""
+    try:
+        valor = exc.response.headers.get("retry-after")
+        if valor:
+            return min(float(valor), maximo)
+    except Exception:
+        pass
+    return maximo
 
 
 class AnthropicProvider(LLMProvider):
@@ -57,9 +68,9 @@ class AnthropicProvider(LLMProvider):
             try:
                 response = self.client.messages.create(**kwargs)
                 return response.content[0].text
-            except anthropic.RateLimitError:
+            except anthropic.RateLimitError as rl_exc:
                 if intento == 0:
-                    time.sleep(_RETRY_WAIT)
+                    time.sleep(_leer_retry_after(rl_exc))
                 else:
                     raise
 

@@ -15,7 +15,21 @@
 import json
 import logging
 import re
+import time
 from typing import Generator
+
+_BACKOFF_MAX = 5.0  # cap del backoff tras 429 en segundos
+
+
+def _backoff_rate_limit(exc: Exception) -> float:
+    """Lee Retry-After del header de la excepción; devuelve máximo _BACKOFF_MAX."""
+    try:
+        valor = getattr(getattr(exc, "response", None), "headers", {}).get("retry-after")
+        if valor:
+            return min(float(valor), _BACKOFF_MAX)
+    except Exception:
+        pass
+    return _BACKOFF_MAX
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
@@ -138,8 +152,6 @@ class AIComplyChat:
 
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
-        import time
-
         self.historial.append({"role": "user", "content": mensaje_usuario})
         system = self._system_con_rag(mensaje_usuario)
 
@@ -149,9 +161,9 @@ class AIComplyChat:
                 respuesta_completa += fragmento
                 yield fragmento
         except Exception as exc:
-            # Retry automático tras 429 (rate limit): esperar 35 s y usar llamada síncrona.
+            # Retry automático tras 429 (rate limit): respetar Retry-After, máx 5 s.
             if "429" in str(exc) or "rate_limit" in str(exc).lower():
-                time.sleep(35)
+                time.sleep(_backoff_rate_limit(exc))
                 respuesta_completa = self.provider.chat(
                     self._historial_truncado(), system_prompt=system
                 )
