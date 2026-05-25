@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import streamlit as st
 
 import uuid
+from datetime import datetime
 
 from config import (
     AICOMPLY_MODE,
@@ -28,7 +30,7 @@ from config import (
 from src.chatbot import AIComplyChat
 from src.llm.factory import crear_provider, crear_provider_desde_env
 from src.security import mensaje_error_seguro, validar_base_url
-from src.tabs.cumplimiento import mostrar_tab_cumplimiento
+from src.tabs.cumplimiento import _inicializar_chatbot_cumplimiento, mostrar_tab_cumplimiento
 from src.tabs.evaluador import mostrar_tab_evaluador
 from src.tabs.informe import mostrar_tab_informe
 
@@ -104,6 +106,47 @@ _AVISOS: dict[str, tuple[str, str]] = {
 def _mostrar_aviso(clave: str) -> None:
     nivel, texto = _AVISOS[clave]
     getattr(st, nivel)(f"**Condiciones de privacidad:** {texto}")
+
+
+# ── Persistencia de sesión ────────────────────────────────────────────────────
+_CLAVES_SESION = (
+    "clasificacion_data",
+    "cumplimiento_data",
+    "mensajes_evaluador",
+    "mensajes_cumplimiento",
+    "evaluacion_completada",
+    "cumplimiento_completado",
+    "acceso_directo_cumplimiento",
+    "informe_md_clasificacion",
+    "informe_md_cumplimiento",
+    "informe_md_completo",
+)
+
+
+def _exportar_sesion() -> bytes:
+    datos: dict = {"_version": "1", "_app": "aicomply"}
+    for k in _CLAVES_SESION:
+        datos[k] = st.session_state.get(k)
+    return json.dumps(datos, ensure_ascii=False, indent=2).encode("utf-8")
+
+
+def _importar_sesion(raw: bytes, provider) -> None:
+    datos = json.loads(raw.decode("utf-8"))
+    for k in _CLAVES_SESION:
+        if k in datos:
+            st.session_state[k] = datos[k]
+
+    chatbot_eval = AIComplyChat(provider=provider)
+    chatbot_eval.historial = list(datos.get("mensajes_evaluador") or [])
+    chatbot_eval.evaluacion_completa = bool(datos.get("evaluacion_completada"))
+    st.session_state.chatbot_evaluador = chatbot_eval
+
+    mensajes_cumpl = datos.get("mensajes_cumplimiento") or []
+    clas_data = datos.get("clasificacion_data") or {}
+    if mensajes_cumpl or datos.get("cumplimiento_completado"):
+        chatbot_cumpl = _inicializar_chatbot_cumplimiento(provider, clas_data)
+        chatbot_cumpl.historial = list(mensajes_cumpl)
+        st.session_state.chatbot_cumplimiento = chatbot_cumpl
 
 
 # ── Inicialización del estado de sesión ───────────────────────────────────────
@@ -442,6 +485,36 @@ with st.sidebar:
         st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
         st.session_state.chatbot_cumplimiento = None
         st.rerun()
+
+    # ── Guardar / cargar sesión ───────────────────────────────────────────────
+    tiene_datos = bool(
+        st.session_state.get("mensajes_evaluador")
+        or st.session_state.get("clasificacion_data")
+    )
+    if tiene_datos:
+        fecha = datetime.now().strftime("%Y-%m-%d_%H%M")
+        st.download_button(
+            "Guardar sesión",
+            data=_exportar_sesion(),
+            file_name=f"aicomply_sesion_{fecha}.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+
+    with st.expander("Cargar sesión guardada"):
+        st.caption("⚠ El fichero puede contener información confidencial de su evaluación.")
+        archivo_sesion = st.file_uploader(
+            "Fichero .json de sesión",
+            type=["json"],
+            label_visibility="collapsed",
+            key="upload_sesion",
+        )
+        if archivo_sesion and st.button("Restaurar sesión", use_container_width=True):
+            try:
+                _importar_sesion(archivo_sesion.read(), provider)
+                st.rerun()
+            except Exception as exc:
+                st.error(f"No se pudo cargar la sesión: {exc}")
 
     if st.button("Cambiar proveedor de IA", use_container_width=True):
         for clave in list(st.session_state.keys()):
