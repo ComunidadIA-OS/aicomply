@@ -251,10 +251,12 @@ def construir_bloque_estado(estado: EvalState) -> str:
         )
     else:
         rol_linea = (
-            "pendiente de registro — "
-            "ACCIÓN REQUERIDA: si el rol ya fue determinado en la conversación, "
-            "añade [ROL_DETERMINADO: <rol>] al final de tu respuesta actual para registrarlo. "
-            "Si aún no fue determinado, resuélvelo ahora y emite la señal."
+            "⛔ SIN REGISTRAR — ÁRBOL BLOQUEADO ⛔\n"
+            "  Esta respuesta tiene UNA SOLA tarea permitida:\n"
+            "  · Si el usuario ya indicó su rol: confírmalo en una frase y emite [ROL_DETERMINADO: <rol>].\n"
+            "  · Si aún no lo ha indicado: presenta la pregunta del rol (#E1).\n"
+            "  NO hagas ninguna otra pregunta. NO avances a ningún otro nodo.\n"
+            "  El árbol permanece BLOQUEADO hasta que emitas [ROL_DETERMINADO]."
         )
 
     estados_obl = (

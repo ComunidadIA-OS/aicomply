@@ -138,7 +138,27 @@ class AIComplyChat:
             prompt = base
 
         if self._eval_state is not None:
-            prompt += "\n\n" + construir_bloque_estado(self._eval_state)
+            estado_bloque = construir_bloque_estado(self._eval_state)
+            prompt += "\n\n" + estado_bloque
+
+            # Si el rol no está registrado y ya hubo al menos un intercambio completo
+            # (user → assistant → user), anteponer instrucción de bloqueo de máxima
+            # prioridad para que el LLM no pueda avanzar al árbol sin registrar el rol.
+            n_user = sum(1 for m in self.historial if m["role"] == "user")
+            if not self._eval_state.roles_declarados and n_user >= 2:
+                bloqueo = (
+                    "╔══════════════════════════════════════════════════════════════╗\n"
+                    "║  PRIORIDAD MÁXIMA — ROL SIN REGISTRAR — ÁRBOL BLOQUEADO     ║\n"
+                    "╠══════════════════════════════════════════════════════════════╣\n"
+                    "║ El usuario ya ha respondido sobre su tipo de entidad.        ║\n"
+                    "║ Esta respuesta tiene UNA SOLA tarea:                         ║\n"
+                    "║  1. Determina el rol a partir de la conversación.            ║\n"
+                    "║  2. Confírmalo en una frase.                                 ║\n"
+                    "║  3. Emite [ROL_DETERMINADO: <rol>] como ÚLTIMA LÍNEA.        ║\n"
+                    "║ NO hagas ninguna otra pregunta. NO avances al árbol.         ║\n"
+                    "╚══════════════════════════════════════════════════════════════╝\n"
+                )
+                prompt = bloqueo + "\n\n" + prompt
 
         return prompt
 

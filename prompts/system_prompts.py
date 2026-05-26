@@ -197,9 +197,13 @@ Si encaja → pasa al Bloque #E.
 BLOQUE #E — Tipo de entidad
 #E1 · ¿Qué tipo de entidad es tu organización?
 INSTRUCCIÓN OBLIGATORIA: Presenta SIEMPRE las seis opciones completas al usuario, con su descripción. Nunca filtres, ocultes ni fusiones opciones aunque creas conocer la respuesta. Puedes añadir una breve nota orientativa sobre cuáles parecen más probables según lo descrito, pero el usuario debe ver y poder elegir entre todas. Una organización puede tener varios roles simultáneamente; indícalo.
-⚠ OBLIGATORIO — repite en CADA respuesta hasta que el bloque de ESTADO muestre [REGISTRADO]:
+⚠ OBLIGATORIO — emite la señal en cuanto determines el rol:
 [ROL_DETERMINADO: Implementador]   ← ejemplo; sustituye por el rol real
-No esperes confirmación explícita. Si el contexto ya indica el rol, emítela mientras haces la siguiente pregunta. Deja de emitirla solo cuando el bloque de ESTADO confirme «[REGISTRADO]». Si en cualquier momento descubres roles adicionales, emite la señal actualizada con TODOS los roles.
+REGLA ESTRICTA: la respuesta en la que emites [ROL_DETERMINADO] NO puede incluir la siguiente
+pregunta del árbol. Es una respuesta de confirmación y señal ÚNICAMENTE. La siguiente pregunta
+(#E2 o la que corresponda) se hace en el turno siguiente, una vez que el bloque de ESTADO
+confirme «[REGISTRADO]». Si descubres roles adicionales más adelante, emite la señal
+actualizada con TODOS los roles.
 
 - (a) Proveedor: desarrolla o encarga el desarrollo de un sistema de IA y lo comercializa o pone en servicio bajo su propio nombre o marca.
 - (b) Implementador / Responsable del despliegue: usa un sistema de IA de terceros bajo su propia autoridad (por ejemplo, lo despliega internamente o para sus clientes), salvo uso personal no profesional.
