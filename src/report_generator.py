@@ -1091,7 +1091,7 @@ class GeneradorInforme:
 
             def _item_plan(texto: str) -> None:
                 m = re.match(r"^\*\*([^*]+)\*\*:?\s*(.*)", texto, re.DOTALL)
-                badge_txt = _limpiar(m.group(1).strip()[:28]) if m else "Accion"
+                badge_txt = _limpiar(m.group(1).strip()) if m else "Accion"
                 resto = _limpiar((m.group(2).strip() if m else texto))
 
                 BADGE_W_P = 35.0
@@ -1101,8 +1101,9 @@ class GeneradorInforme:
                 H_P = 4.5
                 tw = CW - LB - BADGE_W_P - PAD_H_P
                 avg = 1.85
-                nlines = max(1, -(-len(resto) // max(1, int(tw / avg))))
-                est = max(11.0, PAD_V_P * 2 + nlines * H_P)
+                nlines_content = max(1, -(-len(resto) // max(1, int(tw / avg))))
+                nlines_badge = max(1, -(-len(badge_txt) // max(1, int(BADGE_W_P / 1.45))))
+                est = max(11.0, PAD_V_P * 2 + max(nlines_content, nlines_badge) * H_P)
 
                 if pdf.get_y() + est > pdf.h - pdf.b_margin - 3:
                     pdf.add_page()
@@ -1114,10 +1115,12 @@ class GeneradorInforme:
                 pdf.rect(LM, y0, LB, est, style="F")
                 pdf.set_fill_color(*_C_BADGE2)
                 pdf.rect(LM + LB, y0, BADGE_W_P, est, style="F")
-                pdf.set_xy(LM + LB, y0 + (est - H_P) / 2)
+                badge_block_h = nlines_badge * H_P
+                pdf.set_xy(LM + LB, y0 + (est - badge_block_h) / 2)
                 pdf.set_font("Helvetica", "B", 8)
                 pdf.set_text_color(*_C_AZUL)
-                pdf.cell(BADGE_W_P, H_P, badge_txt, align="C")
+                pdf.multi_cell(BADGE_W_P, H_P, badge_txt, align="C",
+                               new_x="LMARGIN", new_y="NEXT")
 
                 pdf.set_xy(LM + LB + BADGE_W_P + PAD_H_P, y0 + PAD_V_P)
                 pdf.set_font("Helvetica", "", 9)
