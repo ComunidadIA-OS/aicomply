@@ -671,40 +671,50 @@ class GeneradorInforme:
             pdf.ln(2)
 
             TIPO_W = 22.0
-            H_ROW = 5.0
+            LINE_H = 3.5
             Q_W = cw * 0.40
             A_W = cw - TIPO_W - Q_W
+            Q_CPL = max(1, int((Q_W - 3) / 1.65))
+            A_CPL = max(1, int((A_W - 4) / 1.65))
 
             for nodo in nodos:
-                if pdf.get_y() + H_ROW + 4 > pdf.h - pdf.b_margin:
-                    pdf.add_page()
                 origen = nodo.get("origen", "")
                 if "directa" in origen:
                     badge_lbl, badge_bg, badge_fg = "Directo", _C_BADGE, _C_AZUL
                 else:
                     badge_lbl, badge_bg, badge_fg = "Inferido", (240, 238, 248), (80, 60, 150)
 
+                pregunta = _limpiar(nodo.get("pregunta", ""))
+                respuesta = _limpiar(nodo.get("respuesta", ""))
+                lines_q = max(1, -(-len(pregunta) // Q_CPL))
+                lines_a = max(1, -(-len(respuesta) // A_CPL))
+                H_ROW = max(6.0, max(lines_q, lines_a) * LINE_H + 2.5)
+
+                if pdf.get_y() + H_ROW + 4 > pdf.h - pdf.b_margin:
+                    pdf.add_page()
+
                 y_row = pdf.get_y()
                 pdf.set_fill_color(249, 249, 247)
                 pdf.rect(lm, y_row, cw, H_ROW, style="F")
                 pdf.set_fill_color(*badge_bg)
                 pdf.rect(lm, y_row, TIPO_W, H_ROW, style="F")
-                pdf.set_xy(lm, y_row + 0.5)
+
+                pdf.set_xy(lm, y_row + (H_ROW - 4) / 2)
                 pdf.set_font("Helvetica", "B", 7)
                 pdf.set_text_color(*badge_fg)
-                pdf.cell(TIPO_W, H_ROW - 1, badge_lbl, align="C")
+                pdf.cell(TIPO_W, 4, badge_lbl, align="C")
 
-                pdf.set_xy(lm + TIPO_W + 1, y_row + 1)
+                pdf.set_xy(lm + TIPO_W + 1, y_row + 1.5)
                 pdf.set_font("Helvetica", "", 7)
                 pdf.set_text_color(50, 50, 50)
-                pregunta = _limpiar(nodo.get("pregunta", "")[:90])
-                pdf.cell(Q_W - 1, H_ROW - 2, pregunta, align="L")
+                pdf.multi_cell(Q_W - 2, LINE_H, pregunta, align="L",
+                               new_x="LMARGIN", new_y="NEXT")
 
-                pdf.set_xy(lm + TIPO_W + Q_W + 1, y_row + 1)
+                pdf.set_xy(lm + TIPO_W + Q_W + 1, y_row + 1.5)
                 pdf.set_font("Helvetica", "I", 7)
                 pdf.set_text_color(80, 80, 80)
-                respuesta = _limpiar(nodo.get("respuesta", "")[:90])
-                pdf.cell(A_W - 2, H_ROW - 2, respuesta, align="L")
+                pdf.multi_cell(A_W - 3, LINE_H, respuesta, align="L",
+                               new_x="LMARGIN", new_y="NEXT")
 
                 pdf.set_draw_color(224, 221, 213)
                 pdf.line(lm, y_row + H_ROW, lm + cw, y_row + H_ROW)
@@ -804,7 +814,7 @@ class GeneradorInforme:
             # ── Configuración ──────────────────────────────────────────────────
 
             pdf = _PDF()
-            pdf.set_margins(18, 15, 18)
+            pdf.set_margins(18, 18, 18)
             pdf.set_auto_page_break(auto=True, margin=20)
 
             W  = pdf.w
@@ -1291,11 +1301,11 @@ class GeneradorInforme:
                 f"{_TEXTO_PIE} "
                 f"Fecha de generacion: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
             )
-            pdf.set_fill_color(255, 251, 232)
-            pdf.set_draw_color(224, 200, 74)
+            pdf.set_fill_color(255, 235, 235)
+            pdf.set_draw_color(180, 30, 30)
             pdf.set_line_width(0.3)
             pdf.set_font("Helvetica", "I", 8)
-            pdf.set_text_color(107, 85, 0)
+            pdf.set_text_color(100, 10, 10)
             pdf.multi_cell(0, 4, gen_txt, border=1, fill=True, align="J",
                            new_x="LMARGIN", new_y="NEXT")
 
