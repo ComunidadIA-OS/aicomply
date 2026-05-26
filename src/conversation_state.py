@@ -245,7 +245,10 @@ def construir_bloque_estado(estado: EvalState) -> str:
 
     if estado.roles_declarados:
         roles = ", ".join(estado.roles_declarados)
-        rol_linea = f"{roles}  [BLOQUEADO — no volver a preguntar]"
+        rol_linea = (
+            f"{roles}  [REGISTRADO — no volver a preguntar; "
+            "si detectas roles adicionales, emite la señal actualizada con TODOS los roles]"
+        )
     else:
         rol_linea = (
             "pendiente de registro — "
