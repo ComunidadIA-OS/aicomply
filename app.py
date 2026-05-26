@@ -14,6 +14,7 @@
 
 import json
 import streamlit as st
+import streamlit.components.v1 as _components
 
 import uuid
 from datetime import datetime
@@ -49,6 +50,50 @@ st.markdown(
 ._ac_spinner{width:16px;height:16px;border:2px solid #ddd;border-top-color:#555;border-radius:50%;animation:_ac_spin .8s linear infinite;flex-shrink:0}
 </style>""",
     unsafe_allow_html=True,
+)
+
+# Selector de tema (claro / oscuro / sistema) visible junto a los 3 puntitos
+_components.html(
+    """<script>
+(function(){
+  var p=window.parent, doc=p.document;
+  if(doc.getElementById('_ac_ts')) return;
+
+  var wrap=doc.createElement('div');
+  wrap.id='_ac_ts';
+
+  [['☀️','Light','Claro'],['🌙','Dark','Oscuro'],['🖥️','System','Sistema']].forEach(function(m){
+    var b=doc.createElement('button');
+    b.title=m[2]; b.textContent=m[0];
+    b.style.cssText='background:none;border:none;cursor:pointer;font-size:15px;'
+      +'width:28px;height:28px;padding:0;border-radius:5px;opacity:.6;'
+      +'transition:opacity .15s,background .15s;display:flex;align-items:center;justify-content:center;';
+    b.onmouseover=function(){this.style.opacity='1';this.style.background='rgba(128,128,128,.15)';};
+    b.onmouseout =function(){this.style.opacity='.6';this.style.background='none';};
+    b.onclick=function(){_acT(m[1]);};
+    wrap.appendChild(b);
+  });
+
+  var tb=doc.querySelector('[data-testid="stToolbar"]');
+  if(tb){
+    wrap.style.cssText='display:flex;gap:1px;align-items:center;margin-right:4px;';
+    tb.insertBefore(wrap,tb.firstChild);
+  } else {
+    wrap.style.cssText='position:fixed;top:8px;right:54px;z-index:99999;display:flex;gap:1px;';
+    doc.body.appendChild(wrap);
+  }
+
+  p._acT=function(name){
+    var ls=p.localStorage;
+    var val=name==='System'?null:JSON.stringify({name:name});
+    if(val) ls.setItem('stActiveTheme',val); else ls.removeItem('stActiveTheme');
+    p.dispatchEvent(new StorageEvent('storage',{
+      key:'stActiveTheme',newValue:val,storageArea:ls,bubbles:true
+    }));
+  };
+})();
+</script>""",
+    height=0,
 )
 
 # ── Avisos de privacidad por provider y plan ───────────────────────────────────
