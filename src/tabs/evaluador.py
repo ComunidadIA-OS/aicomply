@@ -16,7 +16,8 @@ import base64
 
 import streamlit as st
 
-from src.chatbot import AIComplyChat, _SENAL_COMPLETA
+from src.chatbot import AIComplyChat
+from src.conversation_state import _RE_TODAS_LAS_SENALES
 from src.llm.provider import LLMProvider
 from src.security import mensaje_error_seguro, rate_limiter
 
@@ -219,14 +220,14 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
                     try:
                         for fragmento in chatbot.chat_stream(prompt):
                             texto_raw += fragmento
-                            # Mostrar sin la señal técnica
+                            # Mostrar sin las señales de control
                             placeholder.markdown(
-                                texto_raw.replace(_SENAL_COMPLETA, "").strip() + "▌"
+                                _RE_TODAS_LAS_SENALES.sub("", texto_raw).strip() + "▌"
                             )
                     except Exception as exc:
                         texto_raw = f"_{mensaje_error_seguro(exc)}_"
 
-                texto_visible = texto_raw.replace(_SENAL_COMPLETA, "").strip()
+                texto_visible = _RE_TODAS_LAS_SENALES.sub("", texto_raw).strip()
                 placeholder.markdown(texto_visible)
 
         st.session_state.mensajes_evaluador.append(

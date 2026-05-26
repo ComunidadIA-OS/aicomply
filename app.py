@@ -28,6 +28,7 @@ from config import (
     OPENAI_COMPATIBLE_MODEL,
 )
 from src.chatbot import AIComplyChat
+from src.conversation_state import EvalState
 from src.llm.factory import crear_provider, crear_provider_desde_env
 from src.security import mensaje_error_seguro, validar_base_url
 from src.tabs.cumplimiento import _inicializar_chatbot_cumplimiento, mostrar_tab_cumplimiento
@@ -213,6 +214,9 @@ def _exportar_sesion() -> bytes:
     datos: dict = {"_version": "1", "_app": "aicomply"}
     for k in _CLAVES_SESION:
         datos[k] = st.session_state.get(k)
+    chatbot_eval = st.session_state.get("chatbot_evaluador")
+    if chatbot_eval is not None and chatbot_eval._eval_state is not None:
+        datos["_eval_state"] = chatbot_eval._eval_state.to_dict()
     return json.dumps(datos, ensure_ascii=False, indent=2).encode("utf-8")
 
 
@@ -225,6 +229,8 @@ def _importar_sesion(raw: bytes, provider) -> None:
     chatbot_eval = AIComplyChat(provider=provider)
     chatbot_eval.historial = list(datos.get("mensajes_evaluador") or [])
     chatbot_eval.evaluacion_completa = bool(datos.get("evaluacion_completada"))
+    if "_eval_state" in datos:
+        chatbot_eval._eval_state = EvalState.from_dict(datos["_eval_state"])
     st.session_state.chatbot_evaluador = chatbot_eval
 
     mensajes_cumpl = datos.get("mensajes_cumplimiento") or []

@@ -33,6 +33,7 @@ def _backoff_rate_limit(exc: Exception) -> float:
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
+from src.conversation_state import EvalState, construir_bloque_estado, procesar_respuesta
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
 
@@ -96,6 +97,8 @@ class AIComplyChat:
         self.evaluacion_completa: bool = False
         self._system_prompt_override = system_prompt_override
         self._max_historial = max_historial
+        # Solo para el evaluador (sin override). El chatbot de cumplimiento no usa estado.
+        self._eval_state: EvalState | None = EvalState() if system_prompt_override is None else None
 
     @property
     def _system_base(self) -> str:
@@ -120,19 +123,24 @@ class AIComplyChat:
             contexto = formatear_contexto_rag(mensaje, top_k=3)
         except Exception:
             logger.warning("Error al recuperar contexto RAG; continuando sin él.", exc_info=True)
-            return base
+            contexto = ""
 
-        if not contexto:
-            return base
+        if contexto:
+            prompt = (
+                base
+                + "\n\n---\nCONTEXTO NORMATIVO RECUPERADO PARA ESTA CONSULTA:\n"
+                + contexto
+                + "\n---\nUsa este contexto cuando respondas sobre artículos concretos, "
+                "pero NO copies literalmente: cítalo como referencia y mantén el "
+                "lenguaje accesible para PYME."
+            )
+        else:
+            prompt = base
 
-        return (
-            base
-            + "\n\n---\nCONTEXTO NORMATIVO RECUPERADO PARA ESTA CONSULTA:\n"
-            + contexto
-            + "\n---\nUsa este contexto cuando respondas sobre artículos concretos, "
-            "pero NO copies literalmente: cítalo como referencia y mantén el "
-            "lenguaje accesible para PYME."
-        )
+        if self._eval_state is not None:
+            prompt += "\n\n" + construir_bloque_estado(self._eval_state)
+
+        return prompt
 
     def _historial_truncado(self, max_mensajes: int | None = None) -> list[dict]:
         """Recorta el historial para no superar el límite de tokens de la API.
@@ -195,7 +203,11 @@ class AIComplyChat:
         # Solo se acepta si va acompañada de un informe real (≥150 caracteres).
         # Si llega sola o con texto insignificante, se descarta para evitar
         # que el LLM "congele" el chat al emitirla prematuramente en mitad del árbol.
-        if _SENAL_COMPLETA in respuesta_completa:
+        if self._eval_state is not None:
+            respuesta_completa, self._eval_state = procesar_respuesta(respuesta_completa, self._eval_state)
+            if self._eval_state.evaluacion_completa:
+                self.evaluacion_completa = True
+        elif _SENAL_COMPLETA in respuesta_completa:
             texto_sin_senal = respuesta_completa.replace(_SENAL_COMPLETA, "").strip()
             if len(texto_sin_senal) >= 150:
                 self.evaluacion_completa = True
@@ -215,7 +227,11 @@ class AIComplyChat:
             self.historial.pop()
             raise
 
-        if _SENAL_COMPLETA in respuesta:
+        if self._eval_state is not None:
+            respuesta, self._eval_state = procesar_respuesta(respuesta, self._eval_state)
+            if self._eval_state.evaluacion_completa:
+                self.evaluacion_completa = True
+        elif _SENAL_COMPLETA in respuesta:
             self.evaluacion_completa = True
             respuesta = respuesta.replace(_SENAL_COMPLETA, "").strip()
 
@@ -280,3 +296,5 @@ class AIComplyChat:
         self.historial = []
         self.nivel_riesgo = None
         self.evaluacion_completa = False
+        if self._eval_state is not None:
+            self._eval_state = EvalState()
