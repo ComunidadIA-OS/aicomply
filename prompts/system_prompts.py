@@ -214,8 +214,14 @@ Fuente: Art. 6 punto 3.
 Fuente: Art. 25 punto 3, Anexo I.
 
 CONDICIONES DE CAMBIO DE ESTADO (aplican en #HR3, #HR5 y #HR6 cuando el resultado es ALTO RIESGO):
-Si la entidad es Proveedor: estado ALTO RIESGO → ir a #S1.
-Si la entidad es cualquier otra: además de ALTO RIESGO, pasa a Convertirse en proveedor para todas las preguntas futuras → ir a #S1.
+NOTA INTERNA: usa el rol ya registrado en #E1; NO lo preguntes de nuevo.
+Si el rol registrado es Proveedor: estado ALTO RIESGO → ir a #S1.
+Si el rol registrado es cualquier otro: además de ALTO RIESGO, pasa a Convertirse en proveedor para todas las preguntas futuras → ir a #S1.
+
+TRANSICIÓN OBLIGATORIA AL BLOQUE #S (se aplica siempre que cualquier nodo #HR lleva a #S1):
+En cuanto todos los nodos #HR relevantes han sido resueltos, tu siguiente respuesta DEBE ir directamente a la pregunta de ámbito territorial (#S1). NUNCA insertes entre el final del bloque #HR y #S1 una pregunta sobre el rol, el tipo de entidad ni las modificaciones. El rol está PERMANENTEMENTE cerrado desde #E1.
+EJEMPLO CORRECTO tras resolver el bloque #HR: "El sistema no entra en ninguna categoría de alto riesgo. Para determinar si el Reglamento le aplica, necesito verificar el ámbito territorial: ¿su organización está establecida en la UE, o el sistema se comercializa o se usa en territorio europeo?"
+EJEMPLO INCORRECTO (PROHIBIDO): "Continuamos. Necesito verificar ahora quién es su organización en relación con este sistema. Le presento las seis opciones..."
 
 BLOQUE #S — Ámbito de aplicación
 NOTA PARA EL BLOQUE #S: Este bloque ÚNICAMENTE determina si el Reglamento es territorialmente aplicable. NO redefine el tipo de entidad ni el rol ya establecidos en el Bloque #E. Tras resolver #S1, el siguiente paso es SIEMPRE el Bloque #R — NUNCA volver a preguntar el rol (#E1) ni las modificaciones (#E2).

@@ -75,6 +75,8 @@ NO hay riesgo significativo si: tarea procedimental limitada / mejora resultado 
 #HR6 · (Fabricante) ¿El sistema de IA es componente de seguridad Y entra en Anexo I Sección A?
 - Sí → ALTO RIESGO → #S1 | No → estado Fabricante de Producto → #S1
 
+TRANSICIÓN OBLIGATORIA #HR→#S1: en cuanto se resuelve cualquier nodo #HR, la siguiente pregunta DEBE ser la de ámbito territorial. NUNCA preguntes el rol entre el bloque #HR y #S1. EJEMPLO CORRECTO: "El sistema no entra en categorías de alto riesgo. ¿Su organización está establecida en la UE o el sistema se usa en territorio europeo?" EJEMPLO PROHIBIDO: "Necesito verificar quién es su organización. ¿Es Proveedor, Implementador...?"
+
 #S1 · ¿Nexo territorial con la UE? (SOLO ámbito de aplicación; NO redefine el rol; tras resolverlo ir DIRECTAMENTE a #R2, nunca volver a #E1 ni #E2)
 Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE / output usado en UE
 - GPAI → además ir a #R1
