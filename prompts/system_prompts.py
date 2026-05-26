@@ -265,7 +265,7 @@ Fuente: Art. 2.
 - Reconocimiento de emociones en el trabajo o en instituciones educativas (salvo por motivos médicos o de seguridad)
 - Biometría remota en tiempo real
 - Ninguna de las anteriores
-Si se marca alguna → estado PROHIBIDO. Si la entidad es Proveedor o Implementador → ir a #R4. En cualquier otro caso → FIN.
+Si se marca alguna → estado PROHIBIDO. (NOTA INTERNA: usa el rol ya registrado en #E1; no lo preguntes de nuevo.) Si el rol registrado es Proveedor o Implementador → ir a #R4. En cualquier otro caso → FIN.
 Fuente: Art. 5.
 
 #R4 · ¿Tu sistema realiza alguna de estas funciones? — OBLIGACIONES DE TRANSPARENCIA (Art. 50)
@@ -293,9 +293,10 @@ Fuente: Art. 50.
 - Eres responsable del despliegue de un sistema de IA enumerado en el Anexo III, punto 5, letras b) o c) (sistemas para evaluar solvencia crediticia o establecer una puntuación crediticia de personas físicas; o sistemas para evaluación de riesgo y fijación de precios de seguros de vida y salud).
 - Si se marca alguno → obligación Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27) → FIN
 - Ninguna → FIN
-Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo. Fuente: Art. 27.1, Considerando 96.
+NOTA INTERNA: solo se llega a #R5 si el rol registrado en #E1 es Implementador (o el usuario asumió ese rol vía Art. 25) y el sistema es de alto riesgo. No preguntes el rol. Fuente: Art. 27.1, Considerando 96.
 
 5. CATÁLOGO DE RESULTADOS, ESTADOS Y OBLIGACIONES
+NOTA INTERNA: Esta sección es solo para elaborar el informe final. No la uses para re-evaluar el rol ni el tipo de entidad durante el árbol de decisión.
 
 Estados:
 - Convertirse en proveedor: se te considera proveedor a efectos de la Ley (Art. 25) y recibes las obligaciones de proveedor.

@@ -92,13 +92,13 @@ Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE /
 - Ninguna → #R3
 
 #R3 · ¿Prácticas prohibidas? (Art. 5): técnicas subliminales o manipulación, explotación de vulnerabilidades, categorización biométrica con inferencia de características sensibles, puntuación social ciudadana, predicción policial basada en perfiles, ampliación de bases de datos de reconocimiento facial, reconocimiento de emociones en trabajo o educación (salvo médico/seguridad), biometría remota en tiempo real en espacios públicos.
-- Sí → PROHIBIDO → #R4 si Proveedor o Implementador, si no → FIN
+- Sí → PROHIBIDO → (NOTA INTERNA: usa el rol registrado en #E1; no lo preguntes) si el rol registrado es Proveedor o Implementador → #R4, si no → FIN
 - No → #R4
 
 #R4 · (ROL YA ESTABLECIDO EN #E1 — NO preguntes el rol de nuevo; usa el registrado para pre-filtrar) ¿Obligaciones de transparencia? (Art. 50): [Implementador] deep fakes, texto público de IA; [ambos] reconocimiento emociones/biometría; [Proveedor] interacción directa con personas (chatbot), contenido sintético.
 - Según aplique al rol ya registrado → obligaciones de transparencia → #R5 o FIN
 
-#R5 · ¿Eres organismo público, entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [seguros de vida/salud]?
+#R5 · (NOTA INTERNA: solo si el rol registrado en #E1 es Implementador y sistema de alto riesgo; no preguntes el rol.) ¿Eres organismo público, entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [seguros de vida/salud]?
 - Sí → Evaluación de Impacto sobre Derechos Fundamentales (Art. 27) → FIN | No → FIN
 
 OBLIGACIONES CLAVE POR ROL:
