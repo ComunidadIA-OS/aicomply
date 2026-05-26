@@ -623,12 +623,19 @@ class GeneradorInforme:
 
         pdf.set_y(y0_grid + FIELD_H + 3)
 
-        # ── Campo propósito (ancho completo) ──────────────────────────────────
-        desc_short = desc[:280] + ("..." if len(desc) > 280 else "")
+        # ── Campo propósito (ancho completo, texto íntegro, altura dinámica) ───
+        desc_cpl = max(1, int((cw - 5) / 2.0))
+        desc_lines = max(1, -(-len(desc) // desc_cpl))
+        prop_h = 7.5 + desc_lines * 4.5 + 3
+
+        if pdf.get_y() + prop_h > pdf.h - pdf.b_margin:
+            pdf.add_page()
+
         y_prop = pdf.get_y()
         pdf.set_fill_color(*_C_AZUL_BG)
         pdf.set_draw_color(221, 221, 221)
-        pdf.rect(lm, y_prop, cw, 32, style="FD")
+        pdf.set_line_width(0.3)
+        pdf.rect(lm, y_prop, cw, prop_h, style="FD")
         pdf.set_xy(lm + 2.5, y_prop + 2.5)
         pdf.set_font("Helvetica", "", 7)
         pdf.set_text_color(122, 144, 184)
@@ -636,26 +643,16 @@ class GeneradorInforme:
         pdf.set_xy(lm + 2.5, y_prop + 7.5)
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(26, 26, 26)
-        pdf.multi_cell(cw - 5, 4.5, _limpiar(desc_short), align="J",
+        pdf.multi_cell(cw - 5, 4.5, _limpiar(desc), align="J",
                        new_x="LMARGIN", new_y="NEXT")
-        pdf.set_y(max(pdf.get_y(), y_prop + 32) + 4)
-
-        # ── Párrafo narrativo con borde izquierdo azul ────────────────────────
-        if desc:
-            y_nar = pdf.get_y()
-            est_nar = max(14.0, min(35.0, len(desc) / 60 * 5))
-            pdf.set_fill_color(*_C_AZUL)
-            pdf.rect(lm, y_nar, 3, est_nar, style="F")
-            pdf.set_xy(lm + 5, y_nar + 2.5)
-            pdf.set_font("Helvetica", "I", 10)
-            pdf.set_text_color(51, 51, 51)
-            pdf.multi_cell(cw - 7, 5, _limpiar(desc[:220]), align="J",
-                           new_x="LMARGIN", new_y="NEXT")
-            nar_h = pdf.get_y() - y_nar + 3
-            if nar_h > est_nar:
-                pdf.set_fill_color(*_C_AZUL)
-                pdf.rect(lm, y_nar + est_nar, 3, nar_h - est_nar, style="F")
-            pdf.set_y(pdf.get_y() + 5)
+        y_end = pdf.get_y() + 2.5
+        if y_end > y_prop + prop_h:
+            pdf.set_fill_color(*_C_AZUL_BG)
+            pdf.rect(lm, y_prop + prop_h - 0.5, cw,
+                     y_end - (y_prop + prop_h) + 1, style="F")
+            pdf.set_draw_color(221, 221, 221)
+            pdf.rect(lm, y_prop, cw, y_end - y_prop)
+        pdf.set_y(max(y_end, y_prop + prop_h) + 4)
 
         pdf.set_text_color(30, 30, 30)
 
@@ -786,6 +783,7 @@ class GeneradorInforme:
                     self_pdf.cell(ancho * 0.28, 6, fecha_hoy, align="R",
                                   new_x="LMARGIN", new_y="NEXT")
                     self_pdf.set_text_color(30, 30, 30)
+                    self_pdf.set_y(self_pdf.t_margin)
 
                 def footer(self_pdf) -> None:
                     if self_pdf.page_no() <= 1:
@@ -814,7 +812,7 @@ class GeneradorInforme:
             # ── Configuración ──────────────────────────────────────────────────
 
             pdf = _PDF()
-            pdf.set_margins(18, 18, 18)
+            pdf.set_margins(18, 22, 18)
             pdf.set_auto_page_break(auto=True, margin=20)
 
             W  = pdf.w
