@@ -31,9 +31,72 @@ _TEXTO_PIE = (
     "Reglamento de referencia: Reglamento (UE) 2024/1689."
 )
 
+# ── Paleta de colores (RGB) ────────────────────────────────────────────────────
+
+_C_AZUL      = (13, 43, 94)
+_C_AZUL_BG   = (245, 247, 252)
+_C_BADGE     = (232, 238, 248)
+_C_BADGE2    = (220, 230, 245)
+
+_PALETA: dict[str, dict] = {
+    "cubierta": {
+        "borde": (42, 122, 74),
+        "bg":    (244, 251, 246),
+        "badge": (223, 245, 232),
+        "texto": (15, 74, 40),
+        "label": "Cubierta",
+    },
+    "parcial": {
+        "borde": (184, 122, 0),
+        "bg":    (255, 252, 240),
+        "badge": (253, 242, 204),
+        "texto": (90, 56, 0),
+        "label": "Parcial",
+    },
+    "carencia": {
+        "borde": (176, 32, 32),
+        "bg":    (255, 248, 248),
+        "badge": (253, 232, 232),
+        "texto": (106, 16, 16),
+        "label": "Mejora",
+    },
+    "mejora": {
+        "borde": (176, 32, 32),
+        "bg":    (255, 248, 248),
+        "badge": (253, 232, 232),
+        "texto": (106, 16, 16),
+        "label": "Mejora",
+    },
+    "no_evaluada": {
+        "borde": (170, 170, 170),
+        "bg":    (250, 250, 250),
+        "badge": (240, 240, 240),
+        "texto": (102, 102, 102),
+        "label": "Sin evaluar",
+    },
+}
+
 
 def _fecha_larga() -> str:
     return datetime.now().strftime("%d/%m/%Y a las %H:%M")
+
+
+def _extraer_meta_md(markdown: str) -> dict[str, str]:
+    """Extrae los metadatos del encabezado Markdown del informe."""
+    meta: dict[str, str] = {}
+    campos = {
+        "**Sistema evaluado:**": "sistema",
+        "**Sector:**": "sector",
+        "**Clasificación:**": "clasificacion",
+        "**Rol de la entidad:**": "rol",
+        "**Fecha:**": "fecha",
+    }
+    for linea in markdown.split("\n"):
+        linea = linea.strip()
+        for prefijo, clave in campos.items():
+            if linea.startswith(prefijo):
+                meta[clave] = linea[len(prefijo):].strip().rstrip("  ")
+    return meta
 
 
 class GeneradorInforme:
@@ -318,7 +381,6 @@ class GeneradorInforme:
             f"Áreas de mejora: {len(carencias_obl)} | Sin evaluar: {len(no_eval)}"
         )
 
-        # Si hay roles múltiples, agrupar por rol si la información lo permite
         if roles_multiples and len(roles_multiples) > 1:
             texto += (
                 "\n\n*Las obligaciones se presentan agrupadas. "
@@ -399,7 +461,6 @@ class GeneradorInforme:
         return texto
 
     def _seccion_revision_profesional(self, num: int, puntos: list[str]) -> str:
-        # Eliminar duplicados manteniendo orden
         vistos: set[str] = set()
         puntos_unicos = [p for p in puntos if p not in vistos and not vistos.add(p)]  # type: ignore[func-returns-value]
 
@@ -421,323 +482,825 @@ class GeneradorInforme:
     def exportar_texto_plano(self, contenido_markdown: str) -> str:
         """Convierte el informe Markdown a texto plano limpio sin marcas."""
         texto = contenido_markdown
-        # Eliminar encabezados markdown
         texto = re.sub(r"^#{1,6}\s+", "", texto, flags=re.MULTILINE)
-        # Eliminar negrita e itálica
         texto = re.sub(r"\*{1,2}([^*\n]+)\*{1,2}", r"\1", texto)
-        # Eliminar citas blockquote
         texto = re.sub(r"^>\s*", "", texto, flags=re.MULTILINE)
-        # Eliminar separadores de tabla markdown
         texto = re.sub(r"^\|[-:| ]+\|$", "", texto, flags=re.MULTILINE)
-        # Limpiar líneas de tabla (mantener contenido)
         texto = re.sub(r"\|", " ", texto)
-        # Normalizar múltiples líneas en blanco
         texto = re.sub(r"\n{3,}", "\n\n", texto)
         return texto.strip()
 
-    def exportar_pdf(self, contenido_markdown: str, titulo: str = "AIComply — Informe") -> bytes:
-        """Convierte el informe Markdown a PDF con cabecera y pie de página profesionales."""
+    def _renderizar_obligacion(
+        self,
+        pdf,
+        articulo: str,
+        descripcion: str,
+        estado: str,
+        lm: float,
+        cw: float,
+    ) -> None:
+        """Dibuja una caja de obligación con diseño de color según estado."""
+        pal = _PALETA.get(estado, _PALETA["no_evaluada"])
+        BADGE_W = 28.0
+        LEFT_BAR = 3.0
+        PAD_H = 2.5
+        PAD_V = 2.5
+        H = 4.5
+        text_w = cw - LEFT_BAR - BADGE_W - 2 * PAD_H
+
+        # Estimación de altura
+        avg_char_w = 1.9
+        chars_line = max(1, int(text_w / avg_char_w))
+        num_lines = max(1, -(-len(descripcion) // chars_line))
+        est_h = PAD_V + H + 1.5 + num_lines * H + PAD_V
+
+        if pdf.get_y() + est_h > pdf.h - pdf.b_margin - 5:
+            pdf.add_page()
+
+        y0 = pdf.get_y()
+
+        # Fondo
+        pdf.set_fill_color(*pal["bg"])
+        pdf.rect(lm, y0, cw, est_h, style="F")
+        # Barra izquierda
+        pdf.set_fill_color(*pal["borde"])
+        pdf.rect(lm, y0, LEFT_BAR, est_h, style="F")
+        # Fondo badge
+        pdf.set_fill_color(*pal["badge"])
+        pdf.rect(lm + cw - BADGE_W, y0, BADGE_W, est_h, style="F")
+
+        # Texto artículo
+        pdf.set_xy(lm + LEFT_BAR + PAD_H, y0 + PAD_V)
+        pdf.set_font("Helvetica", "B", 9)
+        pdf.set_text_color(*pal["texto"])
+        art_clean = _limpiar(re.sub(r"\*\*", "", articulo))[:90]
+        pdf.cell(text_w, H, art_clean, align="L")
+
+        # Texto descripción
+        pdf.set_xy(lm + LEFT_BAR + PAD_H, y0 + PAD_V + H + 1.5)
+        pdf.set_font("Helvetica", "", 9)
+        pdf.set_text_color(80, 80, 80)
+        pdf.multi_cell(text_w, H, _limpiar(descripcion), align="J",
+                       new_x="LMARGIN", new_y="NEXT")
+
+        real_h = pdf.get_y() - y0 + PAD_V
+
+        # Ampliar fondos si el texto desbordó la estimación
+        if real_h > est_h:
+            ext = real_h - est_h
+            pdf.set_fill_color(*pal["bg"])
+            pdf.rect(lm + LEFT_BAR, y0 + est_h, cw - LEFT_BAR - BADGE_W, ext, style="F")
+            pdf.set_fill_color(*pal["badge"])
+            pdf.rect(lm + cw - BADGE_W, y0 + est_h, BADGE_W, ext, style="F")
+            pdf.set_fill_color(*pal["borde"])
+            pdf.rect(lm, y0 + est_h, LEFT_BAR, ext, style="F")
+
+        box_h = max(est_h, real_h)
+
+        # Borde exterior
+        pdf.set_draw_color(*pal["borde"])
+        pdf.set_line_width(0.3)
+        pdf.rect(lm, y0, cw, box_h, style="D")
+        pdf.set_line_width(0.2)
+
+        # Texto badge centrado verticalmente
+        pdf.set_xy(lm + cw - BADGE_W, y0 + box_h / 2 - H / 2)
+        pdf.set_font("Helvetica", "B", 8)
+        pdf.set_text_color(*pal["texto"])
+        pdf.cell(BADGE_W, H, _limpiar(pal["label"]), align="C")
+
+        pdf.set_y(y0 + box_h + 2)
+        pdf.set_text_color(30, 30, 30)
+        pdf.set_draw_color(180, 180, 180)
+
+    def _renderizar_pagina_sistema(
+        self, pdf, clasificacion_data: dict, lm: float, cw: float
+    ) -> None:
+        """Renderiza la página de descripción del sistema (página 2)."""
+        desc = clasificacion_data.get("descripcion_sistema", "")
+        sector = clasificacion_data.get("sector", "")
+        rol = clasificacion_data.get("rol", "")
+        nodos = clasificacion_data.get("nodos_recorridos", [])
+        indeterminados = clasificacion_data.get("puntos_indeterminados", [])
+
+        # ── Título de sección ─────────────────────────────────────────────────
+        pdf.set_font("Helvetica", "B", 13)
+        pdf.set_text_color(26, 26, 26)
+        pdf.cell(cw, 8, "Descripcion del sistema evaluado", align="L",
+                 new_x="LMARGIN", new_y="NEXT")
+        pdf.set_draw_color(224, 224, 224)
+        pdf.set_line_width(0.3)
+        pdf.line(lm, pdf.get_y(), lm + cw, pdf.get_y())
+        pdf.set_line_width(0.2)
+        pdf.ln(4)
+
+        # ── Ficha técnica 2 columnas ─────────────────────────────────────────
+        FIELD_H = 17.0
+        FIELD_W = cw / 2
+        campos = [
+            ("SECTOR", sector or "—"),
+            ("ROL DE LA ENTIDAD", (rol or "—").capitalize()),
+        ]
+
+        pdf.set_draw_color(221, 221, 221)
+        pdf.set_line_width(0.3)
+        y0_grid = pdf.get_y()
+
+        for i, (label, valor) in enumerate(campos):
+            x = lm + (i % 2) * FIELD_W
+            y = y0_grid + (i // 2) * FIELD_H
+            pdf.set_fill_color(*_C_AZUL_BG)
+            pdf.rect(x, y, FIELD_W, FIELD_H, style="FD")
+            pdf.set_xy(x + 2.5, y + 2.5)
+            pdf.set_font("Helvetica", "", 7)
+            pdf.set_text_color(122, 144, 184)
+            pdf.cell(FIELD_W - 5, 4, label, align="L")
+            pdf.set_xy(x + 2.5, y + 7.5)
+            pdf.set_font("Helvetica", "", 10)
+            pdf.set_text_color(26, 26, 26)
+            pdf.multi_cell(FIELD_W - 5, 4.5, _limpiar((valor or "—")[:80]), align="L",
+                           new_x="LMARGIN", new_y="NEXT")
+
+        pdf.set_y(y0_grid + FIELD_H + 3)
+
+        # ── Campo propósito (ancho completo) ──────────────────────────────────
+        desc_short = desc[:280] + ("..." if len(desc) > 280 else "")
+        y_prop = pdf.get_y()
+        pdf.set_fill_color(*_C_AZUL_BG)
+        pdf.set_draw_color(221, 221, 221)
+        pdf.rect(lm, y_prop, cw, 32, style="FD")
+        pdf.set_xy(lm + 2.5, y_prop + 2.5)
+        pdf.set_font("Helvetica", "", 7)
+        pdf.set_text_color(122, 144, 184)
+        pdf.cell(cw - 5, 4, "PROPOSITO DECLARADO", align="L")
+        pdf.set_xy(lm + 2.5, y_prop + 7.5)
+        pdf.set_font("Helvetica", "", 9)
+        pdf.set_text_color(26, 26, 26)
+        pdf.multi_cell(cw - 5, 4.5, _limpiar(desc_short), align="J",
+                       new_x="LMARGIN", new_y="NEXT")
+        pdf.set_y(max(pdf.get_y(), y_prop + 32) + 4)
+
+        # ── Párrafo narrativo con borde izquierdo azul ────────────────────────
+        if desc:
+            y_nar = pdf.get_y()
+            est_nar = max(14.0, min(35.0, len(desc) / 60 * 5))
+            pdf.set_fill_color(*_C_AZUL)
+            pdf.rect(lm, y_nar, 3, est_nar, style="F")
+            pdf.set_xy(lm + 5, y_nar + 2.5)
+            pdf.set_font("Helvetica", "I", 10)
+            pdf.set_text_color(51, 51, 51)
+            pdf.multi_cell(cw - 7, 5, _limpiar(desc[:220]), align="J",
+                           new_x="LMARGIN", new_y="NEXT")
+            nar_h = pdf.get_y() - y_nar + 3
+            if nar_h > est_nar:
+                pdf.set_fill_color(*_C_AZUL)
+                pdf.rect(lm, y_nar + est_nar, 3, nar_h - est_nar, style="F")
+            pdf.set_y(pdf.get_y() + 5)
+
+        pdf.set_text_color(30, 30, 30)
+
+        # ── Tabla de trazabilidad ─────────────────────────────────────────────
+        if nodos or indeterminados:
+            pdf.set_font("Helvetica", "B", 8)
+            pdf.set_text_color(*_C_AZUL)
+            pdf.cell(cw, 5, "TRAZABILIDAD DE LA INFORMACION", align="L",
+                     new_x="LMARGIN", new_y="NEXT")
+            pdf.set_draw_color(224, 221, 213)
+            pdf.set_line_width(0.3)
+            pdf.line(lm, pdf.get_y(), lm + cw, pdf.get_y())
+            pdf.ln(2)
+
+            TIPO_W = 22.0
+            H_ROW = 5.0
+            Q_W = cw * 0.40
+            A_W = cw - TIPO_W - Q_W
+
+            for nodo in nodos:
+                if pdf.get_y() + H_ROW + 4 > pdf.h - pdf.b_margin:
+                    pdf.add_page()
+                origen = nodo.get("origen", "")
+                if "directa" in origen:
+                    badge_lbl, badge_bg, badge_fg = "Directo", _C_BADGE, _C_AZUL
+                else:
+                    badge_lbl, badge_bg, badge_fg = "Inferido", (240, 238, 248), (80, 60, 150)
+
+                y_row = pdf.get_y()
+                pdf.set_fill_color(249, 249, 247)
+                pdf.rect(lm, y_row, cw, H_ROW, style="F")
+                pdf.set_fill_color(*badge_bg)
+                pdf.rect(lm, y_row, TIPO_W, H_ROW, style="F")
+                pdf.set_xy(lm, y_row + 0.5)
+                pdf.set_font("Helvetica", "B", 7)
+                pdf.set_text_color(*badge_fg)
+                pdf.cell(TIPO_W, H_ROW - 1, badge_lbl, align="C")
+
+                pdf.set_xy(lm + TIPO_W + 1, y_row + 1)
+                pdf.set_font("Helvetica", "", 7)
+                pdf.set_text_color(50, 50, 50)
+                pregunta = _limpiar(nodo.get("pregunta", "")[:90])
+                pdf.cell(Q_W - 1, H_ROW - 2, pregunta, align="L")
+
+                pdf.set_xy(lm + TIPO_W + Q_W + 1, y_row + 1)
+                pdf.set_font("Helvetica", "I", 7)
+                pdf.set_text_color(80, 80, 80)
+                respuesta = _limpiar(nodo.get("respuesta", "")[:90])
+                pdf.cell(A_W - 2, H_ROW - 2, respuesta, align="L")
+
+                pdf.set_draw_color(224, 221, 213)
+                pdf.line(lm, y_row + H_ROW, lm + cw, y_row + H_ROW)
+                pdf.set_y(y_row + H_ROW)
+
+            if indeterminados:
+                pdf.ln(3)
+                pdf.set_font("Helvetica", "B", 8)
+                pdf.set_text_color(90, 72, 0)
+                pdf.cell(cw, 5, "PUNTOS INDETERMINADOS", align="L",
+                         new_x="LMARGIN", new_y="NEXT")
+                for p in indeterminados:
+                    if pdf.get_y() + 10 > pdf.h - pdf.b_margin:
+                        pdf.add_page()
+                    y_p = pdf.get_y()
+                    pdf.set_fill_color(254, 246, 220)
+                    pdf.rect(lm, y_p, cw, 10, style="F")
+                    pdf.set_fill_color(224, 200, 74)
+                    pdf.rect(lm, y_p, 3, 10, style="F")
+                    pdf.set_xy(lm + 5, y_p + 2)
+                    pdf.set_font("Helvetica", "", 8)
+                    pdf.set_text_color(90, 72, 0)
+                    pdf.multi_cell(cw - 7, 4.5, _limpiar(p[:180]), align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
+                    real_h = pdf.get_y() - y_p + 2
+                    if real_h > 10:
+                        ext = real_h - 10
+                        pdf.set_fill_color(254, 246, 220)
+                        pdf.rect(lm + 3, y_p + 10, cw - 3, ext, style="F")
+                        pdf.set_fill_color(224, 200, 74)
+                        pdf.rect(lm, y_p + 10, 3, ext, style="F")
+                    pdf.set_y(max(pdf.get_y(), y_p + max(10, real_h)) + 1.5)
+
+        pdf.set_text_color(30, 30, 30)
+        pdf.set_draw_color(180, 180, 180)
+        pdf.set_line_width(0.2)
+
+    def exportar_pdf(
+        self,
+        contenido_markdown: str,
+        titulo: str = "AIComply — Informe",
+        clasificacion_data: dict | None = None,
+    ) -> bytes:
+        """Genera un PDF con la plantilla visual AIComply."""
         try:
             from fpdf import FPDF
 
             fecha_hoy = datetime.now().strftime("%d/%m/%Y")
+            meta = _extraer_meta_md(contenido_markdown)
+            titulo_limpio = re.sub(r"^AIComply\s*[-—]\s*", "", titulo).strip()
+
+            # ── Clase PDF con cabecera/pie de páginas interiores ───────────────
 
             class _PDF(FPDF):
-                def header(self_pdf):
-                    if self_pdf.page_no() == 1:
-                        return  # portada sin cabecera corrida
+                def header(self_pdf) -> None:
+                    if self_pdf.page_no() <= 1:
+                        return
+                    self_pdf.set_xy(0, 0)
+                    self_pdf.set_fill_color(*_C_AZUL)
+                    self_pdf.rect(0, 0, self_pdf.w, 10, style="F")
                     ancho = self_pdf.w - self_pdf.l_margin - self_pdf.r_margin
-                    self_pdf.set_font("Helvetica", "B", 11)
-                    self_pdf.set_text_color(30, 30, 30)
-                    self_pdf.cell(ancho / 2, 7, "AIComply", align="L")
-                    self_pdf.set_font("Helvetica", size=8)
-                    self_pdf.set_text_color(100, 100, 100)
-                    self_pdf.cell(ancho / 2, 7, fecha_hoy, align="R",
+                    self_pdf.set_xy(self_pdf.l_margin, 2)
+                    self_pdf.set_font("Helvetica", "B", 9)
+                    self_pdf.set_text_color(255, 255, 255)
+                    self_pdf.cell(ancho * 0.72, 6,
+                                  _limpiar(f"AIComply — {titulo_limpio}"), align="L")
+                    self_pdf.set_font("Helvetica", "", 8)
+                    self_pdf.set_text_color(180, 200, 225)
+                    self_pdf.cell(ancho * 0.28, 6, fecha_hoy, align="R",
                                   new_x="LMARGIN", new_y="NEXT")
-                    self_pdf.set_draw_color(180, 180, 180)
-                    self_pdf.line(
-                        self_pdf.l_margin, self_pdf.get_y(),
-                        self_pdf.w - self_pdf.r_margin, self_pdf.get_y(),
-                    )
-                    self_pdf.ln(3)
+                    self_pdf.set_text_color(30, 30, 30)
 
-                def footer(self_pdf):
+                def footer(self_pdf) -> None:
+                    if self_pdf.page_no() <= 1:
+                        return
                     self_pdf.set_y(-14)
-                    self_pdf.set_draw_color(180, 180, 180)
+                    self_pdf.set_draw_color(224, 224, 224)
+                    self_pdf.set_line_width(0.3)
                     self_pdf.line(
                         self_pdf.l_margin, self_pdf.get_y(),
                         self_pdf.w - self_pdf.r_margin, self_pdf.get_y(),
                     )
-                    self_pdf.set_font("Helvetica", "I", 7)
-                    self_pdf.set_text_color(120, 120, 120)
-                    self_pdf.cell(
-                        0, 8,
-                        _limpiar(f"Pág. {self_pdf.page_no()} - {_TEXTO_PIE}"),
-                        align="C",
+                    self_pdf.set_line_width(0.2)
+                    ancho = self_pdf.w - self_pdf.l_margin - self_pdf.r_margin
+                    self_pdf.set_font("Helvetica", "", 7)
+                    self_pdf.set_text_color(170, 170, 170)
+                    pie = _limpiar(
+                        "AIComply - Herramienta auxiliar. "
+                        "No constituye asesoramiento juridico. "
+                        "Reglamento (UE) 2024/1689"
                     )
+                    self_pdf.cell(ancho * 0.82, 8, pie, align="L")
+                    self_pdf.cell(ancho * 0.18, 8,
+                                  f"Pag. {self_pdf.page_no()}", align="R",
+                                  new_x="LMARGIN", new_y="NEXT")
 
-            # Constantes de espaciado
-            H_BODY  = 6    # altura de línea para texto normal
-            H_SMALL = 5    # altura de línea para texto secundario (listas, notas)
-            H_LIST  = 6    # altura de línea para items de lista
-            SP_SEC  = 5    # espacio entre secciones (ln)
-            SP_PAR  = 3    # espacio entre párrafos (ln)
+            # ── Configuración ──────────────────────────────────────────────────
 
             pdf = _PDF()
-            pdf.set_margins(18, 10, 18)   # margen superior 10 mm para portada limpia
-            pdf.set_auto_page_break(auto=True, margin=18)
+            pdf.set_margins(18, 15, 18)
+            pdf.set_auto_page_break(auto=True, margin=20)
+
+            W  = pdf.w
+            LM = pdf.l_margin
+            CW = W - LM - pdf.r_margin   # 174 mm
+
+            # ══════════════════════════════════════════════════════════════════
+            # PÁGINA 1 — PORTADA
+            # ══════════════════════════════════════════════════════════════════
+
+            pdf.add_page()
+            pdf.set_y(0)
+
+            BAND_H = 110.0
+
+            # Banda azul
+            pdf.set_fill_color(*_C_AZUL)
+            pdf.rect(0, 0, W, BAND_H, style="F")
+
+            # Logo
+            pdf.set_xy(LM, 22)
+            pdf.set_font("Helvetica", "B", 14)
+            pdf.set_text_color(255, 255, 255)
+            pdf.cell(CW, 7, "AIComply", align="L")
+
+            # Subtexto reglamento
+            pdf.set_xy(LM, 31)
+            pdf.set_font("Helvetica", "", 8)
+            pdf.set_text_color(160, 190, 230)
+            pdf.cell(CW, 5, "REGLAMENTO (UE) 2024/1689 - AI ACT", align="L")
+
+            # Línea decorativa corta
+            pdf.set_draw_color(255, 255, 255)
+            pdf.set_line_width(0.4)
+            pdf.line(LM, 38, LM + 22, 38)
+            pdf.set_line_width(0.2)
+
+            # Título del informe
+            pdf.set_xy(LM, 43)
+            pdf.set_font("Helvetica", "B", 22)
+            pdf.set_text_color(255, 255, 255)
+            pdf.multi_cell(CW - 8, 11, _limpiar(titulo_limpio), align="L",
+                           new_x="LMARGIN", new_y="NEXT")
+
+            # Subtítulo sistema (descripción corta)
+            sistema_raw = meta.get("sistema", "")
+            if sistema_raw:
+                subtitulo = sistema_raw[:115] + ("..." if len(sistema_raw) > 115 else "")
+                y_sub = min(pdf.get_y() + 2, 95)
+                pdf.set_xy(LM, y_sub)
+                pdf.set_font("Helvetica", "", 10)
+                pdf.set_text_color(170, 200, 235)
+                pdf.multi_cell(CW - 5, 5, _limpiar(subtitulo), align="L",
+                               new_x="LMARGIN", new_y="NEXT")
+
+            # ── Grid 2×2 de metadatos ─────────────────────────────────────────
+            GRID_Y = BAND_H + 8
+            CELL_W = CW / 2
+            CELL_H = 22.0
+
+            metadatos = [
+                ("SISTEMA EVALUADO", (meta.get("sistema") or "—")[:52]),
+                ("SECTOR", meta.get("sector") or "—"),
+                ("ROL DE LA ENTIDAD", (meta.get("rol") or "—").capitalize()),
+                ("FECHA DE GENERACION", meta.get("fecha") or fecha_hoy),
+            ]
+
+            pdf.set_draw_color(221, 221, 221)
+            pdf.set_line_width(0.3)
+
+            for idx, (label, valor) in enumerate(metadatos):
+                col = idx % 2
+                row = idx // 2
+                x = LM + col * CELL_W
+                y = GRID_Y + row * CELL_H
+                pdf.rect(x, y, CELL_W, CELL_H, style="D")
+                pdf.set_xy(x + 2.5, y + 2.5)
+                pdf.set_font("Helvetica", "", 7)
+                pdf.set_text_color(140, 140, 140)
+                pdf.cell(CELL_W - 5, 4, _limpiar(label), align="L")
+                pdf.set_xy(x + 2.5, y + 7.5)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(26, 26, 26)
+                pdf.multi_cell(CELL_W - 5, 4.5,
+                               _limpiar(valor[:48] if len(valor) > 48 else valor),
+                               align="L", new_x="LMARGIN", new_y="NEXT")
+
+            # ── Bloque clasificación ──────────────────────────────────────────
+            CLASIF_Y = GRID_Y + 2 * CELL_H + 6
+            CLASIF_H = 26.0
+
+            pdf.set_fill_color(*_C_AZUL_BG)
+            pdf.set_draw_color(221, 221, 221)
+            pdf.rect(LM, CLASIF_Y, CW, CLASIF_H, style="FD")
+            pdf.set_fill_color(*_C_AZUL)
+            pdf.rect(LM, CLASIF_Y, 4, CLASIF_H, style="F")
+
+            pdf.set_xy(LM + 7, CLASIF_Y + 3.5)
+            pdf.set_font("Helvetica", "", 7)
+            pdf.set_text_color(120, 130, 150)
+            pdf.cell(CW - 10, 4, "CLASIFICACION DEL SISTEMA", align="L")
+
+            clasificacion_val = meta.get("clasificacion", "")
+            pdf.set_xy(LM + 7, CLASIF_Y + 8.5)
+            pdf.set_font("Helvetica", "B", 16)
+            pdf.set_text_color(*_C_AZUL)
+            pdf.cell(CW - 10, 9, _limpiar(clasificacion_val), align="L")
+
+            info_nivel = NIVELES_RIESGO.get(clasificacion_val, {})
+            desc_nivel = info_nivel.get("descripcion", "")
+            if desc_nivel:
+                pdf.set_xy(LM + 7, CLASIF_Y + 18)
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(100, 110, 130)
+                pdf.multi_cell(CW - 12, 4, _limpiar(desc_nivel), align="L",
+                               new_x="LMARGIN", new_y="NEXT")
+
+            # ── Aviso legal ───────────────────────────────────────────────────
+            AVISO_Y = CLASIF_Y + CLASIF_H + 6
+            aviso = _limpiar(
+                "AVISO LEGAL: Este informe es una herramienta auxiliar de orientacion. "
+                "Los resultados no constituyen asesoramiento juridico vinculante. "
+                "Consulte con especialistas antes de tomar decisiones de cumplimiento normativo."
+            )
+            pdf.set_fill_color(255, 251, 232)
+            pdf.set_draw_color(224, 200, 74)
+            pdf.set_line_width(0.3)
+            pdf.rect(LM, AVISO_Y, CW, 20, style="FD")
+            pdf.set_xy(LM + 3, AVISO_Y + 3)
+            pdf.set_font("Helvetica", "", 8)
+            pdf.set_text_color(107, 85, 0)
+            pdf.multi_cell(CW - 6, 4, aviso, align="J",
+                           new_x="LMARGIN", new_y="NEXT")
+
+            pdf.set_text_color(30, 30, 30)
+            pdf.set_draw_color(180, 180, 180)
+            pdf.set_line_width(0.2)
+
+            # ══════════════════════════════════════════════════════════════════
+            # PÁGINA 2 — DESCRIPCIÓN DEL SISTEMA (opcional)
+            # ══════════════════════════════════════════════════════════════════
+
+            if clasificacion_data and clasificacion_data.get("descripcion_sistema"):
+                pdf.add_page()
+                self._renderizar_pagina_sistema(pdf, clasificacion_data, LM, CW)
+
+            # ══════════════════════════════════════════════════════════════════
+            # PÁGINAS INTERIORES — contenido del Markdown
+            # ══════════════════════════════════════════════════════════════════
+
             pdf.add_page()
 
-            # ── Portada (página 1): título + fecha + línea ────────────────────
-            pdf.set_font("Helvetica", "B", 20)
-            pdf.set_text_color(30, 30, 30)
-            pdf.multi_cell(0, 11, _limpiar(titulo), align="L",
-                           new_x="LMARGIN", new_y="NEXT")
-            pdf.set_font("Helvetica", "", 9)
-            pdf.set_text_color(120, 120, 120)
-            pdf.cell(0, 6, fecha_hoy, align="R", new_x="LMARGIN", new_y="NEXT")
-            pdf.set_draw_color(180, 180, 180)
-            pdf.line(pdf.l_margin, pdf.get_y(),
-                     pdf.w - pdf.r_margin, pdf.get_y())
-            pdf.ln(SP_SEC)
-
-            # ── Recuadro amarillo: aviso legal ────────────────────────────────
-            pdf.set_fill_color(255, 243, 205)
-            pdf.set_draw_color(200, 160, 0)
-            pdf.set_font("Helvetica", "B", 8)
-            pdf.set_text_color(80, 60, 0)
-            pdf.multi_cell(
-                0, H_SMALL,
-                _limpiar(
-                    "AVISO LEGAL: Este informe es una herramienta auxiliar de orientacion. "
-                    "Los resultados no constituyen asesoramiento juridico vinculante. "
-                    "Consulte con especialistas antes de tomar decisiones de cumplimiento normativo."
-                ),
-                border=1, fill=True, align="J", new_x="LMARGIN", new_y="NEXT",
-            )
-            pdf.ln(SP_SEC)
-            pdf.set_text_color(30, 30, 30)
-            pdf.set_draw_color(180, 180, 180)
-
-            _PATRON_ETIQUETA = re.compile(r"^(\*\*[^*]+\*\*:?\s*)(.*)", re.DOTALL)
-
-            def _escribir_con_negrita(texto: str, h: float = H_BODY, size: int = 10) -> None:
-                """Renderiza texto con **negrita** inline de forma estable y justificada."""
-                if "**" not in texto:
-                    pdf.set_font("Helvetica", "", size)
-                    pdf.multi_cell(0, h, _limpiar(texto), align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    return
-                m = _PATRON_ETIQUETA.match(texto)
-                if m:
-                    # Patrón **Etiqueta:** valor → etiqueta en negrita, resto justificado
-                    label = _limpiar(re.sub(r"\*\*", "", m.group(1)))
-                    resto = _limpiar(m.group(2).strip())
-                    pdf.set_font("Helvetica", "B", size)
-                    lw = pdf.get_string_width(label) + 0.5
-                    avail = pdf.w - pdf.r_margin - pdf.x
-                    if lw >= avail:
-                        pdf.multi_cell(0, h, label, align="L",
-                                       new_x="LMARGIN", new_y="NEXT")
-                        if resto:
-                            pdf.set_font("Helvetica", "", size)
-                            pdf.multi_cell(0, h, resto, align="J",
-                                           new_x="LMARGIN", new_y="NEXT")
-                    else:
-                        pdf.cell(lw, h, label)
-                        pdf.set_font("Helvetica", "", size)
-                        if resto:
-                            rw = pdf.w - pdf.r_margin - pdf.x
-                            pdf.multi_cell(rw, h, resto, align="J",
-                                           new_x="LMARGIN", new_y="NEXT")
-                        else:
-                            pdf.ln(h)
-                else:
-                    # Negrita inline en medio de párrafo → eliminar marcadores y justificar
-                    sin_md = re.sub(r"\*\*([^*]+)\*\*", r"\1", texto)
-                    pdf.set_font("Helvetica", "", size)
-                    pdf.multi_cell(0, h, _limpiar(sin_md), align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-
-            # Estado para cajas de colores por obligación
-            _COLORES_OBL: dict[str, tuple[tuple[int, int, int], tuple[int, int, int], str]] = {
-                "cubierta":    ((56, 142, 60),   (232, 245, 233), "Cubierta"),
-                "parcial":     ((249, 168, 37),  (255, 248, 225), "Parcial"),
-                "carencia":    ((198, 40, 40),   (255, 235, 238), "Mejora"),
-                "no_evaluada": ((117, 117, 117), (245, 245, 245), "Sin evaluar"),
-            }
+            # Estado del parser
+            _skip = True
+            _seccion: str | None = None
             _obl_estado: str | None = None
             _obl_art: str = ""
             _obl_desc: list[str] = []
+            _metricas_pct: int = 0
+            _metricas_counts: list[int] = []
+            _metricas_emitidas = False
 
-            def _volcar_obl() -> None:
+            def _flush_obl() -> None:
                 nonlocal _obl_art, _obl_desc
-                if not _obl_estado or not _obl_art:
-                    _obl_art = ""
-                    _obl_desc = []
-                    return
-                fg, bg, etiqueta = _COLORES_OBL[_obl_estado]
-                pdf.set_fill_color(*bg)
-                pdf.set_draw_color(*fg)
-                pdf.set_font("Helvetica", "B", 9)
-                pdf.set_text_color(*fg)
-                art_texto = _limpiar(re.sub(r"\*\*(.+?)\*\*", r"\1", _obl_art))
-                pdf.multi_cell(0, H_SMALL + 1, f"{art_texto}  [{etiqueta}]",
-                               border="LB", fill=True, align="J",
-                               new_x="LMARGIN", new_y="NEXT")
-                if _obl_desc:
-                    pdf.set_font("Helvetica", "", 9)
-                    pdf.set_text_color(60, 60, 60)
-                    pdf.multi_cell(0, H_SMALL, _limpiar(" ".join(_obl_desc)),
-                                   fill=True, align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-                pdf.set_draw_color(180, 180, 180)
-                pdf.set_text_color(30, 30, 30)
-                pdf.ln(SP_PAR)
+                if _obl_estado and _obl_art:
+                    desc_txt = _limpiar(" ".join(_obl_desc).strip())
+                    self._renderizar_obligacion(pdf, _obl_art, desc_txt, _obl_estado, LM, CW)
                 _obl_art = ""
                 _obl_desc = []
 
-            _linea_vacia_anterior = False
-            _primer_h1_saltado = False   # el H1 ya aparece como título de portada
+            def _cabecera_seccion(titulo_sec: str) -> None:
+                nonlocal _seccion, _obl_estado, _metricas_emitidas
+                _flush_obl()
+                _obl_estado = None
+                _metricas_emitidas = False
+
+                t_lower = titulo_sec.lower()
+                if "plan de acci" in t_lower:
+                    _seccion = "plan"
+                elif "revisi" in t_lower and "profesional" in t_lower:
+                    _seccion = "revision"
+                elif "lisis de obligaciones" in t_lower:
+                    _seccion = "obligaciones"
+                else:
+                    _seccion = "otro"
+
+                pdf.ln(2)
+                m_num = re.match(r"^(\d+)\.\s+(.+)$", titulo_sec)
+                if m_num:
+                    num_txt = m_num.group(1)
+                    tit_txt = _limpiar(m_num.group(2))
+                    pdf.set_fill_color(*_C_BADGE)
+                    pdf.set_text_color(*_C_AZUL)
+                    pdf.set_font("Helvetica", "B", 9)
+                    pdf.cell(8, 7, num_txt, border=0, fill=True, align="C")
+                    pdf.set_font("Helvetica", "B", 13)
+                    pdf.set_text_color(26, 26, 26)
+                    pdf.cell(CW - 8, 7, f"  {tit_txt}", align="L",
+                             new_x="LMARGIN", new_y="NEXT")
+                else:
+                    pdf.set_font("Helvetica", "B", 13)
+                    pdf.set_text_color(26, 26, 26)
+                    pdf.cell(CW, 7, _limpiar(titulo_sec), align="L",
+                             new_x="LMARGIN", new_y="NEXT")
+
+                pdf.set_draw_color(224, 224, 224)
+                pdf.set_line_width(0.3)
+                pdf.line(LM, pdf.get_y(), LM + CW, pdf.get_y())
+                pdf.set_line_width(0.2)
+                pdf.set_draw_color(180, 180, 180)
+                pdf.ln(3)
+                pdf.set_text_color(30, 30, 30)
+
+            def _grupo_obl(nombre: str, estado_key: str) -> None:
+                nonlocal _obl_estado
+                _flush_obl()
+                _obl_estado = estado_key
+                pal = _PALETA.get(estado_key, _PALETA["no_evaluada"])
+                pdf.ln(1)
+                pdf.set_font("Helvetica", "B", 8)
+                pdf.set_text_color(*pal["borde"])
+                pdf.cell(CW, 5, f">  {nombre.upper()}", align="L",
+                         new_x="LMARGIN", new_y="NEXT")
+                pdf.ln(1)
+                pdf.set_text_color(30, 30, 30)
+
+            def _render_metricas(pct: int, counts: list[int]) -> None:
+                if len(counts) < 4:
+                    return
+                cub, par, mej, sin = counts[0], counts[1], counts[2], counts[3]
+                card_w = CW / 4
+                card_h = 22.0
+                y0 = pdf.get_y()
+
+                tarjetas = [
+                    ("Cubiertas",   cub, (42, 122, 74)),
+                    ("Parciales",   par, (184, 122, 0)),
+                    ("Mejoras",     mej, (176, 32, 32)),
+                    ("Sin evaluar", sin, (150, 150, 150)),
+                ]
+
+                for i, (lbl, num, col) in enumerate(tarjetas):
+                    x = LM + i * card_w
+                    pdf.set_fill_color(*col)
+                    pdf.rect(x, y0, card_w, 2.5, style="F")
+                    pdf.set_fill_color(*_C_AZUL_BG)
+                    pdf.rect(x, y0 + 2.5, card_w, card_h - 2.5, style="F")
+                    pdf.set_xy(x, y0 + 4)
+                    pdf.set_font("Helvetica", "B", 18)
+                    pdf.set_text_color(*col)
+                    pdf.cell(card_w, 10, str(num), align="C")
+                    pdf.set_xy(x, y0 + 14.5)
+                    pdf.set_font("Helvetica", "", 7)
+                    pdf.set_text_color(130, 130, 130)
+                    pdf.cell(card_w, 5, lbl.upper(), align="C")
+
+                pdf.set_y(y0 + card_h + 4)
+
+                # Barra de progreso
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(60, 60, 60)
+                pdf.cell(CW * 0.72, 5, "Grado de cumplimiento estimado", align="L")
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(*_C_AZUL)
+                pdf.cell(CW * 0.28, 5, f"{pct} %", align="R",
+                         new_x="LMARGIN", new_y="NEXT")
+                bar_y = pdf.get_y()
+                pdf.set_fill_color(232, 232, 232)
+                pdf.rect(LM, bar_y, CW, 4, style="F")
+                fill_w = CW * max(0, min(100, pct)) / 100
+                if fill_w > 0:
+                    pdf.set_fill_color(*_C_AZUL)
+                    pdf.rect(LM, bar_y, fill_w, 4, style="F")
+                pdf.set_y(bar_y + 7)
+                pdf.set_text_color(30, 30, 30)
+
+            def _item_plan(texto: str) -> None:
+                m = re.match(r"^\*\*([^*]+)\*\*:?\s*(.*)", texto, re.DOTALL)
+                badge_txt = _limpiar(m.group(1).strip()[:28]) if m else "Accion"
+                resto = _limpiar((m.group(2).strip() if m else texto))
+
+                BADGE_W_P = 35.0
+                LB = 3.0
+                PAD_H_P = 2.5
+                PAD_V_P = 2.5
+                H_P = 4.5
+                tw = CW - LB - BADGE_W_P - PAD_H_P
+                avg = 1.85
+                nlines = max(1, -(-len(resto) // max(1, int(tw / avg))))
+                est = max(11.0, PAD_V_P * 2 + nlines * H_P)
+
+                if pdf.get_y() + est > pdf.h - pdf.b_margin - 3:
+                    pdf.add_page()
+
+                y0 = pdf.get_y()
+                pdf.set_fill_color(*_C_AZUL_BG)
+                pdf.rect(LM, y0, CW, est, style="F")
+                pdf.set_fill_color(*_C_AZUL)
+                pdf.rect(LM, y0, LB, est, style="F")
+                pdf.set_fill_color(*_C_BADGE2)
+                pdf.rect(LM + LB, y0, BADGE_W_P, est, style="F")
+                pdf.set_xy(LM + LB, y0 + (est - H_P) / 2)
+                pdf.set_font("Helvetica", "B", 8)
+                pdf.set_text_color(*_C_AZUL)
+                pdf.cell(BADGE_W_P, H_P, badge_txt, align="C")
+
+                pdf.set_xy(LM + LB + BADGE_W_P + PAD_H_P, y0 + PAD_V_P)
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(51, 51, 51)
+                pdf.multi_cell(tw, H_P, resto, align="J",
+                               new_x="LMARGIN", new_y="NEXT")
+
+                real_h = pdf.get_y() - y0 + PAD_V_P
+                if real_h > est:
+                    ext = real_h - est
+                    pdf.set_fill_color(*_C_AZUL_BG)
+                    pdf.rect(LM + LB + BADGE_W_P, y0 + est,
+                             CW - LB - BADGE_W_P, ext, style="F")
+                    pdf.set_fill_color(*_C_BADGE2)
+                    pdf.rect(LM + LB, y0 + est, BADGE_W_P, ext, style="F")
+                    pdf.set_fill_color(*_C_AZUL)
+                    pdf.rect(LM, y0 + est, LB, ext, style="F")
+
+                box_h = max(est, real_h)
+                pdf.set_draw_color(216, 224, 240)
+                pdf.set_line_width(0.3)
+                pdf.rect(LM, y0, CW, box_h, style="D")
+                pdf.set_line_width(0.2)
+                pdf.set_y(y0 + box_h + 2)
+                pdf.set_text_color(30, 30, 30)
+                pdf.set_draw_color(180, 180, 180)
+
+            def _item_revision(texto: str) -> None:
+                texto = _limpiar(re.sub(r"\*\*", "", texto))
+                LB = 3.0
+                PAD_H_R = 3.0
+                PAD_V_R = 2.5
+                H_R = 4.5
+                tw = CW - LB - 2 * PAD_H_R
+                avg = 1.85
+                nlines = max(1, -(-len(texto) // max(1, int(tw / avg))))
+                est = max(10.0, PAD_V_R * 2 + nlines * H_R)
+
+                if pdf.get_y() + est > pdf.h - pdf.b_margin - 3:
+                    pdf.add_page()
+
+                y0 = pdf.get_y()
+                pdf.set_fill_color(255, 251, 232)
+                pdf.rect(LM, y0, CW, est, style="F")
+                pdf.set_fill_color(224, 200, 74)
+                pdf.rect(LM, y0, LB, est, style="F")
+                pdf.set_xy(LM + LB + PAD_H_R, y0 + PAD_V_R)
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(90, 72, 0)
+                pdf.multi_cell(tw, H_R, texto, align="J",
+                               new_x="LMARGIN", new_y="NEXT")
+
+                real_h = pdf.get_y() - y0 + PAD_V_R
+                if real_h > est:
+                    ext = real_h - est
+                    pdf.set_fill_color(255, 251, 232)
+                    pdf.rect(LM + LB, y0 + est, CW - LB, ext, style="F")
+                    pdf.set_fill_color(224, 200, 74)
+                    pdf.rect(LM, y0 + est, LB, ext, style="F")
+
+                pdf.set_y(max(pdf.get_y(), y0 + max(est, real_h)) + 2)
+                pdf.set_text_color(30, 30, 30)
+
+            def _bullet_normal(texto: str) -> None:
+                texto = re.sub(r"\*\*([^*]+)\*\*", r"\1", texto)
+                pdf.set_font("Helvetica", "", 10)
+                pdf.set_text_color(30, 30, 30)
+                pdf.write(5, "  -  ")
+                pdf.multi_cell(CW - 10, 5, _limpiar(texto), align="J",
+                               new_x="LMARGIN", new_y="NEXT")
+
+            # ── Parser línea a línea ───────────────────────────────────────────
 
             for linea in contenido_markdown.split("\n"):
-                pdf.set_x(pdf.l_margin)
-                linea_limpia = linea.strip()
+                linea_s = linea.strip()
 
-                # Saltar pie (caja roja al final) y aviso legal del Markdown (ya está en recuadro)
-                if (linea_limpia.startswith("*Generado por AIComply")
-                        or linea_limpia.startswith("> **AVISO LEGAL")):
+                if _skip:
+                    if linea_s.startswith("## "):
+                        _skip = False
+                    else:
+                        continue
+
+                if (linea_s.startswith("> **AVISO LEGAL")
+                        or linea_s.startswith("*Generado por AIComply")
+                        or linea_s.startswith("*Fecha de generaci")):
                     continue
 
-                if not linea_limpia or linea_limpia == "---":
-                    if not (_obl_estado and _obl_art) and not _linea_vacia_anterior:
-                        pdf.ln(SP_PAR)
-                    _linea_vacia_anterior = True
+                if not linea_s or linea_s == "---":
+                    if not (_obl_estado and _obl_art):
+                        pdf.ln(2)
                     continue
 
-                _linea_vacia_anterior = False
+                if linea_s.startswith("## "):
+                    _cabecera_seccion(linea_s[3:])
 
-                if linea_limpia.startswith("# "):
-                    if not _primer_h1_saltado:
-                        _primer_h1_saltado = True
-                        continue  # ya mostrado como título de portada
-                    _volcar_obl(); _obl_estado = None
-                    pdf.set_font("Helvetica", "B", 15)
-                    pdf.multi_cell(0, 9, _limpiar(linea_limpia[2:]), align="L",
+                elif linea_s.startswith("### Obligaciones cubiertas"):
+                    _grupo_obl("Obligaciones cubiertas", "cubierta")
+
+                elif linea_s.startswith("### Obligaciones parcialmente"):
+                    _grupo_obl("Obligaciones parcialmente cubiertas", "parcial")
+
+                elif linea_s.startswith("### ") and "reas de mejora" in linea_s:
+                    _grupo_obl("Areas de mejora", "carencia")
+
+                elif linea_s.startswith("### Obligaciones no evaluadas"):
+                    _grupo_obl("Obligaciones no evaluadas", "no_evaluada")
+
+                elif linea_s.startswith("### ") or linea_s.startswith("#### "):
+                    _flush_obl()
+                    _obl_estado = None
+                    nivel = 3 if linea_s.startswith("### ") else 4
+                    sub_txt = _limpiar(linea_s[4:] if nivel == 3 else linea_s[5:])
+                    pdf.set_font("Helvetica", "BI" if nivel == 4 else "B", 10)
+                    pdf.multi_cell(CW, 5, sub_txt, align="L",
                                    new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
-                    pdf.ln(SP_PAR)
-                elif linea_limpia.startswith("## "):
-                    _volcar_obl(); _obl_estado = None
-                    pdf.ln(SP_PAR)
-                    pdf.set_font("Helvetica", "B", 12)
-                    pdf.multi_cell(0, 7, _limpiar(linea_limpia[3:]), align="L",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
-                    pdf.ln(SP_PAR)
-                elif linea_limpia.startswith("### Obligaciones cubiertas"):
-                    _volcar_obl(); _obl_estado = "cubierta"
-                    pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(56, 142, 60)
-                    pdf.multi_cell(0, H_BODY, "Obligaciones cubiertas", align="L",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_text_color(30, 30, 30); pdf.set_font("Helvetica", size=10)
-                elif linea_limpia.startswith("### Obligaciones parcialmente"):
-                    _volcar_obl(); _obl_estado = "parcial"
-                    pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(249, 168, 37)
-                    pdf.multi_cell(0, H_BODY, "Obligaciones parcialmente cubiertas", align="L",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_text_color(30, 30, 30); pdf.set_font("Helvetica", size=10)
-                elif "reas de mejora" in linea_limpia and linea_limpia.startswith("### "):
-                    _volcar_obl(); _obl_estado = "carencia"
-                    pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(198, 40, 40)
-                    pdf.multi_cell(0, H_BODY, "Areas de mejora", align="L",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_text_color(30, 30, 30); pdf.set_font("Helvetica", size=10)
-                elif linea_limpia.startswith("### Obligaciones no evaluadas"):
-                    _volcar_obl(); _obl_estado = "no_evaluada"
-                    pdf.set_font("Helvetica", "B", 10)
-                    pdf.set_text_color(117, 117, 117)
-                    pdf.multi_cell(0, H_BODY, "Obligaciones no evaluadas", align="L",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_text_color(30, 30, 30); pdf.set_font("Helvetica", size=10)
-                elif linea_limpia.startswith("### "):
-                    _volcar_obl(); _obl_estado = None
-                    pdf.set_font("Helvetica", "B", 10)
-                    pdf.multi_cell(0, H_BODY, _limpiar(linea_limpia[4:]), align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
-                elif linea_limpia.startswith("#### "):
-                    _volcar_obl(); _obl_estado = None
-                    pdf.set_font("Helvetica", "BI", 10)
-                    pdf.multi_cell(0, H_BODY, _limpiar(linea_limpia[5:]), align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
-                elif _obl_estado is not None and linea_limpia.startswith("**"):
-                    _volcar_obl()
-                    _obl_art = linea_limpia
-                elif _obl_estado is not None and _obl_art and linea_limpia:
-                    _obl_desc.append(linea_limpia)
+                    pdf.ln(1)
+
+                elif "**Grado de cumplimiento" in linea_s and _seccion == "obligaciones":
+                    m_pct = re.search(r"(\d+)\s*%", linea_s)
+                    if m_pct:
+                        _metricas_pct = int(m_pct.group(1))
+
+                elif linea_s.startswith("Cubiertas:") and _seccion == "obligaciones":
+                    nums = re.findall(r"\d+", linea_s)
+                    if len(nums) >= 4:
+                        _metricas_counts = [int(n) for n in nums[:4]]
+                    if not _metricas_emitidas and _metricas_counts:
+                        _render_metricas(_metricas_pct, _metricas_counts)
+                        _metricas_emitidas = True
+
+                elif _obl_estado is not None and linea_s.startswith("**"):
+                    _flush_obl()
+                    _obl_art = linea_s
+
+                elif _obl_estado is not None and _obl_art and linea_s:
+                    if not linea_s.startswith("*Las obligaciones"):
+                        _obl_desc.append(linea_s)
+
                 elif _obl_estado is not None:
                     pass
-                elif linea_limpia.startswith("> "):
-                    pdf.set_font("Helvetica", "I", 9)
-                    pdf.set_text_color(80, 80, 80)
-                    _escribir_con_negrita(linea_limpia[2:], h=H_SMALL, size=9)
-                    pdf.set_text_color(30, 30, 30)
-                elif linea_limpia.startswith(("- ", "* ")):
-                    # Bullet + texto con write() → wrapping vuelve al l_margin de página
-                    texto_item = linea_limpia[2:]
-                    m_item = _PATRON_ETIQUETA.match(texto_item)
-                    pdf.set_font("Helvetica", "", 10)
-                    pdf.write(H_LIST, "  -  ")
-                    if m_item:
-                        label_i = _limpiar(re.sub(r"\*\*", "", m_item.group(1)))
-                        resto_i = _limpiar(m_item.group(2).strip())
-                        pdf.set_font("Helvetica", "B", 10)
-                        pdf.write(H_LIST, label_i)
-                        if resto_i:
-                            pdf.set_font("Helvetica", "", 10)
-                            pdf.write(H_LIST, " " + resto_i)
+
+                elif linea_s.startswith(("- ", "* ")):
+                    item = linea_s[2:]
+                    if _seccion == "plan":
+                        _item_plan(item)
+                    elif _seccion == "revision":
+                        _item_revision(item)
                     else:
-                        sin_md = re.sub(r"\*\*([^*]+)\*\*", r"\1", texto_item)
-                        pdf.write(H_LIST, _limpiar(sin_md))
-                    pdf.set_font("Helvetica", "", 10)
-                    pdf.ln(H_LIST)
-                elif linea_limpia.startswith("|"):
-                    pdf.set_font("Helvetica", size=9)
-                    pdf.multi_cell(0, H_SMALL, _limpiar(linea_limpia), align="J",
-                                   new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
-                elif (linea_limpia.startswith("*") and linea_limpia.endswith("*")
-                      and not linea_limpia.startswith("**")):
+                        _bullet_normal(item)
+
+                elif linea_s.startswith("> "):
                     pdf.set_font("Helvetica", "I", 9)
-                    pdf.set_text_color(80, 80, 80)
-                    pdf.multi_cell(0, H_SMALL, _limpiar(linea_limpia[1:-1]), align="J",
+                    pdf.set_text_color(90, 90, 90)
+                    pdf.multi_cell(CW, 4.5, _limpiar(linea_s[2:]), align="J",
                                    new_x="LMARGIN", new_y="NEXT")
-                    pdf.set_font("Helvetica", size=10)
                     pdf.set_text_color(30, 30, 30)
+
+                elif (linea_s.startswith("*") and linea_s.endswith("*")
+                      and not linea_s.startswith("**")):
+                    pdf.set_font("Helvetica", "I", 8)
+                    pdf.set_text_color(120, 120, 120)
+                    pdf.multi_cell(CW, 4, _limpiar(linea_s[1:-1]), align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
+                    pdf.set_text_color(30, 30, 30)
+
                 else:
-                    _escribir_con_negrita(linea_limpia)
+                    body = re.sub(r"\*\*([^*]+)\*\*", r"\1", linea_s)
+                    pdf.set_font("Helvetica", "", 10)
+                    pdf.set_text_color(30, 30, 30)
+                    pdf.multi_cell(CW, 5, _limpiar(body), align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
+                    pdf.ln(1)
 
-            _volcar_obl()
+            _flush_obl()
 
-            # Recuadro rojo al final: información de generación
-            pdf.ln(SP_SEC)
-            _texto_gen = _limpiar(
+            # Recuadro de generación
+            pdf.ln(4)
+            gen_txt = _limpiar(
                 f"{_TEXTO_PIE} "
                 f"Fecha de generacion: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
             )
-            pdf.set_fill_color(255, 235, 238)
-            pdf.set_draw_color(198, 40, 40)
+            pdf.set_fill_color(255, 251, 232)
+            pdf.set_draw_color(224, 200, 74)
+            pdf.set_line_width(0.3)
             pdf.set_font("Helvetica", "I", 8)
-            pdf.set_text_color(130, 20, 20)
-            pdf.multi_cell(0, H_SMALL, _texto_gen, border=1, fill=True, align="J",
+            pdf.set_text_color(107, 85, 0)
+            pdf.multi_cell(0, 4, gen_txt, border=1, fill=True, align="J",
                            new_x="LMARGIN", new_y="NEXT")
 
             return bytes(pdf.output())
+
         except ImportError as exc:
             raise RuntimeError(
                 "fpdf2 no está instalado en este entorno. Ejecute: pip install fpdf2"
@@ -769,26 +1332,20 @@ class GeneradorInforme:
 
 
 _UNICODE_A_LATIN1 = str.maketrans({
-    "•": "-",    # bullet •
-    "–": "-",    # en dash –
-    "—": "-",    # em dash —
-    "€": "EUR",  # € (no está en ISO-8859-1)
-    "‘": "'",    # comilla simple izquierda ‘
-    "’": "'",    # comilla simple derecha ’
-    "“": '"',    # comilla doble izquierda “
-    "”": '"',    # comilla doble derecha ”
-    "…": "...",  # puntos suspensivos …
-    "«": '"',    # «
-    "»": '"',    # »
+    "•": "-",
+    "–": "-",
+    "—": "-",
+    "€": "EUR",
+    "‘": "'",
+    "’": "'",
+    "“": '"',
+    "”": '"',
+    "…": "...",
+    "«": '"',
+    "»": '"',
 })
 
 
 def _limpiar(texto: str) -> str:
-    """Convierte el texto a latin-1 para fpdf2.
-
-    Primero transliterada los caracteres tipográficos comunes que están fuera de
-    ISO-8859-1 (bullets, guiones tipográficos, comillas tipográficas) por sus
-    equivalentes ASCII. El resto de caracteres fuera de latin-1 se sustituyen
-    por '?' como salvaguarda final.
-    """
+    """Convierte el texto a latin-1 para fpdf2."""
     return texto.translate(_UNICODE_A_LATIN1).encode("latin-1", "replace").decode("latin-1")

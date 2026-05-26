@@ -43,7 +43,12 @@ def _botones_descarga(informe_md: str, tipo: str) -> None:
     with col_pdf:
         try:
             generador = GeneradorInforme()
-            pdf_bytes = generador.exportar_pdf(informe_md, titulo=f"AIComply — {_TITULOS_INFORME.get(tipo, 'Informe')}")
+            clasificacion_data = st.session_state.get("clasificacion_data")
+            pdf_bytes = generador.exportar_pdf(
+                informe_md,
+                titulo=f"AIComply — {_TITULOS_INFORME.get(tipo, 'Informe')}",
+                clasificacion_data=clasificacion_data,
+            )
             st.download_button(
                 label="Descargar en PDF",
                 data=pdf_bytes,
