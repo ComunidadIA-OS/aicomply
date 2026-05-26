@@ -40,6 +40,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Ocultar el indicador de ejecución (bicicleta/persona) de Streamlit
+st.markdown(
+    "<style>[data-testid='stStatusWidget']{visibility:hidden}</style>",
+    unsafe_allow_html=True,
+)
+
 # ── Avisos de privacidad por provider y plan ───────────────────────────────────
 _AVISOS: dict[str, tuple[str, str]] = {
     "groq": (

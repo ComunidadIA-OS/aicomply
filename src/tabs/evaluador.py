@@ -189,7 +189,9 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
     if st.session_state.evaluacion_completada:
         return
 
+    estado = st.empty()
     if prompt := st.chat_input("Escriba su respuesta aquí...", max_chars=4000):
+        estado.markdown("⏳ **Pensando...**")
         st.session_state.mensajes_evaluador.append({"role": "user", "content": prompt})
 
         with chat_container:

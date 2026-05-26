@@ -171,7 +171,9 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
     if st.session_state.cumplimiento_completado:
         return
 
+    estado = st.empty()
     if prompt := st.chat_input("Escriba su respuesta o pregunta...", max_chars=4000):
+        estado.markdown("⏳ **Pensando...**")
         st.session_state.mensajes_cumplimiento.append({"role": "user", "content": prompt})
 
         with chat_container:
