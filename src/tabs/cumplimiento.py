@@ -76,6 +76,19 @@ def _inicializar_chatbot_cumplimiento(provider: LLMProvider, clasificacion_data:
     """Crea el chatbot de cumplimiento con el prompt enriquecido con la clasificación."""
     contexto = _formatear_contexto_evaluacion(clasificacion_data)
     prompt = SYSTEM_PROMPT_CUMPLIMIENTO.replace("{contexto_evaluacion}", contexto)
+
+    readme = st.session_state.get("readme_tecnico", "")
+    if readme:
+        prompt += (
+            "\n\nDOCUMENTACIÓN TÉCNICA APORTADA POR EL USUARIO:\n"
+            "El usuario ha proporcionado la siguiente documentación técnica de su sistema. "
+            "Úsala para identificar medidas ya implementadas ANTES de preguntar. "
+            "Si la documentación menciona explícitamente que algo está implementado, "
+            "infórmalo al usuario ('Según su documentación, parece que ya tiene cubierto X. ¿Es correcto?') "
+            "en lugar de preguntar desde cero. Siempre confirma con el usuario antes de registrar el estado.\n\n"
+            f"{readme}"
+        )
+
     return AIComplyChat(provider=provider, system_prompt_override=prompt, max_historial=50)
 
 

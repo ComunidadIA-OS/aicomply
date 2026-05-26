@@ -287,6 +287,8 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                         st.error(mensaje_error_seguro(exc))
                         st.stop()
 
+                    st.session_state.readme_tecnico = contenido_readme[:6000]
+
                     mensaje_inicio = (
                         "He analizado la documentación técnica proporcionada. "
                         "Esto es lo que he entendido sobre el sistema:\n\n"
@@ -338,6 +340,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                 st.session_state[clave] = {}
             for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
                 st.session_state[clave] = None
+            st.session_state.pop("readme_tecnico", None)
             st.session_state.evaluacion_completada = False
             st.session_state.cumplimiento_completado = False
             st.session_state.acceso_directo_cumplimiento = False
