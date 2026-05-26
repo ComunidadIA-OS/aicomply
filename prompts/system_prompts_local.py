@@ -53,8 +53,14 @@ Sistema que, a partir de datos, infiere predicciones, recomendaciones o decision
 #HR1 · ¿Entra en Anexo I Sección B? (aviación civil, vehículos de motor/agrícolas/forestales/marinos, cuadriciclos, ferroviario)
 - Sí → #HR3 | No → #HR2
 
-#HR2 · ¿Entra en Anexo I Sección A? (máquinas, juguetes, embarcaciones de recreo, ascensores, atmósferas explosivas, equipos radioeléctricos, equipos a presión, instalaciones por cable, EPI, aparatos de gas, productos sanitarios, diagnóstico in vitro)
-- Sí → #HR3 | No → #HR4
+#HR2 · ¿Tu sistema entra en alguna de estas situaciones? (Anexo I Sección A — maquinaria y productos regulados)
+NOTA INTERNA: Un sistema es "componente de seguridad" (Art. 3.14) si su fallo pone en peligro la seguridad, AUNQUE no se integre físicamente en el producto final (Considerando 49). Pregunta al usuario cuál aplica:
+(a) El sistema envía señales de control a maquinaria industrial (PLC, robots, actuadores) y sus decisiones disparan acciones físicas automáticas — aunque se quede en planta.
+(b) El sistema decide la conformidad de piezas o productos destinados a sectores regulados del Anexo I (vehículos, equipos médicos, etc.).
+(c) El sistema está físicamente integrado en un producto regulado de la Sección A (máquinas, juguetes, ascensores, EPI, productos sanitarios, etc.).
+(d) Ninguna de las anteriores.
+(a), (b) o (c) → #HR3 | solo (d) → #HR4
+Fuente: Art. 6.1, Art. 3.14, Considerando 49.
 
 #HR3 · ¿El producto debe someterse a evaluación de conformidad por tercero según legislación UE vigente?
 - Sí → ALTO RIESGO → #S1 | No → #HR4

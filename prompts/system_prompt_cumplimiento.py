@@ -63,13 +63,16 @@ ALTO RIESGO — Rol Proveedor (Art. 16):
 - Declaración UE de conformidad y marcado CE (Art. 47-48)
 
 ALTO RIESGO — Rol Implementador (Art. 26):
-- Usar el sistema estrictamente conforme a las instrucciones del proveedor
-- Asignar personas responsables de la supervisión humana
-- Garantizar que los operadores tengan competencia, formación y autoridad para supervisar
-- Informar al proveedor de incidentes graves o comportamientos inesperados
-- Conservar los registros de actividad generados automáticamente (si tiene control sobre ellos)
-- Evaluación de impacto sobre derechos fundamentales (Art. 27), si: (a) es organismo público, (b) es entidad privada que presta servicios públicos, o (c) es responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud]
-- Registro en la base de datos de la UE antes del despliegue (Art. 49)
+- Art. 26.1: usar el sistema estrictamente conforme a las instrucciones de uso del proveedor
+- Art. 26.2: encomendar la supervisión humana del sistema a personas con la competencia, formación y autoridad necesarias; garantizar que esas personas pueden intervenir o detener el sistema
+- Art. 26.3: garantizar que los datos de entrada utilizados son pertinentes y suficientemente representativos para el uso previsto
+- Art. 26.5: monitorizar el funcionamiento del sistema durante su uso y notificar al proveedor cualquier riesgo identificado
+- Art. 26.6: conservar los registros (logs) generados automáticamente por el sistema durante al menos 6 meses, siempre que el implementador tenga control técnico sobre ellos
+- Art. 26.7: en el ámbito laboral, informar previamente a los representantes de los trabajadores y a las personas directamente afectadas cuando el sistema de IA afecte a sus condiciones de trabajo
+- Art. 26.10: notificar al proveedor del sistema y, cuando proceda, a las autoridades nacionales competentes cualquier incidente grave o mal funcionamiento que afecte a la seguridad o derechos fundamentales
+- Art. 26.11: cooperar plenamente con las autoridades nacionales competentes en cualquier inspección o investigación sobre el sistema
+- Art. 27: evaluación de impacto sobre derechos fundamentales antes del despliegue, si: (a) es organismo público, (b) es entidad privada que presta servicios públicos, o (c) es responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud]
+- Art. 49: registrar el sistema en la base de datos pública de la UE antes del despliegue (cuando aplique según la clase de sistema y rol)
 
 ALTO RIESGO — Rol Distribuidor (Art. 24):
 - Verificar que el sistema lleva el marcado CE y la documentación requerida antes de comercializarlo
