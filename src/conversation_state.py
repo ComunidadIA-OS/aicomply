@@ -189,9 +189,11 @@ def procesar_respuesta(texto_llm: str, estado: EvalState) -> tuple[str, EvalStat
     y el bloque de ESTADO del siguiente turno seguirá mostrando los roles
     pendientes, empujando al modelo a continuar en lugar de detenerse.
     """
-    # 1) [ROL_DETERMINADO: a, b, ...] — solo la primera vez fija los roles.
+    # 1) [ROL_DETERMINADO: a, b, ...] — acumulativo: añade roles nuevos sin quitar los existentes.
+    #    El LLM la emite en cada turno hasta que el bloque de ESTADO muestre [BLOQUEADO],
+    #    por lo que puede llegar varias veces; los roles ya registrados se ignoran.
     m = _RE_ROL_DETERMINADO.search(texto_llm)
-    if m and not estado.roles_declarados:
+    if m:
         for bruto in m.group("roles").split(","):
             rol = _normalizar_rol(bruto)
             if rol and rol not in estado.roles_declarados:
