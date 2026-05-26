@@ -263,15 +263,22 @@ Si se marca alguna → estado PROHIBIDO. Si la entidad es Proveedor o Implementa
 Fuente: Art. 5.
 
 #R4 · ¿Tu sistema realiza alguna de estas funciones? — OBLIGACIONES DE TRANSPARENCIA (Art. 50)
-- Generar o manipular imagen, audio o vídeo que constituya un deep fake (rol: Implementador)
-- Generar o manipular texto publicado para informar al público sobre asuntos de interés público (rol: Implementador)
-- Reconocimiento de emociones o categorización biométrica (rol: Implementador) → Transparencia: Emoción y Biometría
-- Interactuar directamente con personas (rol: Proveedor) → Transparencia: Personas Físicas → FIN
-- Generar contenido sintético (audio, imagen, vídeo o texto) (rol: Proveedor) → Transparencia: Contenido Sintético → FIN
-- Ninguna de las anteriores
-CONDICIONES:
-  Para "Reconocimiento de emociones o categorización biométrica": si es de alto riesgo → Transparencia: Emoción y Biometría → ir a #R5; si no → FIN.
-  Para "Generar contenido sintético": si es de alto riesgo → Transparencia: Parecido del Contenido → ir a #R5; si no → FIN.
+INSTRUCCIÓN INTERNA — EL ROL YA ESTÁ ESTABLECIDO DESDE #E1. NO vuelvas a preguntar el rol. Usa el rol ya registrado para pre-filtrar las opciones y presentar solo las que aplican:
+  · Implementador: relevantes (i), (ii), (iii).
+  · Proveedor: relevantes (iii), (iv), (v).
+  · Ambos roles: todas pueden aplicar.
+  NUNCA preguntes "¿cuál es su rol?" en este nodo ni en ningún nodo posterior.
+
+(i)   Generar o manipular imagen, audio o vídeo que constituya un deep fake [solo Implementador]
+(ii)  Generar o manipular texto publicado para informar al público sobre asuntos de interés público [solo Implementador]
+(iii) Reconocimiento de emociones o categorización biométrica [ambos roles] → Transparencia: Emoción y Biometría
+(iv)  Interactuar directamente con personas como sistema visible al usuario final [solo Proveedor] → Transparencia: Personas Físicas → FIN
+(v)   Generar contenido sintético (audio, imagen, vídeo o texto) [solo Proveedor] → Transparencia: Contenido Sintético → FIN
+(vi)  Ninguna de las anteriores
+
+CONDICIONES de enrutamiento:
+  Para (iii): si es de alto riesgo → ir a #R5; si no → FIN.
+  Para (v): si es de alto riesgo → ir a #R5; si no → FIN.
 Fuente: Art. 50.
 
 #R5 · ¿Se cumple alguno de estos criterios?

@@ -93,8 +93,8 @@ Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE /
 - Sí → PROHIBIDO → #R4 si Proveedor o Implementador, si no → FIN
 - No → #R4
 
-#R4 · ¿Obligaciones de transparencia? (Art. 50): deep fakes, texto de IA sobre asuntos públicos, reconocimiento emociones o categorización biométrica, interacción directa con personas (chatbot), generación de contenido sintético.
-- Según aplique → obligaciones de transparencia → #R5 o FIN
+#R4 · (ROL YA ESTABLECIDO EN #E1 — NO preguntes el rol de nuevo; usa el registrado para pre-filtrar) ¿Obligaciones de transparencia? (Art. 50): [Implementador] deep fakes, texto público de IA; [ambos] reconocimiento emociones/biometría; [Proveedor] interacción directa con personas (chatbot), contenido sintético.
+- Según aplique al rol ya registrado → obligaciones de transparencia → #R5 o FIN
 
 #R5 · ¿Eres organismo público, entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [seguros de vida/salud]?
 - Sí → Evaluación de Impacto sobre Derechos Fundamentales (Art. 27) → FIN | No → FIN
