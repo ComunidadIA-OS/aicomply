@@ -76,6 +76,19 @@ _ROLES_CANONICOS = {
     "representante autorizado": "Representante autorizado",
 }
 
+# Frases que indican que el LLM está CONFIRMANDO el rol (no solo describiendo opciones).
+_RE_TRIGGER_CONFIRMACION = re.compile(
+    r"(?:"
+    r"su\s+organización\s+es(?:\s+entonces)?|"
+    r"queda\s+confirmado.{0,40}(?:como|rol)|"
+    r"su\s+rol\s+(?:como|es|de)\b|"
+    r"confirmado\s+(?:el\s+)?rol(?:\s+(?:como|de))?|"
+    r"est[aá]s?\s+(?:actuando|operando)\s+como|"
+    r"le\s+corresponde\s+el\s+rol\s+de"
+    r")",
+    re.IGNORECASE,
+)
+
 
 def _normalizar_rol(bruto: str) -> Optional[str]:
     """Normaliza un nombre de rol al canónico; None si no se reconoce."""
@@ -86,6 +99,22 @@ def _normalizar_rol(bruto: str) -> Optional[str]:
     for k, v in _ROLES_CANONICOS.items():
         if k in clave:
             return v
+    return None
+
+
+def _inferir_rol_del_texto(texto: str) -> Optional[str]:
+    """Fallback: extrae el rol cuando el LLM confirmó verbalmente pero olvidó la señal.
+
+    Busca frases de confirmación («queda confirmado su rol como X», «su organización
+    es entonces (b) Implementador»…) y extrae el rol canónico más cercano.
+    Devuelve None si no hay indicios claros de confirmación.
+    """
+    for m in _RE_TRIGGER_CONFIRMACION.finditer(texto):
+        # Analizar los 150 caracteres siguientes al trigger
+        fragmento = texto[m.start(): m.start() + 150]
+        for clave, canon in _ROLES_CANONICOS.items():
+            if re.search(r"\b" + re.escape(clave) + r"\b", fragmento, re.IGNORECASE):
+                return canon
     return None
 
 
@@ -153,6 +182,13 @@ def procesar_respuesta(texto_llm: str, estado: EvalState) -> tuple[str, EvalStat
             if rol and rol not in estado.roles_declarados:
                 estado.roles_declarados.append(rol)
 
+    # 1b) Fallback: si el LLM no emitió la señal pero confirmó el rol en texto,
+    #     extráerlo para que el bloque de ESTADO no siga mostrando «pendiente».
+    if not estado.roles_declarados:
+        rol_inferido = _inferir_rol_del_texto(texto_llm)
+        if rol_inferido:
+            estado.roles_declarados.append(rol_inferido)
+
     # 2) [ROL_COMPLETADO: x] — puede aparecer varias veces.
     for mc in _RE_ROL_COMPLETADO.finditer(texto_llm):
         rol = _normalizar_rol(mc.group("rol"))
@@ -193,7 +229,11 @@ def construir_bloque_estado(estado: EvalState) -> str:
         roles = ", ".join(estado.roles_declarados)
         rol_linea = f"{roles}  [BLOQUEADO — no volver a preguntar]"
     else:
-        rol_linea = "pendiente (nodo #E1 sin resolver)"
+        rol_linea = (
+            "pendiente de registro formal — "
+            "si ya fue establecido en la conversación, léelo de ella y NO lo preguntes; "
+            "resuélvelo solo si la conversación acaba de empezar y aún no se ha determinado"
+        )
 
     estados_obl = (
         ", ".join(estado.estados_obligacion)
