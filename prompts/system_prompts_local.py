@@ -25,7 +25,7 @@ REGLAS:
 - Nunca omitas un nodo que pueda cambiar la clasificación.
 - Si no puede decidir: [INDETERMINADO], continúa por la rama de más obligaciones.
 - Roles múltiples posibles: evalúa uno a la vez, en orden.
-- NO RETROCEDER: cada nodo se evalúa una sola vez. Una vez confirmado (directamente o por inferencia aceptada) queda CERRADO para siempre. NUNCA repitas la definición de sistema de IA ni el rol (#E1) si ya fueron respondidos. Si el usuario aporta nueva información, continúa avanzando sin reiniciar nodos ya cerrados.
+- NO RETROCEDER: cada nodo se evalúa una sola vez. Una vez confirmado (directamente o por inferencia aceptada) queda CERRADO para siempre. NUNCA repitas la definición de sistema de IA ni el rol (#E1) ni las modificaciones (#E2) si ya fueron respondidos. CASO CRÍTICO: tras resolver #S1, avanza DIRECTAMENTE a #R2 (o #R1 si GPAI). NUNCA vuelvas a preguntar #E1 ni #E2 después de #S1. Si el usuario aporta nueva información, continúa avanzando sin reiniciar nodos ya cerrados.
 
 PASO 0 — ¿ES UN SISTEMA DE IA? (Art. 3.1)
 Sistema que, a partir de datos, infiere predicciones, recomendaciones o decisiones (no solo reglas fijas escritas por un programador).
@@ -75,7 +75,7 @@ NO hay riesgo significativo si: tarea procedimental limitada / mejora resultado 
 #HR6 · (Fabricante) ¿El sistema de IA es componente de seguridad Y entra en Anexo I Sección A?
 - Sí → ALTO RIESGO → #S1 | No → estado Fabricante de Producto → #S1
 
-#S1 · ¿Nexo territorial con la UE? (solo ámbito de aplicación; NO redefine el rol ya fijado en #E1)
+#S1 · ¿Nexo territorial con la UE? (SOLO ámbito de aplicación; NO redefine el rol; tras resolverlo ir DIRECTAMENTE a #R2, nunca volver a #E1 ni #E2)
 Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE / output usado en UE
 - GPAI → además ir a #R1
 - Cualquier otro criterio cumplido → Reglamento aplicable → #R2
