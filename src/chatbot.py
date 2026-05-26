@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import json
 import logging
 import re
@@ -33,7 +35,12 @@ def _backoff_rate_limit(exc: Exception) -> float:
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
-from src.conversation_state import EvalState, construir_bloque_estado, procesar_respuesta
+from src.conversation_state import (
+    EvalState,
+    construir_bloque_estado,
+    extraer_roles_confirmados,
+    procesar_respuesta,
+)
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
 
@@ -141,41 +148,39 @@ class AIComplyChat:
             estado_bloque = construir_bloque_estado(self._eval_state)
             prompt += "\n\n" + estado_bloque
 
-            # Si el rol no está registrado y ya hubo al menos un intercambio completo,
-            # anteponer recordatorio de máxima prioridad.
-            # NOTA: NO se asume que el usuario ya respondió; puede que aún no lo haya hecho.
-            n_user = sum(1 for m in self.historial if m["role"] == "user")
-            if not self._eval_state.roles_declarados and n_user >= 2:
-                bloqueo = (
-                    "╔══════════════════════════════════════════════════════════════╗\n"
-                    "║  ROL SIN REGISTRAR — ÁRBOL EN PAUSA                         ║\n"
-                    "╠══════════════════════════════════════════════════════════════╣\n"
-                    "║ Esta respuesta tiene UNA SOLA tarea:                         ║\n"
-                    "║  · Si el usuario YA indicó su rol: confírmalo en una frase  ║\n"
-                    "║    y emite [ROL_DETERMINADO: <rol>] como ÚLTIMA LÍNEA.       ║\n"
-                    "║  · Si AÚN no lo ha indicado: presenta la pregunta del rol.  ║\n"
-                    "║ NO avances al árbol hasta haber emitido [ROL_DETERMINADO].  ║\n"
-                    "╚══════════════════════════════════════════════════════════════╝\n"
-                )
-                prompt = bloqueo + "\n\n" + prompt
-
         return prompt
 
     def _historial_truncado(self, max_mensajes: int | None = None) -> list[dict]:
-        """Recorta el historial para no superar el límite de tokens de la API.
-
-        Conserva siempre los dos primeros mensajes (descripción inicial del sistema)
-        y los (max_mensajes-2) más recientes para mantener el contexto inmediato.
+        """Recorta el historial respetando los dos primeros mensajes, los
+        mensajes pinneados (intercambios donde se confirmó información
+        crítica) y los más recientes hasta llegar al límite.
         """
         limite = max_mensajes if max_mensajes is not None else self._max_historial
         if len(self.historial) <= limite:
             return self.historial
-        primeros = self.historial[:2]
-        resto = self.historial[-(limite - 2):]
-        # Garantizar que el primer mensaje del bloque reciente sea del usuario
-        while resto and resto[0]["role"] != "user":
-            resto = resto[1:]
-        return primeros + resto
+
+        pinneados_idx = set()
+        if self._eval_state is not None:
+            pinneados_idx = {
+                i for i in self._eval_state.mensajes_pinneados
+                if 0 <= i < len(self.historial)
+            }
+
+        primeros_idx = {0, 1} if len(self.historial) >= 2 else set(range(len(self.historial)))
+        obligatorios = primeros_idx | pinneados_idx
+        cupo_recientes = max(0, limite - len(obligatorios))
+        recientes_idx = set(
+            range(max(0, len(self.historial) - cupo_recientes), len(self.historial))
+        )
+
+        seleccionados = sorted(obligatorios | recientes_idx)
+        recorte = [self.historial[i] for i in seleccionados]
+
+        # Tras los dos primeros, el bloque debe arrancar con un user para no
+        # romper contratos de API que exigen alternancia user→assistant.
+        while len(recorte) > 2 and recorte[2]["role"] != "user":
+            del recorte[2]
+        return recorte
 
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
@@ -234,6 +239,8 @@ class AIComplyChat:
 
         self.historial.append({"role": "assistant", "content": respuesta_completa})
         self._extraer_nivel_riesgo(respuesta_completa)
+        if self._eval_state is not None:
+            self._intentar_extraer_roles(mensaje_usuario, respuesta_completa)
 
     def chat_completo(self, mensaje_usuario: str) -> str:
         """Envía un mensaje y devuelve la respuesta completa (sin streaming)."""
@@ -256,6 +263,8 @@ class AIComplyChat:
 
         self.historial.append({"role": "assistant", "content": respuesta})
         self._extraer_nivel_riesgo(respuesta)
+        if self._eval_state is not None:
+            self._intentar_extraer_roles(mensaje_usuario, respuesta)
         return respuesta
 
     def _extraer_nivel_riesgo(self, texto: str) -> None:
@@ -269,6 +278,45 @@ class AIComplyChat:
             self.nivel_riesgo = "LIMITADO"
         elif "RIESGO MINIMO" in texto_upper or "RIESGO MÍNIMO" in texto_upper:
             self.nivel_riesgo = "MINIMO"
+
+    _PALABRAS_ROL = (
+        "proveedor", "implementador", "responsable del despliegue",
+        "distribuidor", "importador", "fabricante", "representante autorizado",
+    )
+
+    def _intentar_extraer_roles(self, user_msg: str, assistant_msg: str) -> None:
+        """Llama al extractor JSON y actualiza EvalState/pinneados si procede.
+
+        Gating:
+          - Sin roles declarados: siempre intentar.
+          - Con roles declarados: intentar solo si el texto del asistente
+            menciona alguna palabra-rol (posible ampliación de roles múltiples).
+        Cualquier excepción se traga: la extracción no debe romper el chat.
+        """
+        if self._eval_state is None:
+            return
+        texto_lower = (assistant_msg or "").lower()
+        hay_rol_previo = bool(self._eval_state.roles_declarados)
+        hay_mencion = any(p in texto_lower for p in self._PALABRAS_ROL)
+        if hay_rol_previo and not hay_mencion:
+            return
+        try:
+            roles = extraer_roles_confirmados(self.provider, user_msg, assistant_msg)
+        except Exception:
+            logger.warning("Extracción de roles: error inesperado.", exc_info=True)
+            return
+        if not roles:
+            return
+        cambio = False
+        for r in roles:
+            if r not in self._eval_state.roles_declarados:
+                self._eval_state.roles_declarados.append(r)
+                cambio = True
+        if cambio:
+            n = len(self.historial)
+            for idx in (n - 2, n - 1):
+                if 0 <= idx < n and idx not in self._eval_state.mensajes_pinneados:
+                    self._eval_state.mensajes_pinneados.append(idx)
 
     def extraer_clasificacion(self) -> dict:
         """Extrae la clasificación estructurada de la conversación de evaluación."""

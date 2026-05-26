@@ -16,55 +16,57 @@
 
 PROBLEMA QUE RESUELVE
 ---------------------
-El LLM no tiene memoria entre turnos: en cada mensaje reconstruye desde cero en
-qué punto del árbol está. Cuando la conversación crece, pierde la posición y
-vuelve a anclarse en #E1 (la pregunta del rol), de modo que re-pregunta el tipo
-de entidad o no llega a terminar la evaluación. Añadir más prohibiciones al
-prompt no lo arregla porque la causa es la falta de estado persistente.
+El LLM olvida el rol a partir del turno ~13 porque la confirmación desaparece
+del historial truncado y el bloque de ESTADO contradice al historial restante.
+La causa raíz era pedirle al LLM emitir tokens estructurados ([ROL_DETERMINADO])
+dentro de prosa libre, lo que falla de forma sistemática.
 
-Este módulo saca el estado del historial y lo mantiene en `st.session_state`,
-igual que ya se hace con la señal [EVALUACION_COMPLETA]. En cada turno:
+SOLUCIÓN
+--------
+El LLM principal solo genera prosa natural. Una llamada JSON separada y barata,
+no-streaming, ejecutada DESPUÉS de cada turno (extraer_roles_confirmados),
+detecta si en ese intercambio se confirmó algún rol y actualiza EvalState.
+Los intercambios donde se confirma el rol se pinean (mensajes_pinneados) para
+sobrevivir al truncado del historial.
 
-  1. Antes de llamar al LLM, se ANTEPONE un bloque de ESTADO (fuente de verdad)
-     con el rol o roles ya determinados, la pasada en curso, los roles
-     completados y el siguiente nodo pendiente.
-  2. Tras recibir la respuesta, se PARSEAN las señales de control que el modelo
-     emite ([ROL_DETERMINADO], [ROL_COMPLETADO], [EVALUACION_COMPLETA]), se
-     actualiza el estado y se ELIMINAN del texto antes de mostrarlo al usuario.
-
-Las señales son invisibles para el usuario; este módulo las quita siempre.
+En cada turno:
+  1. Se antepone un bloque de ESTADO informativo con lo que ya se sabe.
+  2. Tras recibir la respuesta, se procesa la señal [EVALUACION_COMPLETA]
+     y se limpia el texto visible.
+  3. El extractor JSON detecta confirmaciones de rol y actualiza EvalState.
 
 NOTA LEGAL: este módulo NO toma ni altera ninguna decisión de clasificación del
-AI Act. Solo transporta, sin modificarlo, lo que el modelo ya ha determinado
+AI Act. Solo transporta, sin modificarlo, lo que el modelo ha determinado
 (rol, progreso). La lógica del árbol vive íntegra en el system prompt.
 """
 
 from __future__ import annotations
 
+import json
+import logging
 import re
 from dataclasses import dataclass, field, asdict
 from typing import Optional
 
+logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------- #
-# Patrones de las señales de control                                          #
+# Patrones de señales de control                                              #
 # --------------------------------------------------------------------------- #
-# Tolerantes a may/min y espacios. Capturan el contenido entre corchetes.
-_RE_ROL_DETERMINADO = re.compile(
-    r"\[\s*ROL_DETERMINADO\s*:\s*(?P<roles>[^\]]+)\]", re.IGNORECASE
-)
-_RE_ROL_COMPLETADO = re.compile(
-    r"\[\s*ROL_COMPLETADO\s*:\s*(?P<rol>[^\]]+)\]", re.IGNORECASE
-)
+
 _RE_EVAL_COMPLETA = re.compile(r"\[\s*EVALUACION_COMPLETA\s*\]", re.IGNORECASE)
 
-# Cualquiera de las tres, para limpiar de una pasada el texto visible.
+# Conserva las tres señales antiguas para limpiar texto de conversaciones que
+# pudieran contener tokens legacy (compatibilidad retro).
 _RE_TODAS_LAS_SENALES = re.compile(
     r"\[\s*(?:ROL_DETERMINADO\s*:[^\]]*|ROL_COMPLETADO\s*:[^\]]*|EVALUACION_COMPLETA)\s*\]",
     re.IGNORECASE,
 )
 
-# Roles canónicos reconocidos (para normalizar lo que escriba el modelo).
+# --------------------------------------------------------------------------- #
+# Roles canónicos                                                              #
+# --------------------------------------------------------------------------- #
+
 _ROLES_CANONICOS = {
     "proveedor": "Proveedor",
     "implementador": "Implementador",
@@ -76,104 +78,35 @@ _ROLES_CANONICOS = {
     "representante autorizado": "Representante autorizado",
 }
 
-# Frases que indican que el LLM está CONFIRMANDO el rol (no solo describiendo opciones).
-_RE_TRIGGER_CONFIRMACION = re.compile(
-    r"(?:"
-    # formal/informal sing-plur: "su/vuestra/tu organización/asesoría/empresa es [entonces]"
-    r"(?:su|vuestra?|tu)\s+(?:organización|asesoría|empresa|entidad|caso)\s+es(?:\s+entonces)?|"
-    # "queda claro/confirmado/establecido/fijado …"
-    r"queda\s+(?:claro|confirmado|establecido|fijado)|"
-    # "su/vuestro/tu rol como/es/de/queda"
-    r"(?:su|vuestro?|tu)\s+rol\s+(?:como|es|de|queda)\b|"
-    # "confirmado el rol"
-    r"confirmado\s+(?:el\s+)?rol(?:\s+(?:como|de))?|"
-    # "sois [opcionalmente (b)] [el] Implementador"
-    r"\bsois\s+(?:\(?[a-f]\)?\s+)?(?:el\s+|la\s+|un\s+|una\s+)?(?:entonces\s+)?|"
-    # "actuáis como" / "estáis actuando como"
-    r"(?:act[uú][aá]is|est[aá]is\s+actuando)\s+como|"
-    # "os/le corresponde el rol de"
-    r"(?:os|le)\s+corresponde\s+el\s+rol\s+de|"
-    # "os identifico como" / "os posiciono como"
-    r"os\s+(?:identifico|posiciono|clasifico)\s+como|"
-    # "estáis en la categoría de"
-    r"est[aá]is\s+en\s+la\s+categor[ií]a\s+de"
-    r")",
-    re.IGNORECASE,
-)
-
 
 def _normalizar_rol(bruto: str) -> Optional[str]:
     """Normaliza un nombre de rol al canónico; None si no se reconoce."""
     clave = bruto.strip().lower()
     if clave in _ROLES_CANONICOS:
         return _ROLES_CANONICOS[clave]
-    # Coincidencia parcial tolerante (p. ej. "proveedor de IA").
     for k, v in _ROLES_CANONICOS.items():
         if k in clave:
             return v
     return None
 
 
-def _inferir_roles_del_texto(texto: str) -> list[str]:
-    """Fallback: extrae roles cuando el LLM confirmó verbalmente pero no emitió la señal.
-
-    Paso 1 — frases de confirmación explícitas (mayor fiabilidad).
-    Paso 2 — búsqueda en líneas que no sean ítems de lista: captura confirmaciones
-              naturales como «Le clasifico como Implementador» o «actúa como Proveedor».
-    Devuelve lista vacía si no hay indicios claros de confirmación.
-    """
-    encontrados: list[str] = []
-
-    # Paso 1: triggers de confirmación + nombre de rol en ventana de 200 chars
-    for m in _RE_TRIGGER_CONFIRMACION.finditer(texto):
-        fragmento = texto[m.start(): m.start() + 200]
-        for clave, canon in _ROLES_CANONICOS.items():
-            if canon not in encontrados and re.search(
-                r"\b" + re.escape(clave) + r"\b", fragmento, re.IGNORECASE
-            ):
-                encontrados.append(canon)
-
-    if encontrados:
-        return encontrados
-
-    # Paso 2: búsqueda directa en líneas que no sean ítems de lista ni encabezados.
-    # Solo actúa si el bloque parece una confirmación (no una presentación de opciones).
-    _RE_ITEM_LISTA = re.compile(
-        r"^\s*(?:[-•*#]|\([a-f]\)|[a-f]\)|\d+[.)])", re.IGNORECASE
-    )
-    lineas = texto.split("\n")
-    for linea in lineas:
-        if _RE_ITEM_LISTA.match(linea):
-            continue
-        for clave, canon in _ROLES_CANONICOS.items():
-            if canon not in encontrados and re.search(
-                r"\b" + re.escape(clave) + r"\b", linea, re.IGNORECASE
-            ):
-                encontrados.append(canon)
-
-    # El paso 2 puede devolver falsos positivos si el LLM describe las opciones
-    # en párrafo continuo. Filtrar: solo aceptar si hay ≤2 roles distintos encontrados
-    # (una confirmación real rara vez menciona más de dos roles canónicos).
-    if len(encontrados) > 2:
-        return []
-
-    return encontrados
-
-
 # --------------------------------------------------------------------------- #
 # Estado de la evaluación                                                     #
 # --------------------------------------------------------------------------- #
+
 @dataclass
 class EvalState:
     """Estado del recorrido del árbol, persistido en st.session_state."""
 
-    es_sistema_ia: Optional[bool] = None          # None = aún sin confirmar
+    es_sistema_ia: Optional[bool] = None
     roles_declarados: list[str] = field(default_factory=list)
     roles_completados: list[str] = field(default_factory=list)
-    estados_obligacion: list[str] = field(default_factory=list)  # p. ej. Art. 25
+    estados_obligacion: list[str] = field(default_factory=list)
     evaluacion_completa: bool = False
+    # Índices del chatbot.historial que el truncado no debe descartar.
+    # Contienen los intercambios donde se confirmó información crítica (rol).
+    mensajes_pinneados: list[int] = field(default_factory=list)
 
-    # -- helpers de progreso ------------------------------------------------ #
     @property
     def rol_en_curso(self) -> Optional[str]:
         """Primer rol declarado que aún no se ha completado."""
@@ -199,127 +132,155 @@ class EvalState:
             roles_completados=list(d.get("roles_completados", [])),
             estados_obligacion=list(d.get("estados_obligacion", [])),
             evaluacion_completa=bool(d.get("evaluacion_completa", False)),
+            mensajes_pinneados=list(d.get("mensajes_pinneados", [])),
         )
 
 
 # --------------------------------------------------------------------------- #
-# Parseo de señales + limpieza del texto visible                              #
+# Procesado de la respuesta del LLM principal                                 #
 # --------------------------------------------------------------------------- #
+
 def procesar_respuesta(texto_llm: str, estado: EvalState) -> tuple[str, EvalState]:
-    """Actualiza `estado` con las señales del modelo y devuelve el texto limpio.
+    """Procesa la señal de cierre y limpia el texto visible.
 
-    Devuelve (texto_visible_sin_senales, estado_actualizado).
-
-    SALVAGUARDA ANTI-TERMINACIÓN PREMATURA: si el modelo emite
-    [EVALUACION_COMPLETA] pero aún quedan roles declarados sin completar, NO se
-    marca la evaluación como completa. La señal se elimina igualmente del texto
-    y el bloque de ESTADO del siguiente turno seguirá mostrando los roles
-    pendientes, empujando al modelo a continuar en lugar de detenerse.
+    A diferencia de la versión anterior, esta función ya NO intenta extraer
+    roles del texto del modelo principal. La detección de roles se hace en
+    extraer_roles_confirmados(), que se llama por separado tras cada turno.
     """
-    # 1) [ROL_DETERMINADO: a, b, ...] — acumulativo: añade roles nuevos sin quitar los existentes.
-    #    El LLM la emite en cada turno hasta que el bloque de ESTADO muestre [BLOQUEADO],
-    #    por lo que puede llegar varias veces; los roles ya registrados se ignoran.
-    m = _RE_ROL_DETERMINADO.search(texto_llm)
-    if m:
-        for bruto in m.group("roles").split(","):
-            rol = _normalizar_rol(bruto)
-            if rol and rol not in estado.roles_declarados:
-                estado.roles_declarados.append(rol)
-
-    # 1b) Fallback: si el LLM no emitió la señal pero confirmó el rol en texto,
-    #     extraer todos los roles para que el bloque de ESTADO no siga mostrando «pendiente».
-    #     Soporta roles múltiples (Considerando 83): p. ej. Proveedor + Implementador.
-    if not estado.roles_declarados:
-        for rol in _inferir_roles_del_texto(texto_llm):
-            if rol not in estado.roles_declarados:
-                estado.roles_declarados.append(rol)
-
-    # 2) [ROL_COMPLETADO: x] — puede aparecer varias veces.
-    for mc in _RE_ROL_COMPLETADO.finditer(texto_llm):
-        rol = _normalizar_rol(mc.group("rol"))
-        if rol and rol not in estado.roles_completados:
-            estado.roles_completados.append(rol)
-
-    # 3) [EVALUACION_COMPLETA] — solo válida si todos los roles están cerrados.
     if _RE_EVAL_COMPLETA.search(texto_llm):
         if not estado.roles_declarados or estado.todos_los_roles_completados:
             estado.evaluacion_completa = True
-        # si es prematura, se ignora el flag pero igualmente se limpia abajo.
 
-    # 4) Eliminar TODAS las señales del texto visible para el usuario.
     texto_limpio = _RE_TODAS_LAS_SENALES.sub("", texto_llm)
-    # Compactar líneas en blanco que pudieran quedar al quitar una señal sola.
     texto_limpio = re.sub(r"\n{3,}", "\n\n", texto_limpio).strip()
-
     return texto_limpio, estado
 
 
 # --------------------------------------------------------------------------- #
-# Construcción del bloque de ESTADO que se inyecta cada turno                  #
+# Bloque de ESTADO informativo                                                #
 # --------------------------------------------------------------------------- #
-def construir_bloque_estado(estado: EvalState) -> str:
-    """Genera el bloque de ESTADO (fuente de verdad) para anteponer al turno.
 
-    El system prompt instruye al modelo a leer este bloque primero y a no
-    re-preguntar nada que ya figure resuelto aquí.
+def construir_bloque_estado(estado: EvalState) -> str:
+    """Genera el bloque de ESTADO (informativo) para anteponer al turno.
+
+    Tono neutro: la aplicación informa de lo que sabe; no amenaza ni
+    bloquea. La continuidad del árbol depende del propio LLM leyendo este
+    bloque y siguiendo la lógica del system prompt.
     """
     if estado.es_sistema_ia is True:
-        es_ia = "SÍ (confirmado)"
+        es_ia = "sí"
     elif estado.es_sistema_ia is False:
-        es_ia = "NO (no cumple la definición del Art. 3.1)"
+        es_ia = "no (no cumple la definición del Art. 3.1)"
     else:
-        es_ia = "pendiente de confirmar"
+        es_ia = "aún no confirmado"
 
-    if estado.roles_declarados:
-        roles = ", ".join(estado.roles_declarados)
-        rol_linea = (
-            f"{roles}  [REGISTRADO — no volver a preguntar; "
-            "si detectas roles adicionales, emite la señal actualizada con TODOS los roles]"
-        )
-    else:
-        rol_linea = (
-            "⛔ SIN REGISTRAR — ÁRBOL BLOQUEADO ⛔\n"
-            "  Esta respuesta tiene UNA SOLA tarea permitida:\n"
-            "  · Si el usuario ya indicó su rol: confírmalo en una frase y emite [ROL_DETERMINADO: <rol>].\n"
-            "  · Si aún no lo ha indicado: presenta la pregunta del rol (#E1).\n"
-            "  NO hagas ninguna otra pregunta. NO avances a ningún otro nodo.\n"
-            "  El árbol permanece BLOQUEADO hasta que emitas [ROL_DETERMINADO]."
-        )
-
-    estados_obl = (
-        ", ".join(estado.estados_obligacion)
-        if estado.estados_obligacion
-        else "ninguno"
-    )
-
-    completados = (
-        ", ".join(estado.roles_completados)
-        if estado.roles_completados
-        else "ninguno"
-    )
-
+    roles = ", ".join(estado.roles_declarados) if estado.roles_declarados else "aún no determinado"
+    completados = ", ".join(estado.roles_completados) if estado.roles_completados else "ninguno todavía"
+    obligaciones = ", ".join(estado.estados_obligacion) if estado.estados_obligacion else "ninguno"
     en_curso = estado.rol_en_curso or "—"
-    if estado.roles_declarados:
-        total = len(estado.roles_declarados)
-        hechos = len(
-            [r for r in estado.roles_declarados if r in estado.roles_completados]
-        )
-        pasada = f"rol «{en_curso}» ({hechos + 1 if en_curso != '—' else hechos} de {total})"
-        if en_curso == "—":
-            pasada = f"todas las pasadas completadas ({total} de {total})"
-    else:
-        pasada = "recorrido único (rol aún sin determinar)"
 
     return (
-        "═══ ESTADO DE LA EVALUACIÓN (mantenido por la aplicación — FUENTE DE VERDAD) ═══\n"
-        "Este bloque lo mantiene la aplicación, no tú. NO lo cuestiones ni lo contradigas.\n"
-        "NO vuelvas a preguntar nada que ya figure resuelto aquí.\n"
-        f"- ¿Es sistema de IA?: {es_ia}\n"
-        f"- Rol(es) declarado(s): {rol_linea}\n"
-        f"- Estados de obligación adquiridos (p. ej. Art. 25): {estados_obl}\n"
-        f"- Pasada de rol en curso: {pasada}\n"
+        "═══ ESTADO ACTUAL DE LA EVALUACIÓN (mantenido por la aplicación) ═══\n"
+        "Esta información la mantiene la aplicación a partir de la conversación.\n"
+        "Tómala como punto de partida del turno; no la cuestiones ni la repreguntes.\n"
+        f"- ¿Es sistema de IA? {es_ia}\n"
+        f"- Rol(es) de la organización: {roles}\n"
+        f"- Rol que se está evaluando ahora: {en_curso}\n"
         f"- Roles ya completados: {completados}\n"
-        "Continúa desde el siguiente nodo pendiente. El rol está fijado: bajo ninguna\n"
-        "circunstancia lo preguntes de nuevo ni reinicies el árbol.\n"
-        "═══════════════════════════════════════════════════════════════════════════"
+        f"- Estados de obligación adquiridos (p. ej. Art. 25): {obligaciones}\n"
+        "Si el rol ya figura aquí, no lo vuelvas a preguntar: continúa por el\n"
+        "siguiente nodo pendiente del árbol.\n"
+        "═══════════════════════════════════════════════════════════════════════"
     )
+
+
+# --------------------------------------------------------------------------- #
+# Extractor JSON de roles confirmados                                         #
+# --------------------------------------------------------------------------- #
+
+_EXTRACTOR_SYSTEM = (
+    "Eres un extractor de información estructurada. Lees un fragmento de "
+    "conversación y devuelves ÚNICAMENTE un objeto JSON válido. Sin "
+    "preámbulo, sin markdown, sin texto adicional."
+)
+
+_EXTRACTOR_PROMPT_TMPL = """Lee este intercambio entre un usuario (organización
+evaluada bajo la Ley de IA de la UE) y un asistente:
+
+USUARIO: {user_msg}
+
+ASISTENTE: {assistant_msg}
+
+¿En este turno el asistente CONFIRMA el rol o roles de la organización en
+sentido del AI Act? Roles posibles (canónicos):
+"Proveedor", "Implementador", "Distribuidor", "Importador",
+"Fabricante de producto", "Representante autorizado".
+
+"Confirmar" significa afirmar el rol de la organización evaluada (ej.: "su
+organización es Implementador", "queda confirmado como Proveedor",
+"actuáis como Distribuidor"). NO cuenta:
+- Listar las opciones sin asignarlas.
+- Mencionar un rol en una explicación general.
+- Preguntar al usuario qué rol tiene.
+
+Devuelve EXCLUSIVAMENTE:
+{{"confirmado": true|false, "roles": ["..."]}}
+
+Si "confirmado" es false, "roles" debe ser []."""
+
+
+def extraer_roles_confirmados(provider, user_msg: str, assistant_msg: str) -> list[str]:
+    """Llama al provider en modo no-streaming para detectar roles confirmados.
+
+    Devuelve la lista de roles canónicos confirmados en el intercambio, o
+    lista vacía si no hay confirmación o si la extracción falla. Esta función
+    nunca lanza: cualquier error se loggea y devuelve [].
+    """
+    prompt = _EXTRACTOR_PROMPT_TMPL.format(
+        user_msg=(user_msg or "").strip()[:2000],
+        assistant_msg=(assistant_msg or "").strip()[:4000],
+    )
+    try:
+        texto = provider.chat(
+            [{"role": "user", "content": prompt}],
+            system_prompt=_EXTRACTOR_SYSTEM,
+        )
+    except Exception:
+        logger.warning("Extractor de roles: fallo en la llamada al provider.", exc_info=True)
+        return []
+
+    texto = (texto or "").strip()
+    if texto.startswith("```"):
+        partes = texto.split("```")
+        if len(partes) >= 2:
+            texto = partes[1]
+            if texto.lstrip().lower().startswith("json"):
+                texto = texto.lstrip()[4:]
+    texto = texto.strip()
+
+    try:
+        data = json.loads(texto)
+    except Exception:
+        m = re.search(r"\{[\s\S]*\}", texto)
+        if not m:
+            logger.warning("Extractor de roles: respuesta no es JSON: %r", texto[:200])
+            return []
+        try:
+            data = json.loads(m.group())
+        except Exception:
+            logger.warning("Extractor de roles: JSON inválido: %r", texto[:200])
+            return []
+
+    if not data.get("confirmado"):
+        return []
+    roles_brutos = data.get("roles") or []
+    if not isinstance(roles_brutos, list):
+        return []
+    salida: list[str] = []
+    for bruto in roles_brutos:
+        if not isinstance(bruto, str):
+            continue
+        canon = _normalizar_rol(bruto)
+        if canon and canon not in salida:
+            salida.append(canon)
+    return salida

@@ -22,20 +22,32 @@ _SYSTEM = "system prompt de prueba"
 
 
 class SpyProvider:
-    """Provider de test (duck typing) que captura el system_prompt recibido."""
+    """Provider de test (duck typing) que captura los system_prompts recibidos.
+
+    Usar `primer_system_prompt` para verificar el prompt del chat principal cuando
+    `_intentar_extraer_roles` puede hacer llamadas adicionales al provider.
+    """
 
     es_local = False
 
     def __init__(self, respuesta: str = "respuesta de prueba"):
         self.respuesta = respuesta
-        self.ultimo_system_prompt: str = ""
+        self._system_prompts: list[str] = []
+
+    @property
+    def ultimo_system_prompt(self) -> str:
+        return self._system_prompts[-1] if self._system_prompts else ""
+
+    @property
+    def primer_system_prompt(self) -> str:
+        return self._system_prompts[0] if self._system_prompts else ""
 
     def chat(self, _messages, system_prompt: str = "") -> str:
-        self.ultimo_system_prompt = system_prompt
+        self._system_prompts.append(system_prompt)
         return self.respuesta
 
     def chat_stream(self, _messages, system_prompt: str = ""):
-        self.ultimo_system_prompt = system_prompt
+        self._system_prompts.append(system_prompt)
         yield self.respuesta
 
 
@@ -183,6 +195,101 @@ class TestExtraccionNivelRiesgo:
         assert chat.nivel_riesgo is None
 
 
+class TestHistorialTruncadoConPinneados:
+    @staticmethod
+    def _poblar(chat, n_pares: int):
+        for i in range(n_pares):
+            chat.historial.append({"role": "user", "content": f"user {i}"})
+            chat.historial.append({"role": "assistant", "content": f"asst {i}"})
+
+    def test_historial_corto_no_trunca(self, make_provider):
+        chat = AIComplyChat(make_provider("r"), system_prompt_override=_SYSTEM)
+        self._poblar(chat, 3)  # 6 mensajes < max_historial=10
+        assert len(chat._historial_truncado()) == 6
+
+    def test_historial_largo_trunca_a_limite(self, make_provider):
+        chat = AIComplyChat(make_provider("r"), system_prompt_override=_SYSTEM)
+        self._poblar(chat, 8)  # 16 mensajes > max_historial=10
+        assert len(chat._historial_truncado()) <= 10
+
+    def test_primeros_dos_siempre_incluidos(self, make_provider):
+        chat = AIComplyChat(make_provider("r"), system_prompt_override=_SYSTEM)
+        self._poblar(chat, 8)
+        resultado = chat._historial_truncado()
+        assert resultado[0] == chat.historial[0]
+        assert resultado[1] == chat.historial[1]
+
+    def test_mensajes_pinneados_sobreviven_al_truncado(self, make_provider):
+        from src.conversation_state import EvalState
+
+        chat = AIComplyChat(make_provider("r"), system_prompt_override=_SYSTEM)
+        chat._eval_state = EvalState()
+        self._poblar(chat, 8)  # 16 mensajes
+        chat._eval_state.mensajes_pinneados = [4, 5]
+        resultado = chat._historial_truncado()
+        contenidos = [m["content"] for m in resultado]
+        assert chat.historial[4]["content"] in contenidos
+        assert chat.historial[5]["content"] in contenidos
+
+
+class TestIntentarExtraerRoles:
+    def _chat_evaluador(self, provider):
+        from src.conversation_state import EvalState
+
+        chat = AIComplyChat(provider, system_prompt_override=_SYSTEM)
+        chat._eval_state = EvalState()
+        return chat
+
+    def test_rol_registrado_en_eval_state(self, make_provider, monkeypatch):
+        import src.chatbot
+
+        monkeypatch.setattr(src.chatbot, "extraer_roles_confirmados", lambda *_: ["Proveedor"])
+        chat = self._chat_evaluador(make_provider("respuesta"))
+        chat.chat_completo("somos proveedores")
+        assert "Proveedor" in chat._eval_state.roles_declarados
+
+    def test_mensajes_pinneados_tras_registro(self, make_provider, monkeypatch):
+        import src.chatbot
+
+        monkeypatch.setattr(src.chatbot, "extraer_roles_confirmados", lambda *_: ["Distribuidor"])
+        chat = self._chat_evaluador(make_provider("respuesta"))
+        chat.chat_completo("somos distribuidores")
+        assert len(chat._eval_state.mensajes_pinneados) >= 1
+
+    def test_no_llama_extractor_si_hay_rol_y_sin_mencion(self, make_provider, monkeypatch):
+        import src.chatbot
+
+        llamadas = []
+        monkeypatch.setattr(
+            src.chatbot, "extraer_roles_confirmados", lambda *_: llamadas.append(1) or []
+        )
+        chat = self._chat_evaluador(make_provider("texto sin palabras de rol"))
+        chat._eval_state.roles_declarados = ["Implementador"]
+        chat.chat_completo("mensaje genérico")
+        assert len(llamadas) == 0
+
+    def test_llama_extractor_si_respuesta_menciona_rol(self, make_provider, monkeypatch):
+        import src.chatbot
+
+        llamadas = []
+        monkeypatch.setattr(
+            src.chatbot, "extraer_roles_confirmados", lambda *_: llamadas.append(1) or []
+        )
+        chat = self._chat_evaluador(make_provider("actúas como implementador del sistema"))
+        chat._eval_state.roles_declarados = ["Implementador"]
+        chat.chat_completo("mensaje")
+        assert len(llamadas) == 1
+
+    def test_no_duplica_rol_ya_declarado(self, make_provider, monkeypatch):
+        import src.chatbot
+
+        monkeypatch.setattr(src.chatbot, "extraer_roles_confirmados", lambda *_: ["Implementador"])
+        chat = self._chat_evaluador(make_provider("eres implementador"))
+        chat._eval_state.roles_declarados = ["Implementador"]
+        chat.chat_completo("confirma")
+        assert chat._eval_state.roles_declarados.count("Implementador") == 1
+
+
 class TestRAGIntegration:
     def test_rag_inyectado_cuando_no_hay_override(self, monkeypatch):
         import src.chatbot  # noqa: PLC0415
@@ -192,8 +299,8 @@ class TestRAGIntegration:
         chat = AIComplyChat(spy)  # sin override → RAG activo
         chat.chat_completo("¿qué dice el art. 5?")
 
-        assert "fragmento normativo de prueba" in spy.ultimo_system_prompt
-        assert "CONTEXTO NORMATIVO RECUPERADO" in spy.ultimo_system_prompt
+        assert "fragmento normativo de prueba" in spy.primer_system_prompt
+        assert "CONTEXTO NORMATIVO RECUPERADO" in spy.primer_system_prompt
 
     def test_rag_no_inyectado_con_override(self, monkeypatch):
         import src.chatbot  # noqa: PLC0415
