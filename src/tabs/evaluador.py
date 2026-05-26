@@ -314,14 +314,14 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
         rol = datos.get("rol", "?")
         roles_multiples = datos.get("roles_multiples", [])
 
-        st.success(
-            f"Evaluación completada — Clasificación: **{clasificacion}** | Rol: **{rol}**"
+        roles_str = (
+            " / ".join(r.capitalize() for r in roles_multiples)
+            if len(roles_multiples) > 1
+            else rol.capitalize()
         )
-        if roles_multiples:
-            st.info(
-                f"Se han identificado varios roles: **{', '.join(roles_multiples)}**. "
-                "En la pestaña Cumplimiento verá las obligaciones diferenciadas por cada rol."
-            )
+        st.success(
+            f"Evaluación completada — Clasificación: **{clasificacion}** | Rol: **{roles_str}**"
+        )
 
         st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
 
