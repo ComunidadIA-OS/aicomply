@@ -40,9 +40,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Ocultar el indicador de ejecución (bicicleta/persona) de Streamlit
+# Ocultar el indicador de ejecución (bicicleta/persona) y definir rueda de carga
 st.markdown(
-    "<style>[data-testid='stStatusWidget']{visibility:hidden}</style>",
+    """<style>
+[data-testid='stStatusWidget']{visibility:hidden}
+@keyframes _ac_spin{to{transform:rotate(360deg)}}
+._ac_thinking{display:inline-flex;align-items:center;gap:8px;color:#666;font-size:0.9em;padding:4px 0}
+._ac_spinner{width:16px;height:16px;border:2px solid #ddd;border-top-color:#555;border-radius:50%;animation:_ac_spin .8s linear infinite;flex-shrink:0}
+</style>""",
     unsafe_allow_html=True,
 )
 
