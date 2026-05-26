@@ -102,20 +102,23 @@ def _normalizar_rol(bruto: str) -> Optional[str]:
     return None
 
 
-def _inferir_rol_del_texto(texto: str) -> Optional[str]:
-    """Fallback: extrae el rol cuando el LLM confirmó verbalmente pero olvidó la señal.
+def _inferir_roles_del_texto(texto: str) -> list[str]:
+    """Fallback: extrae todos los roles cuando el LLM confirmó verbalmente pero olvidó la señal.
 
     Busca frases de confirmación («queda confirmado su rol como X», «su organización
-    es entonces (b) Implementador»…) y extrae el rol canónico más cercano.
-    Devuelve None si no hay indicios claros de confirmación.
+    es entonces (b) Implementador»…) y extrae TODOS los roles canónicos encontrados
+    en la ventana de contexto siguiente al trigger (soporta roles múltiples).
+    Devuelve lista vacía si no hay indicios claros de confirmación.
     """
+    encontrados: list[str] = []
     for m in _RE_TRIGGER_CONFIRMACION.finditer(texto):
-        # Analizar los 150 caracteres siguientes al trigger
-        fragmento = texto[m.start(): m.start() + 150]
+        fragmento = texto[m.start(): m.start() + 200]
         for clave, canon in _ROLES_CANONICOS.items():
-            if re.search(r"\b" + re.escape(clave) + r"\b", fragmento, re.IGNORECASE):
-                return canon
-    return None
+            if canon not in encontrados and re.search(
+                r"\b" + re.escape(clave) + r"\b", fragmento, re.IGNORECASE
+            ):
+                encontrados.append(canon)
+    return encontrados
 
 
 # --------------------------------------------------------------------------- #
@@ -183,11 +186,12 @@ def procesar_respuesta(texto_llm: str, estado: EvalState) -> tuple[str, EvalStat
                 estado.roles_declarados.append(rol)
 
     # 1b) Fallback: si el LLM no emitió la señal pero confirmó el rol en texto,
-    #     extráerlo para que el bloque de ESTADO no siga mostrando «pendiente».
+    #     extraer todos los roles para que el bloque de ESTADO no siga mostrando «pendiente».
+    #     Soporta roles múltiples (Considerando 83): p. ej. Proveedor + Implementador.
     if not estado.roles_declarados:
-        rol_inferido = _inferir_rol_del_texto(texto_llm)
-        if rol_inferido:
-            estado.roles_declarados.append(rol_inferido)
+        for rol in _inferir_roles_del_texto(texto_llm):
+            if rol not in estado.roles_declarados:
+                estado.roles_declarados.append(rol)
 
     # 2) [ROL_COMPLETADO: x] — puede aparecer varias veces.
     for mc in _RE_ROL_COMPLETADO.finditer(texto_llm):
