@@ -573,6 +573,110 @@ class GeneradorInforme:
         pdf.set_text_color(30, 30, 30)
         pdf.set_draw_color(180, 180, 180)
 
+    def _renderizar_trazabilidad(
+        self, pdf, clasificacion_data: dict, lm: float, cw: float
+    ) -> None:
+        """Renderiza la página de trazabilidad del árbol de decisión."""
+        nodos = clasificacion_data.get("nodos_recorridos", [])
+        indeterminados = clasificacion_data.get("puntos_indeterminados", [])
+
+        if not nodos and not indeterminados:
+            return
+
+        pdf.add_page()
+
+        pdf.set_font("Helvetica", "B", 13)
+        pdf.set_text_color(26, 26, 26)
+        pdf.cell(cw, 8, "Trazabilidad de la evaluacion", align="L",
+                 new_x="LMARGIN", new_y="NEXT")
+        pdf.set_draw_color(224, 224, 224)
+        pdf.set_line_width(0.3)
+        pdf.line(lm, pdf.get_y(), lm + cw, pdf.get_y())
+        pdf.set_line_width(0.2)
+        pdf.ln(4)
+
+        TIPO_W = 22.0
+        LINE_H = 3.5
+        Q_W = cw * 0.40
+        A_W = cw - TIPO_W - Q_W
+        Q_CPL = max(1, int((Q_W - 3) / 1.65))
+        A_CPL = max(1, int((A_W - 4) / 1.65))
+
+        for nodo in nodos:
+            origen = nodo.get("origen", "")
+            if "directa" in origen:
+                badge_lbl, badge_bg, badge_fg = "Directo", _C_BADGE, _C_AZUL
+            else:
+                badge_lbl, badge_bg, badge_fg = "Inferido", (240, 238, 248), (80, 60, 150)
+
+            pregunta = _limpiar(nodo.get("pregunta", ""))
+            respuesta = _limpiar(nodo.get("respuesta", ""))
+            lines_q = max(1, -(-len(pregunta) // Q_CPL))
+            lines_a = max(1, -(-len(respuesta) // A_CPL))
+            H_ROW = max(6.0, max(lines_q, lines_a) * LINE_H + 2.5)
+
+            if pdf.get_y() + H_ROW + 4 > pdf.h - pdf.b_margin:
+                pdf.add_page()
+
+            y_row = pdf.get_y()
+            pdf.set_fill_color(249, 249, 247)
+            pdf.rect(lm, y_row, cw, H_ROW, style="F")
+            pdf.set_fill_color(*badge_bg)
+            pdf.rect(lm, y_row, TIPO_W, H_ROW, style="F")
+
+            pdf.set_xy(lm, y_row + (H_ROW - 4) / 2)
+            pdf.set_font("Helvetica", "B", 7)
+            pdf.set_text_color(*badge_fg)
+            pdf.cell(TIPO_W, 4, badge_lbl, align="C")
+
+            pdf.set_xy(lm + TIPO_W + 1, y_row + 1.5)
+            pdf.set_font("Helvetica", "", 7)
+            pdf.set_text_color(50, 50, 50)
+            pdf.multi_cell(Q_W - 2, LINE_H, pregunta, align="L",
+                           new_x="LMARGIN", new_y="NEXT")
+
+            pdf.set_xy(lm + TIPO_W + Q_W + 1, y_row + 1.5)
+            pdf.set_font("Helvetica", "I", 7)
+            pdf.set_text_color(80, 80, 80)
+            pdf.multi_cell(A_W - 3, LINE_H, respuesta, align="L",
+                           new_x="LMARGIN", new_y="NEXT")
+
+            pdf.set_draw_color(224, 221, 213)
+            pdf.line(lm, y_row + H_ROW, lm + cw, y_row + H_ROW)
+            pdf.set_y(y_row + H_ROW)
+
+        if indeterminados:
+            pdf.ln(3)
+            pdf.set_font("Helvetica", "B", 8)
+            pdf.set_text_color(90, 72, 0)
+            pdf.cell(cw, 5, "PUNTOS INDETERMINADOS", align="L",
+                     new_x="LMARGIN", new_y="NEXT")
+            for p in indeterminados:
+                if pdf.get_y() + 10 > pdf.h - pdf.b_margin:
+                    pdf.add_page()
+                y_p = pdf.get_y()
+                pdf.set_fill_color(254, 246, 220)
+                pdf.rect(lm, y_p, cw, 10, style="F")
+                pdf.set_fill_color(224, 200, 74)
+                pdf.rect(lm, y_p, 3, 10, style="F")
+                pdf.set_xy(lm + 5, y_p + 2)
+                pdf.set_font("Helvetica", "", 8)
+                pdf.set_text_color(90, 72, 0)
+                pdf.multi_cell(cw - 7, 4.5, _limpiar(p[:180]), align="J",
+                               new_x="LMARGIN", new_y="NEXT")
+                real_h = pdf.get_y() - y_p + 2
+                if real_h > 10:
+                    ext = real_h - 10
+                    pdf.set_fill_color(254, 246, 220)
+                    pdf.rect(lm + 3, y_p + 10, cw - 3, ext, style="F")
+                    pdf.set_fill_color(224, 200, 74)
+                    pdf.rect(lm, y_p + 10, 3, ext, style="F")
+                pdf.set_y(max(pdf.get_y(), y_p + max(10, real_h)) + 1.5)
+
+        pdf.set_text_color(30, 30, 30)
+        pdf.set_draw_color(180, 180, 180)
+        pdf.set_line_width(0.2)
+
     def _renderizar_pagina_sistema(
         self, pdf, clasificacion_data: dict, lm: float, cw: float
     ) -> None:
@@ -857,27 +961,42 @@ class GeneradorInforme:
             pdf.multi_cell(CW - 8, 11, _limpiar(titulo_limpio), align="L",
                            new_x="LMARGIN", new_y="NEXT")
 
-            # Subtítulo sistema (descripción corta)
+            # Subtítulo sistema (descripción completa, sin truncar)
             sistema_raw = meta.get("sistema", "")
             if sistema_raw:
-                subtitulo = sistema_raw[:115] + ("..." if len(sistema_raw) > 115 else "")
                 y_sub = min(pdf.get_y() + 2, 95)
                 pdf.set_xy(LM, y_sub)
                 pdf.set_font("Helvetica", "", 10)
                 pdf.set_text_color(170, 200, 235)
-                pdf.multi_cell(CW - 5, 5, _limpiar(subtitulo), align="L",
+                pdf.multi_cell(CW - 5, 5, _limpiar(sistema_raw), align="L",
                                new_x="LMARGIN", new_y="NEXT")
 
             # ── Grid 2×2 de metadatos ─────────────────────────────────────────
             GRID_Y = BAND_H + 8
             CELL_W = CW / 2
-            CELL_H = 22.0
+            LINE_H_V = 4.5
+            BASE_H = 10.0  # label row (4mm) + top padding (2.5) + gap (3.5)
+            CPL = max(1, int((CELL_W - 5) / 1.65))  # chars per line, Helvetica B 9pt
 
             metadatos = [
-                ("SISTEMA EVALUADO", (meta.get("sistema") or "—")[:52]),
+                ("SISTEMA EVALUADO", meta.get("sistema") or "—"),
                 ("SECTOR", meta.get("sector") or "—"),
                 ("ROL DE LA ENTIDAD", (meta.get("rol") or "—").capitalize()),
                 ("FECHA DE GENERACION", meta.get("fecha") or fecha_hoy),
+            ]
+
+            def _row_h(pair):
+                return max(
+                    22.0,
+                    max(
+                        BASE_H + ((len(v) + CPL - 1) // CPL) * LINE_H_V + 2.5
+                        for _, v in pair
+                    ),
+                )
+
+            ROW_HEIGHTS = [
+                _row_h(metadatos[0:2]),
+                _row_h(metadatos[2:4]),
             ]
 
             pdf.set_draw_color(221, 221, 221)
@@ -887,7 +1006,8 @@ class GeneradorInforme:
                 col = idx % 2
                 row = idx // 2
                 x = LM + col * CELL_W
-                y = GRID_Y + row * CELL_H
+                y = GRID_Y + sum(ROW_HEIGHTS[:row])
+                CELL_H = ROW_HEIGHTS[row]
                 pdf.rect(x, y, CELL_W, CELL_H, style="D")
                 pdf.set_xy(x + 2.5, y + 2.5)
                 pdf.set_font("Helvetica", "", 7)
@@ -896,12 +1016,12 @@ class GeneradorInforme:
                 pdf.set_xy(x + 2.5, y + 7.5)
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(26, 26, 26)
-                pdf.multi_cell(CELL_W - 5, 4.5,
-                               _limpiar(valor[:48] if len(valor) > 48 else valor),
+                pdf.multi_cell(CELL_W - 5, LINE_H_V,
+                               _limpiar(valor),
                                align="L", new_x="LMARGIN", new_y="NEXT")
 
             # ── Bloque clasificación ──────────────────────────────────────────
-            CLASIF_Y = GRID_Y + 2 * CELL_H + 6
+            CLASIF_Y = GRID_Y + sum(ROW_HEIGHTS) + 6
             CLASIF_H = 26.0
 
             pdf.set_fill_color(*_C_AZUL_BG)
@@ -952,12 +1072,11 @@ class GeneradorInforme:
             pdf.set_line_width(0.2)
 
             # ══════════════════════════════════════════════════════════════════
-            # PÁGINA 2 — DESCRIPCIÓN DEL SISTEMA (opcional)
+            # PÁGINA DE TRAZABILIDAD (solo si hay nodos registrados)
             # ══════════════════════════════════════════════════════════════════
 
-            if clasificacion_data and clasificacion_data.get("descripcion_sistema"):
-                pdf.add_page()
-                self._renderizar_pagina_sistema(pdf, clasificacion_data, LM, CW)
+            if clasificacion_data:
+                self._renderizar_trazabilidad(pdf, clasificacion_data, LM, CW)
 
             # ══════════════════════════════════════════════════════════════════
             # PÁGINAS INTERIORES — contenido del Markdown
