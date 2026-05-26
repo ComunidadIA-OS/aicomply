@@ -79,12 +79,24 @@ _ROLES_CANONICOS = {
 # Frases que indican que el LLM está CONFIRMANDO el rol (no solo describiendo opciones).
 _RE_TRIGGER_CONFIRMACION = re.compile(
     r"(?:"
-    r"su\s+organización\s+es(?:\s+entonces)?|"
-    r"queda\s+confirmado.{0,40}(?:como|rol)|"
-    r"su\s+rol\s+(?:como|es|de)\b|"
+    # formal/informal sing-plur: "su/vuestra/tu organización/asesoría/empresa es [entonces]"
+    r"(?:su|vuestra?|tu)\s+(?:organización|asesoría|empresa|entidad|caso)\s+es(?:\s+entonces)?|"
+    # "queda claro/confirmado/establecido/fijado …"
+    r"queda\s+(?:claro|confirmado|establecido|fijado)|"
+    # "su/vuestro/tu rol como/es/de/queda"
+    r"(?:su|vuestro?|tu)\s+rol\s+(?:como|es|de|queda)\b|"
+    # "confirmado el rol"
     r"confirmado\s+(?:el\s+)?rol(?:\s+(?:como|de))?|"
-    r"est[aá]s?\s+(?:actuando|operando)\s+como|"
-    r"le\s+corresponde\s+el\s+rol\s+de"
+    # "sois [opcionalmente (b)] [el] Implementador"
+    r"\bsois\s+(?:\(?[a-f]\)?\s+)?(?:el\s+|la\s+|un\s+|una\s+)?(?:entonces\s+)?|"
+    # "actuáis como" / "estáis actuando como"
+    r"(?:act[uú][aá]is|est[aá]is\s+actuando)\s+como|"
+    # "os/le corresponde el rol de"
+    r"(?:os|le)\s+corresponde\s+el\s+rol\s+de|"
+    # "os identifico como" / "os posiciono como"
+    r"os\s+(?:identifico|posiciono|clasifico)\s+como|"
+    # "estáis en la categoría de"
+    r"est[aá]is\s+en\s+la\s+categor[ií]a\s+de"
     r")",
     re.IGNORECASE,
 )
@@ -234,9 +246,10 @@ def construir_bloque_estado(estado: EvalState) -> str:
         rol_linea = f"{roles}  [BLOQUEADO — no volver a preguntar]"
     else:
         rol_linea = (
-            "pendiente de registro formal — "
-            "si ya fue establecido en la conversación, léelo de ella y NO lo preguntes; "
-            "resuélvelo solo si la conversación acaba de empezar y aún no se ha determinado"
+            "pendiente de registro — "
+            "ACCIÓN REQUERIDA: si el rol ya fue determinado en la conversación, "
+            "añade [ROL_DETERMINADO: <rol>] al final de tu respuesta actual para registrarlo. "
+            "Si aún no fue determinado, resuélvelo ahora y emite la señal."
         )
 
     estados_obl = (
