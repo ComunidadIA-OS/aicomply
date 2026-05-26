@@ -156,10 +156,12 @@ class AIComplyChat:
         system = self._system_con_rag(mensaje_usuario)
 
         respuesta_completa = ""
+        _completado = False
         try:
             for fragmento in self.provider.chat_stream(self._historial_truncado(), system_prompt=system):
                 respuesta_completa += fragmento
                 yield fragmento
+            _completado = True
         except Exception as exc:
             # Retry automático tras 429 (rate limit): respetar Retry-After, máx 5 s.
             if "429" in str(exc) or "rate_limit" in str(exc).lower():
@@ -168,10 +170,26 @@ class AIComplyChat:
                     self._historial_truncado(), system_prompt=system
                 )
                 yield respuesta_completa
+                _completado = True
             else:
                 # Rollback: el historial no debe quedar con un user sin assistant.
                 self.historial.pop()
                 raise
+        finally:
+            # Si el stream fue interrumpido (StopException, GeneratorExit, etc.)
+            # antes de completarse, limpiar el historial para evitar dos mensajes
+            # de usuario consecutivos en la siguiente llamada a la API.
+            if not _completado and self.historial and self.historial[-1]["role"] == "user":
+                if respuesta_completa:
+                    # Guardar la respuesta parcial para no perder el contexto
+                    self.historial.append({"role": "assistant", "content": respuesta_completa})
+                    self._extraer_nivel_riesgo(respuesta_completa)
+                else:
+                    # Sin respuesta parcial: rollback del mensaje de usuario
+                    self.historial.pop()
+
+        if not _completado:
+            return
 
         # Detectar señal de evaluación completa y limpiarla del historial persistido.
         # Solo se acepta si va acompañada de un informe real (≥150 caracteres).

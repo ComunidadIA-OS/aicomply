@@ -48,7 +48,74 @@ st.markdown(
 @keyframes _ac_spin{to{transform:rotate(360deg)}}
 ._ac_thinking{display:inline-flex;align-items:center;gap:8px;color:#666;font-size:0.9em;padding:4px 0}
 ._ac_spinner{width:16px;height:16px;border:2px solid #ddd;border-top-color:#555;border-radius:50%;animation:_ac_spin .8s linear infinite;flex-shrink:0}
-</style>""",
+
+/* ── Theme toggle bar ── */
+#ac-tb{position:fixed;top:.35rem;right:2.7rem;z-index:999999;display:flex;gap:0;align-items:center}
+.ac-t{all:unset;cursor:pointer;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:.25rem;color:rgba(49,51,63,.45);transition:color .12s}
+.ac-t:hover,.ac-t[data-active="1"]{color:rgba(49,51,63,.9)}
+.ac-t svg{width:15px;height:15px;pointer-events:none}
+@media(prefers-color-scheme:dark){
+  .ac-t{color:rgba(250,250,250,.45)}
+  .ac-t:hover,.ac-t[data-active="1"]{color:rgba(250,250,250,.9)}}
+body.ac-dark .ac-t{color:rgba(250,250,250,.45)!important}
+body.ac-dark .ac-t:hover,body.ac-dark .ac-t[data-active="1"]{color:rgba(250,250,250,.9)!important}
+
+/* ── Dark overrides ── */
+body.ac-dark .stApp{background-color:#0e1117!important}
+body.ac-dark [data-testid="stSidebar"]>div:first-child{background-color:#262730!important}
+body.ac-dark [data-testid="stHeader"]{background-color:#0e1117!important}
+body.ac-dark [data-testid="stBottomBlockContainer"]{background-color:#0e1117!important}
+body.ac-dark .stMarkdown p,body.ac-dark .stMarkdown li,body.ac-dark .stMarkdown h1,body.ac-dark .stMarkdown h2,body.ac-dark .stMarkdown h3,body.ac-dark .stMarkdown span{color:#fafafa!important}
+body.ac-dark [data-testid="stChatMessage"]{background-color:#1a1d27!important}
+body.ac-dark [data-testid="stChatInput"] textarea{background-color:#262730!important;color:#fafafa!important}
+body.ac-dark .stTextInput input{background-color:#262730!important;color:#fafafa!important}
+body.ac-dark .stRadio label,body.ac-dark .stCaption{color:rgba(250,250,250,.7)!important}
+
+/* ── Light overrides ── */
+body.ac-light .stApp{background-color:#ffffff!important}
+body.ac-light [data-testid="stSidebar"]>div:first-child{background-color:#f0f2f6!important}
+body.ac-light [data-testid="stHeader"]{background-color:#ffffff!important}
+body.ac-light [data-testid="stBottomBlockContainer"]{background-color:#ffffff!important}
+</style>
+<div id="ac-tb">
+  <button class="ac-t" id="ac-t-auto" onclick="acT('auto')" title="Automático (sistema)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+      <circle cx="8" cy="8" r="5.5"/>
+      <path d="M8 2.5A5.5 5.5 0 0 1 8 13.5z" fill="currentColor" stroke="none"/>
+    </svg>
+  </button>
+  <button class="ac-t" id="ac-t-light" onclick="acT('light')" title="Modo día">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+      <circle cx="8" cy="8" r="2.8"/>
+      <line x1="8" y1="1.2" x2="8" y2="3"/><line x1="8" y1="13" x2="8" y2="14.8"/>
+      <line x1="1.2" y1="8" x2="3" y2="8"/><line x1="13" y1="8" x2="14.8" y2="8"/>
+      <line x1="3.2" y1="3.2" x2="4.4" y2="4.4"/><line x1="11.6" y1="11.6" x2="12.8" y2="12.8"/>
+      <line x1="12.8" y1="3.2" x2="11.6" y2="4.4"/><line x1="4.4" y1="11.6" x2="3.2" y2="12.8"/>
+    </svg>
+  </button>
+  <button class="ac-t" id="ac-t-dark" onclick="acT('dark')" title="Modo noche">
+    <svg viewBox="0 0 16 16" fill="currentColor" stroke="none">
+      <path d="M6 2.5a5.5 5.5 0 1 0 7.5 7.5A5 5 0 0 1 6 2.5z"/>
+    </svg>
+  </button>
+</div>
+<script>
+(function(){
+  function setT(m){
+    document.body.classList.remove('ac-dark','ac-light');
+    if(m==='dark') document.body.classList.add('ac-dark');
+    else if(m==='light') document.body.classList.add('ac-light');
+    ['auto','light','dark'].forEach(function(id){
+      var b=document.getElementById('ac-t-'+id);
+      if(b) b.setAttribute('data-active',m===id?'1':'0');
+    });
+  }
+  window.acT=function(m){localStorage.setItem('ac_theme',m);setT(m);};
+  setT(localStorage.getItem('ac_theme')||'auto');
+  new MutationObserver(function(){setT(localStorage.getItem('ac_theme')||'auto');})
+    .observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
+</script>""",
     unsafe_allow_html=True,
 )
 
