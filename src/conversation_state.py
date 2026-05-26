@@ -115,14 +115,16 @@ def _normalizar_rol(bruto: str) -> Optional[str]:
 
 
 def _inferir_roles_del_texto(texto: str) -> list[str]:
-    """Fallback: extrae todos los roles cuando el LLM confirmó verbalmente pero olvidó la señal.
+    """Fallback: extrae roles cuando el LLM confirmó verbalmente pero no emitió la señal.
 
-    Busca frases de confirmación («queda confirmado su rol como X», «su organización
-    es entonces (b) Implementador»…) y extrae TODOS los roles canónicos encontrados
-    en la ventana de contexto siguiente al trigger (soporta roles múltiples).
+    Paso 1 — frases de confirmación explícitas (mayor fiabilidad).
+    Paso 2 — búsqueda en líneas que no sean ítems de lista: captura confirmaciones
+              naturales como «Le clasifico como Implementador» o «actúa como Proveedor».
     Devuelve lista vacía si no hay indicios claros de confirmación.
     """
     encontrados: list[str] = []
+
+    # Paso 1: triggers de confirmación + nombre de rol en ventana de 200 chars
     for m in _RE_TRIGGER_CONFIRMACION.finditer(texto):
         fragmento = texto[m.start(): m.start() + 200]
         for clave, canon in _ROLES_CANONICOS.items():
@@ -130,6 +132,31 @@ def _inferir_roles_del_texto(texto: str) -> list[str]:
                 r"\b" + re.escape(clave) + r"\b", fragmento, re.IGNORECASE
             ):
                 encontrados.append(canon)
+
+    if encontrados:
+        return encontrados
+
+    # Paso 2: búsqueda directa en líneas que no sean ítems de lista ni encabezados.
+    # Solo actúa si el bloque parece una confirmación (no una presentación de opciones).
+    _RE_ITEM_LISTA = re.compile(
+        r"^\s*(?:[-•*#]|\([a-f]\)|[a-f]\)|\d+[.)])", re.IGNORECASE
+    )
+    lineas = texto.split("\n")
+    for linea in lineas:
+        if _RE_ITEM_LISTA.match(linea):
+            continue
+        for clave, canon in _ROLES_CANONICOS.items():
+            if canon not in encontrados and re.search(
+                r"\b" + re.escape(clave) + r"\b", linea, re.IGNORECASE
+            ):
+                encontrados.append(canon)
+
+    # El paso 2 puede devolver falsos positivos si el LLM describe las opciones
+    # en párrafo continuo. Filtrar: solo aceptar si hay ≤2 roles distintos encontrados
+    # (una confirmación real rara vez menciona más de dos roles canónicos).
+    if len(encontrados) > 2:
+        return []
+
     return encontrados
 
 

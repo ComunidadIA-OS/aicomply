@@ -141,21 +141,20 @@ class AIComplyChat:
             estado_bloque = construir_bloque_estado(self._eval_state)
             prompt += "\n\n" + estado_bloque
 
-            # Si el rol no está registrado y ya hubo al menos un intercambio completo
-            # (user → assistant → user), anteponer instrucción de bloqueo de máxima
-            # prioridad para que el LLM no pueda avanzar al árbol sin registrar el rol.
+            # Si el rol no está registrado y ya hubo al menos un intercambio completo,
+            # anteponer recordatorio de máxima prioridad.
+            # NOTA: NO se asume que el usuario ya respondió; puede que aún no lo haya hecho.
             n_user = sum(1 for m in self.historial if m["role"] == "user")
             if not self._eval_state.roles_declarados and n_user >= 2:
                 bloqueo = (
                     "╔══════════════════════════════════════════════════════════════╗\n"
-                    "║  PRIORIDAD MÁXIMA — ROL SIN REGISTRAR — ÁRBOL BLOQUEADO     ║\n"
+                    "║  ROL SIN REGISTRAR — ÁRBOL EN PAUSA                         ║\n"
                     "╠══════════════════════════════════════════════════════════════╣\n"
-                    "║ El usuario ya ha respondido sobre su tipo de entidad.        ║\n"
                     "║ Esta respuesta tiene UNA SOLA tarea:                         ║\n"
-                    "║  1. Determina el rol a partir de la conversación.            ║\n"
-                    "║  2. Confírmalo en una frase.                                 ║\n"
-                    "║  3. Emite [ROL_DETERMINADO: <rol>] como ÚLTIMA LÍNEA.        ║\n"
-                    "║ NO hagas ninguna otra pregunta. NO avances al árbol.         ║\n"
+                    "║  · Si el usuario YA indicó su rol: confírmalo en una frase  ║\n"
+                    "║    y emite [ROL_DETERMINADO: <rol>] como ÚLTIMA LÍNEA.       ║\n"
+                    "║  · Si AÚN no lo ha indicado: presenta la pregunta del rol.  ║\n"
+                    "║ NO avances al árbol hasta haber emitido [ROL_DETERMINADO].  ║\n"
                     "╚══════════════════════════════════════════════════════════════╝\n"
                 )
                 prompt = bloqueo + "\n\n" + prompt
