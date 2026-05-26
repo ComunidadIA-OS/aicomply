@@ -195,6 +195,14 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
             '<div class="_ac_thinking"><div class="_ac_spinner"></div><span>Pensando...</span></div>',
             unsafe_allow_html=True,
         )
+        st.markdown(
+            "<style>[data-testid='stChatInputSubmitButton']"
+            "{background-color:#c62828 !important;border-color:#c62828 !important;}"
+            "[data-testid='stChatInputSubmitButton'] svg{display:none !important;}"
+            "[data-testid='stChatInputSubmitButton']::after"
+            "{content:'■';font-size:14px;color:#fff;line-height:1;}</style>",
+            unsafe_allow_html=True,
+        )
         st.session_state.mensajes_evaluador.append({"role": "user", "content": prompt})
 
         with chat_container:
