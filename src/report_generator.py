@@ -374,22 +374,38 @@ class GeneradorInforme:
                 "No se dispone del detalle de obligaciones. Consulte el análisis en la pestaña Cumplimiento."
             )
 
-        cubiertas = [o for o in obligaciones if o.get("estado") == "cubierta"]
-        parciales = [o for o in obligaciones if o.get("estado") == "parcial"]
-        carencias_obl = [o for o in obligaciones if o.get("estado") == "carencia"]
-        no_eval = [o for o in obligaciones if o.get("estado") not in ("cubierta", "parcial", "carencia")]
+        legales = [o for o in obligaciones if o.get("tipo", "obligacion") == "obligacion"]
+        recomendaciones = [o for o in obligaciones if o.get("tipo") == "recomendacion"]
+        vigilancias = [o for o in obligaciones if o.get("tipo") == "vigilancia"]
 
-        total = len(obligaciones)
-        pct = round(
-            ((len(cubiertas) * 2 + len(parciales)) / (total * 2) * 100) if total else 0
-        )
+        cub_leg = [o for o in legales if o.get("estado") == "cubierta"]
+        par_leg = [o for o in legales if o.get("estado") == "parcial"]
+        car_leg = [o for o in legales if o.get("estado") == "carencia"]
+        no_ev_leg = [o for o in legales if o.get("estado") not in ("cubierta", "parcial", "carencia")]
+
+        total_leg = len(legales)
+        rec_pen = sum(1 for o in (recomendaciones + vigilancias) if o.get("estado") == "carencia")
 
         texto = f"## {num}. Análisis de obligaciones\n\n"
-        texto += (
-            f"**Grado de cumplimiento estimado:** {pct} %  \n"
-            f"Cubiertas: {len(cubiertas)} | Parciales: {len(parciales)} | "
-            f"Áreas de mejora: {len(carencias_obl)} | Sin evaluar: {len(no_eval)}"
-        )
+
+        if total_leg == 0:
+            texto += (
+                "**Cumplimiento legal:** No aplicable  \n"
+                "No se identifican obligaciones legales evaluables del AI Act para este caso. "
+                "Se incluyen recomendaciones voluntarias y medidas prudenciales."
+            )
+        else:
+            pct = round(((len(cub_leg) * 2 + len(par_leg)) / (total_leg * 2) * 100) if total_leg else 0)
+            texto += (
+                f"**Grado de cumplimiento legal estimado:** {pct} %  \n"
+                f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
+                f"No cubiertas: {len(car_leg)} | Sin evaluar: {len(no_ev_leg)}"
+            )
+            if rec_pen:
+                texto += (
+                    f"  \n*Recomendaciones/medidas prudenciales pendientes: {rec_pen} "
+                    "(no computan en el porcentaje legal)*"
+                )
 
         if roles_multiples and len(roles_multiples) > 1:
             texto += (
@@ -408,10 +424,39 @@ class GeneradorInforme:
                 )
             return bloque
 
-        texto += _bloque(cubiertas, "Obligaciones cubiertas")
-        texto += _bloque(parciales, "Obligaciones parcialmente cubiertas")
-        texto += _bloque(carencias_obl, "Áreas de mejora")
-        texto += _bloque(no_eval, "Obligaciones no evaluadas")
+        def _bloque_no_legal(lista: list[dict], encabezado: str, etiquetas: dict) -> str:
+            if not lista:
+                return ""
+            bloque = f"\n\n### {encabezado}\n"
+            bloque += "\n*No computan en el porcentaje de cumplimiento legal.*\n"
+            for o in lista:
+                lbl = etiquetas.get(o.get("estado", ""), "Sin evaluar")
+                bloque += (
+                    f"\n**{o.get('articulo', '')} — {o.get('titulo', '')}** ({lbl})  \n"
+                    f"{o.get('descripcion', '')}  \n"
+                )
+            return bloque
+
+        if legales:
+            texto += "\n\n### A. Obligaciones legales aplicables"
+            texto += _bloque(cub_leg, "Cubiertas")
+            texto += _bloque(par_leg, "Parcialmente cubiertas")
+            texto += _bloque(car_leg, "No cubiertas")
+            texto += _bloque(no_ev_leg, "Sin evaluar")
+
+        if recomendaciones:
+            texto += _bloque_no_legal(
+                recomendaciones,
+                "B. Recomendaciones voluntarias y buenas prácticas",
+                {"cubierta": "Adoptada", "parcial": "En proceso", "carencia": "Recomendación pendiente"},
+            )
+
+        if vigilancias:
+            texto += _bloque_no_legal(
+                vigilancias,
+                "C. Medidas prudenciales y puntos de vigilancia",
+                {"cubierta": "Atendida", "parcial": "En proceso", "carencia": "Medida prudencial pendiente"},
+            )
 
         return texto
 
@@ -460,11 +505,12 @@ class GeneradorInforme:
                 "del proceso Omnibus una vez publicado en el DOUE.",
             ],
             "MINIMO": [
-                "**Aplicable actualmente (Art. 4):** Garantizar que el personal que usa o supervisa "
-                "el sistema tiene formacion suficiente sobre sus capacidades y limitaciones.",
-                "**Recomendado:** Documentar internamente las capacidades y limitaciones del sistema.",
-                "**Opcional:** Considerar la adhesion a codigos de conducta voluntarios (Art. 95).",
-                "**Vigilancia:** Supervisar cambios en el uso que puedan elevar el nivel de riesgo.",
+                "**[Obligacion legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal "
+                "que usa o supervisa el sistema tiene formacion suficiente sobre sus capacidades y limitaciones.",
+                "**[Recomendacion voluntaria] Art. 95:** Considerar la adhesion a codigos de conducta "
+                "voluntarios. No es obligatorio; no computa como incumplimiento.",
+                "**[Medida prudencial]** Documentar internamente las capacidades y limitaciones del sistema "
+                "y supervisar cambios en el uso que puedan elevar el nivel de riesgo.",
             ],
         }
 
@@ -1071,10 +1117,10 @@ class GeneradorInforme:
                 y0 = pdf.get_y()
 
                 tarjetas = [
-                    ("Cubiertas",   cub, (42, 122, 74)),
-                    ("Parciales",   par, (184, 122, 0)),
-                    ("Mejoras",     mej, (176, 32, 32)),
-                    ("Sin evaluar", sin, (150, 150, 150)),
+                    ("Cubiertas",    cub, (42, 122, 74)),
+                    ("Parciales",    par, (184, 122, 0)),
+                    ("No cubiertas", mej, (176, 32, 32)),
+                    ("Sin evaluar",  sin, (150, 150, 150)),
                 ]
 
                 for i, (lbl, num, col) in enumerate(tarjetas):
@@ -1097,7 +1143,7 @@ class GeneradorInforme:
                 # Barra de progreso
                 pdf.set_font("Helvetica", "", 9)
                 pdf.set_text_color(60, 60, 60)
-                pdf.cell(CW * 0.72, 5, "Grado de cumplimiento estimado", align="L")
+                pdf.cell(CW * 0.72, 5, "Grado de cumplimiento legal estimado", align="L")
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(*_C_AZUL)
                 pdf.cell(CW * 0.28, 5, f"{pct} %", align="R",
@@ -1261,7 +1307,7 @@ class GeneradorInforme:
                                    new_x="LMARGIN", new_y="NEXT")
                     pdf.ln(1)
 
-                elif "**Grado de cumplimiento" in linea_s and _seccion == "obligaciones":
+                elif "Grado de cumplimiento" in linea_s and _seccion == "obligaciones":
                     m_pct = re.search(r"(\d+)\s*%", linea_s)
                     if m_pct:
                         _metricas_pct = int(m_pct.group(1))

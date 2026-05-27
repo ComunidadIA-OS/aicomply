@@ -70,13 +70,20 @@ _PROMPT_EXTRAER_CUMPLIMIENTO = """Basándote en toda la conversación de cumplim
       "articulo": "Art. X",
       "titulo": "nombre de la obligación",
       "descripcion": "descripción concreta para esta organización",
-      "estado": "cubierta|parcial|carencia|no_evaluada"
+      "estado": "cubierta|parcial|carencia|no_evaluada",
+      "tipo": "obligacion|recomendacion|vigilancia"
     }
   ],
-  "carencias_detectadas": ["descripción de la carencia 1", "descripción de la carencia 2"],
+  "carencias_detectadas": ["descripción de la carencia 1"],
   "puntos_revision_profesional": ["punto que requiere revisión profesional 1"],
   "resumen_cumplimiento": "resumen ejecutivo del análisis de cumplimiento en 2-3 frases"
-}"""
+}
+El campo "tipo" es obligatorio en cada elemento:
+- "obligacion": exigible legalmente por el AI Act u otra normativa aplicable (p. ej. Art. 4, Art. 9-17, Art. 26, Art. 50.1).
+- "recomendacion": voluntaria, no exigible (p. ej. Art. 95 — adhesión a códigos de conducta, documentación interna voluntaria).
+- "vigilancia": medida prudencial de seguimiento, no es obligación autónoma (p. ej. vigilar cambios de uso que puedan elevar el nivel de riesgo).
+Solo las obligaciones de tipo "obligacion" computan en el porcentaje de cumplimiento legal.
+Para elementos de tipo "recomendacion" o "vigilancia" no adoptados usa estado "carencia", pero no los incluyas en "carencias_detectadas"."""
 
 _SENAL_COMPLETA = "[EVALUACION_COMPLETA]"
 

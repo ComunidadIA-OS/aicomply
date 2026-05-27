@@ -232,3 +232,132 @@ class TestExportarPdf:
         md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, _CUMPLIMIENTO)
         pdf = GeneradorInforme().exportar_pdf(md)
         assert pdf[:4] == b"%PDF"
+
+
+# ── Tests de tipo obligacion/recomendacion/vigilancia ────────────────────────
+
+def _obl(art, titulo, estado, tipo="obligacion"):
+    return {"articulo": art, "titulo": titulo, "descripcion": "", "estado": estado, "tipo": tipo}
+
+
+_MINIMO_CLASIF = {
+    "clasificacion": "MINIMO",
+    "rol": "proveedor",
+    "roles_multiples": [],
+    "descripcion_sistema": "Sistema de recomendación interno",
+    "sector": "Industria",
+    "estados_adicionales": [],
+    "obligaciones_preliminares": [],
+    "puntos_indeterminados": [],
+}
+
+
+class TestCumplimientoLegalVsRecomendaciones:
+    """Garantiza que las recomendaciones no reducen el porcentaje de cumplimiento legal."""
+
+    def test_minimo_sin_legales_solo_recomendaciones(self):
+        """Caso B: sin obligaciones legales — debe decir 'No aplicable', no 0 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 95", "Códigos de conducta", "carencia", "recomendacion"),
+                _obl("Vigilancia", "Cambios de uso", "carencia", "vigilancia"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_MINIMO_CLASIF, cumpl)
+        assert "No aplicable" in md
+        assert "0 %" not in md
+        assert "100 %" not in md
+
+    def test_minimo_una_legal_cubierta_y_dos_recomendaciones(self):
+        """Caso A: 1 obligación cubierta + 2 recomendaciones pendientes → 100 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 4", "Alfabetización IA", "cubierta", "obligacion"),
+                _obl("Art. 95", "Códigos de conducta", "carencia", "recomendacion"),
+                _obl("Vigilancia", "Cambios de uso", "carencia", "vigilancia"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_MINIMO_CLASIF, cumpl)
+        assert "100 %" in md
+        assert "33 %" not in md
+
+    def test_minimo_una_legal_parcial_y_recomendaciones(self):
+        """Caso C: 1 obligación parcial + recomendaciones → 50 %, no 33 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 4", "Alfabetización IA", "parcial", "obligacion"),
+                _obl("Art. 95", "Códigos de conducta", "carencia", "recomendacion"),
+                _obl("Vigilancia", "Cambios de uso", "carencia", "vigilancia"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_MINIMO_CLASIF, cumpl)
+        assert "50 %" in md
+        assert "33 %" not in md
+
+    def test_alto_riesgo_recomendaciones_no_bajan_porcentaje(self):
+        """Recomendaciones en alto riesgo no reducen el porcentaje de cumplimiento legal."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 9", "Gestión de riesgos", "cubierta", "obligacion"),
+                _obl("Art. 10", "Gobernanza de datos", "cubierta", "obligacion"),
+                _obl("Art. 95", "Códigos de conducta", "carencia", "recomendacion"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
+        assert "100 %" in md
+        assert "67 %" not in md
+
+    def test_recomendaciones_aparecen_en_seccion_b(self):
+        """Las recomendaciones deben aparecer en la sección B, no en obligaciones legales."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 4", "Alfabetización IA", "cubierta", "obligacion"),
+                _obl("Art. 95", "Códigos de conducta", "carencia", "recomendacion"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_MINIMO_CLASIF, cumpl)
+        assert "B. Recomendaciones" in md
+        assert "Recomendación pendiente" in md
+
+    def test_vigilancia_aparece_en_seccion_c(self):
+        """Las medidas prudenciales deben aparecer en la sección C."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Vigilancia", "Cambios de uso", "carencia", "vigilancia"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_MINIMO_CLASIF, cumpl)
+        assert "C. Medidas prudenciales" in md
+        assert "Medida prudencial pendiente" in md
+
+    def test_retrocompatibilidad_sin_campo_tipo(self):
+        """Obligaciones sin campo tipo se tratan como obligacion (retrocompatibilidad)."""
+        cumpl = {
+            "obligaciones": [
+                {"articulo": "Art. 9", "titulo": "Gestión de riesgos",
+                 "descripcion": "", "estado": "cubierta"},  # sin tipo
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
+        assert "100 %" in md

@@ -21,7 +21,7 @@ from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable, mensaje_error_seguro, rate_limiter
 
 _NIVELES_OPCIONES: dict[str, str] = {
-    "Mínimo — Sin obligaciones específicas del AI Act": "MINIMO",
+    "Mínimo — Sin obligaciones de alto riesgo (Art. 4 aplica)": "MINIMO",
     "Limitado — Transparencia y etiquetado (chatbots, deepfakes...)": "LIMITADO",
     "Alto riesgo — Obligaciones exhaustivas (Art. 9–17, 43, 47–49...)": "ALTO",
     "Prohibido — Sistema potencialmente ilegal bajo el AI Act": "PROHIBIDO",
@@ -326,48 +326,77 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
         carencias = datos.get("carencias_detectadas", [])
         obligaciones = datos.get("obligaciones", [])
 
-        cubierta = sum(1 for o in obligaciones if o.get("estado") == "cubierta")
-        parcial = sum(1 for o in obligaciones if o.get("estado") == "parcial")
-        n_carencias = sum(1 for o in obligaciones if o.get("estado") == "carencia")
-        no_eval = sum(1 for o in obligaciones if o.get("estado") not in ("cubierta", "parcial", "carencia"))
+        legales       = [o for o in obligaciones if o.get("tipo", "obligacion") == "obligacion"]
+        recomendaciones = [o for o in obligaciones if o.get("tipo") == "recomendacion"]
+        vigilancias   = [o for o in obligaciones if o.get("tipo") == "vigilancia"]
+
+        cub_leg = sum(1 for o in legales if o.get("estado") == "cubierta")
+        par_leg = sum(1 for o in legales if o.get("estado") == "parcial")
+        car_leg = sum(1 for o in legales if o.get("estado") == "carencia")
+        rec_pen = sum(1 for o in (recomendaciones + vigilancias) if o.get("estado") == "carencia")
 
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Cubiertas", cubierta)
-        col2.metric("Parciales", parcial)
-        col3.metric("Áreas de mejora", n_carencias)
-        col4.metric("Sin evaluar", no_eval)
+        col1.metric("Obligaciones cubiertas", cub_leg)
+        col2.metric("Parciales", par_leg)
+        col3.metric("No cubiertas", car_leg)
+        col4.metric("Recomendaciones pendientes", rec_pen)
 
         if datos.get("resumen_cumplimiento"):
             st.info(datos["resumen_cumplimiento"])
 
-        # ── Trazabilidad de obligaciones ───────────────────────────────────────
-        if obligaciones:
-            _ESTADO_ESTILO: dict[str, tuple[str, str, str]] = {
-                "cubierta":    ("#388E3C", "#E8F5E9", "✓ Cubierta"),
-                "parcial":     ("#F9A825", "#FFF8E1", "⚠ Parcial"),
-                "carencia":    ("#C62828", "#FFEBEE", "✗ Área de mejora"),
-                "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
-            }
-            with st.expander("Trazabilidad de obligaciones", expanded=True):
-                for o in obligaciones:
-                    estado = o.get("estado", "no_evaluada")
-                    color, bg, etiqueta = _ESTADO_ESTILO.get(estado, _ESTADO_ESTILO["no_evaluada"])
-                    articulo = html.escape(o.get("articulo", ""))
-                    titulo = html.escape(o.get("titulo", ""))
-                    descripcion = html.escape(o.get("descripcion", ""))
-                    st.markdown(
-                        f'<div style="background:{bg}; border-left:4px solid {color}; '
-                        f'border-radius:4px; padding:8px 14px; margin-bottom:8px;">'
-                        f'<strong>{articulo} — {titulo}</strong> '
-                        f'<span style="color:{color}; font-size:0.85em; font-weight:bold;">({etiqueta})</span>'
-                        + (f'<br/><span style="font-size:0.9em; color:#555;">{descripcion}</span>'
-                           if descripcion else "")
-                        + "</div>",
-                        unsafe_allow_html=True,
-                    )
+        # ── Trazabilidad separada por tipo ─────────────────────────────────────
+        def _render_obl(o: dict) -> None:
+            tipo  = o.get("tipo", "obligacion")
+            estado = o.get("estado", "no_evaluada")
+            if tipo == "recomendacion":
+                estilos = {
+                    "cubierta":    ("#1565C0", "#E3F2FD", "✓ Adoptada"),
+                    "parcial":     ("#F9A825", "#FFF8E1", "⚠ En proceso"),
+                    "carencia":    ("#5E35B1", "#EDE7F6", "→ Recomendación pendiente"),
+                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                }
+            elif tipo == "vigilancia":
+                estilos = {
+                    "cubierta":    ("#1565C0", "#E3F2FD", "✓ Atendida"),
+                    "parcial":     ("#F9A825", "#FFF8E1", "⚠ En proceso"),
+                    "carencia":    ("#EF6C00", "#FFF3E0", "⦿ Medida prudencial pendiente"),
+                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                }
+            else:
+                estilos = {
+                    "cubierta":    ("#388E3C", "#E8F5E9", "✓ Cubierta"),
+                    "parcial":     ("#F9A825", "#FFF8E1", "⚠ Parcial"),
+                    "carencia":    ("#C62828", "#FFEBEE", "✗ No cubierta"),
+                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                }
+            color, bg, etiqueta = estilos.get(estado, estilos["no_evaluada"])
+            articulo = html.escape(o.get("articulo", ""))
+            titulo   = html.escape(o.get("titulo", ""))
+            descripcion = html.escape(o.get("descripcion", ""))
+            st.markdown(
+                f'<div style="background:{bg}; border-left:4px solid {color}; '
+                f'border-radius:4px; padding:8px 14px; margin-bottom:8px;">'
+                f'<strong>{articulo} — {titulo}</strong> '
+                f'<span style="color:{color}; font-size:0.85em; font-weight:bold;">({etiqueta})</span>'
+                + (f'<br/><span style="font-size:0.9em; color:#555;">{descripcion}</span>'
+                   if descripcion else "")
+                + "</div>",
+                unsafe_allow_html=True,
+            )
+
+        if legales:
+            with st.expander(f"Obligaciones legales aplicables ({len(legales)})", expanded=True):
+                for o in legales:
+                    _render_obl(o)
+
+        if recomendaciones or vigilancias:
+            label_rec = f"Recomendaciones y medidas prudenciales ({len(recomendaciones) + len(vigilancias)})"
+            with st.expander(label_rec, expanded=True):
+                for o in (recomendaciones + vigilancias):
+                    _render_obl(o)
 
         if carencias:
-            with st.expander(f"Áreas de mejora identificadas ({len(carencias)})", expanded=False):
+            with st.expander(f"Áreas de mejora legales ({len(carencias)})", expanded=False):
                 for g in carencias:
                     st.caption(f"- {g}")
 
