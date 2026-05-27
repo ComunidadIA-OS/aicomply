@@ -937,13 +937,12 @@ class GeneradorInforme:
                 pdf.multi_cell(CW - 5, 5, _limpiar(subtitulo), align="L",
                                new_x="LMARGIN", new_y="NEXT")
 
-            # ── Grid 2×2 de metadatos ─────────────────────────────────────────
+            # ── Grid 1×3 de metadatos (SISTEMA EVALUADO se muestra en la banda azul)
             GRID_Y = BAND_H + 8
-            CELL_W = CW / 2
+            CELL_W = CW / 3
             CELL_H = 28.0
 
             metadatos = [
-                ("SISTEMA EVALUADO", meta.get("sistema") or "—"),
                 ("SECTOR", meta.get("sector") or "—"),
                 ("ROL DE LA ENTIDAD", (meta.get("rol") or "—").capitalize()),
                 ("FECHA DE GENERACION", meta.get("fecha") or fecha_hoy),
@@ -953,10 +952,8 @@ class GeneradorInforme:
             pdf.set_line_width(0.3)
 
             for idx, (label, valor) in enumerate(metadatos):
-                col = idx % 2
-                row = idx // 2
-                x = LM + col * CELL_W
-                y = GRID_Y + row * CELL_H
+                x = LM + idx * CELL_W
+                y = GRID_Y
                 pdf.rect(x, y, CELL_W, CELL_H, style="D")
                 pdf.set_xy(x + 2.5, y + 2.5)
                 pdf.set_font("Helvetica", "", 7)
@@ -970,7 +967,7 @@ class GeneradorInforme:
                                align="L", new_x="LMARGIN", new_y="NEXT")
 
             # ── Bloque clasificación ──────────────────────────────────────────
-            CLASIF_Y = GRID_Y + 2 * CELL_H + 6
+            CLASIF_Y = GRID_Y + CELL_H + 6
             CLASIF_H = 26.0
 
             pdf.set_fill_color(*_C_AZUL_BG)
