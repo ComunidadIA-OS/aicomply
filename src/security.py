@@ -21,6 +21,26 @@ from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
+# ── Defensa contra prompt injection ──────────────────────────────────────────
+# Los marcadores delimitan el bloque de datos del usuario para que el modelo
+# los trate como contenido a analizar y no como instrucciones.
+
+_MARCADOR_INICIO = "<<<DOCUMENTO_DEL_USUARIO_INICIO>>>"
+_MARCADOR_FIN    = "<<<DOCUMENTO_DEL_USUARIO_FIN>>>"
+
+
+def envolver_contenido_no_confiable(texto: str) -> str:
+    """Envuelve contenido de usuario entre marcadores explícitos.
+
+    Neutraliza secuencias que imiten nuestros delimitadores para evitar que
+    el modelo interprete el texto del usuario como instrucciones del sistema.
+    """
+    texto = texto.strip()
+    # Reemplazar <<< y >>> para que el texto no pueda imitar los marcadores
+    texto = texto.replace("<<<", "«««").replace(">>>", "»»»")
+    return f"{_MARCADOR_INICIO}\n{texto}\n{_MARCADOR_FIN}"
+
+
 # ── C1: Mensajes de error seguros ─────────────────────────────────────────────
 
 _KW_CONEXION = ("Connection refused", "ConnectError", "ConnectionError", "connect timeout", "Connection reset")
