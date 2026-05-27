@@ -1,0 +1,43 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: Sistema de recomendación de ciclos de calentamiento para hornos industriales en una PYME de fundición. Toma como entrada el precio de la electricidad, previsión de demanda, costes de materias primas y calendario de producción, y genera recomendaciones mediante modelos de aprendizaje automático u optimización basada en datos. No ejecuta cambios automáticos sobre el horno ni el SCADA; la decisión final siempre corresponde al supervisor de turno.  
+Sector: Industria manufacturera — fundición metálica  
+Clasificación: MINIMO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 17:04  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como MINIMO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Proveedor / Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: MINIMO  
+Descripción: Sistema de IA de riesgo mínimo — no se identifican obligaciones propias de sistemas de alto riesgo; pueden aplicar obligaciones horizontales (Art. 4, transparencia, normativa sectorial)
+
+Rol principal de la entidad: Proveedor / Implementador
+
+Roles identificados:
+- Proveedor
+- Implementador
+
+Su organización actúa en varios roles bajo el AI Act. Las obligaciones de cada rol se detallan en la sección correspondiente.
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA para el personal que trabaja con el sistema, en particular supervisores de turno (Art. 4) — aplicable desde el 2 de febrero de 2025
+
+4. Puntos que requieren revisión profesional
+
+- Definición de sistema de IA (Art. 3.1) — INDETERMINADO en cuanto al detalle técnico exacto: la organización confirmó que el sistema usa aprendizaje automático u optimización basada en datos, pero no se verificó el mecanismo interno con precisión técnica. Si en algún momento se constatase que el sistema sigue únicamente reglas fijas predefinidas por un técnico sin ningún componente de inferencia, podría no cumplir la definición del Art. 3.1 y quedar fuera del ámbito del Reglamento. En sentido contrario, si se confirmase que incorpora componentes de inferencia más sofisticados, la clasificación actual se mantendría y habría que verificar si el sistema podría considerarse componente de seguridad de maquinaria industrial conforme al Considerando 49.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 17:04.

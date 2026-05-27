@@ -1,0 +1,98 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: TalentScreen Industrial es un sistema de IA diseñado para filtrar, puntuar y priorizar candidaturas de empleo en una PYME fabricante de componentes metálicos para el sector de la automoción. El sistema genera puntuaciones de adecuación y puede descartar automáticamente candidaturas por debajo de un umbral configurable antes de cualquier revisión humana, procesando datos personales laborales como CVs, certificados profesionales, disponibilidad horaria y experiencia declarada. Se despliega como aplicación web en entorno local o servidor propio y ha sido desarrollado y utilizado internamente por la misma organización.  
+Sector: Fabricación de componentes metálicos para el sector de la automoción  
+Clasificación: ALTO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 19:07  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como ALTO con rol Proveedor / Implementador.
+
+2. Análisis de obligaciones
+
+Grado de cumplimiento legal estimado: 75 %  
+Cubiertas: 10   Parciales: 1   No cubiertas: 3   No aplica: 0
+
+Las obligaciones se presentan agrupadas. El rol específico de cada una se indica en la descripción.
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 4 — Alfabetización en IA del personal  
+La empresa ha realizado formación documentada sobre el funcionamiento y limitaciones del sistema dirigida al personal que lo utiliza.  
+
+Art. 9 — Sistema de gestión de riesgos  
+Existe un documento formal que identifica y gestiona los riesgos específicos del sistema, incluyendo sesgo y errores del modelo, con proceso de actualización periódica.  
+
+Art. 10 — Gobernanza de datos de entrenamiento  
+Existe documentación sobre los datos de entrenamiento y validación, incluyendo origen, tratamiento de sesgos y resultados de pruebas.  
+
+Art. 11 — Documentación técnica — Anexo IV  
+La empresa dispone de documentación técnica formal que cubre los ocho apartados del Anexo IV del AI Act.  
+
+Art. 12 — Registro automático de actividad  
+El módulo de registro de auditoría está activo en producción y almacena entradas, puntuaciones, versión del modelo y usuario revisor.  
+
+Art. 13 — Instrucciones de uso  
+Existe manual de instrucciones dirigido al personal operativo y material audiovisual explicativo, separados de la documentación técnica.  
+
+Art. 4 — Alfabetización en IA  
+La empresa ha realizado formación o sesiones informativas sobre el funcionamiento y limitaciones del sistema para el personal que lo utiliza.  
+
+Art. 13 — Instrucciones de uso claras para operadores  
+Existe un manual de instrucciones de uso dirigido al personal operador y un vídeo explicativo complementario.  
+
+Art. 14 — Supervisión humana efectiva  
+Los técnicos de RRHH pueden recuperar y revisar en cualquier momento las candidaturas descartadas automáticamente; los descartes no son irreversibles.  
+
+Art. 72 — Sistema de supervisión poscomercialización  
+Existe un plan de monitorización con auditorías bimestrales, criterios de alerta y persona responsable de su ejecución.  
+
+Parcialmente cubiertas
+
+Art. 17 — Sistema de gestión de calidad  
+Existe control de versiones en GitHub, pero faltan procedimientos documentados de aprobación, prueba previa al despliegue y asignación formal de responsabilidades.  
+
+No cubiertas
+
+Art. 15 — Exactitud, solidez y ciberseguridad  
+No existen métricas documentadas sobre la precisión del modelo, pruebas de robustez ante datos atípicos ni medidas de ciberseguridad formalizadas para proteger los datos de los candidatos.  
+
+Art. 43 — Evaluación de conformidad  
+La evaluación de conformidad conforme al Anexo VI está pendiente de realización.  
+
+Art. 49 — Registro en la base de datos de la UE  
+El sistema no ha sido registrado en la base de datos pública de sistemas de IA de alto riesgo de la UE.  
+
+3. Áreas de mejora identificadas
+
+No se identificaron áreas de mejora pendientes.
+
+4. Plan de acción recomendado
+
+- Inmediato: Designar un responsable de cumplimiento del AI Act e iniciar el inventario del sistema.
+- Preparacion (0-6 meses): Desarrollar la documentacion tecnica (Art. 11, Anexo IV) y el sistema de gestion de riesgos (Art. 9). Estos documentos requieren meses de trabajo; iniciar ahora independientemente del calendario final del Omnibus.
+- Preparacion (6-12 meses): Implementar el registro de actividad (Art. 12), el protocolo de supervision humana (Art. 14) y el sistema de gestion de calidad (Art. 17).
+- Antes del despliegue (plazo provisional: 2 de diciembre de 2027 para Anexo III; 2 de agosto de 2028 para Anexo I, segun el acuerdo Omnibus de mayo de 2026, pendiente de publicacion en el DOUE): Completar la evaluacion de conformidad (Art. 43), registrar el sistema en la base de datos de la UE (Art. 49) y obtener el marcado CE (Art. 47-48).
+- De forma continua: Supervision poscomercializacion (Art. 72), notificacion de incidentes (Art. 73) y actualizacion de la documentacion tecnica.
+
+5. Puntos que requieren revisión profesional
+
+- Suficiencia de los mecanismos de supervisión humana actuales (Art. 14): se confirmó que el sistema descarta automáticamente antes de revisión humana, pero no se analizó si los controles existentes son suficientes para cumplir el Art. 14. Si no lo son, se requerirían cambios técnicos en el flujo de decisión antes del despliegue conforme.
+- Necesidad de organismo notificado externo para la evaluación de conformidad (Art. 43): se indicó que la autoevaluación interna es posible para esta categoría, pero si en el futuro el sistema se integrara con productos del Anexo I, podría requerirse un organismo notificado.
+- Interacción con el RGPD (Art. 22 RGPD): el sistema procesa datos personales de candidatos y puede tomar decisiones con efectos significativos sobre ellos. La coordinación entre las obligaciones del AI Act y las del RGPD, especialmente respecto al derecho a no ser objeto de decisiones exclusivamente automatizadas, requiere revisión profesional.
+- Modificaciones sustanciales futuras (Art. 3.23): cualquier cambio en umbrales de descarte, datos de entrada, modelo subyacente o finalidad debe evaluarse para determinar si constituye una modificación sustancial que obligue a reiniciar la evaluación de conformidad.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 19:07.

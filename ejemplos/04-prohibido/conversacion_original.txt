@@ -1,0 +1,230 @@
+Evaluador y clasificador
+
+Describa su sistema de IA en lenguaje natural o inicie a partir de su documentación técnica. Le haré las preguntas necesarias para determinar su clasificación y obligaciones.
+Una cooperativa agroindustrial dedicada al cultivo y envasado de fruta instala cámaras, micrófonos y pulseras biométricas en invernaderos y líneas de envasado. El sistema usa IA para inferir emociones, estrés, frustración, cansancio, actitud y predisposición al conflicto de cada trabajador durante la jornada. A partir de esas inferencias genera un score de fiabilidad y compromiso. La empresa usa ese score para asignar turnos, retirar bonus, priorizar renovaciones de contrato y seleccionar trabajadores para despido o no renovación.
+
+Una cooperativa agroindustrial dedicada al cultivo y envasado de fruta instala cámaras, micrófonos y pulseras biométricas en invernaderos y líneas de envasado. El sistema usa IA para inferir emociones, estrés, frustración, cansancio, actitud y predisposición al conflicto de cada trabajador durante la jornada. A partir de esas inferencias genera un score de fiabilidad y compromiso. La empresa usa ese score para asignar turnos, retirar bonus, priorizar renovaciones de contrato y seleccionar trabajadores para despido o no renovación.
+Antes de comenzar, un aviso importante: lo que voy a proporcionarte es una orientación basada en el Reglamento (UE) 2024/1689 (Ley de IA de la UE), pero no constituye asesoramiento jurídico vinculante. Para decisiones con consecuencias legales, debes consultar con un profesional cualificado.
+
+Dicho esto, la descripción que me has hecho es suficientemente detallada para comenzar de inmediato. Antes de entrar en el árbol de evaluación, necesito confirmar que lo que describes es un "sistema de IA" en el sentido de la Ley.
+El sistema que describes —cámaras, micrófonos y pulseras biométricas que procesan señales físicas y fisiológicas para inferir estados emocionales, generar una puntuación y tomar decisiones sobre las personas— encaja claramente en la definición del Art. 3.1: es un sistema basado en máquinas que, a partir de datos de entrada, infiere por su cuenta resultados (el score de fiabilidad) que influyen en decisiones con consecuencias reales sobre las personas. No se trata de reglas fijas escritas a mano, sino de inferencia automática.
+¿Confirmas que esta descripción es correcta y que es este sistema el que quieres evaluar?
+Lo confirmo
+Perfecto. Pasamos directamente a la primera pregunta del árbol.
+La cooperativa ha desarrollado este sistema, lo ha encargado a un tercero para que lo construya, o simplemente lo ha adquirido a un proveedor externo y lo está usando internamente en sus instalaciones. Dependiendo de eso, su rol jurídico es distinto.
+¿Cuál de estas situaciones describe mejor a vuestra cooperativa?
+(a) La cooperativa ha desarrollado el sistema vosotros mismos, o lo habéis encargado a medida a un proveedor tecnológico, y lo operáis bajo vuestro nombre o marca.
+(b) La cooperativa ha adquirido el sistema ya desarrollado a un tercero (un proveedor de software o tecnología) y simplemente lo usáis en vuestras instalaciones, sin haberlo desarrollado ni encargado.
+La b)
+Entendido. La cooperativa actúa como implementadora del sistema: lo usa bajo su propia autoridad en sus instalaciones, pero no lo ha desarrollado ni encargado. Eso queda registrado.
+Dicho esto, necesito haceros una pregunta adicional antes de cerrar este punto. Cuando instalasteis el sistema, ¿hicisteis alguna de estas cosas?
+(a) Le pusisteis el nombre o la marca de la cooperativa al sistema.
+(b) Cambiasteis la finalidad para la que el proveedor lo había diseñado originalmente (por ejemplo, el sistema estaba pensado para otra cosa y vosotros lo adaptasteis para evaluar trabajadores).
+(c) Realizasteis modificaciones técnicas sustanciales en el sistema.
+(d) Ninguna de las anteriores: lo usáis tal como os lo entregó el proveedor, para el fin para el que fue diseñado.
+Ninguna
+Registrado. La cooperativa es implementadora del sistema, sin modificaciones que alteren ese rol.
+Ahora pasamos a analizar el tipo de sistema. Voy directamente a lo relevante, porque la descripción que me has dado ya orienta claramente la respuesta.
+El sistema usa cámaras, micrófonos y pulseras biométricas para inferir emociones, nivel de estrés, cansancio y predisposición al conflicto de cada trabajador, y genera un score individual que se usa para asignar turnos, retirar bonus y decidir despidos o no renovaciones. Esto encaja en varias categorías que necesito verificar contigo una por una.
+Primera comprobación: el sistema procesa datos biométricos (señales físicas y fisiológicas de los trabajadores) para inferir o deducir estados emocionales, actitud y predisposición al conflicto. Estas son características que la Ley considera categorías sensibles. ¿Es correcto que el sistema no solo detecta, por ejemplo, el ritmo cardíaco como dato bruto, sino que a partir de esos datos deduce estados emocionales o de ánimo de personas concretas e identificadas?
+Es correcto
+Gracias. Eso es un dato crítico para la evaluación, y lo registro.
+Segunda comprobación: el sistema genera un score individual de fiabilidad y compromiso para cada trabajador, que se usa directamente para tomar decisiones sobre esa persona (turnos, bonus, renovaciones, despidos). ¿Es correcto que ese score se aplica a personas físicas identificadas —es decir, la cooperativa sabe exactamente a qué trabajador corresponde cada puntuación— y que las decisiones se toman sobre esa base?
+Exacto
+Registrado. Con esto tengo suficiente información para determinar la clasificación. No necesito hacerte más preguntas sobre el tipo de sistema, porque el cuadro es muy claro.
+Sin embargo, antes de entregarte el informe final, necesito preguntarte una cosa sobre el ámbito territorial, que es un trámite necesario del árbol de evaluación:
+¿La cooperativa está establecida en la Unión Europea, o el sistema opera sobre trabajadores en territorio de la UE?
+Sí
+Confirmado. El Reglamento es aplicable.
+Con toda la información recabada, puedo entregarte ahora el informe completo.
+
+INFORME DE EVALUACIÓN — LEY DE IA DE LA UE (Reglamento (UE) 2024/1689)
+
+
+1. Resumen ejecutivo
+
+La cooperativa agroindustrial actúa como implementadora del sistema de IA evaluado. El sistema ha sido clasificado como prohibido en varios de sus componentes, de forma independiente y acumulativa, conforme al Art. 5 del Reglamento. Adicionalmente, de no cesar su uso, el sistema también sería de alto riesgo conforme al Art. 6.2 en relación con el Anexo III. La conclusión principal es que este sistema, tal y como está descrito, no puede operarse legalmente en la Unión Europea.
+
+2. Tus obligaciones
+
+A. PROHIBICIONES ACTIVAS — Aplicable actualmente (desde el 2 de febrero de 2025)
+
+El sistema incurre en tres prohibiciones distintas y acumulativas del Art. 5:
+Prohibición 1 — Reconocimiento de emociones en el lugar de trabajo (Art. 5.1.f)
+El Reglamento prohíbe expresamente el uso de sistemas de IA para inferir emociones de personas físicas en el lugar de trabajo. El sistema descrito hace exactamente eso: infiere estrés, frustración, cansancio, actitud y predisposición al conflicto de cada trabajador durante su jornada laboral, en un entorno de trabajo (invernaderos y líneas de envasado). Esta prohibición no admite excepciones salvo motivos médicos o de seguridad debidamente justificados, que no concurren en el caso descrito.
+Prohibición 2 — Categorización biométrica que infiere categorías sensibles (Art. 5.1.g)
+El sistema procesa datos biométricos (señales físicas captadas por cámaras, micrófonos y pulseras) para deducir características de carácter sensible: estado emocional, actitud, predisposición al conflicto. El Reglamento prohíbe los sistemas que, a partir de datos biométricos, infieren o deducen este tipo de categorías sobre personas físicas identificadas.
+Prohibición 3 — Puntuación social aplicada en contexto laboral (Art. 5.1.c)
+El sistema genera un score de fiabilidad y compromiso para cada trabajador, que se utiliza para tomar decisiones que afectan a sus condiciones de vida y trabajo: asignación de turnos, retirada de bonus, priorización en renovaciones y selección para despido. Esto constituye una forma de puntuación social: una evaluación continua de personas basada en su comportamiento en un contexto determinado, cuyos resultados se usan para tratarlas de forma diferenciada en decisiones que les perjudican o benefician de manera significativa.
+
+B. CLASIFICACIÓN ADICIONAL COMO SISTEMA DE ALTO RIESGO — A efectos de referencia
+
+Aunque las prohibiciones anteriores son suficientes para impedir la operación del sistema, conviene que sepas que, de no existir esas prohibiciones, el sistema también sería de alto riesgo por dos vías independientes del Anexo III:
+Empleo y gestión de trabajadores: el sistema se usa para tomar decisiones sobre asignación de tareas, condiciones laborales, renovaciones y despidos, lo que encuadra directamente en el Anexo III, punto 4 del Reglamento.
+Elaboración de perfiles de personas físicas: el sistema construye un perfil individual de cada trabajador a partir de sus datos biométricos y conductuales. La elaboración de perfiles se considera siempre de alto riesgo, sin posibilidad de aplicar la excepción del Art. 6.3.
+Estas clasificaciones no generan obligaciones adicionales en este caso —porque el sistema está prohibido—, pero son relevantes para cualquier rediseño futuro del sistema.
+
+C. OBLIGACIÓN DE ALFABETIZACIÓN EN IA (Art. 4) — Aplicable actualmente
+
+Con independencia de lo anterior, la cooperativa tiene la obligación de garantizar que las personas de su organización que trabajan con sistemas de IA —o que toman decisiones basadas en sus resultados— cuenten con un nivel suficiente de conocimiento sobre cómo funcionan estos sistemas y cuáles son sus implicaciones. Esta obligación es inmediata y aplicable a toda organización que use sistemas de IA, independientemente de su clasificación.
+
+D. OBLIGACIÓN DE TRANSPARENCIA (Art. 50.3) — Aplicable actualmente
+
+El sistema realiza reconocimiento de emociones y categorización biométrica. Si en algún momento se rediseñase para eliminar las funciones prohibidas pero mantuviese alguna forma de análisis biométrico no prohibido, existiría la obligación de informar a las personas afectadas de que están siendo sometidas a ese análisis.
+
+E. EVALUACIÓN DE IMPACTO SOBRE LOS DERECHOS FUNDAMENTALES (Art. 27)
+
+Dado que la cooperativa actúa como implementadora de un sistema que afecta a trabajadores en el contexto laboral, y que el sistema, de no estar prohibido, sería de alto riesgo del Anexo III, existiría la obligación de realizar una evaluación de impacto sobre los derechos fundamentales antes de su despliegue. Esta evaluación no elimina las prohibiciones descritas, pero es un paso necesario en cualquier escenario de rediseño.
+
+F. PROTECCIÓN DE DATOS (referencia complementaria)
+
+Aunque la evaluación de la Ley de IA no abarca el RGPD, debes saber que el tratamiento de datos biométricos para inferir estados emocionales de trabajadores identificados también plantea cuestiones muy serias bajo el Reglamento (UE) 2016/679. Los datos biométricos son datos especialmente protegidos (Art. 9 RGPD) y su tratamiento con esta finalidad probablemente carecería de base jurídica suficiente. Te recomendamos consultar específicamente este punto con un especialista en protección de datos.
+
+3. Recorrido realizado (traza auditable)
+
+Definición de sistema de IA (Art. 3.1): cumple la definición — inferencia automática a partir de datos biométricos para generar un score con consecuencias reales sobre personas (confirmación directa del usuario).
+Tipo de entidad: implementadora — la cooperativa usa el sistema bajo su propia autoridad; no lo ha desarrollado ni lo comercializa bajo su marca (confirmación directa: "ninguna de las anteriores" en respuesta a las opciones de modificación/desarrollo).
+Modificaciones que activan el rol de proveedor (Art. 25): ninguna (respuesta directa del usuario).
+Categorías del Anexo I — productos regulados y maquinaria: no aplicable al caso descrito (inferencia confirmada por el contexto: sistema de gestión de personal, no integrado en producto regulado).
+Categorías del Anexo I — transporte y vehículos: no aplicable (inferencia confirmada por el contexto).
+Categorías del Anexo III: aplicable — empleo y gestión de trabajadores; elaboración de perfiles de personas físicas identificadas (inferencia confirmada por el usuario al confirmar el uso del score para decisiones laborales sobre personas identificadas).
+Riesgo significativo / elaboración de perfiles: alto riesgo confirmado — el sistema realiza elaboración de perfiles, lo que excluye la excepción del Art. 6.3 (inferencia confirmada).
+Ámbito territorial (Art. 2): Reglamento aplicable — cooperativa establecida en la UE u operando sobre trabajadores en territorio de la UE (respuesta directa del usuario).
+Prácticas prohibidas (Art. 5): tres prohibiciones activas e independientes — reconocimiento de emociones en el trabajo (Art. 5.1.f), categorización biométrica que infiere categorías sensibles (Art. 5.1.g), y puntuación social aplicada en contexto laboral (Art. 5.1.c) (inferencia confirmada por el usuario al describir el funcionamiento del sistema).
+Obligaciones de transparencia (Art. 50): aplicables en escenario de rediseño (Art. 50.3) — reconocimiento de emociones y categorización biométrica (inferencia confirmada por el contexto).
+Evaluación de impacto sobre derechos fundamentales (Art. 27): aplicable en escenario de rediseño — la cooperativa es implementadora de un sistema de alto riesgo del Anexo III en el ámbito del empleo (inferencia confirmada por el contexto).
+
+4. Puntos que requieren revisión profesional
+
+Deslinde entre puntuación social y gestión legítima del rendimiento: la frontera entre una práctica prohibida de scoring social y un sistema legal de evaluación del rendimiento depende de los detalles técnicos y del alcance exacto de las decisiones que adopta el sistema. Un profesional debe valorar si existe alguna reconfiguración del sistema que lo sitúe fuera de la prohibición del Art. 5.1.c, y en qué condiciones.
+Base jurídica bajo el RGPD: el tratamiento de datos biométricos de trabajadores para inferir estados emocionales es una cuestión de alta sensibilidad bajo el Art. 9 del RGPD. Requiere análisis específico por un especialista en protección de datos.
+Posible concurrencia con legislación laboral nacional: las decisiones descritas (despidos, no renovaciones, retirada de bonus) basadas en un score automatizado pueden vulnerar también normas de derecho laboral nacional. Se recomienda consulta con un laboralista.
+
+5. Roles múltiples
+
+No se han detectado roles adicionales que requieran un recorrido separado. La cooperativa actúa únicamente como implementadora del sistema.
+
+6. Aviso legal
+
+Este informe es una orientación preliminar elaborada con base en el Reglamento (UE) 2024/1689 y no constituye asesoramiento jurídico vinculante. Las conclusiones se basan exclusivamente en la información facilitada. Ante la gravedad de las prohibiciones identificadas, se recomienda encarecidamente consultar con un abogado especializado en derecho de la inteligencia artificial, protección de datos y derecho laboral antes de tomar cualquier decisión sobre el sistema evaluado.
+
+Evaluación completada — Clasificación: PROHIBIDO | Rol: Implementador
+El sistema ha sido clasificado como práctica prohibida (Art. 5 AI Act). Aun así, puede continuar a la evaluación de cumplimiento para documentar las medidas necesarias: cese, rediseño, retirada, remediación y revisión profesional.
+Proceda a la pestaña Cumplimiento para documentar las medidas de remediación.
+
+Cumplimiento
+
+A continuación revisará sus obligaciones concretas según la clasificación obtenida. El asistente le guiará por cada obligación y detectará qué ya tiene cubierto y qué requiere atención.
+Clasificación del sistema
+PROHIBIDO
+Rol de la entidad
+Implementador
+Sistema evaluado: Sistema de IA que combina cámaras, micrófonos y pulseras biométricas para inferir emociones, estrés, cansancio, actitud y predisposición al conflicto de trabajadores durante la jornada laboral. A partir de esas inferencias genera un score individual de fiabilidad y compromiso para cada trabajador identificado. Ese score se utiliza para tomar decisiones sobre asignación de turnos, retirada de bonus, priorización en renovaciones de contrato y selección para despido.
+
+Adelante
+Aviso legal: Las respuestas de AIComply tienen carácter informativo y orientativo. No constituyen asesoramiento jurídico vinculante. Para decisiones con consecuencias legales, consulte a un profesional especializado.
+
+Clasificación confirmada: PROHIBIDO Rol confirmado: Implementador
+El sistema descrito activa tres prohibiciones independientes del artículo 5 del AI Act, todas ellas en vigor desde el 2 de febrero de 2025:
+Art. 5.1.c — Sistema de puntuación social basado en inferencias de comportamiento y características personales para tomar decisiones que afectan perjudicialmente a los trabajadores en contextos ajenos al que generó los datos.
+Art. 5.1.f — Inferencia de emociones de personas físicas en el lugar de trabajo mediante reconocimiento de emociones.
+Art. 5.1.g — Categorización biométrica que deduce características sensibles (actitud, predisposición al conflicto, compromiso) para producir efectos perjudiciales.
+Estas tres prohibiciones son acumulativas e independientes. Ninguna excepción del artículo 5 resulta aplicable al caso descrito.
+Comenzamos con la evaluación de las obligaciones concretas.
+
+Obligación 1 de 3: [Obligación legal]
+Cese inmediato del uso del sistema — Art. 5.1.c, Art. 5.1.f, Art. 5.1.g [Aplicable actualmente]
+Qué significa para su empresa: El sistema descrito está prohibido por el AI Act. No puede seguir operando, y su empresa no puede tomar decisiones sobre turnos, bonus, renovaciones ni despidos basándose en sus resultados mientras permanezca activo.
+Pregunta directa: ¿Ha detenido ya completamente el uso de este sistema y ha suspendido toda toma de decisiones basada en sus resultados?
+Sí
+Registrado: CUBIERTA
+
+Obligación 2 de 3: [Obligación legal]
+Alfabetización en IA del personal — Art. 4 [Aplicable actualmente — desde 2 feb 2025]
+Qué significa para su empresa: Las personas de su organización que trabajaron con este sistema o tomaron decisiones basadas en sus resultados deben tener conocimientos suficientes sobre qué es un sistema de IA, cómo funciona y cuáles son sus limitaciones y riesgos. Esto incluye también a quienes pudieran operar cualquier otro sistema de IA en el futuro.
+Pregunta directa: ¿Ha recibido el personal implicado algún tipo de formación o información estructurada sobre el uso responsable de sistemas de IA?
+No
+Registrado: CARENCIA
+
+Obligación 3 de 3: [Obligación legal]
+Consulta especializada en protección de datos — Art. 9 RGPD [Aplicable actualmente]
+Qué significa para su empresa: El sistema trató datos biométricos y de salud, que son categorías especialmente protegidas bajo el RGPD. Su empresa debe consultar a un especialista en protección de datos para evaluar si ese tratamiento fue lícito, qué obligaciones de notificación pueden derivarse y si procede comunicar alguna brecha a la Agencia Española de Protección de Datos o a los propios trabajadores afectados.
+Pregunta directa: ¿Ha consultado ya a un delegado de protección de datos o asesor especializado en RGPD sobre las implicaciones del tratamiento biométrico realizado por este sistema?
+No
+Registrado: CARENCIA
+
+Antes de pasar al resumen final, debo evaluar las dos obligaciones adicionales identificadas en la evaluación previa que aún no han sido cubiertas en esta sesión.
+
+Obligación 4 de 6: [Obligación legal]
+Consulta laboralista — legislación nacional [Aplicable actualmente]
+Qué significa para su empresa: El sistema tomó decisiones automatizadas sobre condiciones laborales, retirada de bonus y despidos. Su empresa debe consultar a un especialista en derecho laboral para determinar si esas decisiones son impugnables, si existe responsabilidad derivada de despidos basados en el sistema y qué medidas correctoras o reparadoras pueden ser necesarias.
+Pregunta directa: ¿Ha consultado ya a un asesor laboralista sobre las decisiones tomadas mediante este sistema y sus posibles consecuencias jurídicas?
+No
+Registrado: CARENCIA
+
+Obligación 5 de 6: [Obligación legal]
+Transparencia hacia personas sometidas a reconocimiento de emociones o categorización biométrica — Art. 50.3 [Aplicable actualmente — desde 2 ago 2025]
+Qué significa para su empresa: Si en el futuro rediseña o sustituye este sistema por otro que incluya reconocimiento de emociones o categorización biométrica, estará obligada a informar a los trabajadores afectados de forma clara y previa. Esta obligación también es relevante ahora si los trabajadores no fueron informados durante el período en que el sistema estuvo activo.
+Pregunta directa: ¿Fueron informados los trabajadores afectados de que estaban siendo sometidos a reconocimiento de emociones y categorización biométrica durante el uso del sistema?
+No
+Registrado: CARENCIA
+
+Obligación 6 de 6: [Obligación legal]
+Evaluación de impacto sobre derechos fundamentales — Art. 27 [Aplicable próximamente — 2 dic 2027]
+Qué significa para su empresa: Antes de cualquier redespliegue de este sistema o de uno similar, su empresa debe realizar una evaluación formal que identifique los riesgos sobre derechos fundamentales de los trabajadores afectados. Aunque el plazo formal es diciembre de 2027, dado el historial de este sistema se recomienda realizarla antes de cualquier nuevo despliegue.
+Pregunta directa: ¿Se realizó alguna evaluación de impacto sobre derechos fundamentales antes de desplegar este sistema o existe algún procedimiento interno para realizarla en el futuro?
+No
+Registrado: CARENCIA
+
+RESUMEN FINAL DEL ANÁLISIS
+Clasificación: PROHIBIDO Rol: Implementador Sector: Agroindustrial — cultivo y envasado de fruta
+
+Obligaciones legales evaluadas:
+Art. 5.1.c, Art. 5.1.f, Art. 5.1.g — Cese inmediato del uso del sistema: CUBIERTA
+Art. 4 — Alfabetización en IA del personal: CARENCIA
+Art. 9 RGPD — Consulta especializada en protección de datos: CARENCIA
+Legislación laboral nacional — Consulta laboralista: CARENCIA
+Art. 50.3 — Transparencia hacia trabajadores afectados: CARENCIA
+Art. 27 — Evaluación de impacto sobre derechos fundamentales: CARENCIA
+
+Resultado global: El análisis identifica cinco carencias legales activas. La única obligación cubierta es el cese del sistema. El resto de acciones correctoras son urgentes, especialmente la consulta laboralista y la consulta en materia de protección de datos, dado que pueden existir responsabilidades derivadas del período en que el sistema estuvo operativo.
+El análisis está completo. Puede generar el informe detallado en la pestaña Informe.
+ROHIBIDO
+Rol de la entidad
+Implementador
+Sistema evaluado: Sistema de IA que combina cámaras, micrófonos y pulseras biométricas para inferir emociones, estrés, cansancio, actitud y predisposición al conflicto de trabajadores durante la jornada laboral. A partir de esas inferencias genera un score individual de fiabilidad y compromiso para cada trabajador identificado. Ese score se utiliza para tomar decisiones sobre asignación de turnos, retirada de bonus, priorización en renovaciones de contrato y selección para despido.
+
+Obligaciones cubiertas
+3
+Parciales
+0
+No cubiertas
+5
+Recomendaciones pendientes
+0
+El sistema analizado activa tres prohibiciones independientes del Art. 5 del AI Act, todas en vigor. La empresa ha procedido al cese del sistema, pero presenta cinco carencias legales activas que requieren acción inmediata, incluyendo consultas especializadas en protección de datos y derecho laboral por el período en que el sistema estuvo operativo.
+Obligaciones legales aplicables (8)
+Art. 5.1.c / 5.1.f / 5.1.g — Cese inmediato del sistema prohibido (✓ Cubierta)
+La empresa ha detenido completamente el uso del sistema y ha suspendido la toma de decisiones basada en sus resultados.
+Art. 5.1.c, Art. 5.1.f, Art. 5.1.g — Cese inmediato del sistema prohibido (✓ Cubierta)
+La empresa ha detenido completamente el uso del sistema y ha suspendido las decisiones basadas en sus resultados.
+Art. 5.1.c, Art. 5.1.f, Art. 5.1.g — Cese inmediato del uso del sistema (✓ Cubierta)
+La empresa ha detenido completamente el uso del sistema y ha suspendido toda toma de decisiones basada en sus resultados.
+Art. 4 — Alfabetización en IA del personal (✗ No cubierta)
+El personal implicado no ha recibido formación ni información estructurada sobre el uso responsable de sistemas de IA.
+Art. 9 RGPD — Consulta especializada en protección de datos (✗ No cubierta)
+No se ha consultado a un especialista en protección de datos sobre las implicaciones del tratamiento biométrico realizado por el sistema.
+Legislación laboral nacional — Consulta laboralista (✗ No cubierta)
+No se ha consultado a un asesor laboralista sobre las decisiones automatizadas tomadas sobre condiciones laborales y despidos.
+Art. 50.3 — Transparencia hacia trabajadores afectados (✗ No cubierta)
+Los trabajadores no fueron informados de que estaban siendo sometidos a reconocimiento de emociones y categorización biométrica.
+Art. 27 — Evaluación de impacto sobre derechos fundamentales (✗ No cubierta)
+No se realizó ninguna evaluación de impacto sobre derechos fundamentales antes del despliegue ni existe procedimiento interno para realizarla en el futuro.
+Áreas de mejora legales (5)
+Art. 4 — Ausencia de formación en alfabetización en IA para el personal implicado
+Art. 9 RGPD — No se ha consultado a especialista en protección de datos sobre el tratamiento biométrico realizado
+Legislación laboral nacional — No se ha consultado a asesor laboralista sobre decisiones automatizadas en materia laboral y despidos
+Art. 50.3 — Los trabajadores no fueron informados del uso de reconocimiento de emociones y categorización biométrica
+Art. 27 — No se realizó evaluación de impacto sobre derechos fundamentales ni existe procedimiento para realizarla
+Análisis de cumplimiento completado. Proceda a la pestaña Informe para generar el informe.
+

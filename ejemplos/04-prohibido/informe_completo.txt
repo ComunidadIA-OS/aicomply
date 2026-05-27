@@ -1,0 +1,108 @@
+AIComply — Informe completo
+
+Sistema evaluado: Sistema de IA que combina cámaras, micrófonos y pulseras biométricas para inferir emociones, estrés, cansancio, actitud y predisposición al conflicto de trabajadores durante la jornada laboral. A partir de esas inferencias genera un score individual de fiabilidad y compromiso para cada trabajador identificado. Ese score se utiliza para tomar decisiones sobre asignación de turnos, retirada de bonus, priorización en renovaciones de contrato y selección para despido.  
+Sector: Agroindustrial — cultivo y envasado de fruta  
+Clasificación: PROHIBIDO  
+Rol de la entidad: Implementador  
+Fecha: 27/05/2026 a las 20:09  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como PROHIBIDO según el AI Act europeo. La entidad actúa como Implementador.
+
+El sistema analizado activa tres prohibiciones independientes del Art. 5 del AI Act, todas en vigor. La empresa ha procedido al cese del sistema, pero presenta cinco carencias legales activas que requieren acción inmediata, incluyendo consultas especializadas en protección de datos y derecho laboral por el período en que el sistema estuvo operativo.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: PROHIBIDO  
+Descripción: Sistema de IA prohibido por el AI Act (Artículo 5)
+
+Rol principal de la entidad: Implementador
+
+3. Obligaciones identificadas durante la evaluación
+
+- Cese inmediato del uso del sistema — tres prohibiciones activas e independientes del Art. 5 (Art. 5.1.c, Art. 5.1.f, Art. 5.1.g)
+- Alfabetización en IA del personal que trabaja con sistemas de IA o toma decisiones basadas en sus resultados (Art. 4)
+- Transparencia hacia personas sometidas a reconocimiento de emociones o categorización biométrica en escenario de rediseño (Art. 50.3)
+- Evaluación de impacto sobre derechos fundamentales antes de cualquier redespliegue (Art. 27)
+- Consulta especializada en protección de datos — tratamiento de datos biométricos especialmente protegidos (Art. 9 RGPD)
+- Consulta laboralista — decisiones automatizadas sobre condiciones laborales y despidos bajo legislación nacional
+
+4. Análisis de obligaciones
+
+Grado de cumplimiento legal estimado: 38 %  
+Cubiertas: 3   Parciales: 0   No cubiertas: 5   No aplica: 0
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 5.1.c / 5.1.f / 5.1.g — Cese inmediato del sistema prohibido  
+La empresa ha detenido completamente el uso del sistema y ha suspendido la toma de decisiones basada en sus resultados.  
+
+Art. 5.1.c, Art. 5.1.f, Art. 5.1.g — Cese inmediato del sistema prohibido  
+La empresa ha detenido completamente el uso del sistema y ha suspendido las decisiones basadas en sus resultados.  
+
+Art. 5.1.c, Art. 5.1.f, Art. 5.1.g — Cese inmediato del uso del sistema  
+La empresa ha detenido completamente el uso del sistema y ha suspendido toda toma de decisiones basada en sus resultados.  
+
+No cubiertas
+
+Art. 4 — Alfabetización en IA del personal  
+El personal implicado no ha recibido formación ni información estructurada sobre el uso responsable de sistemas de IA.  
+
+Art. 9 RGPD — Consulta especializada en protección de datos  
+No se ha consultado a un especialista en protección de datos sobre las implicaciones del tratamiento biométrico realizado por el sistema.  
+
+Legislación laboral nacional — Consulta laboralista  
+No se ha consultado a un asesor laboralista sobre las decisiones automatizadas tomadas sobre condiciones laborales y despidos.  
+
+Art. 50.3 — Transparencia hacia trabajadores afectados  
+Los trabajadores no fueron informados de que estaban siendo sometidos a reconocimiento de emociones y categorización biométrica.  
+
+Art. 27 — Evaluación de impacto sobre derechos fundamentales  
+No se realizó ninguna evaluación de impacto sobre derechos fundamentales antes del despliegue ni existe procedimiento interno para realizarla en el futuro.  
+
+5. Áreas de mejora identificadas
+
+- Art. 4 — Ausencia de formación en alfabetización en IA para el personal implicado
+- Art. 9 RGPD — No se ha consultado a especialista en protección de datos sobre el tratamiento biométrico realizado
+- Legislación laboral nacional — No se ha consultado a asesor laboralista sobre decisiones automatizadas en materia laboral y despidos
+- Art. 50.3 — Los trabajadores no fueron informados del uso de reconocimiento de emociones y categorización biométrica
+- Art. 27 — No se realizó evaluación de impacto sobre derechos fundamentales ni existe procedimiento para realizarla
+
+6. Plan de acción recomendado
+
+⚠️ Este sistema está clasificado como práctica prohibida (Art. 5 AI Act).  
+Las sanciones pueden alcanzar 35.000.000 EUR o el 7 % de la facturación global.  
+Consulte urgentemente con un asesor legal especializado.
+
+Pasos de remediación recomendados:
+- Inmediato: Suspender el desarrollo y despliegue del sistema hasta recibir asesoramiento legal.
+- Cese / retirada: Documentar el proceso de cese de operaciones o retirada del sistema del mercado.
+- Rediseño: Evaluar si el sistema puede rediseñarse para eliminar las características que lo hacen prohibido.
+- Remediación: Identificar y documentar las medidas correctoras adoptadas.
+- Notificación: Informar a las partes afectadas y, si procede, notificar a la Autoridad Nacional Competente (NCA).
+- Revisión profesional: Obtener dictamen jurídico especializado antes de cualquier nueva puesta en marcha.
+
+Carencias documentadas durante el análisis (5):
+- Art. 4 — Ausencia de formación en alfabetización en IA para el personal implicado
+- Art. 9 RGPD — No se ha consultado a especialista en protección de datos sobre el tratamiento biométrico realizado
+- Legislación laboral nacional — No se ha consultado a asesor laboralista sobre decisiones automatizadas en materia laboral y despidos
+- Art. 50.3 — Los trabajadores no fueron informados del uso de reconocimiento de emociones y categorización biométrica
+- Art. 27 — No se realizó evaluación de impacto sobre derechos fundamentales ni existe procedimiento para realizarla
+
+7. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 20:09.

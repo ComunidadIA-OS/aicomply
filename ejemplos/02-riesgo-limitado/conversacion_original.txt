@@ -1,0 +1,296 @@
+Evaluador y clasificador
+
+Describa su sistema de IA en lenguaje natural o inicie a partir de su documentación técnica. Le haré las preguntas necesarias para determinar su clasificación y obligaciones.
+INPUT: 
+
+He analizado la documentación técnica proporcionada. Esto es lo que he entendido sobre el sistema:
+CartonAssist B2B es un asistente conversacional basado en inteligencia artificial diseñado para responder preguntas comerciales frecuentes de clientes profesionales, orientarles sobre productos de embalaje, plazos, cantidades mínimas y preparar solicitudes preliminares de presupuesto, sin tomar decisiones contractuales vinculantes. Opera en el sector industrial de fabricación de embalajes de cartón ondulado, dirigido exclusivamente a un entorno B2B. El sistema es un ejemplo ficticio desarrollado para un hackathon o demo de la herramienta AIComply, y sus usuarios principales son clientes empresariales externos, el equipo comercial que gestiona los escalados, y administradores responsables de su mantenimiento y cumplimiento. El sistema no toma decisiones que afecten directamente a las personas de forma vinculante, ya que no aprueba contratos, no fija precios finales ni resuelve reclamaciones, derivando obligatoriamente cualquier consulta con impacto contractual o legal a un agente humano. En cuanto a datos sensibles, el sistema procesa únicamente mensajes de texto, identificadores de cliente y datos básicos de pedido cuando el usuario se autentica, sin tratar datos biométricos, médicos ni financieros de carácter sensible. El despliegue se realiza mediante un widget de chat integrado en la página web corporativa, con un backend REST que combina recuperación documental aumentada (RAG) con un modelo de lenguaje, y puede ejecutarse en entorno local siguiendo un proceso de instalación estándar basado en Python.
+Antes de continuar, ¿es correcta esta descripción? ¿Desea añadir o corregir algo?
+Correcta
+Perfecto. Antes de comenzar la evaluación, le indico brevemente que este análisis es una orientación basada en el Reglamento (UE) 2024/1689, no un asesoramiento jurídico vinculante. Los resultados deben contrastarse con un profesional especializado.
+Dicho esto, la descripción que me ha facilitado encaja claramente con la definición de sistema de IA del Art. 3.1 del Reglamento: CartonAssist B2B infiere respuestas a partir de los mensajes del usuario combinando recuperación documental y un modelo de lenguaje, generando recomendaciones y orientaciones de forma autónoma, en lugar de seguir únicamente reglas fijas predefinidas. Por tanto, el Reglamento (UE) 2024/1689 es aplicable en principio.
+Pasamos a la primera pregunta del análisis.
+¿Qué tipo de entidad es su organización respecto a CartonAssist B2B?
+Según lo que me ha descrito, su empresa ha desarrollado o encargado el sistema y lo despliega internamente bajo su propia marca para atender a sus clientes. Esto sugiere que podría actuar simultáneamente como:
+Proveedora: porque ha desarrollado o encargado el sistema y lo pone en servicio bajo su nombre o marca.
+Implementadora: porque lo utiliza bajo su propia autoridad en su actividad comercial.
+¿Es correcto que su organización ha desarrollado o encargado el desarrollo de CartonAssist B2B y lo opera directamente, sin cedérselo a terceros para que lo exploten bajo su propia marca?
+Correcto
+Confirmado: su organización actúa como proveedora e implementadora del sistema, ya que lo ha desarrollado o encargado y lo utiliza internamente bajo su propia autoridad. Esta doble condición será tenida en cuenta en el análisis de obligaciones.
+Realizaré dos recorridos completos del árbol, uno por cada rol, antes de emitir el informe final.
+
+Comenzamos con el rol de Proveedora.
+La siguiente cuestión es si su organización, o algún agente posterior en la cadena (distribuidor, importador, otro implementador), realiza alguna de estas modificaciones sobre CartonAssist B2B:
+Poner un nombre o marca diferente al sistema
+Modificar la finalidad prevista del sistema una vez en operación
+Realizar una modificación sustancial del sistema
+O bien ninguna de las anteriores.
+Dado que el sistema parece desplegarse directamente por su propia organización sin intermediarios, lo más probable es que no aplique ninguna de estas situaciones. ¿Es así?
+Ninguno
+Confirmado. No se producen modificaciones relevantes por agentes posteriores.
+Pasamos a evaluar si CartonAssist B2B podría clasificarse como sistema de alto riesgo.
+
+Primera verificación de alto riesgo:
+Por lo que me ha descrito, CartonAssist B2B es un asistente conversacional para consultas comerciales sobre embalajes de cartón. Las categorías de esta primera verificación hacen referencia a sistemas relacionados con la seguridad de la aviación civil, vehículos de motor, equipos marinos, sistemas ferroviarios, vehículos agrícolas, etc.
+Ninguna de estas categorías parece aplicar a su caso. ¿Es correcto que CartonAssist B2B no tiene ninguna relación con ninguno de estos sectores de transporte o vehículos?
+Correcto
+Confirmado. Pasamos a la siguiente verificación.
+
+Segunda verificación de alto riesgo:
+Esta verificación analiza si el sistema actúa como componente de seguridad de productos regulados o maquinaria industrial. Las tres situaciones posibles son:
+(a) El sistema envía señales de control a maquinaria industrial (robots, PLCs, actuadores) y sus decisiones disparan acciones físicas automáticas.
+(b) El sistema decide qué piezas o productos superan el control de calidad y pueden comercializarse, siendo esos productos destinados a sectores regulados (vehículos, equipos médicos, etc.).
+(c) El sistema está integrado físicamente dentro de un producto regulado que se entrega al cliente.
+Dado que CartonAssist B2B es un asistente conversacional que responde preguntas comerciales y orienta sobre productos de embalaje, ninguna de estas situaciones parece aplicar. ¿Es correcto?
+Correcto
+Confirmado. Pasamos a la verificación de alto riesgo por categorías del Anexo III.
+
+Tercera verificación de alto riesgo:
+El Anexo III recoge categorías de sistemas que pueden considerarse de alto riesgo por el impacto que tienen sobre personas. Le presento las categorías relevantes aplicando el contexto de su sistema:
+Biometría: CartonAssist B2B no procesa datos biométricos. No aplica.
+Infraestructuras críticas: Es un asistente comercial de embalajes. No aplica.
+Educación y formación profesional: No evalúa ni selecciona estudiantes. No aplica.
+Empleo y gestión de trabajadores: No toma decisiones sobre contratación, promoción ni condiciones laborales. No aplica.
+Acceso a servicios esenciales: No decide sobre créditos, seguros, prestaciones públicas ni servicios básicos. No aplica.
+Aplicación de la ley, migración o justicia: Claramente fuera de su ámbito.
+¿Confirma que ninguna de estas categorías describe la función de CartonAssist B2B?
+Ninguna
+Confirmado. CartonAssist B2B no entra en ninguna categoría de alto riesgo.
+
+Pasamos ahora a verificar el ámbito territorial de aplicación del Reglamento.
+CartonAssist B2B se despliega mediante un widget de chat en una página web corporativa y, según lo descrito, está orientado a clientes profesionales. ¿La empresa está establecida en la Unión Europea, o bien el sistema se comercializa o utiliza por clientes en la UE?
+Sí, estamos en España
+Confirmado. El Reglamento (UE) 2024/1689 es aplicable, ya que la organización está establecida en España, que es un Estado miembro de la UE.
+
+Última verificación antes del informe: prácticas prohibidas y transparencia.
+Tengo dos preguntas rápidas sobre las funciones de CartonAssist B2B:
+Primera: ¿El sistema realiza alguna de estas funciones problemáticas?
+Manipulación subliminal o engaño a los usuarios
+Explotación de vulnerabilidades (edad, discapacidad, situación económica)
+Puntuación social o predicción de comportamiento con fines sancionadores
+Reconocimiento biométrico o de emociones
+Dado que es un asistente conversacional B2B de consultas comerciales, intuyo que ninguna aplica. ¿Es correcto?
+Correcto
+Confirmado. Pasamos a la última verificación.
+Segunda: CartonAssist B2B es un chatbot que interactúa directamente con personas. El Reglamento exige que los usuarios sean informados de que están hablando con un sistema de IA y no con una persona humana.
+¿El sistema informa a los usuarios de esta circunstancia cuando inician la conversación? Por ejemplo, mediante un mensaje de bienvenida del tipo "Soy un asistente virtual" o similar.
+Sí, hay un mensaje al abrir el chatbot
+Perfecto. Con eso queda cubierta la obligación de transparencia del Art. 50.1.
+Tengo toda la información necesaria para elaborar el informe final. Aquí lo tiene:
+
+INFORME DE EVALUACIÓN DE CUMPLIMIENTO
+
+Ley de IA de la UE — Reglamento (UE) 2024/1689
+
+Sistema evaluado: CartonAssist B2B
+
+
+1. Resumen ejecutivo
+
+CartonAssist B2B es un asistente conversacional B2B para consultas comerciales en el sector del embalaje de cartón ondulado. La organización actúa como proveedora e implementadora del sistema. Según la información facilitada, el sistema no es de alto riesgo, no incurre en ninguna práctica prohibida y está sujeto a obligaciones de alfabetización en IA y transparencia frente a usuarios.
+
+2. Tus obligaciones
+
+✦ Aplicables actualmente (desde febrero de 2025)
+
+a) Alfabetización en IA — Art. 4 Debes garantizar que el personal que trabaja con CartonAssist B2B —tanto el equipo técnico que lo mantiene como el equipo comercial que gestiona los escalados— tenga un nivel suficiente de conocimientos sobre inteligencia artificial: qué es, cómo funciona a grandes rasgos, cuáles son sus limitaciones y qué riesgos puede conllevar. No se exige una formación técnica avanzada, sino una comprensión proporcional a la función de cada persona.
+Acción práctica: documenta las acciones formativas realizadas (cursos, sesiones internas, materiales) y guarda registro de quién las ha completado.
+b) Transparencia frente a usuarios — Art. 50.1 Los usuarios que interactúan con CartonAssist B2B deben saber que están hablando con un sistema de IA y no con una persona humana. Según lo confirmado, el sistema ya muestra un mensaje al abrir el chat que cumple este requisito.
+Acción práctica: asegúrate de que ese mensaje sea claro, visible y previo a cualquier intercambio de información. Consérvalo como evidencia de cumplimiento.
+✦ Sin obligaciones adicionales de alto riesgo
+
+El sistema no ha sido clasificado como de alto riesgo, por lo que no aplican las obligaciones del Art. 16 (proveedor) ni del Art. 26 (implementador) para sistemas de alto riesgo.
+
+3. Recorrido realizado (traza auditable)
+
+Pregunta evaluada
+Respuesta
+Origen
+¿Es un sistema de IA según el Art. 3.1?
+Sí — infiere respuestas a partir de datos mediante RAG + LLM
+Inferencia confirmada
+Tipo de entidad
+Proveedor e implementador (desarrolla y usa el sistema internamente bajo su marca)
+Inferencia confirmada
+Modificaciones por agentes posteriores
+Ninguna
+Respuesta directa
+Alto riesgo — Anexo I, Sección B (transporte y vehículos)
+No aplica
+Inferencia confirmada
+Alto riesgo — Anexo I, Sección A (productos regulados / maquinaria)
+No aplica
+Inferencia confirmada
+Alto riesgo — Anexo III (biometría, empleo, servicios esenciales, etc.)
+No aplica
+Respuesta directa
+Ámbito territorial
+Aplicable — organización establecida en España
+Respuesta directa
+Prácticas prohibidas — Art. 5
+Ninguna aplica
+Respuesta directa
+Transparencia — interacción con personas físicas (Art. 50.1)
+Sí, el sistema informa al usuario al abrir el chat
+Respuesta directa
+
+4. Puntos que requieren revisión profesional
+
+No se han identificado nodos indeterminados en esta evaluación. No obstante, se recomienda revisar con un profesional los siguientes aspectos si el sistema evoluciona:
+Ampliación de funciones: si CartonAssist B2B comenzara a tomar decisiones con impacto contractual (aprobación de precios, gestión de crédito, evaluación de solvencia de clientes), podría reclasificarse como sistema de alto riesgo bajo el Anexo III.
+Tratamiento de datos personales: el sistema procesa identificadores de cliente y datos de pedido. Aunque esto no afecta a la clasificación bajo la Ley de IA, puede tener implicaciones bajo el RGPD que conviene verificar con un especialista en protección de datos.
+Modificaciones sustanciales: cualquier cambio relevante en la arquitectura, el modelo subyacente o la finalidad del sistema podría requerir una nueva evaluación de cumplimiento.
+
+5. Roles evaluados
+
+Se ha realizado un único recorrido, correspondiente al doble rol Proveedor + Implementador. No se han identificado roles adicionales que requieran recorridos separados.
+
+6. Aviso legal
+
+Este informe es una orientación preliminar basada en la información facilitada y no constituye asesoramiento jurídico vinculante. La clasificación y las obligaciones descritas deben ser contrastadas con un profesional especializado en derecho tecnológico o cumplimiento normativo antes de tomar decisiones empresariales. El Reglamento (UE) 2024/1689 está sujeto a desarrollo reglamentario y a modificaciones derivadas del acuerdo provisional Ómnibus de mayo de 2026, aún pendiente de publicación en el Diario Oficial de la UE.
+
+Evaluación completada — Clasificación: LIMITADO | Rol: Proveedor / Implementador
+Proceda a la pestaña Cumplimiento para revisar sus obligaciones concretas.
+
+Cumplimiento
+
+A continuación revisará sus obligaciones concretas según la clasificación obtenida. El asistente le guiará por cada obligación y detectará qué ya tiene cubierto y qué requiere atención.
+Su organización actúa en varios roles bajo el AI Act: Proveedor, Implementador. El asistente revisará las obligaciones de cada rol por separado. En el informe final dispondrá de una sección diferenciada por cada rol.
+Clasificación del sistema
+LIMITADO
+Rol de la entidad
+Proveedor / Implementador
+Sistema evaluado: CartonAssist B2B es un asistente conversacional basado en RAG y LLM, dirigido a clientes profesionales del sector del embalaje de cartón ondulado. Responde consultas comerciales frecuentes, orienta sobre productos, plazos y cantidades mínimas, y prepara solicitudes preliminares de presupuesto. No toma decisiones contractuales vinculantes y deriva obligatoriamente cualquier consulta con impacto legal o contractual a un agente humano.
+Adelante
+Aviso legal: La información proporcionada por AIComply tiene carácter orientativo e informativo. No constituye asesoramiento jurídico vinculante. Para decisiones con impacto legal, consulte con un profesional especializado.
+
+Clasificación confirmada: Riesgo limitado Rol confirmado: Proveedor e implementador Sistema evaluado: CartonAssist B2B — asistente conversacional RAG/LLM para clientes profesionales del sector del embalaje de cartón ondulado
+A continuación evaluaremos, una a una, todas las obligaciones aplicables a su clasificación y rol. El catálogo comprende las siguientes obligaciones:
+Alfabetización en IA del personal — Art. 4 [Obligación legal]
+Transparencia frente a usuarios (chatbot) — Art. 50.1 [Obligación legal]
+Marcado de contenido sintético — Art. 50.2 [Obligación legal]
+Reconocimiento de emociones y categorización biométrica — Art. 50.3 [Obligación legal]
+Deep fakes — Art. 50.4 [Obligación legal]
+Adhesión a códigos de conducta — Art. 95 [Recomendación voluntaria]
+Vigilancia activa ante cambios de uso — Medida prudencial
+Comenzamos.
+
+Obligación 1 de 7 [Obligación legal] [Aplicable actualmente — desde 2 feb 2025]
+Alfabetización en IA — Art. 4
+Qué significa para su empresa: Todo el personal que usa, supervisa o toma decisiones sobre CartonAssist B2B debe tener conocimientos suficientes sobre qué puede y qué no puede hacer el sistema, y sobre sus riesgos básicos.
+Definición técnica: "Los proveedores e implementadores de sistemas de IA tomarán medidas para garantizar, en la medida de lo posible, un nivel suficiente de alfabetización en IA de su personal y demás personas que traten sistemas de IA en su nombre, habida cuenta de sus conocimientos técnicos, experiencia, educación y formación, así como del contexto en que vayan a usarse los sistemas de IA."
+Su documentación menciona en el apartado 10: "Formación básica del personal comercial sobre límites del sistema."
+¿Esa formación está ya impartida y documentada para todos los roles relevantes (equipo comercial, administrador y responsable de cumplimiento)?
+Sí, hicimos un cursillo y luego un mini-examen
+Según lo indicado, la formación se ha impartido y existe evidencia de evaluación mediante examen. Registro el estado como CUBIERTA, con la recomendación de mantener la formación actualizada ante cualquier cambio relevante en el sistema.
+
+Obligación 2 de 7 [Obligación legal] [Aplicable actualmente — desde 2 ago 2025]
+Transparencia frente a usuarios (chatbot) — Art. 50.1
+Qué significa para su empresa: Antes de que el cliente escriba su primera pregunta, el sistema debe informarle de forma clara y visible de que está hablando con un sistema de inteligencia artificial, no con una persona.
+Su documentación describe en el apartado 9 el siguiente aviso mostrado al inicio del chat:
+"Estás interactuando con un asistente de inteligencia artificial. Sus respuestas son orientativas. Para presupuestos finales, contratos, reclamaciones o condiciones especiales, te atenderá una persona del equipo comercial."
+Además, el apartado 10 indica que el icono del chat identifica visualmente que se trata de un asistente de IA.
+¿Ese aviso se muestra efectivamente antes de que el usuario pueda enviar su primer mensaje, y no solo en los términos y condiciones o en un lugar secundario?
+Así es
+Perfecto. Registro el estado como CUBIERTA.
+
+Obligación 3 de 7 [Obligación legal] [Aplicable próximamente — 2 dic 2026]
+Marcado de contenido sintético — Art. 50.2
+Qué significa para su empresa: Si su sistema genera texto, imágenes, audio o vídeo de forma sintética y ese contenido se presenta como si fuera real o podría confundirse con contenido humano, deberá marcarlo técnicamente para que sea detectable como generado por IA.
+Definición técnica: "Los proveedores de sistemas de IA que generen contenido sintético en formato texto, imagen, audio o vídeo deberán garantizar que los resultados estén marcados en un formato legible por máquina e identificables como generados artificialmente."
+Esta obligación no entra en vigor hasta el 2 de diciembre de 2026. No obstante, es relevante valorar si aplica a su caso.
+CartonAssist B2B genera respuestas de texto a partir de documentos internos. ¿El sistema presenta en algún momento ese texto generado como si fuera redactado por una persona, o podría confundirse con comunicación humana una vez fuera del contexto del chat?
+Sí, pero no sale del chat
+Entendido. Dado que el texto generado permanece dentro del entorno del chat, donde el usuario ya ha sido informado de que interactúa con un sistema de IA, el riesgo de confusión con contenido humano es muy reducido. No obstante, la obligación formal no estará en vigor hasta el 2 de diciembre de 2026.
+Registro el estado como PARCIAL: el contexto actual minimiza el riesgo, pero conviene revisar antes de esa fecha si el sistema incorpora mecanismos de marcado técnico legible por máquina, especialmente si en el futuro el contenido generado pudiera circular fuera del chat.
+
+Obligación 4 de 7 [Obligación legal] [Aplicable actualmente — desde 2 ago 2025]
+Reconocimiento de emociones y categorización biométrica — Art. 50.3
+Qué significa para su empresa: Si su sistema analiza las emociones del usuario o lo categoriza por características biométricas (voz, expresión facial, etc.), debe informarle de ello de forma explícita antes o durante la interacción.
+Su documentación no menciona ninguna funcionalidad de este tipo. CartonAssist B2B trabaja exclusivamente con texto escrito y documentos internos.
+¿El sistema realiza en algún momento análisis de emociones, tono afectivo o cualquier tipo de categorización biométrica de los usuarios?
+No
+Perfecto. Esta obligación no es aplicable a CartonAssist B2B. Registro el estado como CUBIERTA por inaplicabilidad.
+
+Obligación 5 de 7 [Obligación legal] [Aplicable actualmente — desde 2 ago 2025]
+Deep fakes — Art. 50.4
+Qué significa para su empresa: Si su sistema genera imágenes, vídeos o audios que representen a personas reales de forma artificial (deep fakes), debe marcarlos con información legible por máquina que identifique su origen sintético.
+Su documentación describe un sistema exclusivamente conversacional basado en texto, sin generación de imágenes, vídeos ni audios.
+¿CartonAssist B2B genera en algún momento contenido audiovisual o representaciones sintéticas de personas reales?
+No
+Perfecto. Esta obligación no es aplicable a CartonAssist B2B. Registro el estado como CUBIERTA por inaplicabilidad.
+
+Obligación 6 de 7 [Recomendación voluntaria]
+Adhesión a códigos de conducta — Art. 95
+Qué significa para su empresa: El AI Act invita a proveedores e implementadores de sistemas de riesgo no alto a adherirse voluntariamente a códigos de conducta que promuevan buenas prácticas en el desarrollo y uso de sistemas de IA. No es una obligación exigible.
+¿Su empresa se ha adherido formalmente a algún código de conducta en materia de IA, ya sea sectorial, nacional o promovido por la Comisión Europea?
+No sabemos qué es
+Entendido. Se trata de compromisos voluntarios promovidos por la Comisión Europea u organismos sectoriales mediante los cuales una empresa declara públicamente que sigue determinadas buenas prácticas en el desarrollo y uso de IA, más allá de lo legalmente exigido. No es obligatorio y su ausencia no constituye un incumplimiento.
+Registro el estado como RECOMENDACIÓN NO ADOPTADA. Cuando la Comisión Europea publique los códigos de conducta definitivos, puede ser interesante valorar la adhesión como señal de compromiso ante clientes y socios.
+
+Obligación 7 de 7 [Medida prudencial]
+Vigilancia activa ante cambios de uso
+Qué significa para su empresa: Si en el futuro CartonAssist B2B se ampliara a nuevos casos de uso, nuevos tipos de usuarios o nuevas funcionalidades, podría cambiar su clasificación de riesgo bajo el AI Act y activar obligaciones más exigentes. Conviene tener un procedimiento, aunque sea sencillo, para revisar periódicamente si el sistema sigue siendo de riesgo limitado.
+¿Existe algún proceso o responsable designado para revisar periódicamente si el alcance o uso del sistema ha cambiado de forma relevante?
+Sí, hacemos informes cada mes
+Perfecto. Registro el estado como MEDIDA PRUDENCIAL CUBIERTA.
+
+Resumen final del análisis de cumplimiento
+
+Sistema: CartonAssist B2B Clasificación: Riesgo limitado Rol: Proveedor e implementador
+
+Obligaciones legales aplicables
+
+Obligación
+Estado
+Art. 4 — Alfabetización en IA del personal
+CUBIERTA
+Art. 50.1 — Transparencia frente a usuarios (chatbot)
+CUBIERTA
+Art. 50.2 — Marcado de contenido sintético
+PARCIAL
+Art. 50.3 — Reconocimiento de emociones y categorización biométrica
+CUBIERTA (inaplicable)
+Art. 50.4 — Deep fakes
+CUBIERTA (inaplicable)
+
+Recomendaciones y medidas prudenciales
+
+Elemento
+Estado
+Art. 95 — Adhesión a códigos de conducta
+RECOMENDACIÓN NO ADOPTADA
+Vigilancia activa ante cambios de uso
+MEDIDA PRUDENCIAL CUBIERTA
+
+Conclusión: CartonAssist B2B presenta un nivel de cumplimiento sólido. La única área de mejora identificada es el marcado técnico de contenido sintético conforme al Art. 50.2, cuya obligación formal entra en vigor el 2 de diciembre de 2026, por lo que dispone de tiempo para implementarlo antes de esa fecha.
+El análisis está completo. Puede generar el informe formal en la pestaña Informe.
+Obligaciones cubiertas
+2
+Parciales
+1
+No cubiertas
+0
+Recomendaciones pendientes
+1
+CartonAssist B2B presenta un nivel de cumplimiento sólido para un sistema de riesgo limitado: todas las obligaciones legales actualmente en vigor están cubiertas y las dos inaplicables han sido descartadas con fundamento. La única área de mejora identificada es la implementación del marcado técnico de contenido sintético conforme al Art. 50.2, obligación que entra en vigor el 2 de diciembre de 2026 y para la que la empresa dispone de margen de planificación. No se han detectado carencias en obligaciones legales exigibles en este momento.
+Obligaciones legales aplicables (5)
+Art. 4 — Alfabetización en IA del personal (✓ Cubierta)
+Todo el personal que usa, supervisa o toma decisiones sobre CartonAssist B2B debe tener conocimientos suficientes sobre qué puede y qué no puede hacer el sistema y sobre sus riesgos básicos. La empresa ha impartido un cursillo con mini-examen documentado para los roles relevantes.
+Art. 50.1 — Transparencia frente a usuarios (chatbot) (✓ Cubierta)
+Antes de que el cliente profesional envíe su primer mensaje, CartonAssist B2B muestra un aviso visible que informa de que se trata de un sistema de IA, complementado con un icono identificativo en el chat.
+Art. 50.2 — Marcado de contenido sintético (⚠ Parcial)
+El sistema genera texto sintético que permanece dentro del entorno del chat, donde el usuario ya ha sido informado de que interactúa con IA. No existe aún marcado técnico legible por máquina. La obligación formal entra en vigor el 2 de diciembre de 2026.
+Art. 50.3 — Reconocimiento de emociones y categorización biométrica (— No aplica)
+CartonAssist B2B trabaja exclusivamente con texto escrito y documentos internos. No realiza análisis de emociones, tono afectivo ni categorización biométrica de ningún tipo.
+Art. 50.4 — Deep fakes (— No aplica)
+CartonAssist B2B es un sistema conversacional basado en texto. No genera imágenes, vídeos, audios ni representaciones sintéticas de personas reales.
+Recomendaciones y medidas prudenciales (2)
+Art. 95 — Adhesión a códigos de conducta (→ Recomendación pendiente)
+El AI Act invita voluntariamente a proveedores e implementadores de riesgo no alto a adherirse a códigos de conducta que promuevan buenas prácticas en IA. La empresa no conocía su existencia y no se ha adherido a ninguno.
+Vigilancia de cambios de uso — Vigilancia activa ante cambios de uso (✓ Atendida)
+Existe un proceso de revisión mensual mediante informes para detectar si el alcance o uso del sistema ha cambiado de forma relevante y podría modificar su clasificación de riesgo bajo el AI Act.
+Áreas de mejora legales (1)
+Art. 50.2 — El sistema no dispone aún de marcado técnico legible por máquina que identifique el contenido generado como sintético. Aunque la obligación formal no entra en vigor hasta el 2 de diciembre de 2026, conviene planificar su implementación antes de esa fecha.
+Análisis de cumplimiento completado. Proceda a la pestaña Informe para generar el informe.
+

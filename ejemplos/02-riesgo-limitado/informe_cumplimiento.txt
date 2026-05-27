@@ -1,0 +1,85 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: CartonAssist B2B es un asistente conversacional basado en RAG y LLM, dirigido a clientes profesionales del sector del embalaje de cartón ondulado. Responde consultas comerciales frecuentes, orienta sobre productos, plazos y cantidades mínimas, y prepara solicitudes preliminares de presupuesto. No toma decisiones contractuales vinculantes y deriva obligatoriamente cualquier consulta con impacto legal o contractual a un agente humano.  
+Sector: Fabricación de embalajes de cartón ondulado (industrial B2B)  
+Clasificación: LIMITADO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 17:41  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como LIMITADO con rol Proveedor / Implementador.
+
+CartonAssist B2B presenta un nivel de cumplimiento sólido para un sistema de riesgo limitado: todas las obligaciones legales actualmente en vigor están cubiertas y las dos inaplicables han sido descartadas con fundamento. La única área de mejora identificada es la implementación del marcado técnico de contenido sintético conforme al Art. 50.2, obligación que entra en vigor el 2 de diciembre de 2026 y para la que la empresa dispone de margen de planificación. No se han detectado carencias en obligaciones legales exigibles en este momento.
+
+2. Análisis de obligaciones
+
+Grado de cumplimiento legal estimado: 83 %  
+Cubiertas: 2   Parciales: 1   No cubiertas: 0   No aplica: 2  
+Recomendaciones/medidas prudenciales pendientes: 1 (no computan en el porcentaje legal)
+
+Las obligaciones se presentan agrupadas. El rol específico de cada una se indica en la descripción.
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 4 — Alfabetización en IA del personal  
+Todo el personal que usa, supervisa o toma decisiones sobre CartonAssist B2B debe tener conocimientos suficientes sobre qué puede y qué no puede hacer el sistema y sobre sus riesgos básicos. La empresa ha impartido un cursillo con mini-examen documentado para los roles relevantes.  
+
+Art. 50.1 — Transparencia frente a usuarios (chatbot)  
+Antes de que el cliente profesional envíe su primer mensaje, CartonAssist B2B muestra un aviso visible que informa de que se trata de un sistema de IA, complementado con un icono identificativo en el chat.  
+
+Parcialmente cubiertas
+
+Art. 50.2 — Marcado de contenido sintético  
+El sistema genera texto sintético que permanece dentro del entorno del chat, donde el usuario ya ha sido informado de que interactúa con IA. No existe aún marcado técnico legible por máquina. La obligación formal entra en vigor el 2 de diciembre de 2026.  
+
+No aplica
+
+Art. 50.3 — Reconocimiento de emociones y categorización biométrica  
+CartonAssist B2B trabaja exclusivamente con texto escrito y documentos internos. No realiza análisis de emociones, tono afectivo ni categorización biométrica de ningún tipo.  
+
+Art. 50.4 — Deep fakes  
+CartonAssist B2B es un sistema conversacional basado en texto. No genera imágenes, vídeos, audios ni representaciones sintéticas de personas reales.  
+
+B. Recomendaciones voluntarias y buenas prácticas
+
+No computan en el porcentaje de cumplimiento legal.
+
+Art. 95 — Adhesión a códigos de conducta (Recomendación pendiente)  
+El AI Act invita voluntariamente a proveedores e implementadores de riesgo no alto a adherirse a códigos de conducta que promuevan buenas prácticas en IA. La empresa no conocía su existencia y no se ha adherido a ninguno.  
+
+C. Medidas prudenciales y puntos de vigilancia
+
+No computan en el porcentaje de cumplimiento legal.
+
+Vigilancia de cambios de uso — Vigilancia activa ante cambios de uso (Atendida)  
+Existe un proceso de revisión mensual mediante informes para detectar si el alcance o uso del sistema ha cambiado de forma relevante y podría modificar su clasificación de riesgo bajo el AI Act.  
+
+3. Áreas de mejora identificadas
+
+- Art. 50.2 — El sistema no dispone aún de marcado técnico legible por máquina que identifique el contenido generado como sintético. Aunque la obligación formal no entra en vigor hasta el 2 de diciembre de 2026, conviene planificar su implementación antes de esa fecha.
+
+4. Plan de acción recomendado
+
+- Aplicable actualmente: Anadir aviso claro en la interfaz de que el sistema usa IA antes de cada interaccion (Art. 50.1 — en vigor desde agosto de 2025).
+- Antes del 2 de diciembre de 2026: Implementar el marcado de contenido generado sinteticamente (Art. 50.2) si el sistema genera texto, imagen, audio o video.
+- Recomendado: Revisar anualmente las actualizaciones del AI Act y el resultado del proceso Omnibus una vez publicado en el DOUE.
+- Áreas de mejora prioritarias: 1 área(s) identificada(s) en el análisis de cumplimiento que requieren atención.
+
+5. Puntos que requieren revisión profesional
+
+- Verificar si el marcado técnico de contenido sintético requerido por el Art. 50.2 será exigible en el formato concreto de respuestas de chat de CartonAssist B2B, dado que el contenido no circula fuera del entorno del sistema.
+- Evaluar la conveniencia de adherirse a algún código de conducta sectorial o promovido por la Comisión Europea una vez publicados los códigos definitivos, como señal de compromiso ante clientes y socios B2B.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 17:41.

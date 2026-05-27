@@ -1,0 +1,44 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: CartonAssist B2B es un asistente conversacional basado en RAG y LLM, dirigido a clientes profesionales del sector del embalaje de cartón ondulado. Responde consultas comerciales frecuentes, orienta sobre productos, plazos y cantidades mínimas, y prepara solicitudes preliminares de presupuesto. No toma decisiones contractuales vinculantes y deriva obligatoriamente cualquier consulta con impacto legal o contractual a un agente humano.  
+Sector: Fabricación de embalajes de cartón ondulado (industrial B2B)  
+Clasificación: LIMITADO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 17:41  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como LIMITADO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Proveedor / Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: LIMITADO  
+Descripción: Sistema de IA de riesgo limitado (Art. 50)
+
+Rol principal de la entidad: Proveedor / Implementador
+
+Roles identificados:
+- Proveedor
+- Implementador
+
+Su organización actúa en varios roles bajo el AI Act. Las obligaciones de cada rol se detallan en la sección correspondiente.
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA — Art. 4
+- Transparencia frente a usuarios (chatbot) — Art. 50.1
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 17:41.

@@ -1,0 +1,68 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: Sistema de recomendación de ciclos de calentamiento para hornos industriales en una PYME de fundición. Toma como entrada el precio de la electricidad, previsión de demanda, costes de materias primas y calendario de producción, y genera recomendaciones mediante modelos de aprendizaje automático u optimización basada en datos. No ejecuta cambios automáticos sobre el horno ni el SCADA; la decisión final siempre corresponde al supervisor de turno.  
+Sector: Industria manufacturera — fundición metálica  
+Clasificación: MINIMO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 17:04  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como MINIMO con rol Proveedor / Implementador.
+
+El sistema analizado es de riesgo mínimo y la empresa actúa como proveedora e implementadora. La única obligación legal aplicable actualmente (Art. 4 — Alfabetización en IA) está cubierta mediante formación específica impartida al personal. No obstante, existen incertidumbres técnicas sobre la naturaleza exacta del sistema que requieren revisión profesional para confirmar la clasificación de riesgo.
+
+2. Análisis de obligaciones
+
+Grado de cumplimiento legal estimado: 100 %  
+Cubiertas: 1   Parciales: 0   No cubiertas: 0   Sin evaluar: 0  
+Recomendaciones/medidas prudenciales pendientes: 2 (no computan en el porcentaje legal)
+
+Las obligaciones se presentan agrupadas. El rol específico de cada una se indica en la descripción.
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 4 — Alfabetización en IA del personal  
+El personal que trabaja con el sistema de recomendación de ciclos de calentamiento, especialmente los supervisores de turno, debe comprender qué hace el sistema, sus limitaciones y cómo usarlo responsablemente. La empresa ha realizado formación específica sobre este sistema concreto.  
+
+B. Recomendaciones voluntarias y buenas prácticas
+
+No computan en el porcentaje de cumplimiento legal.
+
+Art. 95 — Adhesión a códigos de conducta (Recomendación pendiente)  
+Adhesión voluntaria a códigos de conducta que promuevan buenas prácticas en el uso responsable de la IA para sistemas de riesgo mínimo. La empresa no se ha adherido a ningún código de conducta.  
+
+C. Medidas prudenciales y puntos de vigilancia
+
+No computan en el porcentaje de cumplimiento legal.
+
+Medida prudencial — Vigilancia activa del nivel de riesgo del sistema (Medida prudencial pendiente)  
+Procedimiento o responsable designado para revisar periódicamente si el uso o las funcionalidades del sistema han cambiado de forma relevante, lo que podría implicar una reclasificación del nivel de riesgo. La empresa no dispone de ningún procedimiento al respecto.  
+
+3. Áreas de mejora identificadas
+
+No se identificaron áreas de mejora pendientes.
+
+4. Plan de acción recomendado
+
+- [Obligacion legal] Art. 4 — Aplicable actualmente: Garantizar que el personal que usa o supervisa el sistema tiene formacion suficiente sobre sus capacidades y limitaciones.
+- [Recomendacion voluntaria] Art. 95: Considerar la adhesion a codigos de conducta voluntarios. No es obligatorio; no computa como incumplimiento.
+- [Medida prudencial] Documentar internamente las capacidades y limitaciones del sistema y supervisar cambios en el uso que puedan elevar el nivel de riesgo.
+
+5. Puntos que requieren revisión profesional
+
+- Definición de sistema de IA (Art. 3.1) — INDETERMINADO en cuanto al detalle técnico exacto: la organización confirmó que el sistema usa aprendizaje automático u optimización basada en datos, pero no se verificó el mecanismo interno con precisión técnica. Si en algún momento se constatase que el sistema sigue únicamente reglas fijas predefinidas por un técnico sin ningún componente de inferencia, podría no cumplir la definición del Art. 3.1 y quedar fuera del ámbito del Reglamento. En sentido contrario, si se confirmase que incorpora componentes de inferencia más sofisticados, la clasificación actual se mantendría y habría que verificar si el sistema podría considerarse componente de seguridad de maquinaria industrial conforme al Considerando 49.
+- La definición técnica exacta del sistema no ha podido verificarse con precisión. Si el sistema incorpora únicamente reglas fijas sin componente de inferencia, podría quedar fuera del ámbito del Reglamento. Si se confirma la presencia de componentes de inferencia más sofisticados, habría que verificar si el sistema podría considerarse componente de seguridad de maquinaria industrial conforme al Considerando 49, lo que podría implicar una reclasificación del nivel de riesgo.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 17:04.
