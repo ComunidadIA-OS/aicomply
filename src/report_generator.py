@@ -427,24 +427,33 @@ class GeneradorInforme:
 
         pasos_por_nivel = {
             "ALTO": [
-                "**Inmediato (0-3 meses):** Designar un responsable de cumplimiento del AI Act.",
-                "**Corto plazo (3-6 meses):** Desarrollar la documentación técnica (Art. 11) "
-                "y el sistema de gestión de riesgos (Art. 9).",
-                "**Medio plazo (6-9 meses):** Implementar el registro de actividad (Art. 12) "
-                "y el protocolo de supervisión humana (Art. 14).",
-                "**Antes del despliegue:** Completar la evaluación de conformidad (Art. 43) "
-                "y registrar el sistema en la base de datos de la UE (Art. 49).",
-                "**De forma continua:** Supervisión poscomercialización y actualización "
-                "de la documentación técnica.",
+                "**Inmediato:** Designar un responsable de cumplimiento del AI Act e "
+                "iniciar el inventario del sistema.",
+                "**Preparacion (0-6 meses):** Desarrollar la documentacion tecnica (Art. 11, Anexo IV) "
+                "y el sistema de gestion de riesgos (Art. 9). Estos documentos requieren meses "
+                "de trabajo; iniciar ahora independientemente del calendario final del Omnibus.",
+                "**Preparacion (6-12 meses):** Implementar el registro de actividad (Art. 12), "
+                "el protocolo de supervision humana (Art. 14) y el sistema de gestion de calidad (Art. 17).",
+                "**Antes del despliegue (plazo provisional: 2 de diciembre de 2027 para Anexo III; "
+                "2 de agosto de 2028 para Anexo I, segun el acuerdo Omnibus de mayo de 2026, "
+                "pendiente de publicacion en el DOUE):** Completar la evaluacion de conformidad (Art. 43), "
+                "registrar el sistema en la base de datos de la UE (Art. 49) y obtener el marcado CE (Art. 47-48).",
+                "**De forma continua:** Supervision poscomercializacion (Art. 72), notificacion "
+                "de incidentes (Art. 73) y actualizacion de la documentacion tecnica.",
             ],
             "LIMITADO": [
-                "**Inmediato:** Añadir aviso claro en la interfaz de que el sistema usa IA (Art. 50.1).",
-                "**Corto plazo:** Implementar el marcado de contenido generado por IA si aplica (Art. 50.2).",
-                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act.",
+                "**Aplicable actualmente:** Anadir aviso claro en la interfaz de que el sistema "
+                "usa IA antes de cada interaccion (Art. 50.1 — en vigor desde agosto de 2025).",
+                "**Antes del 2 de diciembre de 2026:** Implementar el marcado de contenido "
+                "generado sinteticamente (Art. 50.2) si el sistema genera texto, imagen, audio o video.",
+                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y el resultado "
+                "del proceso Omnibus una vez publicado en el DOUE.",
             ],
             "MINIMO": [
+                "**Aplicable actualmente (Art. 4):** Garantizar que el personal que usa o supervisa "
+                "el sistema tiene formacion suficiente sobre sus capacidades y limitaciones.",
                 "**Recomendado:** Documentar internamente las capacidades y limitaciones del sistema.",
-                "**Opcional:** Considerar la adhesión a códigos de conducta voluntarios (Art. 95).",
+                "**Opcional:** Considerar la adhesion a codigos de conducta voluntarios (Art. 95).",
                 "**Vigilancia:** Supervisar cambios en el uso que puedan elevar el nivel de riesgo.",
             ],
         }
