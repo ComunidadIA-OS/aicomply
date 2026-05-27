@@ -11,3 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# Versión del conjunto de prompts (árbol de decisión + catálogo de obligaciones).
+# Incrementar al modificar system_prompts.py, system_prompts_local.py
+# o system_prompt_cumplimiento.py.
+#
+# Historial:
+# 2026.06.0 (2026-05-27): Fases 2-4 — calendario Ómnibus, correcciones jurídicas
+#                          árbol (biometría Art. 5.1.g, NCII/CSAM, código abierto,
+#                          distinción GPAI/sistema), catálogo de obligaciones
+#                          completado (Art. 17, 73, Rep. Autorizado, Fabricante,
+#                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
+# 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
+
+PROMPT_VERSION = "2026.06.0"

@@ -14,8 +14,16 @@
 
 import re
 from datetime import datetime
+from pathlib import Path
 
 from config import NIVELES_RIESGO
+from prompts import PROMPT_VERSION as _PROMPT_VERSION
+
+_CORPUS_VERSION_FILE = Path(__file__).parent.parent / "data" / "CORPUS_VERSION"
+try:
+    _CORPUS_VERSION = _CORPUS_VERSION_FILE.read_text(encoding="utf-8").split("\n")[0].strip()
+except OSError:
+    _CORPUS_VERSION = "desconocida"
 
 _AVISO_LEGAL_MD = (
     "---\n\n"
@@ -484,7 +492,11 @@ class GeneradorInforme:
         return texto
 
     def _pie(self) -> str:
-        return f"---\n\n*{_TEXTO_PIE} Fecha de generación: {_fecha_larga()}.*"
+        return (
+            f"---\n\n*{_TEXTO_PIE} "
+            f"Prompt v{_PROMPT_VERSION} · Corpus v{_CORPUS_VERSION} · "
+            f"Fecha de generación: {_fecha_larga()}.*"
+        )
 
     # ══════════════════════════════════════════════════════════════════════════
     # EXPORTACIÓN
@@ -1311,6 +1323,7 @@ class GeneradorInforme:
             pdf.ln(4)
             gen_txt = _limpiar(
                 f"{_TEXTO_PIE} "
+                f"Prompt v{_PROMPT_VERSION} - Corpus v{_CORPUS_VERSION} - "
                 f"Fecha de generacion: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
             )
             pdf.set_fill_color(255, 235, 235)

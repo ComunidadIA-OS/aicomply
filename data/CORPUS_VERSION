@@ -1,0 +1,4 @@
+2026.06.0
+Re-fragmentación: 2026-05-27 — 42 bloques gigantes → 1.841 chunks (1.500-4.000 chars, overlap 150 chars)
+Documentos re-fragmentados: 22 ficheros en data/docs/
+Excluidos (referencia, sin fragmentar): AIAct.json, Omnibus.json, 06-guia-vigilancia-humana.json, Anteproyecto de Ley.json, requisitos-auditorias-tratamientos-incluyan-ia.json
