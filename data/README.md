@@ -12,7 +12,7 @@ o análisis legal asistido por IA.
   oficial, requisitos clave, ámbito de aplicación y palabras clave.
   Incluye también las 8 categorías del Anexo III (alto riesgo).
 
-- `docs/*.json` — 27 documentos complementarios (273 fragmentos
+- `docs/*.json` — 27 documentos complementarios (más de 2.000 fragmentos
   totales): el texto consolidado del AI Act, 16 guías de la AESIA,
   borradores de directrices de la Comisión Europea sobre clasificación
   de alto riesgo (mayo 2026), opinión EDPB 28/2024 sobre modelos de

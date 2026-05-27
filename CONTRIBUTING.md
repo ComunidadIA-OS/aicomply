@@ -212,7 +212,7 @@ python scripts/ingest_txt.py ruta/al/documento.txt \
   --titulo "Título del documento" \
   --fuente "Organismo emisor" \
   --tipo guia_oficial \
-  --fecha "2025-01-01" \
+  --fecha "2026-05-27" \
   --url "https://fuente-oficial.es/documento"
 ```
 

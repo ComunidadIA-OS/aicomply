@@ -42,13 +42,15 @@ AIComply emite una de las **siguientes seis clasificaciones**, según el árbol 
 - **NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA** — el objeto evaluado no encaja en el Art. 3.1 y el Reglamento no le aplica; el informe indica qué característica falta.
 - **EXCLUIDO** — el sistema sí es IA pero queda fuera del ámbito del Art. 2 (uso militar, investigación, código abierto no comercializado como parte de un sistema de alto riesgo, uso personal no profesional, etc.); el informe indica la razón concreta de la exclusión.
 
+**Flujos diferenciados por clasificación.** El sistema adapta el recorrido según el resultado del evaluador: para sistemas clasificados como NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA o EXCLUIDO, la pestaña de Cumplimiento se omite (no procede analizar obligaciones del AI Act) y se genera únicamente el informe de clasificación documentando la conclusión. Para sistemas clasificados como PROHIBIDO, el análisis de cumplimiento permite documentar medidas de remediación (cese, rediseño, retirada y revisión profesional).
+
 Además, el evaluador detecta y gestiona **roles múltiples** (Considerando 83): una misma entidad puede actuar simultáneamente como Proveedor e Implementador, y AIComply recorre la evaluación una vez por cada rol con obligaciones diferenciadas.
 
 ## Características destacadas
 
 **Entrada por documentación técnica.** Además de describir el sistema en lenguaje natural, el evaluador acepta subir el README o ficha técnica del sistema a evaluar (formatos .md, .txt, .rst). AIComply extrae automáticamente una descripción estructurada del propósito, sector, decisiones que toma el sistema y tipo de datos que procesa, y la presenta al usuario para confirmación antes de iniciar el árbol de decisión.
 
-**Trazabilidad auditable.** Cada respuesta del informe final indica si provino de una respuesta directa del usuario, de una inferencia confirmada por el modelo, o de un nodo marcado como [INDETERMINADO]. Esto permite reconstruir por qué se llegó a la clasificación final y facilita la revisión por un asesor jurídico.
+**Trazabilidad auditable mediante bloques machine-readable.** Cada respuesta del modelo de cumplimiento emite, además del texto natural, bloques JSON estructurados embebidos (`<<<OBLIGACION>>>{...}<<<FIN>>>` y `<<<CIERRE>>>{...}<<<FIN>>>`) que el sistema parsea y persiste en estado tipado. Cada obligación queda registrada con su artículo, estado (cubierta/parcial/carencia/no_aplica), tipo (obligación/recomendación/vigilancia) y rol asociado. El informe final indica si cada respuesta provino de entrada directa del usuario, inferencia confirmada por el modelo o nodo marcado como [INDETERMINADO]. Esto permite reconstruir deterministicamente por qué se llegó a la clasificación final y facilita la revisión por un asesor jurídico.
 
 **Roles múltiples diferenciados.** Cuando la entidad evaluada actúa simultáneamente como Proveedor, Implementador, Distribuidor o Importador (Considerando 83 del AI Act), el sistema recorre la evaluación una vez por cada rol y entrega un informe con las obligaciones de cada uno por separado, sin mezclarlas.
 
@@ -87,6 +89,20 @@ Para más detalle, consulte [SECURITY.md](SECURITY.md).
 AIComply es, que sepamos, la única herramienta open source conversacional en español que cubre clasificación de riesgo, análisis de obligaciones y generación de informe con corpus normativo español (AESIA, anteproyecto de Ley de IA española, directrices de la Comisión Europea de mayo de 2026).
 
 > **Nota sobre COMPL-AI:** COMPL-AI (ETH Zurich, INSAIT y LatticeFlow AI) es un *benchmark* de evaluación de modelos de lenguaje frente a criterios del AI Act: mide si modelos generales como GPT-4, Claude o Llama cumplen requisitos técnicos del Reglamento. **AIComply opera en una capa diferente:** no evalúa modelos, sino que clasifica el *sistema de IA* del usuario y le entrega sus obligaciones concretas como organización. Los dos proyectos son complementarios — COMPL-AI ayuda a un proveedor de modelos a validar su modelo; AIComply ayuda a una PYME a determinar si su sistema entra en el ámbito del AI Act y qué tiene que hacer. Se incluye en la tabla para situar el ecosistema, no como competidor directo.
+
+## Casos de ejemplo completos
+
+El repositorio incluye cinco casos de uso reales evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema, la conversación completa con el evaluador, el análisis de cumplimiento y los tres tipos de informe (clasificación, cumplimiento e informe completo) exportados en PDF y texto plano.
+
+| Caso | Clasificación | Sistema |
+|------|---------------|---------|
+| [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Sistema fuera del ámbito del AI Act |
+| [`01-riesgo-minimo`](ejemplos/01-riesgo-minimo) | MÍNIMO | Optimización de hornos industriales |
+| [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Chatbot B2B |
+| [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Filtrado automatizado de CVs |
+| [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
+
+Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo.
 
 ## Capturas de pantalla
 
@@ -132,7 +148,7 @@ Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-r
 
 ## Corpus normativo
 
-El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **273 fragmentos** indexados:
+El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **2.000 fragmentos** indexados:
 
 | Fuente | Documentos |
 |--------|-----------|
@@ -142,6 +158,8 @@ El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** co
 | Guías oficiales de la AESIA (16 guías + checklist) | 17 |
 | GDPR / AEPD — adecuación, IA agéntica, auditorías | 4 |
 | Directrices de la Comisión Europea sobre alto riesgo — borrador 19 mayo 2026 (principios generales, Anexo I, Anexo III) | 3 |
+
+El versionado del corpus se mantiene de forma independiente del versionado del código en el fichero [`data/CORPUS_VERSION`](data/CORPUS_VERSION), que registra la fecha y características de la última re-fragmentación. Esto permite trazar cambios en el dataset sin acoplar releases del software a actualizaciones normativas.
 
 Para añadir nuevos documentos al corpus, consulte la sección [Ingesta de documentos](#ingesta-de-documentos).
 
@@ -309,7 +327,7 @@ python scripts/ingest_txt.py ruta/al/documento.txt \
   --titulo "Título del documento" \
   --fuente "Organismo emisor" \
   --tipo guia_oficial \
-  --fecha "2025-01-01" \
+  --fecha "2026-05-27" \
   --url "https://..."
 ```
 
@@ -409,7 +427,9 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 - [x] Soporte de múltiples roles simultáneos
 - [x] 25 artículos del AI Act estructurados en el RAG
 - [x] Corpus normativo completo: AESIA, Anteproyecto de Ley ES, GDPR/AEPD, directrices Comisión Europea
-- [x] Tests unitarios para el árbol de decisión y el chatbot
+- [x] Suite de 141 tests unitarios: árbol de decisión, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento, seguridad (SSRF + rate limiting) y vectorstore RAG
+- [x] Bloques machine-readable para trazabilidad determinista del análisis de cumplimiento
+- [x] Flujos diferenciados para clasificaciones especiales (NO IA, EXCLUIDO, PROHIBIDO)
 - [ ] Flujo guiado para la Evaluación de Impacto sobre Derechos Fundamentales (Art. 27)
 - [ ] Persistencia de evaluaciones — guardar y reanudar sesiones
 - [ ] Mejora exportación PDF con fuente Unicode completa
@@ -442,7 +462,7 @@ Este dataset es, que sepamos, el primer corpus estructurado y reutilizable del A
 
 ### Corpus normativo reutilizable
 
-El conjunto de datos legales procesados por AIComply ([`data/`](data/README.md)) es reutilizable por terceros sin necesidad de instalar la aplicación: 25 artículos clave del AI Act + 27 documentos complementarios (273 fragmentos) en JSON estructurado, bajo licencia Apache 2.0. Detalles y ejemplo de uso en [`data/README.md`](data/README.md).
+El conjunto de datos legales procesados por AIComply ([`data/`](data/README.md)) es reutilizable por terceros sin necesidad de instalar la aplicación: 25 artículos clave del AI Act + 27 documentos complementarios (más de 2.000 fragmentos) en JSON estructurado, bajo licencia Apache 2.0. Detalles y ejemplo de uso en [`data/README.md`](data/README.md).
 
 ### Corpus legal normalizado para RAG (`data/docs/`)
 

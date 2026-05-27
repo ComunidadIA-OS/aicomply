@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aicomply"
-version = "0.2.0"
+version = "0.1.0"
 description = "Asistente conversacional en español para evaluar el cumplimiento de sistemas de IA con el AI Act europeo (Reglamento UE 2024/1689)"
 readme = "README.md"
 license = { text = "Apache-2.0" }

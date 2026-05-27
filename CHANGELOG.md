@@ -20,7 +20,7 @@ Primera versión de AIComply, desarrollada íntegramente durante el Hackathon Re
 
 ### Fase 2 — Corpus normativo y RAG (23–24 mayo)
 
-- Corpus normativo completo — 27 documentos, 282 fragmentos indexados: AI Act, AESIA (16 guías), GDPR/AEPD, anteproyecto Ley española de IA, directrices Comisión Europea mayo 2026
+- Corpus normativo completo — 27 documentos con más de 2.000 fragmentos tras re-fragmentación (chunks de 1.500-4.000 caracteres con overlap de 150): AI Act, AESIA (16 guías), GDPR/AEPD, anteproyecto Ley española de IA, directrices Comisión Europea mayo 2026
 - 25 artículos del AI Act estructurados en JSON con metadatos normativos (título, nivel de riesgo, rol, requisitos clave, palabras clave)
 - Pipeline de ingesta `scripts/ingest_txt.py` para convertir documentos legales `.txt` al formato JSON del RAG
 - RAG dinámico conectado al Evaluador — el árbol de decisión consulta el corpus en tiempo real para contextualizar cada nodo
@@ -41,6 +41,15 @@ Primera versión de AIComply, desarrollada íntegramente durante el Hackathon Re
 - Interpolación de prompts con `.replace()` en lugar de `.format()` para evitar `KeyError`
 - Backoff acotado con `Retry-After` en providers; rollback del historial si `chat_stream` falla
 - GitHub Actions CI — pipeline de tests automáticos con soporte Python 3.10–3.12
-- Suite de tests unitarios para árbol de decisión, chatbot, generador PDF y streaming
+- Suite de 141 tests unitarios: árbol de decisión, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento, seguridad (SSRF + rate limiting) y vectorstore RAG
 - Guardar y restaurar sesión en JSON desde el sidebar
-- Casos de ejemplo: caso 01 (horno industrial, ALTO) y caso 02 (chatbot de reservas, LIMITADO) con informes PDF reales
+- Cinco casos de ejemplo completos (uno por cada clasificación del AI Act) bajo `ejemplos/`: 00-no-ia, 01-riesgo-minimo, 02-riesgo-limitado, 03-alto-riesgo y 04-prohibido — cada caso con sistema de entrada, conversación, análisis y los tres tipos de informe en PDF y texto
+- Bloques machine-readable embebidos en la respuesta del modelo de cumplimiento (`<<<OBLIGACION>>>` y `<<<CIERRE>>>`) para trazabilidad determinista del análisis
+- Flujos diferenciados por clasificación: NO_IA y EXCLUIDO omiten la pestaña de cumplimiento; PROHIBIDO permite documentar medidas de remediación
+- Re-fragmentación del corpus a chunks de 1.500-4.000 caracteres con overlap de 150 (22 ficheros procesados, 5 excluidos por estar ya fragmentados adecuadamente — ver `data/CORPUS_VERSION`)
+
+### Cierre de la fase de hackathon (27 mayo)
+
+- Alineamiento de versiones entre `pyproject.toml` y `CHANGELOG.md` (ambos a 0.1.0)
+- Sincronización de las cifras del corpus en `README.md`, `CHANGELOG.md` y `data/README.md` tras la re-fragmentación
+- Entrega final del repositorio bajo Apache 2.0 a la organización del hackathon SEDIA/AESIA
