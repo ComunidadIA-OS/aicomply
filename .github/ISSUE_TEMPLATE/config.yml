@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reportar una vulnerabilidad de seguridad
+    url: https://github.com/ComunidadIA-OS/aicomply/security/policy
+    about: Para vulnerabilidades de seguridad, consulte SECURITY.md y notifique de forma privada en lugar de abrir un issue público.
+  - name: Pregunta general o discusión
+    url: https://github.com/ComunidadIA-OS/aicomply/discussions
+    about: Para preguntas generales, casos de uso o discusiones, use GitHub Discussions en lugar de abrir un issue.
