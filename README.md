@@ -126,7 +126,7 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ![Informe generado con opciones de descarga en PDF y texto plano](assets/08-informe.png)
 
-Puede consultar los [ejemplos de informes generados con AIComply](ejemplos/) para ver el output real antes de instalar la herramienta.
+Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/informe_completo.pdf) para ver el output real antes de instalar la herramienta.
 
 ---
 
