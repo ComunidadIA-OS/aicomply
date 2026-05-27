@@ -189,6 +189,15 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
     if st.session_state.evaluacion_completada:
         return
 
+    # Botón Regenerar: elimina el último par usuario/asistente y permite reenviar.
+    mensajes = st.session_state.mensajes_evaluador
+    if len(mensajes) >= 2 and mensajes[-1]["role"] == "assistant":
+        if st.button("↻ Regenerar respuesta", key="btn_regen_eval"):
+            st.session_state.mensajes_evaluador = mensajes[:-2]
+            if len(chatbot.historial) >= 2:
+                chatbot.historial = chatbot.historial[:-2]
+            st.rerun()
+
     estado = st.empty()
     if prompt := st.chat_input("Escriba su respuesta aquí...", max_chars=4000):
         estado.markdown(
