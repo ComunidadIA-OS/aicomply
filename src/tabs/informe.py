@@ -20,10 +20,13 @@ from src.report_generator import GeneradorInforme
 
 _FECHA_HOY = date.today().strftime("%Y-%m-%d")
 
-_CLASIFICACIONES_SIN_CUMPLIMIENTO = frozenset({
-    "PROHIBIDO",
+_CLASIFICACIONES_SOLO_EVAL = frozenset({
     "EXCLUIDO",
     "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+    "NO ES SISTEMA DE IA",
+    "NO_IA",
+    "FUERA DE ALCANCE",
+    "FUERA_DE_ALCANCE",
 })
 
 _TITULOS_INFORME = {
@@ -116,10 +119,10 @@ def _seccion_informe_cumplimiento(cumpl_ok: bool, es_caso_especial: bool) -> Non
     st.caption("Incluye: obligaciones por artículo, áreas de mejora y recomendaciones de acción.")
 
     if es_caso_especial:
-        clasificacion = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "")
         st.info(
-            f"La clasificación **{clasificacion}** no requiere análisis de cumplimiento. "
-            "Consulte el **Informe de clasificación** para las implicaciones legales y las acciones recomendadas."
+            "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+            "No procede generar informe de cumplimiento. "
+            "Consulte el **Informe de clasificación** para documentar esta conclusión."
         )
         return
 
@@ -166,9 +169,9 @@ def _seccion_informe_completo(eval_ok: bool, cumpl_ok: bool, es_caso_especial: b
     st.caption("Incluye clasificación, obligaciones, áreas de mejora, recomendaciones y puntos de revisión.")
 
     if es_caso_especial:
-        clasificacion = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "")
         st.info(
-            f"La clasificación **{clasificacion}** no requiere análisis de cumplimiento. "
+            "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+            "No procede generar informe completo. "
             "Use el **Informe de clasificación** para obtener el informe completo de su caso."
         )
         return
@@ -224,9 +227,9 @@ def mostrar_tab_informe() -> None:
     )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
 
-    # Para PROHIBIDO, EXCLUIDO y NO CUMPLE no tiene sentido el análisis de cumplimiento
+    # Para EXCLUIDO / NO_IA el flujo termina en evaluación; PROHIBIDO sí pasa a cumplimiento
     clasificacion_actual = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "").upper()
-    es_caso_especial = eval_ok and clasificacion_actual in _CLASIFICACIONES_SIN_CUMPLIMIENTO
+    es_caso_especial = eval_ok and clasificacion_actual in _CLASIFICACIONES_SOLO_EVAL
 
     # Indicadores de progreso
     col1, col2, col3 = st.columns(3)

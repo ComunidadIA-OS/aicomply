@@ -26,18 +26,15 @@ except OSError:
     _CORPUS_VERSION = "desconocida"
 
 _CLASIFICACIONES_SIN_OBLIGACIONES = frozenset({
-    "PROHIBIDO",
     "EXCLUIDO",
     "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+    "NO ES SISTEMA DE IA",
+    "NO_IA",
+    "FUERA DE ALCANCE",
+    "FUERA_DE_ALCANCE",
 })
 
 _TEXTO_SIN_OBLIGACIONES: dict[str, str] = {
-    "PROHIBIDO": (
-        "Este sistema está **prohibido** por el Reglamento (UE) 2024/1689 (Art. 5). "
-        "No procede realizar análisis de cumplimiento: el sistema no puede desarrollarse "
-        "ni desplegarse legalmente en la Unión Europea. "
-        "El informe recoge las implicaciones legales y las acciones inmediatas requeridas."
-    ),
     "EXCLUIDO": (
         "El sistema evaluado está **fuera del ámbito de aplicación** del AI Act (Art. 2). "
         "No se identifican obligaciones del Reglamento (UE) 2024/1689. "
@@ -288,13 +285,21 @@ class GeneradorInforme:
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
         clas_norm = (clasificacion or "").upper().strip()
-        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+        if clas_norm == "PROHIBIDO":
+            texto += (
+                f"Este informe recoge el análisis de cumplimiento de un sistema clasificado como "
+                f"**práctica prohibida** con rol **{_capitalizar_roles(rol)}** (Art. 5 AI Act). "
+                "Documenta las medidas necesarias: cese, rediseño, retirada, remediación "
+                "y revisión profesional."
+            )
+        elif clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
             texto += _TEXTO_SIN_OBLIGACIONES.get(clas_norm, "")
             return texto
-        texto += (
-            f"Este informe recoge el análisis de cumplimiento de un sistema clasificado como "
-            f"**{clasificacion}** con rol **{_capitalizar_roles(rol)}**."
-        )
+        else:
+            texto += (
+                f"Este informe recoge el análisis de cumplimiento de un sistema clasificado como "
+                f"**{clasificacion}** con rol **{_capitalizar_roles(rol)}**."
+            )
         if resumen:
             texto += f"\n\n{resumen}"
         return texto
@@ -319,8 +324,9 @@ class GeneradorInforme:
         clas_norm = (clasificacion or "").upper().strip()
         if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
             texto += f"\n\n{_TEXTO_SIN_OBLIGACIONES.get(clas_norm, '')}"
-        elif resumen_cumpl:
-            texto += f"\n\n{resumen_cumpl}"
+        else:
+            if resumen_cumpl:
+                texto += f"\n\n{resumen_cumpl}"
         return texto
 
     def _seccion_clasificacion(
@@ -530,14 +536,30 @@ class GeneradorInforme:
 
         if clas_norm == "PROHIBIDO":
             texto += (
-                "\n**Este sistema está prohibido por el AI Act (Art. 5).**  \n"
-                "Debe detenerse el desarrollo y despliegue de forma inmediata. "
-                "Consulte urgentemente con un asesor legal especializado. "
-                "Las sanciones pueden alcanzar 35.000.000 EUR o el 7 % de la facturación global."
+                "\n> ⚠️ **Este sistema está clasificado como práctica prohibida (Art. 5 AI Act).**  \n"
+                "> Las sanciones pueden alcanzar 35.000.000 EUR o el 7 % de la facturación global.  \n"
+                "> Consulte urgentemente con un asesor legal especializado.\n\n"
+                "**Pasos de remediación recomendados:**"
             )
+            pasos_prohibido = [
+                "**Inmediato:** Suspender el desarrollo y despliegue del sistema hasta recibir asesoramiento legal.",
+                "**Cese / retirada:** Documentar el proceso de cese de operaciones o retirada del sistema del mercado.",
+                "**Rediseño:** Evaluar si el sistema puede rediseñarse para eliminar las características que lo hacen prohibido.",
+                "**Remediación:** Identificar y documentar las medidas correctoras adoptadas.",
+                "**Notificación:** Informar a las partes afectadas y, si procede, notificar a la Autoridad Nacional Competente (NCA).",
+                "**Revisión profesional:** Obtener dictamen jurídico especializado antes de cualquier nueva puesta en marcha.",
+            ]
+            for paso in pasos_prohibido:
+                texto += f"\n- {paso}"
+            if carencias:
+                texto += f"\n\n**Carencias documentadas durante el análisis ({len(carencias)}):**"
+                for c in carencias[:5]:
+                    texto += f"\n- {c}"
+                if len(carencias) > 5:
+                    texto += f"\n- … y {len(carencias) - 5} área(s) más — ver sección de análisis."
             return texto
 
-        if clas_norm in ("EXCLUIDO", "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA"):
+        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
             texto += (
                 "\n**Este sistema no está sujeto al AI Act.**  \n"
                 "No se requieren acciones de cumplimiento del Reglamento (UE) 2024/1689. "

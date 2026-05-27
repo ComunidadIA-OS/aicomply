@@ -16,6 +16,15 @@ import base64
 
 import streamlit as st
 
+_CLASIFICACIONES_SOLO_EVAL = frozenset({
+    "EXCLUIDO",
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+    "NO ES SISTEMA DE IA",
+    "NO_IA",
+    "FUERA DE ALCANCE",
+    "FUERA_DE_ALCANCE",
+})
+
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable
@@ -356,7 +365,22 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
             f"Evaluación completada — Clasificación: **{clasificacion}** | Rol: **{roles_str}**"
         )
 
-        st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
+        if clasificacion.upper() in _CLASIFICACIONES_SOLO_EVAL:
+            st.info(
+                "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+                "No procede iniciar una evaluación de cumplimiento bajo el AI Act. "
+                "Puede generar únicamente el **Informe de evaluación** en la pestaña **Informe** "
+                "para documentar esta conclusión."
+            )
+        elif clasificacion.upper() == "PROHIBIDO":
+            st.warning(
+                "El sistema ha sido clasificado como **práctica prohibida** (Art. 5 AI Act). "
+                "Aun así, puede continuar a la evaluación de cumplimiento para documentar las medidas necesarias: "
+                "cese, rediseño, retirada, remediación y revisión profesional."
+            )
+            st.info("Proceda a la pestaña **Cumplimiento** para documentar las medidas de remediación.")
+        else:
+            st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
 
         indeterminados = datos.get("puntos_indeterminados", [])
         if indeterminados:

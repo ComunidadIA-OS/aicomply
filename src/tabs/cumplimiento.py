@@ -17,6 +17,15 @@ import streamlit as st
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.chatbot import AIComplyChat, _RE_BLOQUE_CIERRE, _RE_BLOQUE_OBLIGACION
+
+_CLASIFICACIONES_SOLO_EVAL = frozenset({
+    "EXCLUIDO",
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+    "NO ES SISTEMA DE IA",
+    "NO_IA",
+    "FUERA DE ALCANCE",
+    "FUERA_DE_ALCANCE",
+})
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable, mensaje_error_seguro, rate_limiter
 
@@ -300,6 +309,16 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
     # ── Sin clasificación previa: mostrar formulario de acceso directo ─────────
     if not evaluacion_completada and not acceso_directo:
         _mostrar_formulario_acceso_directo()
+        return
+
+    # ── NO_IA / EXCLUIDO: no procede cumplimiento ──────────────────────────────
+    clasificacion_actual = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "").upper()
+    if evaluacion_completada and clasificacion_actual in _CLASIFICACIONES_SOLO_EVAL:
+        st.info(
+            "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+            "No procede iniciar una evaluación de cumplimiento. "
+            "Genere el **Informe de evaluación** en la pestaña **Informe** para documentar esta conclusión."
+        )
         return
 
     _inicializar_estado(provider)
