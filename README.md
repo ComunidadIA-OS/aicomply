@@ -280,6 +280,8 @@ Si `LLM_PROVIDER` está vacío, la interfaz mostrará el selector interactivo en
    pip install -r requirements.txt
    ```
 
+   Para reproducir el entorno exacto del hackathon (mismas versiones de todas las dependencias transitivas): `pip install -r requirements-lock.txt`. El fichero `requirements.txt` define rangos compatibles; el lockfile fija versiones exactas verificadas durante el desarrollo.
+
 4. **Configurar el provider (opcional):**
    ```bash
    cp .env.example .env
