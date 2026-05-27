@@ -38,6 +38,12 @@ OPENAI_COMPATIBLE_API_KEY = os.getenv("OPENAI_COMPATIBLE_API_KEY", "")
 OPENAI_COMPATIBLE_MODEL = os.getenv("OPENAI_COMPATIBLE_MODEL", "")
 
 # ── Textos de la interfaz ──────────────────────────────────────────────────────
+AVISO_IA_ART50 = (
+    "Está interactuando con un sistema de inteligencia artificial. "
+    "Las respuestas se generan automáticamente y son orientativas "
+    "(Art. 50.1 del Reglamento (UE) 2024/1689)."
+)
+
 DISCLAIMER_INICIAL = """
 **AVISO LEGAL IMPORTANTE**
 

@@ -22,6 +22,7 @@ from config import (
     AICOMPLY_MODE,
     ANTHROPIC_API_KEY,
     ANTHROPIC_MODEL,
+    AVISO_IA_ART50,
     DISCLAIMER_INICIAL,
     OPENAI_COMPATIBLE_API_KEY,
     OPENAI_COMPATIBLE_BASE_URL,
@@ -536,10 +537,7 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.caption(
-        "AIComply es una herramienta auxiliar de orientación. "
-        "Los resultados no constituyen asesoramiento legal."
-    )
+    st.caption(AVISO_IA_ART50)
 
 
 # ════════════════════════════════════════════════════════════════════════════════

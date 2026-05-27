@@ -28,8 +28,9 @@ _AVISO_LEGAL_MD = (
 _TEXTO_PIE = (
     "Generado por AIComply — Herramienta auxiliar de orientación. "
     "No constituye asesoramiento jurídico. "
-    "Reglamento de referencia: Reglamento (UE) 2024/1689."
+    "Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689."
 )
+# TODO Art. 50.2: marcado legible por máquina (p. ej. metadatos C2PA) — exigible desde 2 dic 2026
 
 # ── Paleta de colores (RGB) ────────────────────────────────────────────────────
 
