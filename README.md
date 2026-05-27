@@ -476,9 +476,118 @@ Script CLI reutilizable para convertir documentos legales en texto plano (.txt) 
 
 Clase abstracta `LLMProvider` con implementaciones para Anthropic Claude y cualquier API compatible con OpenAI (Groq, Mistral, LM Studio, vLLM, Ollama). Permite cambiar de provider sin modificar la lógica de negocio. Reutilizable en cualquier aplicación Python que necesite independencia del proveedor de LLM.
 
+## Aportación a la comunidad y dependencias upstream
+
+AIComply se construye sobre librerías de código abierto preexistentes, y aspira
+a contribuir de vuelta a la comunidad mediante mejoras detectadas durante el
+desarrollo y recursos reutilizables ofrecidos al ecosistema.
+
+### Dependencias core y sus repositorios
+
+| Dependencia | Función en AIComply | Repositorio |
+|-------------|---------------------|-------------|
+| [`anthropic`](https://github.com/anthropics/anthropic-sdk-python) | Cliente oficial de la API de Anthropic Claude | github.com/anthropics/anthropic-sdk-python |
+| [`openai`](https://github.com/openai/openai-python) | Cliente para APIs compatibles con OpenAI (Ollama, LM Studio, Groq, Mistral, vLLM) | github.com/openai/openai-python |
+| [`streamlit`](https://github.com/streamlit/streamlit) | Framework de interfaz web | github.com/streamlit/streamlit |
+| [`scikit-learn`](https://github.com/scikit-learn/scikit-learn) | Motor TF-IDF para el vectorstore | github.com/scikit-learn/scikit-learn |
+| [`numpy`](https://github.com/numpy/numpy) | Operaciones numéricas base de `scikit-learn` | github.com/numpy/numpy |
+| [`fpdf2`](https://github.com/py-pdf/fpdf2) | Generación de informes PDF | github.com/py-pdf/fpdf2 |
+| [`python-dotenv`](https://github.com/theskumar/python-dotenv) | Carga de variables de entorno desde `.env` | github.com/theskumar/python-dotenv |
+| [`pytest`](https://github.com/pytest-dev/pytest) | Framework de testing (dev) | github.com/pytest-dev/pytest |
+| [`ruff`](https://github.com/astral-sh/ruff) | Linter y formateador (dev) | github.com/astral-sh/ruff |
+| [`mypy`](https://github.com/python/mypy) | Comprobación estática de tipos (dev) | github.com/python/mypy |
+
+### Mejoras detectadas durante el desarrollo
+
+_En revisión durante el hackathon — esta sección se actualizará con los enlaces
+a issues o PRs abiertos en dependencias upstream._
+
+Si durante el desarrollo o el uso de AIComply detecta un bug o área de mejora
+en alguna dependencia, abra un issue o PR en el repositorio correspondiente y
+añada el enlace aquí mediante un PR a este README.
+
+### Recursos que AIComply ofrece a la comunidad
+
+Los siguientes artefactos están publicados bajo Apache 2.0 y son reutilizables
+de forma independiente del resto de la aplicación:
+
+- **Corpus estructurado del AI Act** ([`data/ai_act/ai_act_articles.json`](data/ai_act/ai_act_articles.json))
+  — 25 artículos clave del Reglamento (UE) 2024/1689 en JSON con metadatos
+  normativos (nivel de riesgo, rol aplicable, requisitos clave, palabras clave).
+- **Corpus legal normalizado para RAG** ([`data/docs/`](data/docs/)) — 27 documentos
+  legales (AI Act, guías AESIA, GDPR/AEPD, directrices Comisión Europea,
+  anteproyecto Ley ES) en JSON con metadatos homogéneos.
+- **Herramienta de ingesta de documentos legales** ([`scripts/ingest_txt.py`](scripts/ingest_txt.py))
+  — CLI para convertir documentos legales `.txt` al formato JSON normalizado del
+  corpus.
+- **Abstracción multi-provider de LLM** ([`src/llm/`](src/llm/)) — Clase abstracta
+  `LLMProvider` con implementaciones para Anthropic Claude y APIs compatibles con
+  OpenAI, reutilizable en cualquier proyecto Python que necesite independencia
+  del proveedor de modelo.
+- **Evaluación de Impacto en Protección de Datos** ([`docs/EIPD.md`](docs/EIPD.md))
+  — análisis RGPD Art. 35 documentado, reutilizable como plantilla para
+  herramientas similares.
+
+Ver también la sección [Recursos reutilizables para la comunidad](#recursos-reutilizables-para-la-comunidad)
+para detalles de uso.
+
+### Compatibilidad de licencias
+
+Todas las dependencias core de AIComply son compatibles con la publicación bajo
+licencia Apache 2.0. La tabla siguiente lista la licencia de cada dependencia y
+confirma la compatibilidad:
+
+| Dependencia | Licencia | Compatible con Apache 2.0 |
+|-------------|----------|---------------------------|
+| `anthropic` SDK | MIT | ✅ |
+| `openai` SDK | Apache 2.0 | ✅ |
+| `streamlit` | Apache 2.0 | ✅ |
+| `scikit-learn` | BSD-3-Clause | ✅ |
+| `numpy` | BSD-3-Clause | ✅ |
+| `fpdf2` | LGPL-3.0+ | ✅ (uso como librería, sin modificar fpdf2 ni redistribuir su código fuente alterado) |
+| `python-dotenv` | BSD-3-Clause | ✅ |
+| `pytest` (dev) | MIT | ✅ |
+| `ruff` (dev) | MIT | ✅ |
+| `mypy` (dev) | MIT | ✅ |
+
+**Notas sobre la compatibilidad:**
+
+- **MIT, BSD-2, BSD-3, Apache 2.0** son licencias permisivas plenamente compatibles
+  con la redistribución bajo Apache 2.0.
+- **`fpdf2` (LGPL-3.0+)** es una excepción: la LGPL permite usar la librería como
+  dependencia dinámica sin contaminar la licencia del consumidor, siempre que no
+  se modifique el código de la propia librería ni se redistribuya una versión
+  alterada. AIComply usa `fpdf2` como dependencia estándar instalada vía pip y no
+  modifica su código fuente, por lo que la compatibilidad se mantiene. Si en el
+  futuro se quisieran redistribuir versiones modificadas de `fpdf2`, habría que
+  publicarlas bajo LGPL.
+
+Las licencias de las dependencias se han verificado consultando el campo `License`
+de cada paquete en el PyPI oficial.
+
 ## Licencia
 
 Este proyecto está licenciado bajo la [Licencia Apache 2.0](LICENSE).
+
+## Sobre este proyecto
+
+AIComply nace en el marco del **Hackathon Reto IA Responsable y Abierta en
+Industria** (mayo 2026), organizado por la **Secretaría de Estado de
+Digitalización e Inteligencia Artificial (SEDIA)** del Ministerio para la
+Transformación Digital y de la Función Pública, en colaboración con la
+**Agencia Española de Supervisión de la Inteligencia Artificial (AESIA)**.
+
+Cuentan también como entidades colaboradoras el **Instituto Tecnológico de
+Aragón (ITA)** y la **Universidad de Zaragoza (UNIZAR)**, ambos parte del
+**EDIH de Aragón** (European Digital Innovation Hub).
+
+El proyecto se publica como parte de la **Comunidad IA de Código Abierto**
+impulsada por el Ministerio, cuyo objetivo es fomentar el desarrollo de
+soluciones de inteligencia artificial responsables, transparentes y reutilizables,
+con especial enfoque en su aplicabilidad por parte de PYMEs de sectores
+productivos.
+
+Más información: [Comunidad IA de Código Abierto — Portal MTDFP](https://portal.mineco.gob.es/es-es/digitalizacionIA/comunidad-ia-cod-abierto)
 
 ---
 
