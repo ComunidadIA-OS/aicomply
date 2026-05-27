@@ -1,0 +1,47 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: Sistema de IA de visión artificial basado en red neuronal que analiza imágenes de placas electrónicas y carcasas de drones militares para detectar defectos físicos. Clasifica automáticamente cada componente como apto, requiere revisión o rechazado, y propone al técnico de calidad qué piezas retirar del lote. Se utiliza exclusivamente en una línea de fabricación de material militar bajo contrato con el Ministerio de Defensa español.  
+Sector: Fabricación de componentes electrónicos para defensa  
+Clasificación: EXCLUIDO  
+Rol de la entidad: Proveedor / Implementador  
+Fecha: 27/05/2026 a las 21:51  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como EXCLUIDO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Proveedor / Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: EXCLUIDO  
+Descripción: Sistema de IA fuera del ámbito de aplicación del Reglamento (UE) 2024/1689 (Art. 2)
+
+Rol principal de la entidad: Proveedor / Implementador
+
+Roles identificados:
+- Proveedor
+- Implementador
+
+Su organización actúa en varios roles bajo el AI Act. Las obligaciones de cada rol se detallan en la sección correspondiente.
+
+3. Obligaciones identificadas durante la evaluación
+
+- El AI Act no es aplicable a este sistema (Art. 2 — fuera del ámbito de aplicación)
+- No se identifican obligaciones del Reglamento (UE) 2024/1689
+- Acción recomendada: documentar esta evaluación para acreditarla si fuera necesario
+- Verificar si aplican otras normativas sectoriales (protección de datos, seguridad del producto, etc.)
+- Revisar la clasificación si el sistema o su uso cambia en el futuro
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.06.0 · Corpus v2026.06.0 · Fecha de generación: 27/05/2026 a las 21:51.

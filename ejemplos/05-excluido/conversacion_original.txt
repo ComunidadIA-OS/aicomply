@@ -1,0 +1,71 @@
+Evaluador y clasificador
+
+Describa su sistema de IA en lenguaje natural o inicie a partir de su documentación técnica. Le haré las preguntas necesarias para determinar su clasificación y obligaciones.
+
+Una PYME industrial española fabrica componentes electrónicos para drones de uso exclusivamente militar bajo contrato con el Ministerio de Defensa. La empresa ha desarrollado un sistema de IA de visión artificial que analiza imágenes de placas electrónicas y carcasas de drones militares para detectar grietas, daños térmicos, corrosión o defectos de montaje. El sistema utiliza una red neuronal entrenada con imágenes históricas de componentes militares inspeccionados previamente. Genera una clasificación automática de cada pieza como "apta", "requiere revisión" o "rechazada", y propone al técnico de calidad qué componentes deben retirarse del lote. El sistema se usa únicamente dentro de una línea de fabricación destinada a material militar. No se comercializa para usos civiles, no se utiliza en productos industriales ordinarios y no se pone a disposición de clientes privados. Su finalidad exclusiva es apoyar el control de calidad de componentes destinados a drones militares.
+
+Antes de comenzar, un aviso breve: este análisis es una orientación preliminar basada en el Reglamento (UE) 2024/1689. No constituye asesoramiento jurídico vinculante. Le recomiendo contrastar las conclusiones con un profesional especializado en derecho tecnológico o cumplimiento normativo.
+
+Dicho esto, la descripción que ha facilitado permite llegar a una conclusión con bastante claridad, sin necesidad de recorrer todo el árbol de decisión.
+
+El elemento determinante en este caso es el ámbito de aplicación del Reglamento. El artículo 2 del Reglamento (UE) 2024/1689 excluye expresamente de su ámbito los sistemas de IA utilizados exclusivamente con fines militares o de defensa, con independencia de quién los desarrolle o dónde se usen.
+
+En su caso:
+- El sistema analiza componentes destinados únicamente a drones militares bajo contrato con el Ministerio de Defensa.
+- No se comercializa para usos civiles ni se pone a disposición de terceros privados.
+- Su finalidad es estrictamente el control de calidad dentro de una línea de fabricación de material militar.
+
+Esto encaja con precisión en la exclusión por uso militar. No obstante, permítame confirmar un punto antes de cerrar el análisis, porque es relevante para que la conclusión sea sólida:
+
+¿El sistema se utiliza o se utilizará en algún momento también en líneas de producción de componentes electrónicos de uso civil o dual, aunque sea de forma puntual o experimental? Por ejemplo, ¿se ha planteado reutilizarlo para inspeccionar componentes destinados a otros sectores no militares?
+
+Si la respuesta es no y el uso es estrictamente militar en todos los escenarios actuales y previstos, puedo cerrar la evaluación y entregarle el informe final.
+
+No
+
+Perfecto. Con esa confirmación, el análisis está completo.
+
+INFORME DE EVALUACIÓN — REGLAMENTO (UE) 2024/1689 (IA Act)
+
+1. Resumen ejecutivo
+
+La organización ha desarrollado y opera internamente un sistema de IA de visión artificial para el control de calidad de componentes electrónicos destinados exclusivamente a drones militares. Tras analizar la descripción facilitada y confirmar que el sistema no tiene ningún uso civil ni dual, se concluye que el sistema queda excluido del ámbito de aplicación del Reglamento (UE) 2024/1689. El Reglamento no impone obligación alguna sobre este sistema en su configuración actual.
+
+2. Tus obligaciones
+
+Ninguna obligación bajo el Reglamento (UE) 2024/1689 en la configuración actual del sistema.
+
+El artículo 2 del Reglamento excluye expresamente los sistemas de IA desarrollados y utilizados exclusivamente con fines militares. Dado que el sistema cumple esta condición de forma inequívoca, el Reglamento no es aplicable.
+
+Advertencia importante: Esta exclusión es sensible al uso real del sistema. Si en el futuro se produjera alguna de las siguientes situaciones, la exclusión dejaría de ser válida y habría que realizar una nueva evaluación:
+- El sistema se reutiliza, aunque sea puntualmente, en líneas de producción de componentes civiles o de uso dual.
+- El sistema se comercializa o licencia a terceros para cualquier finalidad no estrictamente militar.
+- El sistema se integra en un producto o proceso que pueda tener salida al mercado civil.
+
+3. Recorrido realizado (traza auditable)
+
+- Definición de sistema de IA (Art. 3.1): Cumple la definición — el sistema utiliza una red neuronal que infiere clasificaciones a partir de imágenes, con capacidad de generalización más allá de reglas fijas (respuesta directa e inferencia confirmada).
+- Tipo de entidad: Proveedor e implementador — la organización ha desarrollado el sistema y lo opera internamente (inferencia confirmada por la descripción).
+- Ámbito territorial: Establecida en España, dentro de la UE; el sistema opera en territorio español (inferencia confirmada).
+- Exclusión por uso militar (Art. 2): El sistema se utiliza exclusivamente en la fabricación de material militar bajo contrato con el Ministerio de Defensa, sin uso civil ni dual, presente ni previsto (respuesta directa confirmada). Resultado: EXCLUIDO.
+
+4. Puntos que requieren revisión profesional
+
+No existen nodos indeterminados en este recorrido. La exclusión es clara con la información facilitada.
+
+No obstante, se recomienda revisión profesional en los siguientes supuestos futuros:
+- Evolución del uso del sistema: Cualquier ampliación del uso a componentes civiles o duales exige una nueva evaluación completa bajo el Reglamento.
+- Cambios normativos: El perímetro de la exclusión militar podría ser objeto de desarrollo interpretativo por parte de la Comisión Europea o las autoridades nacionales de supervisión.
+- Normativa sectorial de defensa: Aunque el Reglamento de IA no aplica, la fabricación de material militar bajo contrato con el Ministerio de Defensa puede estar sujeta a otros marcos normativos específicos del sector.
+
+5. Aviso legal
+
+Este informe constituye una orientación preliminar basada en el Reglamento (UE) 2024/1689 y la información facilitada. No tiene carácter de asesoramiento jurídico vinculante. Se recomienda contrastar estas conclusiones con un profesional especializado antes de adoptar decisiones de cumplimiento normativo.
+
+Evaluación completada — Clasificación: EXCLUIDO | Rol: Proveedor / Implementador
+
+---
+
+Cumplimiento
+
+El sistema evaluado queda excluido del ámbito de aplicación del Reglamento (UE) 2024/1689 (Art. 2 — uso militar exclusivo). No procede iniciar una evaluación de cumplimiento bajo el AI Act. Genere el Informe de evaluación en la pestaña Informe para documentar esta conclusión.

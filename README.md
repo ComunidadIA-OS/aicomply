@@ -372,12 +372,13 @@ aicomply/
 ├── scripts/
 │   └── ingest_txt.py                   # Convierte .txt legales a JSON para el RAG
 ├── assets/                             # Capturas de pantalla para el README
-├── ejemplos/                           # Cinco ejemplos completos de evaluación con AIComply
+├── ejemplos/                           # Seis ejemplos completos de evaluación con AIComply
 │   ├── 00-no-ia/                       # Sistema fuera del ámbito del AI Act
 │   ├── 01-riesgo-minimo/               # Riesgo mínimo — optimización de hornos
 │   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
 │   ├── 03-alto-riesgo/                 # Alto riesgo — filtrado de CVs
-│   └── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
+│   ├── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
+│   └── 05-excluido/                    # Excluido Art. 2 — visión artificial militar
 ├── LICENSE
 ├── README.md
 ├── CONTRIBUTING.md
