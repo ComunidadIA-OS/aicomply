@@ -860,7 +860,7 @@ class GeneradorInforme:
             # Subtítulo sistema (descripción corta)
             sistema_raw = meta.get("sistema", "")
             if sistema_raw:
-                subtitulo = sistema_raw[:115] + ("..." if len(sistema_raw) > 115 else "")
+                subtitulo = sistema_raw
                 y_sub = min(pdf.get_y() + 2, 95)
                 pdf.set_xy(LM, y_sub)
                 pdf.set_font("Helvetica", "", 10)
@@ -871,10 +871,10 @@ class GeneradorInforme:
             # ── Grid 2×2 de metadatos ─────────────────────────────────────────
             GRID_Y = BAND_H + 8
             CELL_W = CW / 2
-            CELL_H = 22.0
+            CELL_H = 28.0
 
             metadatos = [
-                ("SISTEMA EVALUADO", (meta.get("sistema") or "—")[:52]),
+                ("SISTEMA EVALUADO", meta.get("sistema") or "—"),
                 ("SECTOR", meta.get("sector") or "—"),
                 ("ROL DE LA ENTIDAD", (meta.get("rol") or "—").capitalize()),
                 ("FECHA DE GENERACION", meta.get("fecha") or fecha_hoy),
@@ -897,7 +897,7 @@ class GeneradorInforme:
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(26, 26, 26)
                 pdf.multi_cell(CELL_W - 5, 4.5,
-                               _limpiar(valor[:48] if len(valor) > 48 else valor),
+                               _limpiar(valor),
                                align="L", new_x="LMARGIN", new_y="NEXT")
 
             # ── Bloque clasificación ──────────────────────────────────────────
