@@ -516,12 +516,25 @@ class GeneradorInforme:
             ],
         }
 
-        pasos = pasos_por_nivel.get(clasificacion, [])
+        clas_norm = clasificacion.upper().strip() if clasificacion else ""
+        pasos = pasos_por_nivel.get(clas_norm, [])
+        if not pasos:
+            pasos = [
+                "**Inmediato:** Revisar la clasificación del sistema con un asesor legal "
+                "especializado para determinar las obligaciones aplicables.",
+                "**Recomendado:** Documentar las capacidades, limitaciones y usos previstos "
+                "del sistema y mantener ese registro actualizado.",
+            ]
+
         if carencias:
+            pasos = list(pasos)
             pasos.append(
-                f"**Áreas de mejora prioritarias:** {len(carencias)} área(s) identificada(s) "
-                "en el análisis de cumplimiento que requieren atención."
+                f"**Áreas de mejora detectadas ({len(carencias)}):**"
             )
+            for c in carencias[:5]:
+                pasos.append(f"  - {c}")
+            if len(carencias) > 5:
+                pasos.append(f"  - … y {len(carencias) - 5} área(s) adicional(es) — ver sección de obligaciones.")
 
         for paso in pasos:
             texto += f"\n- {paso}"

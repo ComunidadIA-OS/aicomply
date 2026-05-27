@@ -16,7 +16,7 @@ import html
 import streamlit as st
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
-from src.chatbot import AIComplyChat
+from src.chatbot import AIComplyChat, _RE_BLOQUE_CIERRE, _RE_BLOQUE_OBLIGACION
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable, mensaje_error_seguro, rate_limiter
 
@@ -171,7 +171,8 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
 
         for msg in st.session_state.mensajes_cumplimiento:
             with st.chat_message(msg["role"]):
-                st.markdown(msg["content"])
+                content = _RE_BLOQUE_OBLIGACION.sub("", _RE_BLOQUE_CIERRE.sub("", msg["content"])).rstrip()
+                st.markdown(content)
 
     if st.session_state.cumplimiento_completado:
         return
@@ -218,6 +219,7 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
                             placeholder.markdown(texto + "▌")
                     except Exception as exc:
                         texto = f"_{mensaje_error_seguro(exc)}_"
+                texto = _RE_BLOQUE_OBLIGACION.sub("", _RE_BLOQUE_CIERRE.sub("", texto)).rstrip()
                 placeholder.markdown(texto)
 
         st.session_state.mensajes_cumplimiento.append({"role": "assistant", "content": texto})

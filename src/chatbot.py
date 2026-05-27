@@ -91,6 +91,23 @@ Para elementos de tipo "recomendacion" o "vigilancia" no adoptados usa estado "c
 
 _SENAL_COMPLETA = "[EVALUACION_COMPLETA]"
 
+_RE_BLOQUE_OBLIGACION = re.compile(r"<<<OBLIGACION>>>(.+?)<<<FIN>>>", re.DOTALL)
+_RE_BLOQUE_CIERRE     = re.compile(r"<<<CIERRE>>>(.+?)<<<FIN>>>",     re.DOTALL)
+_RE_REGISTRADO = re.compile(
+    r"Registrado:\s*(?P<art>Art\.?\s*[\w.\-]+)\s*[—\-:]\s*(?P<titulo>[^:]+?):\s*"
+    r"(?P<estado>CUBIERTA|PARCIAL|CARENCIA|NO[_ ]?CUBIERTA|NO[_ ]?APLICA)",
+    re.IGNORECASE,
+)
+_NORM_ESTADO = {
+    "cubierta": "cubierta",
+    "parcial": "parcial",
+    "carencia": "carencia",
+    "no cubierta": "carencia",
+    "no_cubierta": "carencia",
+    "no aplica": "no_aplica",
+    "no_aplica": "no_aplica",
+}
+
 
 class AIComplyChat:
     """Gestiona la conversación con el LLM para el árbol de decisión o el análisis de cumplimiento."""
@@ -107,6 +124,10 @@ class AIComplyChat:
         self.evaluacion_completa: bool = False
         self._system_prompt_override = system_prompt_override
         self._max_historial = max_historial
+        self.obligaciones_registradas: list[dict] = []
+        self.carencias_registradas: list[str] = []
+        self.puntos_revision_registrados: list[str] = []
+        self.resumen_cumplimiento_registrado: str = ""
 
     @property
     def _system_base(self) -> str:
@@ -161,6 +182,42 @@ class AIComplyChat:
             resto = resto[1:]
         return primeros + resto
 
+    def _procesar_bloques(self, texto: str) -> str:
+        """Extrae bloques machine-readable del texto, persiste su contenido y devuelve texto limpio."""
+        for m in _RE_BLOQUE_OBLIGACION.finditer(texto):
+            try:
+                obl = json.loads(m.group(1))
+                if "articulo" not in obl or "estado" not in obl:
+                    continue
+                key = (obl.get("articulo", ""), obl.get("titulo", ""))
+                self.obligaciones_registradas = [
+                    o for o in self.obligaciones_registradas
+                    if (o.get("articulo", ""), o.get("titulo", "")) != key
+                ]
+                self.obligaciones_registradas.append(obl)
+            except Exception:
+                logger.warning("Bloque OBLIGACION malformado; ignorado.", exc_info=True)
+
+        for m in _RE_BLOQUE_CIERRE.finditer(texto):
+            try:
+                cierre = json.loads(m.group(1))
+                self.resumen_cumplimiento_registrado = (
+                    cierre.get("resumen") or self.resumen_cumplimiento_registrado
+                )
+                for c in cierre.get("carencias", []):
+                    if c and c not in self.carencias_registradas:
+                        self.carencias_registradas.append(c)
+                for p in cierre.get("puntos_revision", []):
+                    if p and p not in self.puntos_revision_registrados:
+                        self.puntos_revision_registrados.append(p)
+                break
+            except Exception:
+                logger.warning("Bloque CIERRE malformado; ignorado.", exc_info=True)
+
+        texto_limpio = _RE_BLOQUE_OBLIGACION.sub("", texto)
+        texto_limpio = _RE_BLOQUE_CIERRE.sub("", texto_limpio)
+        return texto_limpio.rstrip()
+
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
         self.historial.append({"role": "user", "content": mensaje_usuario})
@@ -183,6 +240,8 @@ class AIComplyChat:
                 # Rollback: el historial no debe quedar con un user sin assistant.
                 self.historial.pop()
                 raise
+
+        respuesta_completa = self._procesar_bloques(respuesta_completa)
 
         # Detectar señal de evaluación completa y limpiarla del historial persistido.
         # Solo se acepta si va acompañada de un informe real (≥150 caracteres).
@@ -207,6 +266,8 @@ class AIComplyChat:
         except Exception:
             self.historial.pop()
             raise
+
+        respuesta = self._procesar_bloques(respuesta)
 
         if _SENAL_COMPLETA in respuesta:
             self.evaluacion_completa = True
@@ -287,13 +348,56 @@ class AIComplyChat:
         return self._normalizar_clasificacion_data(datos)
 
     def extraer_cumplimiento(self) -> dict:
-        """Extrae las obligaciones y gaps de la conversación de cumplimiento."""
+        """Devuelve la estructura de cumplimiento construida incrementalmente.
+
+        La fuente de verdad son los bloques <<<OBLIGACION>>> y <<<CIERRE>>> capturados
+        turno a turno por _procesar_bloques. Solo llama al LLM si no hay registros.
+        """
+        if self.obligaciones_registradas:
+            return {
+                "obligaciones": list(self.obligaciones_registradas),
+                "carencias_detectadas": list(self.carencias_registradas),
+                "puntos_revision_profesional": list(self.puntos_revision_registrados),
+                "resumen_cumplimiento": self.resumen_cumplimiento_registrado or "",
+            }
+
+        resultado_fallback = self._extraer_cumplimiento_legacy()
+        if not resultado_fallback.get("obligaciones"):
+            reconstruido = self._reconstruir_obligaciones_desde_historial()
+            if reconstruido:
+                resultado_fallback["obligaciones"] = reconstruido
+        return resultado_fallback
+
+    def _extraer_cumplimiento_legacy(self) -> dict:
+        """Extracción clásica: pide al LLM que derife el JSON del historial completo."""
         if len(self.historial) < 2:
             return {"obligaciones": [], "carencias_detectadas": [], "puntos_revision_profesional": []}
 
         mensajes = self.historial + [{"role": "user", "content": _PROMPT_EXTRAER_CUMPLIMIENTO}]
         texto = self.provider.chat(mensajes, system_prompt=_SYSTEM_EXTRACTION)
         return self._parsear_json(texto, {"obligaciones": [], "carencias_detectadas": []})
+
+    def _reconstruir_obligaciones_desde_historial(self) -> list[dict]:
+        """Último recurso: busca en el historial líneas 'Registrado: Art. X — Título: ESTADO'."""
+        reconstruidas: dict[tuple, dict] = {}
+        for msg in self.historial:
+            if msg.get("role") != "assistant":
+                continue
+            for m in _RE_REGISTRADO.finditer(msg.get("content", "")):
+                estado_raw = m.group("estado").lower().replace(" ", "_")
+                estado = _NORM_ESTADO.get(estado_raw.replace("_", " "), estado_raw)
+                art = m.group("art").strip()
+                titulo = m.group("titulo").strip()
+                key = (art, titulo)
+                reconstruidas[key] = {
+                    "articulo": art,
+                    "titulo": titulo,
+                    "estado": estado,
+                    "tipo": "obligacion",
+                    "descripcion": "",
+                    "rol": "",
+                }
+        return list(reconstruidas.values())
 
     def _parsear_json(self, texto: str, fallback: dict) -> dict:
         texto = texto.strip()
@@ -322,3 +426,7 @@ class AIComplyChat:
         self.historial = []
         self.nivel_riesgo = None
         self.evaluacion_completa = False
+        self.obligaciones_registradas = []
+        self.carencias_registradas = []
+        self.puntos_revision_registrados = []
+        self.resumen_cumplimiento_registrado = ""
