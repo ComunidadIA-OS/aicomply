@@ -20,6 +20,12 @@ from src.report_generator import GeneradorInforme
 
 _FECHA_HOY = date.today().strftime("%Y-%m-%d")
 
+_CLASIFICACIONES_SIN_CUMPLIMIENTO = frozenset({
+    "PROHIBIDO",
+    "EXCLUIDO",
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+})
+
 _TITULOS_INFORME = {
     "clasificacion": "Informe de clasificación",
     "cumplimiento": "Informe de cumplimiento",
@@ -104,10 +110,18 @@ def _seccion_informe_clasificacion(eval_ok: bool) -> None:
         _botones_descarga(st.session_state[clave_md], "clasificacion")
 
 
-def _seccion_informe_cumplimiento(cumpl_ok: bool) -> None:
+def _seccion_informe_cumplimiento(cumpl_ok: bool, es_caso_especial: bool) -> None:
     """Sección del informe de cumplimiento (se desbloquea con Pestaña 2)."""
     st.subheader("Informe de cumplimiento")
     st.caption("Incluye: obligaciones por artículo, áreas de mejora y recomendaciones de acción.")
+
+    if es_caso_especial:
+        clasificacion = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "")
+        st.info(
+            f"La clasificación **{clasificacion}** no requiere análisis de cumplimiento. "
+            "Consulte el **Informe de clasificación** para las implicaciones legales y las acciones recomendadas."
+        )
+        return
 
     if not cumpl_ok:
         pasos_faltantes = []
@@ -146,10 +160,18 @@ def _seccion_informe_cumplimiento(cumpl_ok: bool) -> None:
         _botones_descarga(st.session_state[clave_md], "cumplimiento")
 
 
-def _seccion_informe_completo(eval_ok: bool, cumpl_ok: bool) -> None:
+def _seccion_informe_completo(eval_ok: bool, cumpl_ok: bool, es_caso_especial: bool) -> None:
     """Sección del informe completo (se desbloquea con Pestañas 1 y 2)."""
     st.subheader("Informe completo")
     st.caption("Incluye clasificación, obligaciones, áreas de mejora, recomendaciones y puntos de revisión.")
+
+    if es_caso_especial:
+        clasificacion = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "")
+        st.info(
+            f"La clasificación **{clasificacion}** no requiere análisis de cumplimiento. "
+            "Use el **Informe de clasificación** para obtener el informe completo de su caso."
+        )
+        return
 
     if not (eval_ok and cumpl_ok):
         faltantes = []
@@ -202,20 +224,24 @@ def mostrar_tab_informe() -> None:
     )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
 
+    # Para PROHIBIDO, EXCLUIDO y NO CUMPLE no tiene sentido el análisis de cumplimiento
+    clasificacion_actual = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "").upper()
+    es_caso_especial = eval_ok and clasificacion_actual in _CLASIFICACIONES_SIN_CUMPLIMIENTO
+
     # Indicadores de progreso
     col1, col2, col3 = st.columns(3)
     col1.metric("Evaluación", "Completada" if eval_ok else "Pendiente")
-    col2.metric("Cumplimiento", "Completado" if cumpl_ok else "Pendiente")
-    col3.metric("Informe completo", "Disponible" if (eval_ok and cumpl_ok) else "Pendiente")
+    col2.metric("Cumplimiento", "No aplica" if es_caso_especial else ("Completado" if cumpl_ok else "Pendiente"))
+    col3.metric("Informe completo", "No aplica" if es_caso_especial else ("Disponible" if (eval_ok and cumpl_ok) else "Pendiente"))
 
     st.divider()
 
-    # Tres secciones desplegables, una por tipo de informe
-    with st.expander("Informe de clasificación", expanded=eval_ok and not cumpl_ok):
+    # Para casos especiales, el informe de clasificación es el único relevante y se abre automáticamente
+    with st.expander("Informe de clasificación", expanded=eval_ok and (es_caso_especial or not cumpl_ok)):
         _seccion_informe_clasificacion(eval_ok)
 
     with st.expander("Informe de cumplimiento", expanded=cumpl_ok and not st.session_state.get("informe_md_completo")):
-        _seccion_informe_cumplimiento(cumpl_ok)
+        _seccion_informe_cumplimiento(cumpl_ok, es_caso_especial)
 
     with st.expander("Informe completo", expanded=(eval_ok and cumpl_ok)):
-        _seccion_informe_completo(eval_ok, cumpl_ok)
+        _seccion_informe_completo(eval_ok, cumpl_ok, es_caso_especial)

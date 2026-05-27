@@ -25,6 +25,31 @@ try:
 except OSError:
     _CORPUS_VERSION = "desconocida"
 
+_CLASIFICACIONES_SIN_OBLIGACIONES = frozenset({
+    "PROHIBIDO",
+    "EXCLUIDO",
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+})
+
+_TEXTO_SIN_OBLIGACIONES: dict[str, str] = {
+    "PROHIBIDO": (
+        "Este sistema está **prohibido** por el Reglamento (UE) 2024/1689 (Art. 5). "
+        "No procede realizar análisis de cumplimiento: el sistema no puede desarrollarse "
+        "ni desplegarse legalmente en la Unión Europea. "
+        "El informe recoge las implicaciones legales y las acciones inmediatas requeridas."
+    ),
+    "EXCLUIDO": (
+        "El sistema evaluado está **fuera del ámbito de aplicación** del AI Act (Art. 2). "
+        "No se identifican obligaciones del Reglamento (UE) 2024/1689. "
+        "Pueden aplicar otras normativas sectoriales o de protección de datos."
+    ),
+    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA": (
+        "El sistema evaluado **no cumple la definición de sistema de IA** del Art. 3.1 del AI Act. "
+        "El Reglamento (UE) 2024/1689 no es aplicable. "
+        "Pueden aplicar otras normativas según el tipo de tecnología utilizada."
+    ),
+}
+
 _AVISO_LEGAL_MD = (
     "---\n\n"
     "> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. "
@@ -171,7 +196,7 @@ class GeneradorInforme:
             self._cabecera("Informe de cumplimiento", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol),
-            self._seccion_obligaciones_detalladas(2, obligaciones, roles_multiples),
+            self._seccion_obligaciones_detalladas(2, obligaciones, roles_multiples, clasificacion),
             self._seccion_carencias(3, carencias),
             self._seccion_plan_accion(4, clasificacion, carencias),
             self._seccion_revision_profesional(5, indeterminados + puntos_revision),
@@ -208,7 +233,7 @@ class GeneradorInforme:
             self._resumen_ejecutivo_completo(descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
             self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
-            self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples),
+            self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples, clasificacion),
             self._seccion_carencias(5, carencias),
             self._seccion_plan_accion(6, clasificacion, carencias),
             self._seccion_revision_profesional(7, indeterminados + puntos_revision),
@@ -262,6 +287,10 @@ class GeneradorInforme:
         self, resumen: str, clasificacion: str, rol: str
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
+        clas_norm = (clasificacion or "").upper().strip()
+        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+            texto += _TEXTO_SIN_OBLIGACIONES.get(clas_norm, "")
+            return texto
         texto += (
             f"Este informe recoge el análisis de cumplimiento de un sistema clasificado como "
             f"**{clasificacion}** con rol **{_capitalizar_roles(rol)}**."
@@ -287,7 +316,10 @@ class GeneradorInforme:
         )
         if estados:
             texto += f" Estados adicionales: {', '.join(estados)}."
-        if resumen_cumpl:
+        clas_norm = (clasificacion or "").upper().strip()
+        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+            texto += f"\n\n{_TEXTO_SIN_OBLIGACIONES.get(clas_norm, '')}"
+        elif resumen_cumpl:
             texto += f"\n\n{resumen_cumpl}"
         return texto
 
@@ -336,6 +368,20 @@ class GeneradorInforme:
                 "Posibles sanciones de hasta 35.000.000 EUR o el 7 % de la facturación global",
                 "Consulte urgentemente con un asesor legal especializado",
             ],
+            "EXCLUIDO": [
+                "El AI Act no es aplicable a este sistema (Art. 2 — fuera del ámbito de aplicación)",
+                "No se identifican obligaciones del Reglamento (UE) 2024/1689",
+                "Acción recomendada: documentar esta evaluación para acreditarla si fuera necesario",
+                "Verificar si aplican otras normativas sectoriales (protección de datos, seguridad del producto, etc.)",
+                "Revisar la clasificación si el sistema o su uso cambia en el futuro",
+            ],
+            "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA": [
+                "El sistema no cumple la definición de sistema de IA del Art. 3.1 del AI Act",
+                "El Reglamento (UE) 2024/1689 no es aplicable",
+                "Acción recomendada: documentar esta evaluación para acreditarla si fuera necesario",
+                "Verificar si aplican otras normativas según el tipo de tecnología utilizada",
+                "Revisar la clasificación si el sistema evoluciona y adquiere capacidades de inferencia autónoma",
+            ],
             "ALTO": [
                 "Sistema de gestión de riesgos documentado (Art. 9)",
                 "Gobernanza de datos de entrenamiento, validación y prueba (Art. 10)",
@@ -366,8 +412,14 @@ class GeneradorInforme:
         return texto
 
     def _seccion_obligaciones_detalladas(
-        self, num: int, obligaciones: list[dict], roles_multiples: list[str]
+        self, num: int, obligaciones: list[dict], roles_multiples: list[str], clasificacion: str = ""
     ) -> str:
+        clas_norm = (clasificacion or "").upper().strip()
+        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+            return (
+                f"## {num}. Análisis de obligaciones\n\n"
+                + _TEXTO_SIN_OBLIGACIONES.get(clas_norm, "No aplica análisis de obligaciones.")
+            )
         if not obligaciones:
             return (
                 f"## {num}. Análisis de obligaciones\n\n"
@@ -474,11 +526,25 @@ class GeneradorInforme:
     def _seccion_plan_accion(self, num: int, clasificacion: str, carencias: list[str]) -> str:
         texto = f"## {num}. Plan de acción recomendado\n"
 
-        if clasificacion == "PROHIBIDO":
+        clas_norm = (clasificacion or "").upper().strip()
+
+        if clas_norm == "PROHIBIDO":
             texto += (
-                "\n**Este sistema está prohibido por el AI Act.**  \n"
+                "\n**Este sistema está prohibido por el AI Act (Art. 5).**  \n"
                 "Debe detenerse el desarrollo y despliegue de forma inmediata. "
-                "Consulte con un asesor legal especializado."
+                "Consulte urgentemente con un asesor legal especializado. "
+                "Las sanciones pueden alcanzar 35.000.000 EUR o el 7 % de la facturación global."
+            )
+            return texto
+
+        if clas_norm in ("EXCLUIDO", "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA"):
+            texto += (
+                "\n**Este sistema no está sujeto al AI Act.**  \n"
+                "No se requieren acciones de cumplimiento del Reglamento (UE) 2024/1689. "
+                "Se recomienda:\n"
+                "- Documentar esta evaluación y sus conclusiones para poder acreditarla si fuera necesario.\n"
+                "- Verificar si aplican otras normativas sectoriales (protección de datos, seguridad del producto, etc.).\n"
+                "- Revisar la clasificación si el sistema o su uso cambia en el futuro."
             )
             return texto
 
