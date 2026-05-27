@@ -490,9 +490,8 @@ Clase abstracta `LLMProvider` con implementaciones para Anthropic Claude y cualq
 
 ## Aportación a la comunidad y dependencias upstream
 
-AIComply se construye sobre librerías de código abierto preexistentes, y aspira
-a contribuir de vuelta a la comunidad mediante mejoras detectadas durante el
-desarrollo y recursos reutilizables ofrecidos al ecosistema.
+AIComply se construye sobre librerías de código abierto preexistentes y contribuye
+de vuelta a la comunidad con recursos reutilizables ofrecidos al ecosistema.
 
 ### Dependencias core y sus repositorios
 
@@ -509,14 +508,6 @@ desarrollo y recursos reutilizables ofrecidos al ecosistema.
 | [`ruff`](https://github.com/astral-sh/ruff) | Linter y formateador (dev) | github.com/astral-sh/ruff |
 | [`mypy`](https://github.com/python/mypy) | Comprobación estática de tipos (dev) | github.com/python/mypy |
 
-### Mejoras detectadas durante el desarrollo
-
-_En revisión durante el hackathon — esta sección se actualizará con los enlaces
-a issues o PRs abiertos en dependencias upstream._
-
-Si durante el desarrollo o el uso de AIComply detecta un bug o área de mejora
-en alguna dependencia, abra un issue o PR en el repositorio correspondiente y
-añada el enlace aquí mediante un PR a este README.
 
 ### Recursos que AIComply ofrece a la comunidad
 
