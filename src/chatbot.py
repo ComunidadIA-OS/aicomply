@@ -74,7 +74,7 @@ _PROMPT_EXTRAER_CUMPLIMIENTO = """Basándote en toda la conversación de cumplim
       "articulo": "Art. X",
       "titulo": "nombre de la obligación",
       "descripcion": "descripción concreta para esta organización",
-      "estado": "cubierta|parcial|carencia|no_evaluada",
+      "estado": "cubierta|parcial|carencia|no_aplica",
       "tipo": "obligacion|recomendacion|vigilancia"
     }
   ],

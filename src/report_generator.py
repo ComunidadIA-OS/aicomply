@@ -76,12 +76,12 @@ _PALETA: dict[str, dict] = {
         "texto": (106, 16, 16),
         "label": "Mejora",
     },
-    "no_evaluada": {
+    "no_aplica": {
         "borde": (170, 170, 170),
         "bg":    (250, 250, 250),
         "badge": (240, 240, 240),
         "texto": (102, 102, 102),
-        "label": "Sin evaluar",
+        "label": "No aplica",
     },
 }
 
@@ -381,7 +381,7 @@ class GeneradorInforme:
         cub_leg = [o for o in legales if o.get("estado") == "cubierta"]
         par_leg = [o for o in legales if o.get("estado") == "parcial"]
         car_leg = [o for o in legales if o.get("estado") == "carencia"]
-        no_ev_leg = [o for o in legales if o.get("estado") not in ("cubierta", "parcial", "carencia")]
+        no_ap_leg = [o for o in legales if o.get("estado") not in ("cubierta", "parcial", "carencia")]
 
         total_leg = len(legales)
         # Solo las obligaciones con estado definitivo computan en el porcentaje
@@ -401,7 +401,7 @@ class GeneradorInforme:
             texto += (
                 f"**Grado de cumplimiento legal estimado:** {pct} %  \n"
                 f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
-                f"No cubiertas: {len(car_leg)} | Sin evaluar: {len(no_ev_leg)}"
+                f"No cubiertas: {len(car_leg)} | No aplica: {len(no_ap_leg)}"
             )
             if rec_pen:
                 texto += (
@@ -432,7 +432,7 @@ class GeneradorInforme:
             bloque = f"\n\n### {encabezado}\n"
             bloque += "\n*No computan en el porcentaje de cumplimiento legal.*\n"
             for o in lista:
-                lbl = etiquetas.get(o.get("estado", ""), "Sin evaluar")
+                lbl = etiquetas.get(o.get("estado", ""), "No aplica")
                 bloque += (
                     f"\n**{o.get('articulo', '')} — {o.get('titulo', '')}** ({lbl})  \n"
                     f"{o.get('descripcion', '')}  \n"
@@ -444,7 +444,7 @@ class GeneradorInforme:
             texto += _bloque(cub_leg, "Cubiertas")
             texto += _bloque(par_leg, "Parcialmente cubiertas")
             texto += _bloque(car_leg, "No cubiertas")
-            texto += _bloque(no_ev_leg, "Sin evaluar")
+            texto += _bloque(no_ap_leg, "No aplica")
 
         if recomendaciones:
             texto += _bloque_no_legal(
@@ -571,7 +571,7 @@ class GeneradorInforme:
         cw: float,
     ) -> None:
         """Dibuja una caja de obligación con diseño de color según estado."""
-        pal = _PALETA.get(estado, _PALETA["no_evaluada"])
+        pal = _PALETA.get(estado, _PALETA["no_aplica"])
         BADGE_W = 28.0
         LEFT_BAR = 3.0
         PAD_H = 2.5
@@ -1098,7 +1098,7 @@ class GeneradorInforme:
                 nonlocal _obl_estado
                 _flush_obl()
                 _obl_estado = estado_key
-                pal = _PALETA.get(estado_key, _PALETA["no_evaluada"])
+                pal = _PALETA.get(estado_key, _PALETA["no_aplica"])
                 pdf.ln(1)
                 pdf.set_font("Helvetica", "B", 8)
                 pdf.set_text_color(*pal["borde"])
@@ -1119,7 +1119,7 @@ class GeneradorInforme:
                     ("Cubiertas",    cub, (42, 122, 74)),
                     ("Parciales",    par, (184, 122, 0)),
                     ("No cubiertas", mej, (176, 32, 32)),
-                    ("Sin evaluar",  sin, (150, 150, 150)),
+                    ("No aplica",  sin, (150, 150, 150)),
                 ]
 
                 for i, (lbl, num, col) in enumerate(tarjetas):
@@ -1293,8 +1293,8 @@ class GeneradorInforme:
                 elif linea_s.startswith("### ") and "reas de mejora" in linea_s:
                     _grupo_obl("Areas de mejora", "carencia")
 
-                elif linea_s.startswith("### Obligaciones no evaluadas"):
-                    _grupo_obl("Obligaciones no evaluadas", "no_evaluada")
+                elif linea_s.startswith("### Obligaciones no aplicables"):
+                    _grupo_obl("Obligaciones no aplicables", "no_aplica")
 
                 elif linea_s.startswith("### ") or linea_s.startswith("#### "):
                     _flush_obl()

@@ -350,29 +350,29 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
         # ── Trazabilidad separada por tipo ─────────────────────────────────────
         def _render_obl(o: dict) -> None:
             tipo  = o.get("tipo", "obligacion")
-            estado = o.get("estado", "no_evaluada")
+            estado = o.get("estado", "no_aplica")
             if tipo == "recomendacion":
                 estilos = {
                     "cubierta":    ("#1565C0", "#E3F2FD", "✓ Adoptada"),
                     "parcial":     ("#F9A825", "#FFF8E1", "⚠ En proceso"),
                     "carencia":    ("#5E35B1", "#EDE7F6", "→ Recomendación pendiente"),
-                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                    "no_aplica": ("#757575", "#F5F5F5", "— No aplica"),
                 }
             elif tipo == "vigilancia":
                 estilos = {
                     "cubierta":    ("#1565C0", "#E3F2FD", "✓ Atendida"),
                     "parcial":     ("#F9A825", "#FFF8E1", "⚠ En proceso"),
                     "carencia":    ("#EF6C00", "#FFF3E0", "⦿ Medida prudencial pendiente"),
-                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                    "no_aplica": ("#757575", "#F5F5F5", "— No aplica"),
                 }
             else:
                 estilos = {
                     "cubierta":    ("#388E3C", "#E8F5E9", "✓ Cubierta"),
                     "parcial":     ("#F9A825", "#FFF8E1", "⚠ Parcial"),
                     "carencia":    ("#C62828", "#FFEBEE", "✗ No cubierta"),
-                    "no_evaluada": ("#757575", "#F5F5F5", "— Sin evaluar"),
+                    "no_aplica": ("#757575", "#F5F5F5", "— No aplica"),
                 }
-            color, bg, etiqueta = estilos.get(estado, estilos["no_evaluada"])
+            color, bg, etiqueta = estilos.get(estado, estilos["no_aplica"])
             articulo = html.escape(o.get("articulo", ""))
             titulo   = html.escape(o.get("titulo", ""))
             descripcion = html.escape(o.get("descripcion", ""))
