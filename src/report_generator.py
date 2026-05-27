@@ -90,6 +90,11 @@ def _fecha_larga() -> str:
     return datetime.now().strftime("%d/%m/%Y a las %H:%M")
 
 
+def _capitalizar_roles(rol_str: str) -> str:
+    """Capitaliza cada componente de un rol compuesto ('proveedor / implementador' → 'Proveedor / Implementador')."""
+    return " / ".join(p.strip().capitalize() for p in rol_str.split("/") if p.strip())
+
+
 def _extraer_meta_md(markdown: str) -> dict[str, str]:
     """Extrae los metadatos del encabezado Markdown del informe."""
     meta: dict[str, str] = {}
@@ -229,7 +234,7 @@ class GeneradorInforme:
             f"**Sistema evaluado:** {descripcion}  \n"
             f"**Sector:** {sector}  \n"
             f"**Clasificación:** {clasificacion}  \n"
-            f"**Rol de la entidad:** {rol.capitalize()}  \n"
+            f"**Rol de la entidad:** {_capitalizar_roles(rol)}  \n"
             f"**Fecha:** {fecha}  \n"
             "**Reglamento de referencia:** Reglamento (UE) 2024/1689"
         )
@@ -243,16 +248,12 @@ class GeneradorInforme:
         estados: list[str],
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
+        rol_display = _capitalizar_roles(rol)
         texto += (
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
             f"según el Reglamento (UE) 2024/1689 (AI Act europeo). "
-            f"La entidad actúa como **{rol}**."
+            f"La entidad actúa como **{rol_display}**."
         )
-        if roles_multiples and len(roles_multiples) > 1:
-            texto += (
-                f" Se han identificado además los siguientes roles adicionales: "
-                f"**{', '.join(r.capitalize() for r in roles_multiples)}**."
-            )
         if estados:
             texto += f" Estados adicionales aplicables: {', '.join(estados)}."
         return texto
@@ -263,7 +264,7 @@ class GeneradorInforme:
         texto = f"## 1. Resumen ejecutivo\n\n"
         texto += (
             f"Este informe recoge el análisis de cumplimiento de un sistema clasificado como "
-            f"**{clasificacion}** con rol **{rol}**."
+            f"**{clasificacion}** con rol **{_capitalizar_roles(rol)}**."
         )
         if resumen:
             texto += f"\n\n{resumen}"
@@ -279,12 +280,11 @@ class GeneradorInforme:
         resumen_cumpl: str,
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
+        rol_display = _capitalizar_roles(rol)
         texto += (
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
-            f"según el AI Act europeo. La entidad actúa como **{rol}**."
+            f"según el AI Act europeo. La entidad actúa como **{rol_display}**."
         )
-        if roles_multiples and len(roles_multiples) > 1:
-            texto += f" Roles adicionales identificados: {', '.join(r.capitalize() for r in roles_multiples)}."
         if estados:
             texto += f" Estados adicionales: {', '.join(estados)}."
         if resumen_cumpl:
@@ -306,10 +306,10 @@ class GeneradorInforme:
         if descripcion_nivel:
             texto += f"  \n**Descripción:** {descripcion_nivel}"
 
-        texto += f"\n\n**Rol principal de la entidad:** {rol.capitalize()}"
+        texto += f"\n\n**Rol principal de la entidad:** {_capitalizar_roles(rol)}"
 
         if roles_multiples and len(roles_multiples) > 1:
-            texto += "\n\n**Roles adicionales identificados:**"
+            texto += "\n\n**Roles identificados:**"
             for r in roles_multiples:
                 texto += f"\n- {r.capitalize()}"
             texto += (
@@ -668,7 +668,7 @@ class GeneradorInforme:
         FIELD_W = cw / 2
         campos = [
             ("SECTOR", sector or "—"),
-            ("ROL DE LA ENTIDAD", (rol or "—").capitalize()),
+            ("ROL DE LA ENTIDAD", _capitalizar_roles(rol or "—")),
         ]
 
         pdf.set_draw_color(221, 221, 221)
@@ -944,7 +944,7 @@ class GeneradorInforme:
 
             metadatos = [
                 ("SECTOR", meta.get("sector") or "—"),
-                ("ROL DE LA ENTIDAD", (meta.get("rol") or "—").capitalize()),
+                ("ROL DE LA ENTIDAD", _capitalizar_roles(meta.get("rol") or "—")),
                 ("FECHA DE GENERACION", meta.get("fecha") or fecha_hoy),
             ]
 

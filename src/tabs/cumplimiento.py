@@ -114,10 +114,13 @@ def _mostrar_resumen_clasificacion(datos: dict) -> None:
     clasificacion = datos.get("clasificacion", "?")
     roles_multiples = datos.get("roles_multiples", [])
     rol = datos.get("rol", "?")
+    def _cap_rol(s: str) -> str:
+        return " / ".join(p.strip().capitalize() for p in s.split("/") if p.strip())
+
     roles_str = (
         " / ".join(r.capitalize() for r in roles_multiples)
         if len(roles_multiples) > 1
-        else rol.capitalize()
+        else _cap_rol(rol)
     )
     descripcion = datos.get("descripcion_sistema", "")
 
@@ -153,7 +156,7 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
             rol_display = (
                 " / ".join(r.capitalize() for r in _roles_m)
                 if len(_roles_m) > 1
-                else _rol_single.capitalize()
+                else " / ".join(p.strip().capitalize() for p in _rol_single.split("/") if p.strip())
             )
             with st.chat_message("assistant"):
                 st.markdown(

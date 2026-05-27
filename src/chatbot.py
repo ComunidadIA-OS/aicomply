@@ -51,8 +51,8 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
 {
   "clasificacion": "ALTO|LIMITADO|MINIMO|PROHIBIDO|NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA|EXCLUIDO|PENDIENTE",
   "estados_adicionales": ["Notificar a la NCA", "Convertirse en proveedor", "GPAI con Riesgo Sistémico"],
-  "rol": "proveedor|implementador|distribuidor|importador|fabricante|representante_autorizado",
-  "roles_multiples": [],
+  "rol": "todos los roles identificados, separados por ' / ' cuando hay varios (p. ej. 'proveedor / implementador')",
+  "roles_multiples": ["proveedor", "implementador"],
   "nodos_recorridos": [
     {"pregunta": "Tipo de entidad", "respuesta": "Implementador", "origen": "respuesta directa|inferencia confirmada|INDETERMINADO"}
   ],
@@ -61,6 +61,10 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
   "sector": "sector de la empresa",
   "obligaciones_preliminares": ["obligación ya identificada (Art. X)"]
 }
+REGLA OBLIGATORIA PARA roles_multiples: Lista TODOS los roles identificados como array.
+- Si la organización ha desarrollado o encargado el sistema Y lo utiliza internamente bajo su propia autoridad, incluye AMBOS: ["proveedor", "implementador"]. El campo "rol" debe reflejar los mismos roles: "proveedor / implementador".
+- Si solo aplica un rol, incluye únicamente ese: p. ej. ["implementador"]. El campo "rol" = "implementador".
+- NUNCA dejes roles_multiples vacío; como mínimo contiene el rol identificado.
 Si la evaluación no ha llegado a una clasificación definitiva, usa "clasificacion": "PENDIENTE"."""
 
 _PROMPT_EXTRAER_CUMPLIMIENTO = """Basándote en toda la conversación de cumplimiento anterior, extrae la información estructurada. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional ni bloques de código markdown:
@@ -224,6 +228,54 @@ class AIComplyChat:
         elif "RIESGO MINIMO" in texto_upper or "RIESGO MÍNIMO" in texto_upper:
             self.nivel_riesgo = "MINIMO"
 
+    _ROLES_VALIDOS = frozenset({
+        "proveedor", "implementador", "distribuidor",
+        "importador", "fabricante", "representante_autorizado",
+    })
+    _ALIAS_ROLES = {"provider": "proveedor", "deployer": "implementador"}
+    _SEP_ROLES = re.compile(r"\s*/\s*|\s+[ey]\s+|\s*,\s*|_")
+
+    @classmethod
+    def _normalizar_clasificacion_data(cls, datos: dict) -> dict:
+        """Garantiza coherencia entre 'rol' y 'roles_multiples'.
+
+        - Detecta roles combinados en el campo 'rol' (p. ej. "proveedor / implementador")
+          y los expande en 'roles_multiples' si este viene vacío.
+        - Asegura que 'roles_multiples' contiene como mínimo el rol indicado en 'rol'.
+        - Deduplica 'roles_multiples' preservando el orden.
+        - NO reduce 'rol' a un único valor: si el LLM emitió "proveedor / implementador",
+          se conserva así para que los renderers de UI e informe muestren todos los roles.
+        """
+        rol_raw = (datos.get("rol") or "").strip()
+        partes = [
+            cls._ALIAS_ROLES.get(p, p)
+            for p in cls._SEP_ROLES.split(rol_raw.lower())
+            if p.strip()
+        ]
+        partes_validas = [p for p in partes if p in cls._ROLES_VALIDOS]
+
+        roles_m = [r.strip().lower() for r in datos.get("roles_multiples", []) if r.strip()]
+        roles_m_validos = [r for r in roles_m if r in cls._ROLES_VALIDOS]
+
+        if not roles_m_validos:
+            # Poblar desde 'rol' si no vino lista
+            roles_m_validos = partes_validas if partes_validas else roles_m
+
+        # Deduplicar preservando orden
+        seen: set[str] = set()
+        roles_dedup = []
+        for r in roles_m_validos:
+            if r not in seen:
+                seen.add(r)
+                roles_dedup.append(r)
+
+        # Si 'rol' venía como valor único pero roles_dedup tiene varios, reconstruir 'rol'
+        if len(roles_dedup) > 1 and len(partes_validas) <= 1:
+            datos = {**datos, "rol": " / ".join(roles_dedup)}
+
+        datos["roles_multiples"] = roles_dedup
+        return datos
+
     def extraer_clasificacion(self) -> dict:
         """Extrae la clasificación estructurada de la conversación de evaluación."""
         if len(self.historial) < 2:
@@ -231,7 +283,8 @@ class AIComplyChat:
 
         mensajes = self.historial + [{"role": "user", "content": _PROMPT_EXTRAER_CLASIFICACION}]
         texto = self.provider.chat(mensajes, system_prompt=_SYSTEM_EXTRACTION)
-        return self._parsear_json(texto, {"clasificacion": "PENDIENTE"})
+        datos = self._parsear_json(texto, {"clasificacion": "PENDIENTE"})
+        return self._normalizar_clasificacion_data(datos)
 
     def extraer_cumplimiento(self) -> dict:
         """Extrae las obligaciones y gaps de la conversación de cumplimiento."""
