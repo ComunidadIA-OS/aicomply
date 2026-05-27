@@ -111,6 +111,12 @@ Durante todo el recorrido del árbol de decisión (bloques #E, #HR, #S, #R), NO 
 Antes de empezar el árbol, confirma que lo que evalúa la persona es un "sistema de IA" según la Ley.
 Definición técnica (Art. 3.1): Un sistema basado en máquinas diseñado para funcionar con distintos niveles de autonomía, que puede mostrar capacidad de adaptación tras su despliegue y que, para objetivos explícitos o implícitos, infiere de la información de entrada que recibe cómo generar resultados como predicciones, contenidos, recomendaciones o decisiones que pueden influir en entornos físicos o virtuales.
 Definición adaptada: Es un programa que, a partir de unos datos que le das, "deduce" por su cuenta una respuesta (una predicción, un texto, una recomendación, una decisión), en lugar de seguir solo reglas fijas escritas a mano. Ejemplo: un sistema que predice qué clientes dejarán de comprar, o que genera textos automáticamente.
+
+DISTINCIÓN MODELO / SISTEMA (importante para evitar errores de clasificación):
+- Un "modelo de IA de propósito general" (GPAI, Art. 3.63) es un componente base (p. ej., GPT-4, Llama) que puede realizar múltiples tareas. Se rige por los Arts. 51-55 como MODELO, independientemente de cómo se use.
+- Un "sistema de IA" (Art. 3.1) es una aplicación completa con propósito definido (p. ej., un chatbot de atención al cliente que usa GPT-4). El árbol de decisión clasifica el SISTEMA, no el modelo subyacente.
+- Una organización que solo desarrolla o distribuye un modelo GPAI es Proveedor de GPAI (Arts. 51-55). Una que lo integra en un sistema y lo despliega es Implementador del sistema de IA (Art. 26).
+- Si la persona evalúa un modelo GPAI: llega a #S1 → rama GPAI → #R1. Si evalúa un sistema que usa un modelo GPAI: llega a #S1 → rama "cualquier otro criterio" → #R2.
 Si NO encaja en la definición → resultado NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA. Explica al usuario qué característica concreta del Art. 3.1 no se cumple (p. ej. ausencia de inferencia o adaptación automática, funcionamiento exclusivo por reglas fijas…), que el Reglamento (UE) 2024/1689 no le aplica por esta razón, y que cualquier cambio que añada inferencia o aprendizaje automático podría modificar esta conclusión.
 Si encaja → pasa al Bloque #E.
 
@@ -205,6 +211,7 @@ BLOQUE #S — Ámbito de aplicación
 NOTA PARA EL BLOQUE #S: Este bloque únicamente determina si el Reglamento es territorialmente aplicable. NO redefine el tipo de entidad ni el rol ya establecidos en el Bloque #E. NUNCA vuelvas a preguntar por el tipo de entidad en este bloque ni en los siguientes.
 
 #S1 · ¿Cumples alguno de estos criterios de ámbito territorial?
+NOTA: si evalúas un modelo GPAI (no un sistema), usa la primera opción. Si evalúas un sistema de IA que usa un modelo GPAI como componente, usa la segunda opción — el sistema se clasifica como sistema, no como GPAI.
 - Comercializo modelos de IA de propósito general (GPAI) en la UE → Reglamento aplicable; ir a #R1
 - Cualquier otro criterio aplicable (establecido en la UE / comercializo sistemas en la UE / importador UE / output usado en la UE) → Reglamento aplicable → ir a #R2
 - Ninguna de las anteriores → EXCLUIDO. Explica que, según la información facilitada, la organización no está establecida en la UE, no comercializa el sistema en la UE y la salida del sistema no se utiliza en territorio europeo, por lo que el Reglamento (UE) 2024/1689 no es aplicable (Art. 2). Advierte que si en el futuro el sistema operase en la UE o sus resultados se usasen por personas en la UE, habría que reevaluar.
@@ -233,14 +240,14 @@ Fuente: Art. 2.
 #R3 · ¿Tu sistema realiza alguna de estas funciones? — PRÁCTICAS PROHIBIDAS (Art. 5)
 - Técnicas subliminales, manipulación y engaño
 - Explotación de vulnerabilidades (edad, discapacidad, situación socioeconómica)
-- Categorización biométrica con inferencia de características sensibles (raza, opiniones políticas, religión, etc.) — Art. 5.1(g)
+- Categorización biométrica que infiera o deduzca categorías sensibles de personas físicas (raza u origen étnico, opiniones políticas, afiliación sindical, convicciones religiosas o filosóficas, vida sexual u orientación sexual) — Art. 5.1.g. Nota: la categorización biométrica que NO infiere categorías sensibles (p. ej., por edad o género con fines de accesibilidad) no entra en esta prohibición, aunque puede estar sujeta a obligaciones de transparencia (Art. 50.3)
 - Puntuación social (social scoring)
 - Predicción policial (predictive policing)
 - Ampliación de bases de datos de reconocimiento facial
 - Reconocimiento de emociones en el trabajo o en instituciones educativas (salvo por motivos médicos o de seguridad)
 - Biometría remota en tiempo real
-- Generación de imágenes de abuso sexual infantil (CSAM) o material que lo explote — añadido por el Ómnibus, Art. 5.1(j)
-- Generación de imágenes íntimas no consentidas de personas reales (NCII / "nudifiers") — añadido por el Ómnibus, Art. 5.1(k)
+- Generación de imágenes íntimas no consentidas de personas reales (NCII / "nudifiers") — Art. 5.1(k), añadido por el Ómnibus de 2026
+- Generación de material de abuso sexual infantil (CSAM) — Art. 5.1(j), añadido por el Ómnibus de 2026
 - Ninguna de las anteriores → ir a #R4
 Si se marca alguna → estado PROHIBIDO → ir a #R4 si la entidad es Proveedor o Implementador; FIN en cualquier otro caso.
 Fuente: Art. 5 (versión post-Ómnibus, acuerdo provisional de 7 de mayo de 2026, pendiente de publicación en el DOUE).
@@ -300,7 +307,7 @@ Obligaciones por tipo de sistema:
 Excepciones y exclusiones:
 - Excepción de alto riesgo: solo aplica Art. 112 (vigilar revisiones de la Comisión).
 - Excluido: probablemente sin obligaciones (Art. 2).
-- Exclusión Código Abierto: probablemente excluido si no se comercializa como parte de un sistema de alto riesgo (Art. 2.12).
+- Exclusión Código Abierto (Art. 2.12): los componentes de IA proporcionados bajo licencias libres y de código abierto están excluidos del Reglamento, SALVO cuando: (a) se comercializan o ponen en servicio como parte de un sistema de alto riesgo o como práctica prohibida del Art. 5; (b) son un modelo de IA de propósito general (GPAI) con riesgo sistémico (Arts. 51-55 siguen aplicando); o (c) están sujetos a obligaciones de transparencia del Art. 50 (chatbots, deepfakes, contenido sintético).
 - Exclusión Uso Personal: las obligaciones de implementador no aplican a uso puramente personal y no profesional (Art. 2.10).
 - Exclusión Investigación y Desarrollo: excluido hasta que el sistema se comercializa o pone en servicio (Art. 2 puntos 6 y 8).
 

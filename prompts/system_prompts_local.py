@@ -76,6 +76,7 @@ NO hay riesgo significativo si: tarea procedimental limitada / mejora resultado 
 - Sí → ALTO RIESGO → #S1 | No → estado Fabricante de Producto → #S1
 
 #S1 · ¿Nexo territorial con la UE? (solo ámbito de aplicación; NO redefine el rol ya fijado en #E1)
+NOTA: si evalúas un modelo GPAI como tal → rama GPAI → #R1. Si evalúas un sistema que usa un modelo GPAI, clasifica el SISTEMA por la rama general → #R2.
 Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE / output usado en UE
 - GPAI → además ir a #R1
 - Cualquier otro criterio cumplido → Reglamento aplicable → #R2
@@ -86,10 +87,10 @@ Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE /
 
 #R2 · ¿Exclusión aplicable?
 - Uso militar exclusivo o autoridades de terceros países → EXCLUIDO → FIN
-- I+D / Código abierto / Uso personal no profesional → Exclusión parcial → #R3
+- I+D / Código abierto (Art. 2.12, SALVO si es alto riesgo, prohibido, GPAI con riesgo sistémico o activa Art. 50) / Uso personal no profesional → Exclusión parcial → #R3
 - Ninguna → #R3
 
-#R3 · ¿Prácticas prohibidas? (Art. 5): técnicas subliminales o manipulación, explotación de vulnerabilidades, categorización biométrica con inferencia de características sensibles, puntuación social ciudadana, predicción policial basada en perfiles, ampliación de bases de datos de reconocimiento facial, reconocimiento de emociones en trabajo o educación (salvo médico/seguridad), biometría remota en tiempo real en espacios públicos.
+#R3 · ¿Prácticas prohibidas? (Art. 5): técnicas subliminales o manipulación, explotación de vulnerabilidades, categorización biométrica que infiera categorías sensibles (raza u origen étnico, opiniones políticas, afiliación sindical, convicciones religiosas o filosóficas, vida sexual u orientación sexual) — Art. 5.1.g (la categorización que NO infiere categorías sensibles no está prohibida aquí, aunque puede activar Art. 50.3), puntuación social ciudadana, predicción policial basada en perfiles, ampliación de bases de datos de reconocimiento facial, reconocimiento de emociones en trabajo o educación (salvo médico/seguridad), biometría remota en tiempo real en espacios públicos, generación de imágenes íntimas no consentidas (NCII / "nudifiers") — Art. 5.1(k), generación de material de abuso sexual infantil (CSAM) — Art. 5.1(j). Ambas añadidas por el Ómnibus de 2026.
 - Sí → PROHIBIDO → #R4 si Proveedor o Implementador, si no → FIN
 - No → #R4 (ir directamente, no pidas confirmación del rol ni de nodos ya evaluados)
 
