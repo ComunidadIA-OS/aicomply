@@ -361,3 +361,56 @@ class TestCumplimientoLegalVsRecomendaciones:
         }
         md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
         assert "100 %" in md
+
+
+class TestPorcentajeSinEvaluar:
+    """Las obligaciones 'sin evaluar' (no_evaluada) no deben reducir el porcentaje."""
+
+    def test_sin_evaluar_no_penaliza(self):
+        """2 cubiertas + 3 sin evaluar → 100 %, no 40 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 9",  "Gestión de riesgos",    "cubierta"),
+                _obl("Art. 10", "Gobernanza de datos",    "cubierta"),
+                _obl("Art. 11", "Documentación técnica",  "no_evaluada"),
+                _obl("Art. 12", "Registro de actividad",  "no_evaluada"),
+                _obl("Art. 13", "Instrucciones de uso",   "no_evaluada"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
+        assert "100 %" in md
+        assert "40 %" not in md
+
+    def test_sin_evaluar_mixto(self):
+        """1 cubierta + 1 carencia + 2 sin evaluar → 50 %, no 25 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 9",  "Gestión de riesgos",    "cubierta"),
+                _obl("Art. 10", "Gobernanza de datos",    "carencia"),
+                _obl("Art. 11", "Documentación técnica",  "no_evaluada"),
+                _obl("Art. 12", "Registro de actividad",  "no_evaluada"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
+        assert "50 %" in md
+        assert "25 %" not in md
+
+    def test_todos_sin_evaluar_muestra_cero(self):
+        """Si todas las legales están sin evaluar, el porcentaje es 0 %."""
+        cumpl = {
+            "obligaciones": [
+                _obl("Art. 9",  "Gestión de riesgos",   "no_evaluada"),
+                _obl("Art. 10", "Gobernanza de datos",   "no_evaluada"),
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
+        assert "0 %" in md

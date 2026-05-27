@@ -384,6 +384,8 @@ class GeneradorInforme:
         no_ev_leg = [o for o in legales if o.get("estado") not in ("cubierta", "parcial", "carencia")]
 
         total_leg = len(legales)
+        # Solo las obligaciones con estado definitivo computan en el porcentaje
+        evaluadas_leg = len(cub_leg) + len(par_leg) + len(car_leg)
         rec_pen = sum(1 for o in (recomendaciones + vigilancias) if o.get("estado") == "carencia")
 
         texto = f"## {num}. Análisis de obligaciones\n\n"
@@ -395,7 +397,7 @@ class GeneradorInforme:
                 "Se incluyen recomendaciones voluntarias y medidas prudenciales."
             )
         else:
-            pct = round(((len(cub_leg) * 2 + len(par_leg)) / (total_leg * 2) * 100) if total_leg else 0)
+            pct = round(((len(cub_leg) * 2 + len(par_leg)) / (evaluadas_leg * 2) * 100) if evaluadas_leg else 0)
             texto += (
                 f"**Grado de cumplimiento legal estimado:** {pct} %  \n"
                 f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
