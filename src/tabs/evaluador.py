@@ -78,9 +78,9 @@ _NIVELES_DESCRIPCION = [
     (
         "Riesgo mínimo",
         "#388E3C",
-        "Sistemas sin obligaciones específicas del AI Act: filtros de spam, "
+        "Sistemas sin obligaciones propias de alto riesgo: filtros de spam, "
         "videojuegos con IA, herramientas de optimización interna. "
-        "Se recomiendan buenas prácticas voluntarias.",
+        "Pueden aplicar obligaciones horizontales (Art. 4, transparencia, normativa sectorial).",
     ),
 ]
 

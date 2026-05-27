@@ -72,7 +72,7 @@ NIVELES_RIESGO = {
     },
     "MINIMO": {
         "color": "#00AA00",
-        "descripcion": "Sistema de IA de riesgo mínimo — sin obligaciones específicas del AI Act",
+        "descripcion": "Sistema de IA de riesgo mínimo — no se identifican obligaciones propias de sistemas de alto riesgo; pueden aplicar obligaciones horizontales (Art. 4, transparencia, normativa sectorial)",
     },
     "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA": {
         "color": "#9E9E9E",
