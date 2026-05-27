@@ -90,31 +90,43 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Capturas de pantalla
 
-### Pantalla de configuración y selección de provider
+### Aviso legal y selección de provider
 
-![Selector de provider con avisos de privacidad](assets/01-selector-provider.png)
+![Aviso legal previo y selección del modelo de IA a utilizar](assets/00-aviso.png)
 
-### Pestaña Evaluador — niveles de riesgo del AI Act
+### Pestaña Evaluador y clasificador
 
-![Pirámide de niveles de riesgo con descripción de cada nivel](assets/02-evaluador-piramide.png)
+![Pantalla principal del evaluador con descripción del sistema e inicio del árbol de decisión](assets/01-evaluador.png)
 
-### Pestaña Evaluador — árbol de decisión conversacional
+### Pirámide de niveles de riesgo del AI Act
 
-![Conversación con el evaluador de riesgo](assets/03-evaluador-chat.png)
+![Pirámide de niveles de riesgo con descripción de cada nivel](assets/02-piramide.png)
 
-### Pestaña Evaluador — evaluación completada
+### Evaluación completada — clasificación y rol identificados
 
-![Evaluación completada con clasificación y rol identificados](assets/034-evaluador-final.jpeg)
+![Resultado de la evaluación con clasificación definitiva y rol de la entidad](assets/03-evaluacion-final.png)
 
-### Resultado de la clasificación y análisis de cumplimiento
+### Evaluador — pantalla de evaluación finalizada
 
-![Resultado clasificación con nivel de riesgo, rol y trazabilidad de obligaciones](assets/04-clasificacion.png)
+![Pantalla de evaluación finalizada con opción de continuar a cumplimiento](assets/04-evaluador-final.png)
 
-### Pestaña Informe — generación y descarga
+### Pestaña Cumplimiento — inicio del análisis
 
-![Pantalla de informe con evaluación completada y opciones de descarga](assets/05-informe.png)
+![Inicio del análisis de cumplimiento con resumen de clasificación](assets/05-cumplimiento-portada.png)
 
-Puede descargar un [informe de ejemplo generado con AIComply](examples/informe-ejemplo.pdf) para ver el output real antes de instalar la herramienta.
+### Pestaña Cumplimiento — análisis completado
+
+![Análisis de cumplimiento completado con trazabilidad de obligaciones y áreas de mejora](assets/06-cumplimiento-final.png)
+
+### Pestaña Informe — informes pendientes de generar
+
+![Vista de la pestaña Informe antes de generar los documentos](assets/07-informe-pendiente.png)
+
+### Pestaña Informe — informe generado y listo para descargar
+
+![Informe generado con opciones de descarga en PDF y texto plano](assets/08-informe.png)
+
+Puede consultar los [ejemplos de informes generados con AIComply](ejemplos/) para ver el output real antes de instalar la herramienta.
 
 ---
 
@@ -338,8 +350,12 @@ aicomply/
 ├── scripts/
 │   └── ingest_txt.py                   # Convierte .txt legales a JSON para el RAG
 ├── assets/                             # Capturas de pantalla para el README
-├── examples/
-│   └── informe-ejemplo.pdf             # Informe de ejemplo generado con AIComply
+├── ejemplos/                           # Cinco ejemplos completos de evaluación con AIComply
+│   ├── 00-no-ia/                       # Sistema fuera del ámbito del AI Act
+│   ├── 01-riesgo-minimo/               # Riesgo mínimo — optimización de hornos
+│   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
+│   ├── 03-alto-riesgo/                 # Alto riesgo — filtrado de CVs
+│   └── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
 ├── LICENSE
 ├── README.md
 ├── CONTRIBUTING.md
