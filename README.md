@@ -195,13 +195,15 @@ Para añadir nuevos documentos al corpus, consulte la sección [Ingesta de docum
 
 ## Configuración del modelo de lenguaje
 
+> **Nota sobre capacidad del modelo:** AIComply ejecuta un razonamiento normativo exigente (árbol de decisión con seis ramas, emisión de bloques JSON estructurados, manejo de roles múltiples, análisis sobre corpus legal en español). Durante el desarrollo hemos verificado que **los modelos locales pequeños (8B o inferiores) no tienen capacidad suficiente** para esta tarea: pueden no seguir el árbol de decisión correctamente, omitir los bloques estructurados o producir clasificaciones incoherentes. Para uso real, recomendamos **Anthropic Claude** (Sonnet 4.6 o superior) o, en local, **modelos de al menos 70B parámetros** ejecutados en hardware con capacidad suficiente (GPU dedicada con 40+ GB de VRAM, o servidor con RAM significativa para CPU-only). LM Studio y vLLM permiten servir estos modelos vía endpoint compatible con OpenAI.
+
 AIComply incluye una pantalla de configuración inicial donde puede elegir su proveedor de IA con información clara sobre las implicaciones de privacidad de cada opción.
 
 ### Tabla comparativa de privacidad
 
 | Provider | Plan | Datos en servidores de terceros | Uso para entrenamiento | Recomendado para |
 |----------|------|---------------------------------|------------------------|------------------|
-| Ollama / LM Studio / vLLM (local, vía API compatible) | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad |
+| Ollama / LM Studio / vLLM (local, vía API compatible) | Gratuito | No — todo local | No | Documentación confidencial, máxima privacidad (requiere modelo ≥70B + hardware adecuado para esta tarea) |
 | Anthropic Claude | API Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
 | Anthropic Claude | API de pago | Sí (EE. UU.) | No | Uso empresarial general |
 | OpenAI | ChatGPT Enterprise | Sí (EE. UU.) | No | Documentación empresarial confidencial |
@@ -292,13 +294,15 @@ Si `LLM_PROVIDER` está vacío, la interfaz mostrará el selector interactivo en
 
 ### Inicio rápido con Ollama
 
+Ollama es la vía más simple para probar AIComply en local, pero **debe utilizarse con un modelo de 70B parámetros o superior** (`llama3.3` o equivalente) y hardware capaz de servirlo. Modelos más pequeños no son adecuados para el razonamiento normativo de AIComply. Si su equipo no dispone de ese hardware, recomendamos usar Anthropic Claude (ver sección anterior) para obtener resultados fiables; el coste por sesión completa de evaluación es típicamente bajo.
+
 Ollama expone un endpoint compatible con OpenAI en `http://localhost:11434/v1` — no requiere configuración especial:
 
 ```bash
 # 1. Instalar Ollama
 curl -fsSL https://ollama.ai/install.sh | sh   # Linux/macOS
 
-# 2. Descargar un modelo (se recomienda 70B+ para uso serio)
+# 2. Descargar un modelo (70B+ es requisito real para esta tarea, no recomendación)
 ollama pull llama3.3
 
 # 3. Ejecutar AIComply apuntando al endpoint compatible de Ollama
@@ -438,6 +442,11 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 - [ ] API REST para integración con CI/CD
 - [ ] Soporte multiidioma (inglés, francés, alemán)
 - [ ] Integración con el AI Office de la UE para actualizaciones normativas
+
+### Limitaciones conocidas
+
+- **Modelos locales pequeños no soportados de facto.** Aunque la arquitectura acepta cualquier endpoint compatible con OpenAI, modelos de 8B parámetros o inferiores no producen resultados fiables en el árbol de decisión del AI Act. Mejorar la robustez con modelos pequeños requeriría rediseñar los prompts del sistema y posiblemente añadir una capa de validación de salida — trabajo pendiente para futuras versiones.
+- **Coste de modelos grandes en hosting compartido.** Servir un modelo 70B+ vía Ollama o vLLM para uso multiusuario tiene un coste de infraestructura no trivial. Para despliegues compartidos, Anthropic Claude vía API resulta hoy más práctico económicamente.
 
 ## Contribuir
 
