@@ -61,7 +61,7 @@ PROHIBIDO (Art. 5):
 ALTO RIESGO — Rol Proveedor (Art. 16):
 - Sistema de gestión de riesgos documentado y actualizado durante todo el ciclo de vida (Art. 9) [Aplicable próximamente — 2 dic 2027]
 - Gobernanza de datos: prácticas de gestión de datos de entrenamiento, validación y prueba (Art. 10) [Aplicable próximamente — 2 dic 2027]
-- Documentación técnica completa según el Anexo IV (Art. 11) — el Anexo IV exige 9 apartados: descripción general, instrucciones de uso, diseño y desarrollo, supervisión humana, validación y prueba, gestión de riesgos, cambios del ciclo de vida, normas aplicadas y declaración de conformidad [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]
+- Documentación técnica completa según el Anexo IV (Art. 11) — el Anexo IV exige los siguientes apartados: 1) descripción general del sistema; 2) descripción detallada de elementos y desarrollo; 3) datos de funcionamiento y rendimiento; 4) gestión de riesgos; 5) cambios a lo largo del ciclo de vida; 6) lista de normas aplicadas; 7) declaración UE de conformidad; 8) sistema de seguimiento poscomercialización [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]
 - Registro automático de actividad (logs de funcionamiento) (Art. 12) [Aplicable próximamente — 2 dic 2027]
 - Instrucciones de uso claras para el implementador, incluyendo capacidades y limitaciones (Art. 13) [Aplicable próximamente — 2 dic 2027]
 - Supervisión humana efectiva: mecanismos que permitan intervenir o detener el sistema (Art. 14) [Aplicable próximamente — 2 dic 2027]
@@ -123,8 +123,10 @@ RIESGO LIMITADO — Transparencia (Art. 50):
 - Marcar los deep fakes con información legible por máquina (Art. 50.4) [Aplicable actualmente — desde 2 ago 2025]
 
 MÍNIMO:
+No se identifican obligaciones propias de sistemas de alto riesgo. Sí pueden aplicar obligaciones horizontales o específicas, como alfabetización en IA, transparencia, protección de datos, seguridad industrial o normativa sectorial.
 - Alfabetización en IA del personal (Art. 4): garantizar que quienes usan o supervisan el sistema tienen conocimientos suficientes sobre sus capacidades y limitaciones [Aplicable actualmente — desde 2 feb 2025]
 - Adhesión voluntaria a códigos de conducta (Art. 95): buenas prácticas recomendadas, no obligatorias.
 - Vigilancia activa: supervisar cambios en el uso del sistema que puedan elevar su nivel de riesgo.
+IMPORTANTE: el Art. 26 es exclusivo de implementadores de sistemas de ALTO RIESGO. Para sistemas de riesgo mínimo pueden recomendarse medidas similares (supervisión, registro de uso, formación), pero NUNCA presentarlas como obligaciones del Art. 26.
 
 NO inventes obligaciones ni artículos que no figuren aquí. Si surge una duda fuera de este catálogo, remite a un profesional."""

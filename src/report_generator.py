@@ -344,8 +344,9 @@ class GeneradorInforme:
                 "Informar sobre reconocimiento de emociones si aplica (Art. 50.3)",
             ],
             "MINIMO": [
-                "No hay obligaciones específicas del AI Act vigentes",
-                "Se recomiendan buenas prácticas voluntarias",
+                "No se identifican obligaciones propias de sistemas de alto riesgo",
+                "Sí pueden aplicar obligaciones horizontales: Art. 4 (alfabetización en IA), "
+                "transparencia, protección de datos o normativa sectorial",
                 "Posible adhesión a códigos de conducta voluntarios (Art. 95)",
             ],
         }
