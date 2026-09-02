@@ -17,6 +17,7 @@ import streamlit as st
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.chatbot import AIComplyChat, _RE_BLOQUE_CIERRE, _RE_BLOQUE_OBLIGACION
+from src.tabs.avisos import avisar_si_truncada, marcar_truncada
 
 _CLASIFICACIONES_SOLO_EVAL = frozenset({
     "EXCLUIDO",
@@ -153,6 +154,30 @@ def _mostrar_resumen_clasificacion(datos: dict) -> None:
                 st.caption(f"- {p}")
 
 
+def _mostrar_conflictos(conflictos: list[dict]) -> None:
+    """Avisa de las obligaciones que cambiaron de estado durante la conversación.
+
+    Se muestran TODAS, en las dos direcciones: el usuario necesita ver qué se recalificó.
+    Al informe solo se escalan las que inflan el cumplimiento (ver _registrar_conflicto en
+    src/chatbot.py); aquí no se filtra nada.
+    """
+    if not conflictos:
+        return
+
+    with st.expander(f"Obligaciones recalificadas durante el análisis ({len(conflictos)})"):
+        st.caption(
+            "Estas obligaciones se registraron con un estado y después se cambiaron a otro. "
+            "Prevalece el más reciente. Revise que el estado final es el correcto."
+        )
+        for c in conflictos:
+            rol = f" [{c.get('rol')}]" if c.get("rol") else ""
+            st.markdown(
+                f"- **{c.get('articulo', '')} — {c.get('titulo', '')}**{rol}: "
+                f"{str(c.get('estado_anterior', '')).upper()} → "
+                f"{str(c.get('estado_nuevo', '')).upper()} (turno {c.get('turno', '?')})"
+            )
+
+
 def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
     """Renderiza el área de chat de cumplimiento y gestiona el input."""
     chat_container = st.container(height=430)
@@ -182,6 +207,9 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
             with st.chat_message(msg["role"]):
                 content = _RE_BLOQUE_OBLIGACION.sub("", _RE_BLOQUE_CIERRE.sub("", msg["content"])).rstrip()
                 st.markdown(content)
+
+    avisar_si_truncada("truncada_cumplimiento")
+    _mostrar_conflictos(chatbot.conflictos_registrados)
 
     if st.session_state.cumplimiento_completado:
         return
@@ -231,6 +259,7 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
                 texto = _RE_BLOQUE_OBLIGACION.sub("", _RE_BLOQUE_CIERRE.sub("", texto)).rstrip()
                 placeholder.markdown(texto)
 
+        marcar_truncada("truncada_cumplimiento", chatbot.ultima_respuesta_truncada)
         st.session_state.mensajes_cumplimiento.append({"role": "assistant", "content": texto})
         st.rerun()
 

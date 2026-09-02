@@ -111,6 +111,81 @@ _NORM_ESTADO = {
     "no_aplica": "no_aplica",
 }
 
+_ESTADOS_VALIDOS = frozenset({"cubierta", "parcial", "carencia", "no_aplica"})
+
+MARCADOR_OBLIGACIONES = "{OBLIGACIONES_REGISTRADAS}"
+
+# Estados ordenados de menor a mayor cumplimiento aparente. Solo se usa para clasificar
+# la dirección de una recalificación; ver _registrar_conflicto.
+_ORDEN_ESTADO = {"carencia": 0, "parcial": 1, "cubierta": 2, "no_aplica": 3}
+
+
+def _normalizar_estado(valor: object) -> str | None:
+    """Devuelve el estado en su forma canónica, o None si no es reconocible.
+
+    Tolera las variantes contra las que advierte el prompt (mayúsculas, "no_cubierta",
+    espacios en vez de guiones bajos). Un estado sin normalizar no es inocuo: el informe
+    mete cualquier valor desconocido en "no aplica" y lo saca del denominador, así que
+    una sola CARENCIA en mayúsculas sube el grado de cumplimiento de portada en silencio.
+    """
+    bruto = str(valor).strip().lower().replace("_", " ")
+    estado = _NORM_ESTADO.get(bruto)
+    return estado if estado in _ESTADOS_VALIDOS else None
+
+
+def _clave_obligacion(obl: dict) -> tuple[str, str, str]:
+    """Identidad de una obligación: artículo, título y rol.
+
+    El rol forma parte de la clave porque el catálogo repite artículos entre roles: el
+    Art. 49 aparece bajo Proveedor y bajo Implementador, y el "titulo" que emite el modelo
+    es un nombre breve que puede coincidir en ambos. Sin el rol, en un caso de doble rol la
+    segunda entrada machacaría a la primera y la diferencia de estado entre roles se leería
+    como una recalificación que no ha ocurrido.
+    """
+    return (obl.get("articulo", ""), obl.get("titulo", ""), obl.get("rol", ""))
+
+
+def formatear_obligaciones_registradas(obligaciones: list[dict]) -> str:
+    """Formatea el registro de obligaciones ya evaluadas para inyectarlo en el prompt.
+
+    Es la memoria del análisis, y sobrevive a la truncación del historial. Sin ella el
+    modelo solo dispone de la ventana que le deja _historial_truncado(), que en un recorrido
+    de 22 obligaciones deja fuera las primeras: creía no haberlas evaluado y las repreguntaba.
+    """
+    if not obligaciones:
+        return (
+            "REGISTRO DE OBLIGACIONES YA EVALUADAS EN ESTE ANÁLISIS:\n"
+            "Todavía no se ha registrado ninguna obligación; el análisis empieza por la primera."
+        )
+
+    lineas = [
+        f"REGISTRO DE OBLIGACIONES YA EVALUADAS EN ESTE ANÁLISIS "
+        f"({len(obligaciones)} registradas):"
+    ]
+    for i, obl in enumerate(obligaciones, start=1):
+        rol = obl.get("rol", "")
+        etiqueta_rol = f" [{rol}]" if rol else ""
+        lineas.append(
+            f"{i:2d}. {obl.get('articulo', '?')} — {obl.get('titulo', '')}{etiqueta_rol}: "
+            f"{str(obl.get('estado', '')).upper()}"
+        )
+    lineas += [
+        "",
+        "Esta lista la mantiene la aplicación a partir de los bloques <<<OBLIGACION>>> que has "
+        "emitido: es completa y fiable. El historial de la conversación puede estar recortado; "
+        "esta lista no.",
+    ]
+    return "\n".join(lineas)
+
+
+def aplicar_obligaciones_registradas(texto: str, obligaciones: list[dict]) -> str:
+    """Sustituye el marcador {OBLIGACIONES_REGISTRADAS} por el registro formateado.
+
+    Usa .replace() y NUNCA .format(), por la misma razón que aplicar_calendario: los prompts
+    contienen llaves literales en el bloque machine-readable <<<OBLIGACION>>>{...}.
+    """
+    return texto.replace(MARCADOR_OBLIGACIONES, formatear_obligaciones_registradas(obligaciones))
+
 
 class AIComplyChat:
     """Gestiona la conversación con el LLM para el árbol de decisión o el análisis de cumplimiento."""
@@ -130,7 +205,9 @@ class AIComplyChat:
         self.obligaciones_registradas: list[dict] = []
         self.carencias_registradas: list[str] = []
         self.puntos_revision_registrados: list[str] = []
+        self.conflictos_registrados: list[dict] = []
         self.resumen_cumplimiento_registrado: str = ""
+        self.ultima_respuesta_truncada: bool = False
 
     @property
     def _system_base(self) -> str:
@@ -150,12 +227,19 @@ class AIComplyChat:
         el contexto recuperado es opcional y su ausencia solo degrada la respuesta,
         pero un prompt sin fechas de aplicación produce información jurídica falsa.
         Si el calendario no se puede cargar, la excepción propaga.
+
+        El registro de obligaciones se inyecta también en cada turno, y por eso el marcador
+        va al final del prompt: es el único bloque que cambia turno a turno, así que dejarlo
+        detrás mantiene estable todo el prefijo. Hoy no se usa prompt caching, pero si algún
+        día se añade, ese es el orden que lo hace aprovechable.
         """
         if self._system_prompt_override:
-            return aplicar_calendario(self._system_prompt_override)
+            prompt = aplicar_calendario(self._system_prompt_override)
+            return aplicar_obligaciones_registradas(prompt, self.obligaciones_registradas)
 
         base = SYSTEM_PROMPT_CHATBOT_LOCAL if self.provider.es_local else SYSTEM_PROMPT_CHATBOT
         base = aplicar_calendario(base)
+        base = aplicar_obligaciones_registradas(base, self.obligaciones_registradas)
 
         try:
             contexto = formatear_contexto_rag(mensaje, top_k=3)
@@ -191,6 +275,35 @@ class AIComplyChat:
             resto = resto[1:]
         return primeros + resto
 
+    def _registrar_conflicto(self, previa: dict, nueva: dict) -> None:
+        """Anota la recalificación de una obligación ya registrada.
+
+        Gana el estado más reciente: la última respuesta del usuario es su mejor respuesta, y
+        bloquearla le impediría corregir al alza desde el chat. Lo que no puede ocurrir —y era
+        el fallo— es que gane en silencio.
+
+        "mejora" marca los conflictos que se escalan a revisión profesional: los que inflan el
+        numerador o alteran el denominador del grado de cumplimiento que calcula
+        src/report_generator.py. No equivale a "sube el porcentaje": cubierta → no_aplica lo
+        baja, porque retira del cálculo una obligación con crédito completo, y aun así se
+        escala, porque reclasificar algo como no aplicable es un juicio jurídico. Un cambio a
+        peor es el usuario admitiendo una laguna y no necesita revisión: escalarlos todos
+        llenaría la sección de avisos inocuos hasta dejarla sin significado.
+        """
+        anterior = str(previa.get("estado", ""))
+        nuevo = str(nueva.get("estado", ""))
+        if anterior == nuevo:
+            return
+        self.conflictos_registrados.append({
+            "articulo": nueva.get("articulo", ""),
+            "titulo": nueva.get("titulo", ""),
+            "rol": nueva.get("rol", ""),
+            "estado_anterior": anterior,
+            "estado_nuevo": nuevo,
+            "turno": sum(1 for m in self.historial if m.get("role") == "assistant") + 1,
+            "mejora": _ORDEN_ESTADO.get(nuevo, -1) > _ORDEN_ESTADO.get(anterior, -1),
+        })
+
     def _procesar_bloques(self, texto: str) -> str:
         """Extrae bloques machine-readable del texto, persiste su contenido y devuelve texto limpio."""
         for m in _RE_BLOQUE_OBLIGACION.finditer(texto):
@@ -198,11 +311,27 @@ class AIComplyChat:
                 obl = json.loads(m.group(1))
                 if "articulo" not in obl or "estado" not in obl:
                     continue
-                key = (obl.get("articulo", ""), obl.get("titulo", ""))
-                self.obligaciones_registradas = [
-                    o for o in self.obligaciones_registradas
-                    if (o.get("articulo", ""), o.get("titulo", "")) != key
-                ]
+                # Un estado que el informe no sabe interpretar es peor que una obligación
+                # ausente: la ausencia se nota, el estado inválido infla el porcentaje.
+                estado = _normalizar_estado(obl["estado"])
+                if estado is None:
+                    logger.warning(
+                        "Bloque OBLIGACION con estado no reconocido (%r); ignorado.",
+                        obl.get("estado"),
+                    )
+                    continue
+                obl["estado"] = estado
+                clave = _clave_obligacion(obl)
+                previa = next(
+                    (o for o in self.obligaciones_registradas if _clave_obligacion(o) == clave),
+                    None,
+                )
+                if previa is not None:
+                    self._registrar_conflicto(previa, obl)
+                    self.obligaciones_registradas = [
+                        o for o in self.obligaciones_registradas
+                        if _clave_obligacion(o) != clave
+                    ]
                 self.obligaciones_registradas.append(obl)
             except Exception:
                 logger.warning("Bloque OBLIGACION malformado; ignorado.", exc_info=True)
@@ -227,6 +356,15 @@ class AIComplyChat:
         texto_limpio = _RE_BLOQUE_CIERRE.sub("", texto_limpio)
         return texto_limpio.rstrip()
 
+    def _leer_truncacion(self) -> None:
+        """Recoge del provider si la última respuesta se cortó por agotar max_tokens.
+
+        getattr con retroceso porque los providers de test son duck-typed y no heredan del ABC.
+        """
+        self.ultima_respuesta_truncada = bool(
+            getattr(self.provider, "ultima_respuesta_truncada", False)
+        )
+
     def chat_stream(self, mensaje_usuario: str) -> Generator[str, None, None]:
         """Envía un mensaje y produce la respuesta en streaming, actualizando el historial."""
         self.historial.append({"role": "user", "content": mensaje_usuario})
@@ -250,6 +388,7 @@ class AIComplyChat:
                 self.historial.pop()
                 raise
 
+        self._leer_truncacion()
         respuesta_completa = self._procesar_bloques(respuesta_completa)
 
         # Detectar señal de evaluación completa y limpiarla del historial persistido.
@@ -276,6 +415,7 @@ class AIComplyChat:
             self.historial.pop()
             raise
 
+        self._leer_truncacion()
         respuesta = self._procesar_bloques(respuesta)
 
         if _SENAL_COMPLETA in respuesta:
@@ -366,7 +506,7 @@ class AIComplyChat:
             return {
                 "obligaciones": list(self.obligaciones_registradas),
                 "carencias_detectadas": list(self.carencias_registradas),
-                "puntos_revision_profesional": list(self.puntos_revision_registrados),
+                "puntos_revision_profesional": self._puntos_revision_con_conflictos(),
                 "resumen_cumplimiento": self.resumen_cumplimiento_registrado or "",
             }
 
@@ -376,6 +516,26 @@ class AIComplyChat:
             if reconstruido:
                 resultado_fallback["obligaciones"] = reconstruido
         return resultado_fallback
+
+    def _puntos_revision_con_conflictos(self) -> list[str]:
+        """Puntos de revisión registrados más las recalificaciones que exigen verificación.
+
+        Solo se escalan los conflictos con mejora=True (ver _registrar_conflicto). No muta
+        self.puntos_revision_registrados: la lista devuelta es una vista, no la fuente.
+        """
+        puntos = list(self.puntos_revision_registrados)
+        for c in self.conflictos_registrados:
+            if not c.get("mejora"):
+                continue
+            rol = f" [{c['rol']}]" if c.get("rol") else ""
+            punto = (
+                f"Verificar la recalificación de {c['articulo']} — {c['titulo']}{rol}: "
+                f"se registró como {str(c['estado_anterior']).upper()} y después se cambió a "
+                f"{str(c['estado_nuevo']).upper()} (turno {c['turno']})."
+            )
+            if punto not in puntos:
+                puntos.append(punto)
+        return puntos
 
     def _extraer_cumplimiento_legacy(self) -> dict:
         """Extracción clásica: pide al LLM que derife el JSON del historial completo."""
@@ -393,8 +553,9 @@ class AIComplyChat:
             if msg.get("role") != "assistant":
                 continue
             for m in _RE_REGISTRADO.finditer(msg.get("content", "")):
-                estado_raw = m.group("estado").lower().replace(" ", "_")
-                estado = _NORM_ESTADO.get(estado_raw.replace("_", " "), estado_raw)
+                estado = _normalizar_estado(m.group("estado"))
+                if estado is None:
+                    continue
                 art = m.group("art").strip()
                 titulo = m.group("titulo").strip()
                 key = (art, titulo)
@@ -438,4 +599,6 @@ class AIComplyChat:
         self.obligaciones_registradas = []
         self.carencias_registradas = []
         self.puntos_revision_registrados = []
+        self.conflictos_registrados = []
         self.resumen_cumplimiento_registrado = ""
+        self.ultima_respuesta_truncada = False
