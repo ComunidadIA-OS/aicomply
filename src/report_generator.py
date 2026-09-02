@@ -20,6 +20,7 @@ from pathlib import Path
 
 from config import NIVELES_RIESGO
 from prompts import PROMPT_VERSION as _PROMPT_VERSION
+from src.calendario import cargar_calendario, obtener_obligacion, obtener_version
 
 _CORPUS_VERSION_FILE = Path(__file__).parent.parent / "data" / "CORPUS_VERSION"
 try:
@@ -62,7 +63,9 @@ _TEXTO_PIE = (
     "No constituye asesoramiento jurídico. "
     "Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689."
 )
-# TODO Art. 50.2: marcado legible por máquina (p. ej. metadatos C2PA) — exigible desde 2 dic 2026
+# TODO Art. 50.2: marcado legible por máquina (p. ej. metadatos C2PA). Ya exigible: este informe
+# es contenido sintético generado después del 2 de agosto de 2026, así que no le alcanza el
+# periodo de gracia del Art. 111.4 (que solo cubre sistemas anteriores a esa fecha).
 
 # ── Paleta de colores (RGB) ────────────────────────────────────────────────────
 
@@ -572,34 +575,43 @@ class GeneradorInforme:
             )
             return texto
 
+        # Las fechas proceden de data/calendario.json — nunca literales aquí.
+        _anexo_iii = obtener_obligacion("anexo_iii")["fecha_legible"]
+        _anexo_i = obtener_obligacion("anexo_i")["fecha_legible"]
+        _art_50 = obtener_obligacion("art_50")["fecha_legible"]
+        _art_50_2 = obtener_obligacion("art_50_2")
+        _norma_omnibus = cargar_calendario()["norma_modificativa"]["referencia"]
+
         pasos_por_nivel = {
             "ALTO": [
                 "**Inmediato:** Designar un responsable de cumplimiento del AI Act e "
                 "iniciar el inventario del sistema.",
-                "**Preparacion (0-6 meses):** Desarrollar la documentacion tecnica (Art. 11, Anexo IV) "
-                "y el sistema de gestion de riesgos (Art. 9). Estos documentos requieren meses "
-                "de trabajo; iniciar ahora independientemente del calendario final del Omnibus.",
-                "**Preparacion (6-12 meses):** Implementar el registro de actividad (Art. 12), "
-                "el protocolo de supervision humana (Art. 14) y el sistema de gestion de calidad (Art. 17).",
-                "**Antes del despliegue (plazo provisional: 2 de diciembre de 2027 para Anexo III; "
-                "2 de agosto de 2028 para Anexo I, segun el acuerdo Omnibus de mayo de 2026, "
-                "pendiente de publicacion en el DOUE):** Completar la evaluacion de conformidad (Art. 43), "
+                "**Preparación (0-6 meses):** Desarrollar la documentación técnica (Art. 11, Anexo IV) "
+                "y el sistema de gestión de riesgos (Art. 9). Estos documentos requieren meses "
+                "de trabajo: conviene iniciarlos ahora.",
+                "**Preparación (6-12 meses):** Implementar el registro de actividad (Art. 12), "
+                "el protocolo de supervisión humana (Art. 14) y el sistema de gestión de calidad (Art. 17).",
+                f"**Antes del despliegue ({_anexo_iii} para el Anexo III; {_anexo_i} para el Anexo I, "
+                f"según el {_norma_omnibus}):** Completar la evaluación de conformidad (Art. 43), "
                 "registrar el sistema en la base de datos de la UE (Art. 49) y obtener el marcado CE (Art. 47-48).",
-                "**De forma continua:** Supervision poscomercializacion (Art. 72), notificacion "
-                "de incidentes (Art. 73) y actualizacion de la documentacion tecnica.",
+                "**De forma continua:** Supervisión poscomercialización (Art. 72), notificación "
+                "de incidentes (Art. 73) y actualización de la documentación técnica.",
             ],
             "LIMITADO": [
-                "**Aplicable actualmente:** Anadir aviso claro en la interfaz de que el sistema "
-                "usa IA antes de cada interaccion (Art. 50.1 — en vigor desde agosto de 2025).",
-                "**Antes del 2 de diciembre de 2026:** Implementar el marcado de contenido "
-                "generado sinteticamente (Art. 50.2) si el sistema genera texto, imagen, audio o video.",
-                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y el resultado "
-                "del proceso Omnibus una vez publicado en el DOUE.",
+                "**Aplicable actualmente:** Añadir aviso claro en la interfaz de que el sistema "
+                f"usa IA antes de cada interacción (Art. 50.1 — en vigor desde el {_art_50}).",
+                "**Marcado de contenido sintético (Art. 50.2)** si el sistema genera texto, imagen, "
+                f"audio o vídeo. La fecha depende de cuándo se introdujo el sistema en el mercado: si es "
+                f"posterior al {_art_50_2['fecha_legible']}, la obligación ya es exigible desde su "
+                f"comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el plazo "
+                f"vence el {_art_50_2['fecha_gracia_legible']}.",
+                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y de las "
+                "directrices de la Comisión Europea.",
             ],
             "MINIMO": [
-                "**[Obligacion legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal "
-                "que usa o supervisa el sistema tiene formacion suficiente sobre sus capacidades y limitaciones.",
-                "**[Recomendacion voluntaria] Art. 95:** Considerar la adhesion a codigos de conducta "
+                "**[Obligación legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal "
+                "que usa o supervisa el sistema tiene formación suficiente sobre sus capacidades y limitaciones.",
+                "**[Recomendación voluntaria] Art. 95:** Considerar la adhesión a códigos de conducta "
                 "voluntarios. No es obligatorio; no computa como incumplimiento.",
                 "**[Medida prudencial]** Documentar internamente las capacidades y limitaciones del sistema "
                 "y supervisar cambios en el uso que puedan elevar el nivel de riesgo.",
@@ -646,6 +658,7 @@ class GeneradorInforme:
         return (
             f"---\n\n*{_TEXTO_PIE} "
             f"Prompt v{_PROMPT_VERSION} · Corpus v{_CORPUS_VERSION} · "
+            f"Calendario v{obtener_version()} · "
             f"Fecha de generación: {_fecha_larga()}.*"
         )
 
@@ -1472,7 +1485,8 @@ class GeneradorInforme:
             gen_txt = _limpiar(
                 f"{_TEXTO_PIE} "
                 f"Prompt v{_PROMPT_VERSION} - Corpus v{_CORPUS_VERSION} - "
-                f"Fecha de generacion: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
+                f"Calendario v{obtener_version()} - "
+                f"Fecha de generación: {datetime.now().strftime('%d/%m/%Y a las %H:%M')}."
             )
             pdf.set_fill_color(255, 235, 235)
             pdf.set_draw_color(180, 30, 30)

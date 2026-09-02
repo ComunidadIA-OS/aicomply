@@ -17,11 +17,13 @@ Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y 
 
 ## El problema
 
-El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente con un calendario escalonado. Las prácticas prohibidas (Art. 5) y la alfabetización en IA (Art. 4) aplican desde el **2 de febrero de 2025**; las reglas para modelos de IA de propósito general (GPAI, Arts. 51-55), desde el **2 de agosto de 2025**. Las obligaciones para sistemas de **alto riesgo del Anexo III** (empleo, servicios esenciales, biometría…) estaban previstas para agosto de 2026; el acuerdo provisional Ómnibus de 7 de mayo de 2026 —pendiente de publicación en el DOUE y por tanto aún no vinculante— las aplaza al **2 de diciembre de 2027**. Las del **Anexo I** (productos regulados: maquinaria, vehículos, dispositivos médicos…) se aplazarían al **2 de agosto de 2028**. Hasta la publicación formal en el DOUE, la fecha de agosto de 2026 sigue siendo la referencia oficial. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
+El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente con un calendario escalonado. Las prácticas prohibidas (Art. 5) y la alfabetización en IA (Art. 4) aplican desde el **2 de febrero de 2025**; las reglas para modelos de IA de propósito general (GPAI, Arts. 51-55), desde el **2 de agosto de 2025**; las obligaciones de transparencia del **Art. 50** (chatbots, contenido sintético, deep fakes), desde el **2 de agosto de 2026**. El Ómnibus digital se adoptó como **Reglamento (UE) 2026/1744** y está en vigor desde el **27 de julio de 2026**: traslada las obligaciones de **alto riesgo del Anexo III** (empleo, servicios esenciales, biometría…) al **2 de diciembre de 2027** y las del **Anexo I** (productos regulados: maquinaria, vehículos, dispositivos médicos…) al **2 de agosto de 2028**. Son fechas firmes, no un calendario provisional. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
+
+Con la entrada en vigor del Ómnibus se actualizan tanto las fechas que maneja la herramienta —centralizadas en [`data/calendario.json`](data/calendario.json)— como el corpus del RAG.
 
 El problema es que el **41% de las PYMEs españolas ya usa IA de forma regular** (IONOS/YouGov, 2026) — la tasa más alta de Europa — pero la mayoría no sabe si sus sistemas están sujetos al reglamento, qué nivel de riesgo tienen ni qué obligaciones concretas les aplican. La asesoría legal especializada en AI Act tiene un coste prohibitivo para una PYME. Las herramientas existentes están en inglés, son cuestionarios estáticos o están diseñadas para grandes corporaciones.
 
-**Escenario ilustrativo:** MECALSA S.L. (empresa representativa de PYME industrial), fabricante con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y la exposición regulatoria es real ahora, con independencia del calendario definitivo que resulte del Ómnibus.
+**Escenario ilustrativo:** MECALSA S.L. (empresa representativa de PYME industrial), fabricante con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y la exposición regulatoria es real ahora.
 
 ## Descripción
 
@@ -148,12 +150,11 @@ Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-r
 
 ## Corpus normativo
 
-El RAG (Retrieval-Augmented Generation) de AIComply incluye **27 documentos** con más de **2.000 fragmentos** indexados:
+El RAG (Retrieval-Augmented Generation) de AIComply incluye **26 documentos** con más de **2.000 fragmentos** indexados:
 
 | Fuente | Documentos |
 |--------|-----------|
 | Reglamento (UE) 2024/1689 — AI Act completo | 1 |
-| Reglamento Ómnibus (modificaciones sectoriales) | 1 |
 | Anteproyecto de Ley española de IA (gobernanza y régimen sancionador) | 1 |
 | Guías oficiales de la AESIA (16 guías + checklist) | 17 |
 | GDPR / AEPD — adecuación, IA agéntica, auditorías | 4 |

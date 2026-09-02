@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import pytest
 
 from src.chatbot import AIComplyChat
@@ -230,3 +232,49 @@ class TestRAGIntegration:
 
         assert respuesta == "respuesta"
         assert "CONTEXTO NORMATIVO RECUPERADO" not in spy.ultimo_system_prompt
+
+
+class TestCalendarioInyectado:
+    """El calendario normativo no es opcional como el RAG: si falla, revienta.
+
+    Un prompt sin contexto RAG solo da respuestas menos precisas; un prompt sin
+    fechas de aplicación produce información jurídica falsa.
+    """
+
+    def test_calendario_inyectado_sin_override(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        AIComplyChat(spy).chat_completo("mensaje")
+
+        assert "{CALENDARIO_" not in spy.ultimo_system_prompt
+        assert "Reglamento (UE) 2026/1744" in spy.ultimo_system_prompt
+
+    def test_calendario_inyectado_tambien_con_override(self, monkeypatch):
+        """La rama de cumplimiento retorna antes y también debe recibirlo."""
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override="prompt {CALENDARIO_AI_ACT} fin")
+        chat.chat_completo("mensaje")
+
+        assert "{CALENDARIO_" not in spy.ultimo_system_prompt
+        assert "Reglamento (UE) 2026/1744" in spy.ultimo_system_prompt
+
+    def test_calendario_roto_propaga_la_excepcion(self, monkeypatch):
+        """Contraste con test_rag_excepcion_no_rompe_chat: aquí NO se traga."""
+        import src.calendario  # noqa: PLC0415
+        import src.chatbot  # noqa: PLC0415
+        from src.calendario import CalendarioNoDisponibleError  # noqa: PLC0415
+
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+        monkeypatch.setattr(src.calendario, "_calendario_cache", None)
+        monkeypatch.setattr(
+            src.calendario, "CALENDARIO_FILE", Path("/no/existe/calendario.json")
+        )
+
+        chat = AIComplyChat(SpyProvider("respuesta"))
+        with pytest.raises(CalendarioNoDisponibleError):
+            chat.chat_completo("mensaje")

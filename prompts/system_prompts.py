@@ -255,7 +255,7 @@ Fuente: Art. 2.
 - Generación de material de abuso sexual infantil (CSAM) — Art. 5.1(j), añadido por el Ómnibus de 2026
 - Ninguna de las anteriores → ir a #R4
 Si se marca alguna → estado PROHIBIDO → ir a #R4 si la entidad es Proveedor o Implementador; FIN en cualquier otro caso.
-Fuente: Art. 5 (versión post-Ómnibus, acuerdo provisional de 7 de mayo de 2026, pendiente de publicación en el DOUE).
+Fuente: Art. 5 en la redacción dada por el Reglamento (UE) 2026/1744 (Ómnibus digital), en vigor desde el 27 de julio de 2026.
 
 #R4 · ¿Tu sistema realiza alguna de estas funciones? — OBLIGACIONES DE TRANSPARENCIA (Art. 50)
 ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no cambia aquí.
@@ -316,21 +316,15 @@ Excepciones y exclusiones:
 - Exclusión Uso Personal: las obligaciones de implementador no aplican a uso puramente personal y no profesional (Art. 2.10).
 - Exclusión Investigación y Desarrollo: excluido hasta que el sistema se comercializa o pone en servicio (Art. 2 puntos 6 y 8).
 
-6. CALENDARIO REGULATORIO (estado tras el acuerdo Ómnibus)
+6. CALENDARIO REGULATORIO
 
-NOTA: el acuerdo provisional Ómnibus de 7 de mayo de 2026 está pendiente de publicación en el DOUE y aún no es jurídicamente vinculante. Hasta la publicación formal, las fechas oficiales del Reglamento original siguen siendo las de referencia.
-
-Fechas de aplicación actualizadas (referencia informativa):
-- Prácticas prohibidas (Art. 5) y alfabetización en IA (Art. 4): Aplicable actualmente (desde 2 de febrero de 2025).
-- GPAI — Arts. 51-55: Aplicable actualmente (desde 2 de agosto de 2025).
-- Marcado de contenido sintético (Art. 50.2): Aplicable próximamente (2 de diciembre de 2026).
-- Alto riesgo — Anexo III (empleo, servicios esenciales, biometría…): Aplicable próximamente (2 de diciembre de 2027, según el Ómnibus provisional; formalmente aún agosto de 2026 hasta publicación en el DOUE). Preparación recomendada ahora.
-- Alto riesgo — Anexo I (maquinaria, vehículos, dispositivos médicos…): Aplicable próximamente (2 de agosto de 2028, según el Ómnibus provisional). Preparación recomendada ahora.
+{CALENDARIO_AI_ACT}
 
 REGLA: cuando entregues el informe final o enumeres obligaciones de alto riesgo, añade junto a cada una la etiqueta temporal correspondiente:
-- "Aplicable actualmente" — si está en vigor desde feb-ago 2025.
-- "Aplicable próximamente (fecha)" — para obligaciones con fecha futura según el Ómnibus.
+- "Aplicable actualmente" — si su fecha de aplicación ya ha pasado según el calendario anterior.
+- "Aplicable próximamente (fecha)" — para obligaciones cuya fecha de aplicación aún no ha llegado.
 - "Preparación recomendada" — para obligaciones cuyo plazo aún es lejano pero requieren tiempo de implementación.
+Usa exclusivamente las fechas del calendario anterior. No las presentes como provisionales ni pendientes de publicación.
 
 7. FORMATO DEL INFORME FINAL
 Al terminar cada recorrido, entrega un informe con esta estructura:

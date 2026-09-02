@@ -68,14 +68,19 @@ Cuando hayas completado la última obligación, además del resumen narrativo, e
 
 "carencias" lista solo las CARENCIAS LEGALES (estado=carencia y tipo=obligacion); excluye recomendaciones y vigilancias no adoptadas. "puntos_revision" lista los puntos indeterminados confirmados durante la conversación, no los heredados del árbol previo.
 
-ESTADO TEMPORAL DE APLICABILIDAD (acuerdo provisional Ómnibus, 7 mayo 2026; pendiente publicación en el DOUE):
-Junto a cada obligación de alto riesgo, indica entre corchetes su estado temporal:
-- [Aplicable actualmente] — en vigor desde 2 feb 2025 (Art. 4, Art. 5) o 2 ago 2025 (GPAI).
-- [Aplicable próximamente — 2 dic 2026] — Art. 50.2 (marcado de contenido sintético).
-- [Aplicable próximamente — 2 dic 2027] — obligaciones del Anexo III (empleo, servicios esenciales, biometría…), según el Ómnibus provisional.
-- [Aplicable próximamente — 2 ago 2028] — obligaciones del Anexo I (productos regulados), según el Ómnibus provisional.
-- [Preparación recomendada] — obligaciones con plazo aún lejano pero que requieren meses de implementación.
-Nota: hasta la publicación formal en el DOUE, agosto de 2026 sigue siendo la fecha oficial de referencia para las obligaciones del Anexo III.
+ESTADO TEMPORAL DE APLICABILIDAD:
+
+{CALENDARIO_AI_ACT}
+
+Junto a cada obligación, indica entre corchetes su estado temporal, usando exclusivamente las fechas del calendario anterior:
+- [Aplicable actualmente — desde <fecha>] — si la fecha de aplicación ya ha pasado.
+- [Aplicable próximamente — <fecha>] — si la fecha de aplicación aún no ha llegado.
+- [Preparación recomendada] — obligaciones con plazo aún lejano pero que requieren meses de implementación. Se añade a la etiqueta anterior, no la sustituye.
+Estas fechas son derecho vigente. No las presentes como provisionales, condicionadas ni pendientes de publicación.
+
+CASO ESPECIAL — Art. 50.2 (marcado de contenido sintético): su etiqueta depende de cuándo se introdujo el sistema en el mercado, así que NO la asignes por defecto. Antes de etiquetarla, PREGUNTA al usuario si su sistema generativo ya estaba en el mercado antes del 2 de agosto de 2026:
+- Si lo estaba: [Aplicable próximamente — 2 dic 2026] (periodo de gracia del Art. 111.4).
+- Si es posterior a esa fecha, o si el usuario no lo sabe: [Aplicable actualmente — desde 2 ago 2026].
 
 CATÁLOGO DE OBLIGACIONES POR CLASIFICACIÓN:
 
@@ -143,10 +148,10 @@ Notificar a la NCA (Art. 6.4, Art. 49.2):
 - Riesgo de reclasificación como alto riesgo si la autoridad detecta una clasificación errónea (Art. 80)
 
 RIESGO LIMITADO — Transparencia (Art. 50):
-- Informar al usuario que interactúa con un sistema de IA, de forma clara y en el momento de la interacción (Art. 50.1, chatbots) [Aplicable actualmente — desde 2 ago 2025]
-- Marcar el contenido generado sintéticamente (texto, imagen, audio, vídeo) con tecnología de detección (Art. 50.2) [Aplicable próximamente — 2 dic 2026]
-- Informar sobre el uso de reconocimiento de emociones o categorización biométrica (Art. 50.3) [Aplicable actualmente — desde 2 ago 2025]
-- Marcar los deep fakes con información legible por máquina (Art. 50.4) [Aplicable actualmente — desde 2 ago 2025]
+- Informar al usuario que interactúa con un sistema de IA, de forma clara y en el momento de la interacción (Art. 50.1, chatbots) [Aplicable actualmente — desde 2 ago 2026]
+- Marcar el contenido generado sintéticamente (texto, imagen, audio, vídeo) con tecnología de detección (Art. 50.2) [etiqueta condicional — PREGUNTA primero si el sistema estaba en el mercado antes del 2 ago 2026: si lo estaba, [Aplicable próximamente — 2 dic 2026]; si no, [Aplicable actualmente — desde 2 ago 2026]]
+- Informar sobre el uso de reconocimiento de emociones o categorización biométrica (Art. 50.3) [Aplicable actualmente — desde 2 ago 2026]
+- Marcar los deep fakes con información legible por máquina (Art. 50.4) [Aplicable actualmente — desde 2 ago 2026]
 
 MÍNIMO:
 No se identifican obligaciones propias de sistemas de alto riesgo. No obstante, pueden aplicar obligaciones horizontales del AI Act (Art. 4), y en su caso obligaciones de transparencia del Art. 50 u otra normativa sectorial. Las recomendaciones voluntarias se presentan separadas y no computan como incumplimientos.

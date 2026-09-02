@@ -35,6 +35,7 @@ def _backoff_rate_limit(exc: Exception) -> float:
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
+from src.calendario import aplicar_calendario
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
 
@@ -133,7 +134,7 @@ class AIComplyChat:
 
     @property
     def _system_base(self) -> str:
-        return self._system_prompt_override or SYSTEM_PROMPT_CHATBOT
+        return aplicar_calendario(self._system_prompt_override or SYSTEM_PROMPT_CHATBOT)
 
     def _system_con_rag(self, mensaje: str) -> str:
         """Devuelve el system prompt adecuado al provider.
@@ -144,11 +145,17 @@ class AIComplyChat:
           lanza una excepción, usa el prompt base sin modificar.
         - Con Ollama (local): usa el prompt compacto para reducir tokens.
         - Con APIs en la nube: usa el prompt completo.
+
+        El calendario normativo se inyecta SIEMPRE y fuera del try/except del RAG:
+        el contexto recuperado es opcional y su ausencia solo degrada la respuesta,
+        pero un prompt sin fechas de aplicación produce información jurídica falsa.
+        Si el calendario no se puede cargar, la excepción propaga.
         """
         if self._system_prompt_override:
-            return self._system_prompt_override
+            return aplicar_calendario(self._system_prompt_override)
 
         base = SYSTEM_PROMPT_CHATBOT_LOCAL if self.provider.es_local else SYSTEM_PROMPT_CHATBOT
+        base = aplicar_calendario(base)
 
         try:
             contexto = formatear_contexto_rag(mensaje, top_k=3)
