@@ -54,8 +54,8 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
 {
   "clasificacion": "ALTO|LIMITADO|MINIMO|PROHIBIDO|NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA|EXCLUIDO|PENDIENTE",
   "estados_adicionales": ["Notificar a la NCA", "Convertirse en proveedor", "GPAI con Riesgo Sistémico"],
-  "rol": "todos los roles identificados, separados por ' / ' cuando hay varios (p. ej. 'proveedor / implementador')",
-  "roles_multiples": ["proveedor", "implementador"],
+  "rol": "los roles confirmados en la conversación, separados por ' / ' cuando hay más de uno",
+  "roles_multiples": ["implementador"],
   "nodos_recorridos": [
     {"pregunta": "Tipo de entidad", "respuesta": "Implementador", "origen": "respuesta directa|inferencia confirmada|INDETERMINADO"}
   ],
@@ -65,10 +65,13 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
   "obligaciones_preliminares": ["obligación ya identificada (Art. X)"]
 }
 REGLA OBLIGATORIA PARA obligaciones_preliminares: cita el ARTÍCULO, nunca el apartado. Escribe "(Art. 26)", nunca "(Art. 26.1)" ni "(Art. 26.3)". Esta lista es preliminar; la precisión de apartado la aporta después el análisis de cumplimiento, y un apartado equivocado aquí contradice ese análisis dentro del mismo informe.
-REGLA OBLIGATORIA PARA roles_multiples: Lista TODOS los roles identificados como array.
-- Si la organización ha desarrollado o encargado el sistema Y lo utiliza internamente bajo su propia autoridad, incluye AMBOS: ["proveedor", "implementador"]. El campo "rol" debe reflejar los mismos roles: "proveedor / implementador".
-- Si solo aplica un rol, incluye únicamente ese: p. ej. ["implementador"]. El campo "rol" = "implementador".
+REGLA OBLIGATORIA PARA roles_multiples: lista los roles que la conversación CONFIRMÓ, y solo esos. Tienes la conversación entera delante: un rol cuenta como confirmado cuando la persona lo respondió o aceptó una inferencia sobre él, no cuando resulte plausible por el sector, por la clasificación o por el tipo de sistema.
+- Si la organización ha desarrollado o encargado el sistema Y lo utiliza internamente bajo su propia autoridad, incluye AMBOS: ["proveedor", "implementador"]. El campo "rol" debe reflejar los mismos roles: "proveedor / implementador". Las dos condiciones tienen que constar en la conversación; una sola no basta.
+- Si solo consta un rol, incluye únicamente ese: p. ej. ["implementador"]. El campo "rol" = "implementador".
+- NO AÑADAS un rol que la conversación no confirmara. En particular, si la persona dijo que adquirió el sistema de un tercero y que no lo modifica, "proveedor" NO va en la lista: el rol es el que se determinó al preguntar por el tipo de entidad, y las modificaciones del Art. 25 se cerraron sin activarlo.
+- Ante la duda entre uno y dos roles, emite el que la conversación confirme. Añadir un rol de más multiplica las obligaciones que se atribuyen a la organización; quedarse corto es un error menor que pasarse.
 - NUNCA dejes roles_multiples vacío; como mínimo contiene el rol identificado.
+REGLA OBLIGATORIA PARA nodos_recorridos: la "respuesta" de cada fila reproduce lo que la persona respondió en esa pregunta. No escribas en ella una justificación de un rol que la conversación no dé, ni añadas a la fila de las modificaciones del Art. 25 un motivo que respalde un rol distinto del registrado en "Tipo de entidad".
 Si la evaluación no ha llegado a una clasificación definitiva, usa "clasificacion": "PENDIENTE"."""
 
 _PROMPT_EXTRAER_CUMPLIMIENTO = """Basándote en toda la conversación de cumplimiento anterior, extrae la información estructurada. Devuelve ÚNICAMENTE el siguiente JSON, sin texto adicional ni bloques de código markdown:
@@ -481,6 +484,41 @@ class AIComplyChat:
         return datos
 
     @classmethod
+    def _reconciliar_rol(
+        cls, rol_raw: str, partes_validas: list[str], roles: list[str]
+    ) -> str | None:
+        """Corrige 'rol' cuando trae roles que 'roles_multiples' no tiene. None si coinciden.
+
+        Los dos campos alimentan partes distintas del informe: la cabecera y la portada del
+        PDF se imprimen desde 'rol', y las obligaciones se construyen desde 'roles_multiples'
+        (_roles_plan, en report_generator, prefiere el array). Sin reconciliar, un desacuerdo
+        produce un documento que se contradice a sí mismo: encabezado con dos roles y un solo
+        bloque de obligaciones.
+
+        Se estrecha hacia 'roles_multiples' —el array explícito que gobierna la regla del
+        prompt de extracción— y no al revés: ensanchar codificaría en el código el fallo B15,
+        que es añadir un rol ante la duda. El ensanchado que sí se conserva en la función
+        llamante es otro caso, el de 'rol' simple con un array más ancho, donde los campos no
+        se contradicen porque 'rol' no afirma nada que el array niegue.
+
+        La discrepancia no se estrecha en silencio: que los dos campos no coincidan significa
+        que el modelo se ha contradicho sobre el dato más consecuente de la evaluación —el rol
+        determina el catálogo entero—, y hoy no sabemos con qué frecuencia ocurre. Se registra
+        como warning y no como punto de revisión profesional del informe: al usuario "los dos
+        campos internos de rol no coincidían" no le dice nada accionable.
+        """
+        sobrantes = [p for p in partes_validas if p not in roles]
+        if not sobrantes or not roles:
+            return None
+        rol_estrecho = " / ".join(roles)
+        logger.warning(
+            "Discrepancia de rol en la extracción: 'rol'=%r aporta %s que no está en "
+            "'roles_multiples'=%s. Se conserva 'roles_multiples' y 'rol' pasa a %r.",
+            rol_raw, sobrantes, roles, rol_estrecho,
+        )
+        return rol_estrecho
+
+    @classmethod
     def _normalizar_clasificacion_data(cls, datos: dict) -> dict:
         """Garantiza coherencia entre 'rol' y 'roles_multiples'.
 
@@ -488,10 +526,22 @@ class AIComplyChat:
           y los expande en 'roles_multiples' si este viene vacío.
         - Asegura que 'roles_multiples' contiene como mínimo el rol indicado en 'rol'.
         - Deduplica 'roles_multiples' preservando el orden.
-        - NO reduce 'rol' a un único valor: si el LLM emitió "proveedor / implementador",
-          se conserva así para que los renderers de UI e informe muestren todos los roles.
+        - NO reduce 'rol' a un único valor cuando los dos campos concuerdan: si el LLM emitió
+          "proveedor / implementador" y el array dice lo mismo, se conserva así para que los
+          renderers de UI e informe muestren todos los roles.
+        - Reconcilia los dos campos cuando SÍ discrepan: 'rol' pasa a contener exactamente los
+          roles de 'roles_multiples'. Ver _reconciliar_rol.
         - Delega en _normalizar_obligaciones_preliminares el recorte del apartado del
           Art. 26 en 'obligaciones_preliminares'.
+
+        Lo que esta función NO hace, deliberadamente: comprobar si el modelo se ha inventado
+        un rol (hallazgo B15). No hay señal fiable para ello y no debe añadirse una. La única
+        traza que llega hasta aquí es 'nodos_recorridos', que emite el mismo modelo en la
+        misma llamada: en B15 ya venía contaminada ("Tipo de entidad: Proveedor e
+        Implementador"), así que contrastar contra ella no habría saltado. Y el doble rol
+        legítimo tiene firma idéntica al inventado —#E2 respondido "ninguna de las anteriores"
+        y sin "Convertirse en proveedor" en estados_adicionales—, de modo que cualquier regla
+        que marcase uno marcaría también el otro. El contrapeso vive en los prompts.
         """
         rol_raw = (datos.get("rol") or "").strip()
         partes = [
@@ -516,8 +566,12 @@ class AIComplyChat:
                 seen.add(r)
                 roles_dedup.append(r)
 
+        # Si 'rol' trae roles que roles_dedup no tiene, estrechar hacia roles_dedup (B15)
+        rol_estrecho = cls._reconciliar_rol(rol_raw, partes_validas, roles_dedup)
+        if rol_estrecho is not None:
+            datos = {**datos, "rol": rol_estrecho}
         # Si 'rol' venía como valor único pero roles_dedup tiene varios, reconstruir 'rol'
-        if len(roles_dedup) > 1 and len(partes_validas) <= 1:
+        elif len(roles_dedup) > 1 and len(partes_validas) <= 1:
             datos = {**datos, "rol": " / ".join(roles_dedup)}
 
         datos["roles_multiples"] = roles_dedup
