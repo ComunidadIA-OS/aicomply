@@ -205,7 +205,9 @@ class GeneradorInforme:
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_clasificacion(descripcion, clasificacion, rol, roles_multiples, estados),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
-            self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
+            self._seccion_obligaciones_preliminares(
+                3, obligaciones_prev, clasificacion, rol, roles_multiples
+            ),
             self._seccion_revision_profesional(4, indeterminados),
             self._pie(),
         ]
@@ -271,7 +273,9 @@ class GeneradorInforme:
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_completo(descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
-            self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
+            self._seccion_obligaciones_preliminares(
+                3, obligaciones_prev, clasificacion, rol, roles_multiples
+            ),
             self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples, clasificacion),
             self._seccion_carencias(5, carencias),
             self._seccion_plan_accion(6, clasificacion, carencias, rol, roles_multiples),
@@ -405,7 +409,12 @@ class GeneradorInforme:
         return texto
 
     def _seccion_obligaciones_preliminares(
-        self, num: int, obligaciones: list[str], clasificacion: str
+        self,
+        num: int,
+        obligaciones: list[str],
+        clasificacion: str,
+        rol: str = "",
+        roles_multiples: list[str] | None = None,
     ) -> str:
         texto = f"## {num}. Obligaciones identificadas durante la evaluación\n"
 
@@ -430,17 +439,8 @@ class GeneradorInforme:
                 "Verificar si aplican otras normativas según el tipo de tecnología utilizada",
                 "Revisar la clasificación si el sistema evoluciona y adquiere capacidades de inferencia autónoma",
             ],
-            "ALTO": [
-                "Sistema de gestión de riesgos documentado (Art. 9)",
-                "Gobernanza de datos de entrenamiento, validación y prueba (Art. 10)",
-                "Documentación técnica completa según el Anexo IV (Art. 11)",
-                "Registro automático de actividad (Art. 12)",
-                "Instrucciones de uso para el implementador (Art. 13)",
-                "Supervisión humana efectiva (Art. 14)",
-                "Exactitud, solidez y ciberseguridad declaradas (Art. 15)",
-                "Evaluación de conformidad antes de la comercialización (Art. 43)",
-                "Registro en la base de datos de la UE (Art. 49)",
-            ],
+            # ALTO no está aquí: su lista depende del rol y la construye
+            # _preliminares_alto (hallazgo B14).
             "LIMITADO": [
                 "Informar al usuario que interactúa con un sistema de IA (Art. 50.1)",
                 "Marcar el contenido generado sintéticamente (Art. 50.2)",
@@ -454,10 +454,129 @@ class GeneradorInforme:
             ],
         }
 
-        lista = obligaciones if obligaciones else _OBLIGACIONES_POR_NIVEL.get(clasificacion, [])
-        for ob in lista:
+        if obligaciones:
+            for ob in obligaciones:
+                texto += f"\n- {ob}"
+            return texto
+
+        # Sin obligaciones extraídas de la conversación, la lista es la del catálogo.
+        # En ALTO depende del rol: un implementador no tiene las obligaciones del
+        # proveedor y esta sección no puede atribuírselas (hallazgo B14).
+        if clasificacion == "ALTO":
+            return texto + self._preliminares_alto(_roles_plan(rol, roles_multiples))
+
+        for ob in _OBLIGACIONES_POR_NIVEL.get(clasificacion, []):
             texto += f"\n- {ob}"
         return texto
+
+    def _preliminares_alto(self, roles: list[str]) -> str:
+        """Lista preliminar de ALTO, en bloques según el rol identificado.
+
+        Mismo origen que `_plan_alto`: el catálogo de
+        `prompts/system_prompt_cumplimiento.py`. Con `roles` vacío el rol no está
+        determinado; los bloques de proveedor e implementador se presentan como
+        alternativos, nunca como acumulables.
+        """
+        preliminares_proveedor = [
+            "Sistema de gestión de riesgos documentado (Art. 9)",
+            "Gobernanza de datos de entrenamiento, validación y prueba (Art. 10)",
+            "Documentación técnica completa según el Anexo IV (Art. 11)",
+            "Registro automático de actividad (Art. 12)",
+            "Instrucciones de uso para el implementador (Art. 13)",
+            "Supervisión humana efectiva (Art. 14)",
+            "Exactitud, solidez y ciberseguridad declaradas (Art. 15)",
+            "Evaluación de conformidad antes de la comercialización (Art. 43)",
+            "Registro en la base de datos de la UE (Art. 49)",
+        ]
+
+        preliminares_implementador = [
+            "Uso del sistema conforme a las instrucciones del proveedor (Art. 26.1)",
+            "Supervisión humana encomendada a personas con la competencia, la formación y "
+            "la autoridad necesarias (Art. 26.2)",
+            "Datos de entrada pertinentes y suficientemente representativos para el uso "
+            "previsto (Art. 26.3)",
+            "Monitorización del funcionamiento del sistema y notificación de riesgos al "
+            "proveedor (Art. 26.5)",
+            "Conservación de los registros generados automáticamente durante al menos seis "
+            "meses (Art. 26.6)",
+            "En el ámbito laboral, información previa a los trabajadores afectados y a sus "
+            "representantes (Art. 26.7)",
+            "Notificación de incidentes graves al proveedor y, cuando proceda, a las "
+            "autoridades nacionales competentes (Art. 26.10)",
+            "Cooperación con las autoridades nacionales competentes (Art. 26.11)",
+            "Evaluación de impacto sobre los derechos fundamentales, cuando proceda "
+            "(Art. 27)",
+        ]
+
+        bloques_por_rol: dict[str, tuple[str, list[str]]] = {
+            "proveedor": ("Obligaciones como proveedor (Art. 16)", preliminares_proveedor),
+            "implementador": (
+                "Obligaciones como implementador (Art. 26)", preliminares_implementador
+            ),
+            "distribuidor": (
+                "Obligaciones como distribuidor (Art. 24)",
+                [
+                    "Verificación del marcado CE y de la documentación exigida antes de "
+                    "comercializar el sistema (Art. 24)",
+                    "No comercializar el sistema si no cumple los requisitos del AI Act (Art. 24)",
+                    "Información al proveedor o al importador de los riesgos identificados (Art. 24)",
+                ],
+            ),
+            "importador": (
+                "Obligaciones como importador (Art. 23)",
+                [
+                    "Verificación de la conformidad del sistema antes de introducirlo en el "
+                    "mercado de la UE (Art. 23)",
+                    "Comprobación de que el proveedor no establecido en la UE ha completado la "
+                    "evaluación de conformidad (Art. 23)",
+                    "No comercializar el sistema si presenta un riesgo para la salud, la "
+                    "seguridad o los derechos fundamentales (Art. 23)",
+                    "Conservación de la declaración UE de conformidad y de la documentación "
+                    "técnica (Art. 23)",
+                ],
+            ),
+            "representante_autorizado": (
+                "Obligaciones como representante autorizado (Arts. 22 y 54)",
+                [
+                    "Actuar como punto de contacto de las autoridades competentes de la UE "
+                    "(Arts. 22 y 54)",
+                    "Garantizar que el proveedor no establecido en la UE ha completado sus "
+                    "obligaciones (Arts. 22 y 54)",
+                    "Conservación del mandato escrito y entrega a las autoridades cuando lo "
+                    "soliciten (Arts. 22 y 54)",
+                ],
+            ),
+            "fabricante": (
+                "Obligaciones como fabricante de producto (Art. 25, Anexo I)",
+                [
+                    "El sistema de IA que es componente de seguridad de un producto del Anexo I "
+                    "y se comercializa bajo su nombre o marca convierte a su organización en "
+                    "proveedora a todos los efectos (Art. 25). Ver el bloque «Obligaciones como "
+                    "proveedor».",
+                ],
+            ),
+        }
+
+        def _bloque(encabezado: str, items: list[str]) -> str:
+            return f"\n### {encabezado}\n" + "".join(f"\n- {i}" for i in items) + "\n"
+
+        if not roles:
+            texto = (
+                "\n- Determinar el rol de su entidad bajo el AI Act (proveedor, implementador, "
+                "distribuidor, importador, representante autorizado o fabricante): las "
+                "obligaciones aplicables dependen del rol.\n"
+                "\n> No se ha podido determinar el rol de su entidad. Los dos bloques siguientes "
+                "son alternativos: solo le aplica el que corresponda a su rol.\n"
+            )
+            texto += _bloque(
+                "Si su entidad es proveedora del sistema (Art. 16)", preliminares_proveedor
+            )
+            texto += _bloque(
+                "Si su entidad es implementadora del sistema (Art. 26)", preliminares_implementador
+            )
+            return texto
+
+        return "".join(_bloque(*bloques_por_rol[r]) for r in roles)
 
     def _seccion_obligaciones_detalladas(
         self, num: int, obligaciones: list[dict], roles_multiples: list[str], clasificacion: str = ""
