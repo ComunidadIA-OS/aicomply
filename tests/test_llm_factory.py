@@ -24,7 +24,9 @@ class TestCrearProvider:
         with patch("src.llm.factory.AnthropicProvider") as mock_cls:
             mock_cls.return_value = MagicMock()
             crear_provider({"provider": "anthropic", "api_key": "sk-test", "model": "claude-test"})
-            mock_cls.assert_called_once_with(api_key="sk-test", model="claude-test")
+            _, kwargs = mock_cls.call_args
+            assert kwargs["api_key"] == "sk-test"
+            assert kwargs["model"] == "claude-test"
 
     def test_anthropic_modelo_por_defecto(self):
         with patch("src.llm.factory.AnthropicProvider") as mock_cls:
@@ -42,11 +44,10 @@ class TestCrearProvider:
                 "base_url": "http://localhost:1234/v1",
                 "model": "gpt-test",
             })
-            mock_cls.assert_called_once_with(
-                api_key="key-test",
-                base_url="http://localhost:1234/v1",
-                model="gpt-test",
-            )
+            _, kwargs = mock_cls.call_args
+            assert kwargs["api_key"] == "key-test"
+            assert kwargs["base_url"] == "http://localhost:1234/v1"
+            assert kwargs["model"] == "gpt-test"
 
     def test_provider_desconocido_lanza_valor_error(self):
         with pytest.raises(ValueError, match="Provider no soportado"):
@@ -104,3 +105,62 @@ class TestCrearProviderDesdeEnv:
         monkeypatch.delenv("OPENAI_COMPATIBLE_MODEL", raising=False)
         resultado = crear_provider_desde_env()
         assert resultado is None
+
+
+class TestMaxTokens:
+    """LLM_MAX_TOKENS es un techo configurable, no un gasto.
+
+    Con el default anterior (2048) el informe final de un caso de alto riesgo con doble rol
+    se cortaba dentro de la tabla de traza, y al truncarse no emitía [EVALUACION_COMPLETA].
+    """
+
+    def test_default_sin_variable_de_entorno(self, monkeypatch):
+        monkeypatch.delenv("LLM_MAX_TOKENS", raising=False)
+        with patch("src.llm.factory.AnthropicProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider({"provider": "anthropic", "api_key": "sk-test"})
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 8192
+
+    def test_la_variable_de_entorno_manda(self, monkeypatch):
+        monkeypatch.setenv("LLM_MAX_TOKENS", "16000")
+        with patch("src.llm.factory.AnthropicProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider({"provider": "anthropic", "api_key": "sk-test"})
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 16000
+
+    @pytest.mark.parametrize("valor", ["no-es-un-numero", "0", "-1", ""])
+    def test_valor_inutilizable_cae_al_default(self, monkeypatch, valor):
+        monkeypatch.setenv("LLM_MAX_TOKENS", valor)
+        with patch("src.llm.factory.AnthropicProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider({"provider": "anthropic", "api_key": "sk-test"})
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 8192
+
+    def test_la_config_explicita_gana_al_entorno(self, monkeypatch):
+        monkeypatch.setenv("LLM_MAX_TOKENS", "16000")
+        with patch("src.llm.factory.AnthropicProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider({"provider": "anthropic", "api_key": "sk-test", "max_tokens": 1024})
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 1024
+
+    def test_tambien_llega_al_provider_openai_compatible(self, monkeypatch):
+        monkeypatch.setenv("LLM_MAX_TOKENS", "3000")
+        with patch("src.llm.factory.OpenAICompatibleProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider({"provider": "openai_compatible", "model": "m", "base_url": "u"})
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 3000
+
+    def test_tambien_se_aplica_creando_desde_entorno(self, monkeypatch):
+        monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
+        monkeypatch.setenv("LLM_MAX_TOKENS", "5000")
+        with patch("src.llm.factory.AnthropicProvider") as mock_cls:
+            mock_cls.return_value = MagicMock()
+            crear_provider_desde_env()
+            _, kwargs = mock_cls.call_args
+            assert kwargs["max_tokens"] == 5000

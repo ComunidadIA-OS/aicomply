@@ -28,6 +28,12 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "")
 # "hosted" — bloquea URLs internas (loopback, RFC1918, metadata) para prevenir SSRF
 AICOMPLY_MODE = os.getenv("AICOMPLY_MODE", "local")
 
+# ── Techo de longitud de la respuesta ──────────────────────────────────────────
+# Es un techo, no un gasto: solo se consume si el modelo lo llena. Con 2048 el informe
+# final de un caso de alto riesgo con doble rol se cortaba a media tabla. Bájelo si su
+# servidor local tiene una ventana de contexto corta.
+LLM_MAX_TOKENS = os.getenv("LLM_MAX_TOKENS", "8192")
+
 # ── Anthropic Claude ───────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-6")

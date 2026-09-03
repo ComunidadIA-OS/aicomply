@@ -56,3 +56,13 @@ class LLMProvider(ABC):
     def es_local(self) -> bool:
         """True si el modelo corre en infraestructura local. Usado para seleccionar el prompt compacto."""
         return False
+
+    @property
+    def ultima_respuesta_truncada(self) -> bool:
+        """True si la última respuesta terminó por agotar max_tokens, no por fin natural.
+
+        Una respuesta truncada se corta a media frase y no llega a emitir las señales que la
+        aplicación espera ([EVALUACION_COMPLETA], bloques <<<CIERRE>>>). Se expone para poder
+        avisar al usuario en vez de dejarle un informe cortado sin explicación.
+        """
+        return getattr(self, "_truncada", False)

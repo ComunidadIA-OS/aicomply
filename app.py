@@ -135,10 +135,29 @@ _CLAVES_SESION = (
 )
 
 
+_CAMPOS_REGISTRO_CUMPLIMIENTO = (
+    "obligaciones_registradas",
+    "carencias_registradas",
+    "puntos_revision_registrados",
+    "conflictos_registrados",
+    "resumen_cumplimiento_registrado",
+)
+
+
 def _exportar_sesion() -> bytes:
     datos: dict = {"_version": "1", "_app": "aicomply"}
     for k in _CLAVES_SESION:
         datos[k] = st.session_state.get(k)
+
+    # El registro de cumplimiento no se puede reconstruir desde los mensajes: _procesar_bloques
+    # ya ha borrado los bloques <<<OBLIGACION>>> del texto que se persiste. Sin él, al reimportar
+    # el asistente vería un registro vacío y reempezaría por la primera obligación.
+    chatbot_cumpl = st.session_state.get("chatbot_cumplimiento")
+    if chatbot_cumpl is not None:
+        datos["cumplimiento_registro"] = {
+            campo: getattr(chatbot_cumpl, campo) for campo in _CAMPOS_REGISTRO_CUMPLIMIENTO
+        }
+
     return json.dumps(datos, ensure_ascii=False, indent=2).encode("utf-8")
 
 
@@ -158,6 +177,19 @@ def _importar_sesion(raw: bytes, provider) -> None:
     if mensajes_cumpl or datos.get("cumplimiento_completado"):
         chatbot_cumpl = _inicializar_chatbot_cumplimiento(provider, clas_data)
         chatbot_cumpl.historial = list(mensajes_cumpl)
+
+        registro = datos.get("cumplimiento_registro") or {}
+        if registro:
+            for campo in _CAMPOS_REGISTRO_CUMPLIMIENTO:
+                if campo in registro:
+                    setattr(chatbot_cumpl, campo, registro[campo])
+        else:
+            # Sesión exportada antes de que el registro se persistiera: se reconstruye lo que
+            # se pueda desde las líneas "Registrado: Art. X — Título: ESTADO" del historial.
+            chatbot_cumpl.obligaciones_registradas = (
+                chatbot_cumpl._reconstruir_obligaciones_desde_historial()
+            )
+
         st.session_state.chatbot_cumplimiento = chatbot_cumpl
 
 

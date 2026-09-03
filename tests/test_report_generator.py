@@ -16,6 +16,7 @@ import re
 
 import pytest
 
+from src.calendario import obtener_version
 from src.report_generator import GeneradorInforme, _limpiar
 
 # ── Fixtures de datos ──────────────────────────────────────────────────────────
@@ -414,3 +415,48 @@ class TestPorcentajeSinEvaluar:
         }
         md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, cumpl)
         assert "0 %" in md
+
+
+# ── Calendario normativo en el informe (regresión A1, A2, A3) ─────────────────
+
+class TestCalendarioEnElInforme:
+    """El informe es lo que se lleva la PYME: no puede citar fechas caducadas."""
+
+    def test_alto_riesgo_cita_las_fechas_firmes_del_omnibus(self):
+        md = GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
+        assert "2 de diciembre de 2027" in md
+        assert "2 de agosto de 2028" in md
+        assert "Reglamento (UE) 2026/1744" in md
+
+    def test_alto_riesgo_no_presenta_el_calendario_como_provisional(self):
+        md = GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
+        for frase in ("pendiente de publicacion", "pendiente de publicación",
+                      "plazo provisional", "acuerdo Omnibus", "calendario final"):
+            assert frase not in md
+
+    def test_limitado_corrige_la_fecha_del_art_50_1(self):
+        """A2: decía «en vigor desde agosto de 2025», que es la fecha de GPAI."""
+        clas = dict(_CLASIFICACION, clasificacion="LIMITADO")
+        md = GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO)
+        assert "2 de agosto de 2026" in md
+        assert "agosto de 2025" not in md
+
+    def test_limitado_distingue_los_dos_casos_del_art_50_2(self):
+        """A3: el 2 dic 2026 solo cubre sistemas ya en el mercado antes del 2 ago 2026."""
+        clas = dict(_CLASIFICACION, clasificacion="LIMITADO")
+        md = GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO)
+        assert "2 de diciembre de 2026" in md
+        assert "ya estaba en el mercado antes de esa fecha" in md
+
+    def test_el_pie_declara_la_version_del_calendario(self):
+        """Tocar una fecha ya no mueve PROMPT_VERSION: el informe debe declarar
+        con qué calendario se generó."""
+        md = GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
+        assert f"Calendario v{obtener_version()}" in md
+
+    def test_el_pdf_se_genera_con_las_tildes_reintroducidas(self):
+        """C1: _limpiar() codifica a latin-1, que admite tildes y ñ."""
+        pdf = GeneradorInforme().exportar_pdf(
+            GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
+        )
+        assert pdf.startswith(b"%PDF")

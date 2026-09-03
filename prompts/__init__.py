@@ -17,6 +17,10 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.0 (2026-09-02): calendario Ómnibus adoptado (Reglamento (UE) 2026/1744, en vigor
+#                          desde el 27-07-2026); el bloque de fechas se inyecta desde
+#                          data/calendario.json; corregidas las fechas del Art. 50
+#                          (2 ago 2026, no 2025) y el transitorio del Art. 50.2
 # 2026.06.0 (2026-05-27): Fases 2-4 — calendario Ómnibus, correcciones jurídicas
 #                          árbol (biometría Art. 5.1.g, NCII/CSAM, código abierto,
 #                          distinción GPAI/sistema), catálogo de obligaciones
@@ -24,4 +28,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.06.0"
+PROMPT_VERSION = "2026.09.0"

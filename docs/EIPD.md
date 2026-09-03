@@ -123,4 +123,6 @@ Esta EIPD debe revisarse cuando se introduzca un nuevo proveedor LLM, cuando cam
 el flujo de datos descrito en la Sección 1, o cuando una nueva versión del corpus o
 del prompt suponga un cambio material en la naturaleza del tratamiento.
 
-**Próxima revisión recomendada:** diciembre de 2026 (entrada en vigor Art. 50.2).
+**Próxima revisión recomendada:** diciembre de 2026, cuando vence el periodo de gracia del
+Art. 111.4 para los sistemas generativos que ya estuvieran en el mercado antes del 2 de agosto
+de 2026. El Art. 50.2 es exigible desde esa fecha con carácter general.

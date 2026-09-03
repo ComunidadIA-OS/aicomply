@@ -26,6 +26,7 @@ _CLASIFICACIONES_SOLO_EVAL = frozenset({
 })
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
+from src.tabs.avisos import avisar_si_truncada, marcar_truncada
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable
 from src.security import mensaje_error_seguro, rate_limiter
@@ -206,6 +207,8 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
             with st.chat_message(msg["role"]):
                 st.markdown(msg["content"])
 
+    avisar_si_truncada("truncada_evaluador")
+
     if st.session_state.evaluacion_completada:
         return
 
@@ -258,6 +261,7 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
                 texto_visible = texto_raw.replace(_SENAL_COMPLETA, "").strip()
                 placeholder.markdown(texto_visible)
 
+        marcar_truncada("truncada_evaluador", chatbot.ultima_respuesta_truncada)
         st.session_state.mensajes_evaluador.append(
             {"role": "assistant", "content": texto_visible}
         )

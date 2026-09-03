@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import time
 from typing import Generator
 
 import anthropic
 
 from .provider import LLMProvider
+
+logger = logging.getLogger(__name__)
 
 _RETRY_WAIT_MAX = 5.0  # backoff máximo en segundos; respeta Retry-After si la API lo devuelve
 
@@ -40,11 +43,12 @@ class AnthropicProvider(LLMProvider):
         self,
         api_key: str,
         model: str = "claude-sonnet-4-6",
-        max_tokens: int = 2048,
+        max_tokens: int = 8192,
     ):
         self.client = anthropic.Anthropic(api_key=api_key, timeout=60.0)
         self._model = model
         self.max_tokens = max_tokens
+        self._truncada = False
 
     @property
     def nombre_modelo(self) -> str:
@@ -56,6 +60,7 @@ class AnthropicProvider(LLMProvider):
 
     def chat(self, messages: list[dict], system_prompt: str = "") -> str:
         """Llamada síncrona sin streaming. Reintenta una vez tras un error 429."""
+        self._truncada = False
         kwargs: dict = {
             "model": self._model,
             "max_tokens": self.max_tokens,
@@ -67,6 +72,7 @@ class AnthropicProvider(LLMProvider):
         for intento in range(2):
             try:
                 response = self.client.messages.create(**kwargs)
+                self._truncada = getattr(response, "stop_reason", None) == "max_tokens"
                 return response.content[0].text
             except anthropic.RateLimitError as rl_exc:
                 if intento == 0:
@@ -78,6 +84,7 @@ class AnthropicProvider(LLMProvider):
         self, messages: list[dict], system_prompt: str = ""
     ) -> Generator[str, None, None]:
         """Llamada con streaming; produce fragmentos de texto."""
+        self._truncada = False
         kwargs: dict = {
             "model": self._model,
             "max_tokens": self.max_tokens,
@@ -89,3 +96,11 @@ class AnthropicProvider(LLMProvider):
         with self.client.messages.stream(**kwargs) as stream:
             for texto in stream.text_stream:
                 yield texto
+            # El motivo de parada solo se conoce al cerrar el stream.
+            try:
+                final = stream.get_final_message()
+                self._truncada = getattr(final, "stop_reason", None) == "max_tokens"
+            except Exception:
+                logger.warning(
+                    "No se pudo leer el motivo de parada del stream.", exc_info=True
+                )

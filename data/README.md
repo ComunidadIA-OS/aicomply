@@ -12,12 +12,19 @@ o análisis legal asistido por IA.
   oficial, requisitos clave, ámbito de aplicación y palabras clave.
   Incluye también las 8 categorías del Anexo III (alto riesgo).
 
-- `docs/*.json` — 27 documentos complementarios (más de 2.000 fragmentos
+- `docs/*.json` — 26 documentos complementarios (más de 2.000 fragmentos
   totales): el texto consolidado del AI Act, 16 guías de la AESIA,
   borradores de directrices de la Comisión Europea sobre clasificación
   de alto riesgo (mayo 2026), opinión EDPB 28/2024 sobre modelos de
   IA, orientaciones sobre IA agéntica, y el Anteproyecto de Ley
   español de Buen Uso y Gobernanza de la IA.
+
+- `calendario.json` — fuente única de las fechas de aplicación del AI Act
+  (Reglamento (UE) 2024/1689, modificado por el Reglamento (UE) 2026/1744),
+  con la norma que fija cada fecha y las notas necesarias para los casos
+  condicionales. Se inyecta en los prompts y en el informe a través de
+  `src/calendario.py`; ningún otro fichero debe embeber fechas de aplicación.
+  No entra en el índice del RAG.
 
 ## Estructura de cada fichero
 

@@ -1,4 +1,5 @@
-2026.06.0
+2026.09.0
 Re-fragmentación: 2026-05-27 — 42 bloques gigantes → 1.841 chunks (1.500-4.000 chars, overlap 150 chars)
 Documentos re-fragmentados: 22 ficheros en data/docs/
-Excluidos (referencia, sin fragmentar): AIAct.json, Omnibus.json, 06-guia-vigilancia-humana.json, Anteproyecto de Ley.json, requisitos-auditorias-tratamientos-incluyan-ia.json
+Excluidos (referencia, sin fragmentar): AIAct.json, 06-guia-vigilancia-humana.json, Anteproyecto de Ley.json, requisitos-auditorias-tratamientos-incluyan-ia.json
+Retirado 2026-09-02: Omnibus.json (23 fragmentos). Era el texto de la PROPUESTA de la Comisión, no el Reglamento (UE) 2026/1744 adoptado. Fijaba el transitorio del Art. 50.2 en el 2 de febrero de 2027 (la fecha adoptada es el 2 de diciembre de 2026) y arrastraba fechas de negociación (2 ago 2027, 2 ago 2030) ausentes del texto final; metadatos erróneos (fecha 2024-07-12, url vacía). Al estar indexado, el RAG podía inyectar en el mismo prompt un contexto que contradecía el calendario normativo. Pendiente: reingerir el texto adoptado con scripts/ingest_txt.py.

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import pytest
 
 from src.chatbot import AIComplyChat
@@ -230,3 +232,150 @@ class TestRAGIntegration:
 
         assert respuesta == "respuesta"
         assert "CONTEXTO NORMATIVO RECUPERADO" not in spy.ultimo_system_prompt
+
+
+class TestCalendarioInyectado:
+    """El calendario normativo no es opcional como el RAG: si falla, revienta.
+
+    Un prompt sin contexto RAG solo da respuestas menos precisas; un prompt sin
+    fechas de aplicación produce información jurídica falsa.
+    """
+
+    def test_calendario_inyectado_sin_override(self, monkeypatch):
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        AIComplyChat(spy).chat_completo("mensaje")
+
+        assert "{CALENDARIO_" not in spy.ultimo_system_prompt
+        assert "Reglamento (UE) 2026/1744" in spy.ultimo_system_prompt
+
+    def test_calendario_inyectado_tambien_con_override(self, monkeypatch):
+        """La rama de cumplimiento retorna antes y también debe recibirlo."""
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override="prompt {CALENDARIO_AI_ACT} fin")
+        chat.chat_completo("mensaje")
+
+        assert "{CALENDARIO_" not in spy.ultimo_system_prompt
+        assert "Reglamento (UE) 2026/1744" in spy.ultimo_system_prompt
+
+    def test_calendario_roto_propaga_la_excepcion(self, monkeypatch):
+        """Contraste con test_rag_excepcion_no_rompe_chat: aquí NO se traga."""
+        import src.calendario  # noqa: PLC0415
+        import src.chatbot  # noqa: PLC0415
+        from src.calendario import CalendarioNoDisponibleError  # noqa: PLC0415
+
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+        monkeypatch.setattr(src.calendario, "_calendario_cache", None)
+        monkeypatch.setattr(
+            src.calendario, "CALENDARIO_FILE", Path("/no/existe/calendario.json")
+        )
+
+        chat = AIComplyChat(SpyProvider("respuesta"))
+        with pytest.raises(CalendarioNoDisponibleError):
+            chat.chat_completo("mensaje")
+
+
+class TestObligacionesInyectadas:
+    """El registro de obligaciones viaja en el prompt, no en el historial.
+
+    El historial se recorta en silencio (_historial_truncado). Cuando el modelo dependía
+    de él para saber qué había evaluado, en un recorrido largo repreguntaba las primeras
+    obligaciones y las recalificaba, corrompiendo el informe.
+    """
+
+    _PROMPT = "prompt de cumplimiento\n{OBLIGACIONES_REGISTRADAS}"
+
+    def _bloque(self, articulo: str, titulo: str, estado: str, rol: str = "proveedor") -> str:
+        import json  # noqa: PLC0415
+        datos = {"articulo": articulo, "titulo": titulo, "estado": estado, "rol": rol}
+        return f"<<<OBLIGACION>>>{json.dumps(datos)}<<<FIN>>>"
+
+    def test_las_registradas_llegan_al_prompt_aunque_el_historial_este_truncado(self):
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=self._PROMPT, max_historial=6)
+
+        for i in range(1, 23):
+            chat._procesar_bloques(self._bloque(f"Art. {i}", f"Obligación {i}", "cubierta"))
+        for i in range(40):
+            rol = "user" if i % 2 == 0 else "assistant"
+            chat.historial.append({"role": rol, "content": f"mensaje {i}"})
+
+        chat.chat_completo("siguiente")
+
+        # Sin esto el test no probaría nada: el historial tiene que estar realmente recortado.
+        assert len(chat._historial_truncado()) < len(chat.historial)
+        for i in range(1, 23):
+            assert f"Art. {i} — Obligación {i}" in spy.ultimo_system_prompt
+
+    def test_el_marcador_nunca_sobrevive(self):
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=self._PROMPT)
+        chat.chat_completo("mensaje")
+        assert "{OBLIGACIONES_REGISTRADAS}" not in spy.ultimo_system_prompt
+
+    def test_sin_registros_dice_explicitamente_que_no_hay_ninguna(self):
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=self._PROMPT)
+        chat.chat_completo("mensaje")
+        assert "Todavía no se ha registrado ninguna obligación" in spy.ultimo_system_prompt
+
+    def test_cada_obligacion_lleva_su_estado(self):
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=self._PROMPT)
+        chat._procesar_bloques(self._bloque("Art. 9", "Gestión de riesgos", "carencia"))
+        chat.chat_completo("mensaje")
+        assert "Art. 9 — Gestión de riesgos [proveedor]: CARENCIA" in spy.ultimo_system_prompt
+
+    def test_el_rol_distingue_el_mismo_articulo_bajo_dos_roles(self):
+        spy = SpyProvider("respuesta")
+        chat = AIComplyChat(spy, system_prompt_override=self._PROMPT)
+        chat._procesar_bloques(self._bloque("Art. 49", "Registro UE", "carencia", "proveedor"))
+        chat._procesar_bloques(self._bloque("Art. 49", "Registro UE", "cubierta", "implementador"))
+
+        chat.chat_completo("mensaje")
+
+        assert "Art. 49 — Registro UE [proveedor]: CARENCIA" in spy.ultimo_system_prompt
+        assert "Art. 49 — Registro UE [implementador]: CUBIERTA" in spy.ultimo_system_prompt
+
+    def test_el_evaluador_no_se_rompe_sin_marcador(self, monkeypatch):
+        """El prompt del árbol no lleva el marcador: la sustitución debe ser inocua."""
+        import src.chatbot  # noqa: PLC0415
+        monkeypatch.setattr(src.chatbot, "formatear_contexto_rag", lambda *_, **__: "")
+
+        spy = SpyProvider("respuesta")
+        AIComplyChat(spy).chat_completo("mensaje")
+
+        assert "REGISTRO DE OBLIGACIONES" not in spy.ultimo_system_prompt
+
+
+class TestRespuestaTruncada:
+    """Una respuesta cortada por max_tokens se propaga al chatbot para poder avisar."""
+
+    class _ProviderTruncado(SpyProvider):
+        ultima_respuesta_truncada = True
+
+    def test_chat_completo_propaga_la_truncacion(self):
+        chat = AIComplyChat(self._ProviderTruncado("corta"), system_prompt_override=_SYSTEM)
+        chat.chat_completo("mensaje")
+        assert chat.ultima_respuesta_truncada is True
+
+    def test_chat_stream_propaga_la_truncacion(self):
+        chat = AIComplyChat(self._ProviderTruncado("corta"), system_prompt_override=_SYSTEM)
+        list(chat.chat_stream("mensaje"))
+        assert chat.ultima_respuesta_truncada is True
+
+    def test_respuesta_normal_no_marca_truncacion(self):
+        chat = AIComplyChat(SpyProvider("completa"), system_prompt_override=_SYSTEM)
+        chat.chat_completo("mensaje")
+        assert chat.ultima_respuesta_truncada is False
+
+    def test_resetear_limpia_la_marca(self):
+        chat = AIComplyChat(self._ProviderTruncado("corta"), system_prompt_override=_SYSTEM)
+        chat.chat_completo("mensaje")
+        chat.resetear()
+        assert chat.ultima_respuesta_truncada is False

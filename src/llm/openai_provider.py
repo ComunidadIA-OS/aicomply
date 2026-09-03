@@ -39,7 +39,7 @@ class OpenAICompatibleProvider(LLMProvider):
         api_key: str = "dummy",
         base_url: str = "https://api.openai.com/v1",
         model: str = "gpt-4o",
-        max_tokens: int = 2048,
+        max_tokens: int = 8192,
     ):
         # Para APIs locales (LM Studio, etc.) la api_key puede ser cualquier valor
         self.client = OpenAI(
@@ -49,6 +49,7 @@ class OpenAICompatibleProvider(LLMProvider):
         )
         self._model = model
         self.max_tokens = max_tokens
+        self._truncada = False
 
     @property
     def nombre_modelo(self) -> str:
@@ -68,18 +69,21 @@ class OpenAICompatibleProvider(LLMProvider):
 
     def chat(self, messages: list[dict], system_prompt: str = "") -> str:
         """Llamada síncrona sin streaming."""
+        self._truncada = False
         msgs = self._preparar_messages(messages, system_prompt)
         response = self.client.chat.completions.create(
             model=self._model,
             messages=msgs,
             max_tokens=self.max_tokens,
         )
+        self._truncada = getattr(response.choices[0], "finish_reason", None) == "length"
         return response.choices[0].message.content or ""
 
     def chat_stream(
         self, messages: list[dict], system_prompt: str = ""
     ) -> Generator[str, None, None]:
         """Llamada con streaming; produce fragmentos de texto."""
+        self._truncada = False
         msgs = self._preparar_messages(messages, system_prompt)
         stream = self.client.chat.completions.create(
             model=self._model,
@@ -88,6 +92,13 @@ class OpenAICompatibleProvider(LLMProvider):
             stream=True,
         )
         for chunk in stream:
-            delta = chunk.choices[0].delta
+            # Algunos servidores compatibles emiten chunks finales sin choices (p. ej. usage).
+            choices = getattr(chunk, "choices", None)
+            if not choices:
+                continue
+            # El motivo de parada viaja en el último chunk que lo trae.
+            if getattr(choices[0], "finish_reason", None):
+                self._truncada = choices[0].finish_reason == "length"
+            delta = choices[0].delta
             if delta.content:
                 yield delta.content
