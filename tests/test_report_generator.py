@@ -467,9 +467,11 @@ class TestCalendarioEnElInforme:
 def _plan_de_accion(md: str) -> str:
     """Recorta la sección «Plan de acción recomendado» del informe completo.
 
-    Se recorta porque la sección 3 imprime su lista por defecto de ALTO —de proveedor—
-    cuando no hay obligaciones preliminares extraídas: sin recortar, comprobar que el
-    implementador no ve el Art. 43 fallaría por un defecto distinto (B10).
+    El recorte aísla la sección que se está comprobando. Nació porque la sección 3
+    imprimía su lista por defecto de ALTO —toda de proveedor— fuese cual fuese el rol,
+    y sin recortar «el implementador no ve el Art. 43» fallaba por ese otro defecto
+    (B14) y no por el plan. B14 ya está corregido; el recorte se conserva para que cada
+    test siga hablando de una sola sección.
     """
     m = re.search(r"^## \d+\. Plan de acción recomendado$(.*?)(?=^## \d+\.)",
                   md, re.MULTILINE | re.DOTALL)
@@ -571,3 +573,121 @@ class TestPlanAccionPorRol:
             _CUMPLIMIENTO,
         )
         assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
+
+
+# ── Obligaciones preliminares de ALTO por rol (regresión B14) ─────────────────
+
+_ARTS_PROVEEDOR = ("Art. 9", "Art. 10", "Art. 11", "Art. 12", "Art. 13",
+                   "Art. 14", "Art. 15", "Art. 43", "Art. 49")
+
+
+def _preliminares(md: str) -> str:
+    """Recorta la sección «Obligaciones identificadas durante la evaluación»."""
+    m = re.search(r"^## \d+\. Obligaciones identificadas durante la evaluación$(.*?)(?=^## \d+\.)",
+                  md, re.MULTILINE | re.DOTALL)
+    assert m, "El informe no contiene la sección de obligaciones preliminares"
+    return m.group(1)
+
+
+def _preliminares_para(**campos) -> str:
+    """Sección 3 del informe completo de ALTO con los roles indicados.
+
+    'obligaciones_preliminares' va vacío a propósito: es el caso en que el evaluador no
+    extrajo nada de la conversación y la sección cae en la lista por defecto del catálogo.
+    """
+    clas = dict(_CLASIFICACION, obligaciones_preliminares=[], **campos)
+    return _preliminares(GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO))
+
+
+class TestObligacionesPreliminaresPorRol:
+    """B14: la lista por defecto de ALTO no puede ser la del proveedor para todos los roles."""
+
+    def test_implementador_no_recibe_obligaciones_del_proveedor(self):
+        seccion = _preliminares_para(rol="implementador", roles_multiples=["implementador"])
+        for art in _ARTS_PROVEEDOR:
+            assert art not in seccion, f"El implementador no debe ver el {art} en la sección 3"
+        assert "marcado CE" not in seccion
+
+    def test_implementador_recibe_las_obligaciones_del_art_26(self):
+        seccion = _preliminares_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Obligaciones como implementador (Art. 26)" in seccion
+        for apartado in ("Art. 26.1", "Art. 26.2", "Art. 26.3", "Art. 26.5",
+                         "Art. 26.6", "Art. 26.7", "Art. 26.10", "Art. 26.11"):
+            assert apartado in seccion, f"Falta el {apartado} en la sección 3 del implementador"
+        assert "Art. 27" in seccion  # evaluación de impacto, cuando proceda
+
+    def test_proveedor_si_recibe_las_obligaciones_del_proveedor(self):
+        seccion = _preliminares_para(rol="proveedor", roles_multiples=["proveedor"])
+        assert "Obligaciones como proveedor (Art. 16)" in seccion
+        for art in _ARTS_PROVEEDOR:
+            assert art in seccion, f"El proveedor debe seguir viendo el {art}"
+        assert "Obligaciones como implementador" not in seccion
+
+    def test_doble_rol_recibe_los_dos_bloques(self):
+        seccion = _preliminares_para(rol="proveedor / implementador",
+                                     roles_multiples=["proveedor", "implementador"])
+        assert "Obligaciones como proveedor (Art. 16)" in seccion
+        assert "Obligaciones como implementador (Art. 26)" in seccion
+
+    def test_distribuidor_recibe_el_art_24_y_no_los_bloques_ajenos(self):
+        seccion = _preliminares_para(rol="distribuidor", roles_multiples=["distribuidor"])
+        assert "Obligaciones como distribuidor (Art. 24)" in seccion
+        assert "Art. 16" not in seccion
+        assert "Art. 26" not in seccion
+        assert "Art. 49" not in seccion
+
+    def test_importador_recibe_el_art_23(self):
+        seccion = _preliminares_para(rol="importador", roles_multiples=["importador"])
+        assert "Obligaciones como importador (Art. 23)" in seccion
+        assert "Art. 43" not in seccion
+
+    def test_representante_autorizado_recibe_los_arts_22_y_54(self):
+        seccion = _preliminares_para(rol="representante_autorizado",
+                                     roles_multiples=["representante_autorizado"])
+        assert "Arts. 22 y 54" in seccion
+        assert "Art. 26" not in seccion
+
+    def test_fabricante_asume_las_obligaciones_del_proveedor(self):
+        seccion = _preliminares_para(rol="fabricante", roles_multiples=["fabricante"])
+        assert "Art. 25" in seccion
+        assert "Obligaciones como proveedor (Art. 16)" in seccion
+
+    def test_rol_sin_determinar_presenta_los_bloques_como_alternativos(self):
+        seccion = _preliminares_para(rol="no especificado", roles_multiples=[])
+        assert "Si su entidad es proveedora del sistema (Art. 16)" in seccion
+        assert "Si su entidad es implementadora del sistema (Art. 26)" in seccion
+        assert "No se ha podido determinar el rol" in seccion
+
+    def test_la_lista_extraida_por_el_evaluador_manda_sobre_la_del_catalogo(self):
+        """Con obligaciones extraídas, la sección las imprime tal cual y no toca el catálogo."""
+        clas = dict(_CLASIFICACION, rol="implementador", roles_multiples=["implementador"],
+                    obligaciones_preliminares=["Supervisión humana (Art. 26)"])
+        seccion = _preliminares(
+            GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO)
+        )
+        assert "Supervisión humana (Art. 26)" in seccion
+        assert "Obligaciones como implementador (Art. 26)" not in seccion
+
+    def test_los_niveles_distintos_de_alto_no_cambian(self):
+        """LIMITADO conserva su lista literal: el sesgo de rol del Art. 50 es B12."""
+        seccion = _preliminares_para(clasificacion="LIMITADO", rol="implementador",
+                                     roles_multiples=["implementador"])
+        assert "Art. 50.1" in seccion
+        assert "Obligaciones como implementador" not in seccion
+
+    def test_el_pdf_se_genera_con_la_seccion_3_por_rol(self):
+        md = GeneradorInforme().generar_informe_completo(
+            dict(_CLASIFICACION, rol="implementador", roles_multiples=["implementador"],
+                 obligaciones_preliminares=[]),
+            _CUMPLIMIENTO,
+        )
+        assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
+
+    def test_el_informe_de_clasificacion_tambien_construye_la_seccion_por_rol(self):
+        """La sección 3 vive en los dos informes que la incluyen."""
+        clas = dict(_CLASIFICACION, rol="implementador", roles_multiples=["implementador"],
+                    obligaciones_preliminares=[])
+        md = GeneradorInforme().generar_informe_clasificacion(clas)
+        seccion = _preliminares(md)
+        assert "Obligaciones como implementador (Art. 26)" in seccion
+        assert "Art. 43" not in seccion

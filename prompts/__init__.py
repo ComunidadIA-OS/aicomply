@@ -17,6 +17,11 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.1 (2026-09-03): Art. 49 del Rol Implementador convertido en obligación condicional
+#                          —solo aplica al implementador que es organismo público o actúa en
+#                          su nombre; el privado la recibe como no_aplica, no como carencia—;
+#                          las obligaciones preliminares se extraen citando el artículo, sin
+#                          apartado
 # 2026.09.0 (2026-09-02): calendario Ómnibus adoptado (Reglamento (UE) 2026/1744, en vigor
 #                          desde el 27-07-2026); el bloque de fechas se inyecta desde
 #                          data/calendario.json; corregidas las fechas del Art. 50
@@ -28,4 +33,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.0"
+PROMPT_VERSION = "2026.09.1"

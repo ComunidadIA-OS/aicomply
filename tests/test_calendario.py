@@ -171,6 +171,24 @@ def test_el_catalogo_instruye_a_preguntar_por_el_art_50_2():
     assert "antes del 2 ago 2026" in SYSTEM_PROMPT_CUMPLIMIENTO
 
 
+def test_el_art_49_del_implementador_es_condicional():
+    """B11: el registro en la base de datos de la UE es obligación del proveedor; el
+    implementador solo registra si es organismo público. Con la salvedad blanda anterior
+    el modelo lo computó como carencia legal de una empresa privada.
+
+    Comprobación de texto: no sustituye al recorrido manual, solo impide que la
+    condición desaparezca del catálogo sin que nadie se entere."""
+    bloque = SYSTEM_PROMPT_CUMPLIMIENTO.split("ALTO RIESGO — Rol Implementador (Art. 26):")[1]
+    bloque = bloque.split("ALTO RIESGO — Rol Distribuidor")[0]
+    art_49 = [linea for linea in bloque.splitlines() if linea.startswith("- Art. 49:")]
+    assert len(art_49) == 1, "el Art. 49 debería seguir figurando una sola vez bajo Implementador"
+    linea = art_49[0]
+    assert "PREGUNTA" in linea, "debe instruir a preguntar antes de etiquetar"
+    assert "organismo público" in linea
+    assert "no_aplica" in linea
+    assert "cuando aplique según la clase de sistema y rol" not in linea
+
+
 # ── 4 · Sin afirmaciones caducadas en el repositorio ──────────────────────────
 
 _FRASES_CADUCADAS = (

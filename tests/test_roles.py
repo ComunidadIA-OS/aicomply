@@ -174,6 +174,63 @@ class TestNormalizarClasificacionData:
         assert len(result["roles_multiples"]) >= 1
 
 
+# ── Apartados del Art. 26 en las obligaciones preliminares (regresión B10) ────
+
+def _preliminares_normalizadas(*obligaciones) -> list[str]:
+    datos = {"rol": "implementador", "roles_multiples": ["implementador"],
+             "obligaciones_preliminares": list(obligaciones)}
+    return AIComplyChat._normalizar_clasificacion_data(datos)["obligaciones_preliminares"]
+
+
+class TestApartadosPreliminares:
+    """B10: el evaluador citaba apartados del Art. 26 que contradecían al análisis
+    de cumplimiento dentro del mismo informe. El recorte es solo del Art. 26."""
+
+    @pytest.mark.parametrize("entrada,esperado", [
+        ("Supervisión humana (Art. 26.1)", "Supervisión humana (Art. 26)"),
+        ("Conservación de registros (Art. 26.5)", "Conservación de registros (Art. 26)"),
+        ("Notificación de incidentes (Art. 26.10)", "Notificación de incidentes (Art. 26)"),
+        ("Art. 26.3: datos de entrada", "Art. 26: datos de entrada"),
+        ("Uso conforme a instrucciones (art 26.1)", "Uso conforme a instrucciones (art 26)"),
+    ])
+    def test_el_apartado_del_art_26_se_recorta(self, entrada, esperado):
+        assert _preliminares_normalizadas(entrada) == [esperado]
+
+    def test_el_art_26_sin_apartado_se_queda_igual(self):
+        assert _preliminares_normalizadas("Obligaciones del implementador (Art. 26)") == [
+            "Obligaciones del implementador (Art. 26)"
+        ]
+
+    @pytest.mark.parametrize("entrada", [
+        "Informar de que se interactúa con una IA (Art. 50.1)",
+        "Marcado de contenido sintético (Art. 50.2)",
+        "Categorización biométrica prohibida (Art. 5.1.g)",
+        "Revisar si aplica el Art. 6.2",
+        "Registro en la base de datos de la UE (Art. 49)",
+    ])
+    def test_los_demas_articulos_conservan_su_apartado(self, entrada):
+        """El recorte es selectivo a propósito: en el Art. 50 cada apartado es una
+        obligación distinta, y en el Art. 5 la letra es el dato principal del informe."""
+        assert _preliminares_normalizadas(entrada) == [entrada]
+
+    def test_una_obligacion_sin_articulo_no_revienta(self):
+        assert _preliminares_normalizadas("Designar un responsable de cumplimiento") == [
+            "Designar un responsable de cumplimiento"
+        ]
+
+    def test_lista_vacia_o_campo_ausente_no_revientan(self):
+        assert _preliminares_normalizadas() == []
+        datos = {"rol": "implementador", "roles_multiples": ["implementador"]}
+        assert "obligaciones_preliminares" not in AIComplyChat._normalizar_clasificacion_data(datos)
+
+    def test_un_elemento_no_textual_se_deja_pasar(self):
+        """El JSON del LLM puede traer cualquier cosa; el normalizador no es un validador."""
+        datos = {"rol": "implementador", "roles_multiples": [],
+                 "obligaciones_preliminares": [None, 3, "Supervisión (Art. 26.2)"]}
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["obligaciones_preliminares"] == [None, 3, "Supervisión (Art. 26)"]
+
+
 # ── Tests de renderizado en el informe Markdown ───────────────────────────────
 
 class TestRenderizadoRolInforme:

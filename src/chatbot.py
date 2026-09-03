@@ -64,6 +64,7 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
   "sector": "sector de la empresa",
   "obligaciones_preliminares": ["obligación ya identificada (Art. X)"]
 }
+REGLA OBLIGATORIA PARA obligaciones_preliminares: cita el ARTÍCULO, nunca el apartado. Escribe "(Art. 26)", nunca "(Art. 26.1)" ni "(Art. 26.3)". Esta lista es preliminar; la precisión de apartado la aporta después el análisis de cumplimiento, y un apartado equivocado aquí contradice ese análisis dentro del mismo informe.
 REGLA OBLIGATORIA PARA roles_multiples: Lista TODOS los roles identificados como array.
 - Si la organización ha desarrollado o encargado el sistema Y lo utiliza internamente bajo su propia autoridad, incluye AMBOS: ["proveedor", "implementador"]. El campo "rol" debe reflejar los mismos roles: "proveedor / implementador".
 - Si solo aplica un rol, incluye únicamente ese: p. ej. ["implementador"]. El campo "rol" = "implementador".
@@ -445,6 +446,40 @@ class AIComplyChat:
     _ALIAS_ROLES = {"provider": "proveedor", "deployer": "implementador"}
     _SEP_ROLES = re.compile(r"\s*/\s*|\s+[ey]\s+|\s*,\s*|_")
 
+    # Recorta el apartado SOLO del Art. 26: "Art. 26.3" → "Art. 26".
+    _RE_APARTADO_ART_26 = re.compile(r"(Art\.?\s*26)(?:\.\d+)+", re.IGNORECASE)
+
+    @classmethod
+    def _normalizar_obligaciones_preliminares(cls, datos: dict) -> dict:
+        """Quita el apartado a las obligaciones preliminares del Art. 26.
+
+        El evaluador citaba apartados equivocados —supervisión humana como Art. 26.1
+        cuando es 26.2, conservación de registros como 26.5 cuando es 26.6— y el informe
+        acababa con dos numeraciones distintas para las mismas obligaciones: la de esta
+        lista y la del análisis de cumplimiento, que sí las cita bien. Además la lista se
+        inyecta en el prompt de esa fase siguiente (_formatear_contexto_evaluacion), así
+        que el error no solo se imprimía: se propagaba.
+
+        El recorte es SELECTIVO a propósito, no lo generalices:
+        - El Art. 26 tiene once apartados parecidos entre sí, es donde se observó el fallo,
+          y su precisión aquí es redundante porque el análisis de cumplimiento la da bien.
+        - "Art. 50.1" → "Art. 50" perdería información real: los cuatro apartados del
+          Art. 50 son obligaciones distintas y de roles distintos.
+        - "Art. 5.1.g" → "Art. 5" sería peor todavía: en un informe PROHIBIDO, qué letra
+          del Art. 5 aplica es el dato más importante del documento.
+
+        El prompt de extracción ya pide citar solo el artículo; esto es la red, porque una
+        instrucción al modelo es orientativa y el código es determinista.
+        """
+        preliminares = datos.get("obligaciones_preliminares")
+        if not isinstance(preliminares, list):
+            return datos
+        datos["obligaciones_preliminares"] = [
+            cls._RE_APARTADO_ART_26.sub(r"\1", ob) if isinstance(ob, str) else ob
+            for ob in preliminares
+        ]
+        return datos
+
     @classmethod
     def _normalizar_clasificacion_data(cls, datos: dict) -> dict:
         """Garantiza coherencia entre 'rol' y 'roles_multiples'.
@@ -455,6 +490,8 @@ class AIComplyChat:
         - Deduplica 'roles_multiples' preservando el orden.
         - NO reduce 'rol' a un único valor: si el LLM emitió "proveedor / implementador",
           se conserva así para que los renderers de UI e informe muestren todos los roles.
+        - Delega en _normalizar_obligaciones_preliminares el recorte del apartado del
+          Art. 26 en 'obligaciones_preliminares'.
         """
         rol_raw = (datos.get("rol") or "").strip()
         partes = [
@@ -484,7 +521,7 @@ class AIComplyChat:
             datos = {**datos, "rol": " / ".join(roles_dedup)}
 
         datos["roles_multiples"] = roles_dedup
-        return datos
+        return cls._normalizar_obligaciones_preliminares(datos)
 
     def extraer_clasificacion(self) -> dict:
         """Extrae la clasificación estructurada de la conversación de evaluación."""
