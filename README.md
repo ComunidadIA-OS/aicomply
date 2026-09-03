@@ -104,7 +104,7 @@ El repositorio incluye cinco casos de uso reales evaluados con AIComply, uno por
 | [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Filtrado automatizado de CVs |
 | [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
 
-Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo.
+Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para el aviso sobre su antigüedad**.
 
 ## Capturas de pantalla
 
@@ -145,6 +145,8 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo.
 ![Informe generado con opciones de descarga en PDF y texto plano](assets/08-informe.png)
 
 Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/informe_completo.pdf) para ver el output real antes de instalar la herramienta.
+
+> **Aviso:** los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 

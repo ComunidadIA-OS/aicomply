@@ -214,7 +214,13 @@ _FICHEROS_VIGILADOS = (
 @pytest.mark.parametrize("ruta", _FICHEROS_VIGILADOS)
 def test_sin_afirmaciones_caducadas(ruta):
     """A1. Este test no barre el repositorio entero a propósito: _trabajo/AUDITORIA.md
-    y este mismo fichero citan las frases caducadas para documentarlas."""
+    y este mismo fichero citan las frases caducadas para documentarlas.
+
+    El guard no distingue afirmar de advertir: prohíbe la frase, la diga quien la diga.
+    Por eso un fichero vigilado tampoco puede citarla para decir que está caducada.
+    Si hace falta reproducir literalmente una afirmación antigua —por ejemplo en el
+    aviso de que `ejemplos/` es de mayo de 2026— va en un fichero no vigilado
+    (`ejemplos/README.md`), y el vigilado enlaza a él."""
     texto = (_RAIZ / ruta).read_text(encoding="utf-8")
     for frase in _FRASES_CADUCADAS:
         assert frase not in texto, f"{ruta} contiene la afirmación caducada '{frase}'"

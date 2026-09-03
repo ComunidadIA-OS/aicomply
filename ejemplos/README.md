@@ -1,5 +1,23 @@
 # Ejemplos AIComply
 
+> ### ⚠️ Estos ejemplos son de mayo de 2026 y no reflejan la versión actual
+>
+> Se generaron con la versión v0.1.0 del hackathon. Desde entonces se han corregido varios
+> defectos que **siguen presentes en estas transcripciones e informes**:
+>
+> | En los ejemplos aparece | La versión actual dice |
+> |---|---|
+> | El Ómnibus como «acuerdo provisional pendiente de publicación en el DOUE» | Reglamento (UE) 2026/1744, en vigor desde el 27 de julio de 2026 |
+> | Art. 50.1, 50.3 y 50.4 aplicables «desde el 2 de agosto de 2025» | Desde el 2 de agosto de 2026 |
+> | Art. 50.2 con fecha única de 2 de diciembre de 2026 | Condicional: periodo de gracia solo para sistemas ya en el mercado antes del 2 de agosto de 2026 |
+> | Planes de acción que piden a un implementador documentación técnica del Anexo IV, sistema de gestión de calidad y marcado CE | Plan construido según el rol de la entidad |
+> | Art. 49 como carencia legal de un implementador privado | Se pregunta por el carácter público antes de etiquetarlo; para una entidad privada, no aplica |
+>
+> Se conservan porque documentan el estado del proyecto en la entrega del hackathon y porque
+> las conversaciones ilustran bien el recorrido del árbol de decisión. **No los use como
+> referencia normativa.** Se regenerarán con la versión actual.
+
+
 Esta carpeta contiene seis ejemplos completos de evaluación con AIComply, preparados para revisión en GitHub y uso en demos del hackathon SEDIA 2026.
 
 Cada ejemplo incluye la conversación completa con el asistente, los informes generados en PDF y texto plano, y un README explicativo.
