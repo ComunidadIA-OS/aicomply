@@ -460,3 +460,114 @@ class TestCalendarioEnElInforme:
             GeneradorInforme().generar_informe_completo(_CLASIFICACION, _CUMPLIMIENTO)
         )
         assert pdf.startswith(b"%PDF")
+
+
+# ── Plan de acción de ALTO por rol (regresión B9) ─────────────────────────────
+
+def _plan_de_accion(md: str) -> str:
+    """Recorta la sección «Plan de acción recomendado» del informe completo.
+
+    Se recorta porque la sección 3 imprime su lista por defecto de ALTO —de proveedor—
+    cuando no hay obligaciones preliminares extraídas: sin recortar, comprobar que el
+    implementador no ve el Art. 43 fallaría por un defecto distinto (B10).
+    """
+    m = re.search(r"^## \d+\. Plan de acción recomendado$(.*?)(?=^## \d+\.)",
+                  md, re.MULTILINE | re.DOTALL)
+    assert m, "El informe no contiene la sección de plan de acción"
+    return m.group(1)
+
+
+def _plan_para(**campos) -> str:
+    """Plan de acción del informe completo de ALTO con los roles indicados."""
+    clas = dict(_CLASIFICACION, **campos)
+    return _plan_de_accion(GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO))
+
+
+class TestPlanAccionPorRol:
+    """B9: el plan de ALTO no puede pedirle a un implementador obligaciones del proveedor."""
+
+    def test_implementador_no_recibe_obligaciones_del_proveedor(self):
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert "marcado CE" not in plan
+        assert "Art. 43" not in plan
+        assert "Art. 17" not in plan
+        assert "Art. 11" not in plan  # documentación técnica del Anexo IV
+
+    def test_implementador_recibe_las_obligaciones_del_art_26(self):
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Obligaciones como implementador (Art. 26)" in plan
+        for apartado in ("Art. 26.1", "Art. 26.2", "Art. 26.3", "Art. 26.5",
+                         "Art. 26.6", "Art. 26.7", "Art. 26.10", "Art. 26.11"):
+            assert apartado in plan, f"Falta el {apartado} en el plan del implementador"
+        assert "Art. 27" in plan  # evaluación de impacto, cuando proceda
+
+    def test_proveedor_si_recibe_las_obligaciones_del_proveedor(self):
+        plan = _plan_para(rol="proveedor", roles_multiples=["proveedor"])
+        assert "Obligaciones como proveedor (Art. 16)" in plan
+        assert "marcado CE" in plan
+        assert "Art. 43" in plan
+        assert "Art. 17" in plan
+        assert "Obligaciones como implementador" not in plan
+
+    def test_doble_rol_recibe_los_dos_bloques_y_un_solo_bloque_comun(self):
+        plan = _plan_para(rol="proveedor / implementador",
+                          roles_multiples=["proveedor", "implementador"])
+        assert "Obligaciones como proveedor (Art. 16)" in plan
+        assert "Obligaciones como implementador (Art. 26)" in plan
+        assert plan.count("### Acciones comunes a cualquier rol") == 1
+
+    def test_los_roles_se_deducen_del_campo_rol_si_no_hay_lista(self):
+        """El campo 'rol' puede traer varios roles separados por '/'."""
+        plan = _plan_para(rol="proveedor / implementador", roles_multiples=[])
+        assert "Obligaciones como proveedor (Art. 16)" in plan
+        assert "Obligaciones como implementador (Art. 26)" in plan
+
+    def test_distribuidor_recibe_el_art_24_y_no_los_bloques_ajenos(self):
+        plan = _plan_para(rol="distribuidor", roles_multiples=["distribuidor"])
+        assert "Obligaciones como distribuidor (Art. 24)" in plan
+        assert "Art. 16" not in plan
+        assert "Art. 26" not in plan
+
+    def test_importador_recibe_el_art_23(self):
+        plan = _plan_para(rol="importador", roles_multiples=["importador"])
+        assert "Obligaciones como importador (Art. 23)" in plan
+        assert "Art. 16" not in plan
+        assert "Art. 26" not in plan
+
+    def test_representante_autorizado_recibe_los_arts_22_y_54(self):
+        plan = _plan_para(rol="representante_autorizado",
+                          roles_multiples=["representante_autorizado"])
+        assert "Arts. 22 y 54" in plan
+        assert "Art. 26" not in plan
+
+    def test_fabricante_asume_las_obligaciones_del_proveedor(self):
+        """Art. 25 en relación con el Anexo I: el fabricante recibe además el bloque de proveedor."""
+        plan = _plan_para(rol="fabricante", roles_multiples=["fabricante"])
+        assert "Art. 25" in plan
+        assert "Obligaciones como proveedor (Art. 16)" in plan
+        assert "marcado CE" in plan
+
+    def test_rol_sin_determinar_presenta_los_bloques_como_alternativos(self):
+        plan = _plan_para(rol="no especificado", roles_multiples=[])
+        assert "Si su entidad es proveedora del sistema (Art. 16)" in plan
+        assert "Si su entidad es implementadora del sistema (Art. 26)" in plan
+        assert "No se ha podido determinar el rol" in plan
+        assert "Evaluador y clasificador" in plan
+
+    def test_el_plan_conserva_las_tildes_y_es_codificable_en_latin1(self):
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Preparación" in plan
+        assert "supervisión" in plan
+        _limpiar(plan).encode("latin-1")  # no debe lanzar UnicodeEncodeError
+
+    def test_el_plan_sigue_listando_las_areas_de_mejora(self):
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Áreas de mejora detectadas (2):" in plan
+        assert "Falta documentación técnica (Anexo IV)" in plan
+
+    def test_el_pdf_se_genera_con_los_bloques_por_rol(self):
+        md = GeneradorInforme().generar_informe_completo(
+            dict(_CLASIFICACION, rol="implementador", roles_multiples=["implementador"]),
+            _CUMPLIMIENTO,
+        )
+        assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")

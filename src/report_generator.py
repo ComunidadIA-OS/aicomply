@@ -122,6 +122,43 @@ def _capitalizar_roles(rol_str: str) -> str:
     return " / ".join(p.strip().capitalize() for p in rol_str.split("/") if p.strip())
 
 
+# Roles con bloque propio en el catálogo de prompts/system_prompt_cumplimiento.py.
+# El orden es el del catálogo y fija el orden de los bloques del plan de acción.
+_ROLES_PLAN = (
+    "proveedor", "implementador", "distribuidor",
+    "importador", "representante_autorizado", "fabricante",
+)
+_ALIAS_ROLES_PLAN = {
+    "provider": "proveedor",
+    "deployer": "implementador",
+    "representante autorizado": "representante_autorizado",
+}
+
+
+def _roles_plan(rol: str, roles_multiples: list[str] | None) -> list[str]:
+    """Roles reconocidos por el plan de acción, sin duplicados y en orden del catálogo.
+
+    Prefiere 'roles_multiples'; si viene vacío, cae al campo 'rol', que puede traer
+    varios roles separados por '/'. Devuelve [] cuando ningún valor es un rol conocido:
+    ese es el caso «rol no determinado», que el plan trata aparte.
+    """
+    crudos = list(roles_multiples or []) or (rol or "").split("/")
+
+    reconocidos: set[str] = set()
+    for r in crudos:
+        r_norm = r.strip().lower()
+        r_norm = _ALIAS_ROLES_PLAN.get(r_norm, r_norm)
+        if r_norm in _ROLES_PLAN:
+            reconocidos.add(r_norm)
+
+    # El fabricante de producto asume todas las obligaciones del proveedor
+    # (Art. 25 en relación con el Anexo I), así que arrastra su bloque.
+    if "fabricante" in reconocidos:
+        reconocidos.add("proveedor")
+
+    return [r for r in _ROLES_PLAN if r in reconocidos]
+
+
 def _extraer_meta_md(markdown: str) -> dict[str, str]:
     """Extrae los metadatos del encabezado Markdown del informe."""
     meta: dict[str, str] = {}
@@ -200,7 +237,7 @@ class GeneradorInforme:
             self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol),
             self._seccion_obligaciones_detalladas(2, obligaciones, roles_multiples, clasificacion),
             self._seccion_carencias(3, carencias),
-            self._seccion_plan_accion(4, clasificacion, carencias),
+            self._seccion_plan_accion(4, clasificacion, carencias, rol, roles_multiples),
             self._seccion_revision_profesional(5, indeterminados + puntos_revision),
             self._pie(),
         ]
@@ -237,7 +274,7 @@ class GeneradorInforme:
             self._seccion_obligaciones_preliminares(3, obligaciones_prev, clasificacion),
             self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples, clasificacion),
             self._seccion_carencias(5, carencias),
-            self._seccion_plan_accion(6, clasificacion, carencias),
+            self._seccion_plan_accion(6, clasificacion, carencias, rol, roles_multiples),
             self._seccion_revision_profesional(7, indeterminados + puntos_revision),
             self._pie(),
         ]
@@ -534,7 +571,14 @@ class GeneradorInforme:
             texto += f"\n- {c}"
         return texto
 
-    def _seccion_plan_accion(self, num: int, clasificacion: str, carencias: list[str]) -> str:
+    def _seccion_plan_accion(
+        self,
+        num: int,
+        clasificacion: str,
+        carencias: list[str],
+        rol: str = "",
+        roles_multiples: list[str] | None = None,
+    ) -> str:
         texto = f"## {num}. Plan de acción recomendado\n"
 
         clas_norm = (clasificacion or "").upper().strip()
@@ -578,25 +622,23 @@ class GeneradorInforme:
         # Las fechas proceden de data/calendario.json — nunca literales aquí.
         _anexo_iii = obtener_obligacion("anexo_iii")["fecha_legible"]
         _anexo_i = obtener_obligacion("anexo_i")["fecha_legible"]
+        _art_4 = obtener_obligacion("art_5_art_4")["fecha_legible"]
         _art_50 = obtener_obligacion("art_50")["fecha_legible"]
         _art_50_2 = obtener_obligacion("art_50_2")
         _norma_omnibus = cargar_calendario()["norma_modificativa"]["referencia"]
 
+        # ALTO se construye por bloques según el rol: un implementador no tiene las
+        # obligaciones del proveedor y el informe no puede pedírselas (hallazgo B9).
+        if clas_norm == "ALTO":
+            texto += self._plan_alto(
+                _roles_plan(rol, roles_multiples),
+                _anexo_iii, _anexo_i, _art_4, _norma_omnibus,
+            )
+            for linea in self._pasos_carencias(carencias):
+                texto += f"\n- {linea}"
+            return texto
+
         pasos_por_nivel = {
-            "ALTO": [
-                "**Inmediato:** Designar un responsable de cumplimiento del AI Act e "
-                "iniciar el inventario del sistema.",
-                "**Preparación (0-6 meses):** Desarrollar la documentación técnica (Art. 11, Anexo IV) "
-                "y el sistema de gestión de riesgos (Art. 9). Estos documentos requieren meses "
-                "de trabajo: conviene iniciarlos ahora.",
-                "**Preparación (6-12 meses):** Implementar el registro de actividad (Art. 12), "
-                "el protocolo de supervisión humana (Art. 14) y el sistema de gestión de calidad (Art. 17).",
-                f"**Antes del despliegue ({_anexo_iii} para el Anexo III; {_anexo_i} para el Anexo I, "
-                f"según el {_norma_omnibus}):** Completar la evaluación de conformidad (Art. 43), "
-                "registrar el sistema en la base de datos de la UE (Art. 49) y obtener el marcado CE (Art. 47-48).",
-                "**De forma continua:** Supervisión poscomercialización (Art. 72), notificación "
-                "de incidentes (Art. 73) y actualización de la documentación técnica.",
-            ],
             "LIMITADO": [
                 "**Aplicable actualmente:** Añadir aviso claro en la interfaz de que el sistema "
                 f"usa IA antes de cada interacción (Art. 50.1 — en vigor desde el {_art_50}).",
@@ -618,7 +660,6 @@ class GeneradorInforme:
             ],
         }
 
-        clas_norm = clasificacion.upper().strip() if clasificacion else ""
         pasos = pasos_por_nivel.get(clas_norm, [])
         if not pasos:
             pasos = [
@@ -628,18 +669,168 @@ class GeneradorInforme:
                 "del sistema y mantener ese registro actualizado.",
             ]
 
-        if carencias:
-            pasos = list(pasos)
-            pasos.append(
-                f"**Áreas de mejora detectadas ({len(carencias)}):**"
-            )
-            for c in carencias[:5]:
-                pasos.append(f"  - {c}")
-            if len(carencias) > 5:
-                pasos.append(f"  - … y {len(carencias) - 5} área(s) adicional(es) — ver sección de obligaciones.")
+        pasos = list(pasos) + self._pasos_carencias(carencias)
 
         for paso in pasos:
             texto += f"\n- {paso}"
+        return texto
+
+    @staticmethod
+    def _pasos_carencias(carencias: list[str]) -> list[str]:
+        """Bullets del bloque «Áreas de mejora detectadas» al final del plan."""
+        if not carencias:
+            return []
+        pasos = [f"**Áreas de mejora detectadas ({len(carencias)}):**"]
+        pasos += [f"  - {c}" for c in carencias[:5]]
+        if len(carencias) > 5:
+            pasos.append(
+                f"  - … y {len(carencias) - 5} área(s) adicional(es) — ver sección de obligaciones."
+            )
+        return pasos
+
+    def _plan_alto(
+        self,
+        roles: list[str],
+        anexo_iii: str,
+        anexo_i: str,
+        art_4: str,
+        norma_omnibus: str,
+    ) -> str:
+        """Bloques del plan de acción de ALTO, uno por rol identificado.
+
+        Los pasos de cada rol proceden del catálogo de
+        `prompts/system_prompt_cumplimiento.py`; las fechas, de `data/calendario.json`.
+        Con `roles` vacío el rol no está determinado: se emiten los bloques de
+        proveedor e implementador como alternativos, nunca como acumulables.
+        """
+        paso_art_4 = (
+            f"**Aplicable actualmente (desde el {art_4}):** Garantizar la alfabetización en IA "
+            "del personal que usa o supervisa el sistema: conocimientos suficientes sobre sus "
+            "capacidades y limitaciones (Art. 4)."
+        )
+        paso_responsable = (
+            "**Inmediato:** Designar un responsable de cumplimiento del AI Act e "
+            "iniciar el inventario del sistema."
+        )
+
+        pasos_proveedor = [
+            "**Preparación (0-6 meses):** Desarrollar la documentación técnica (Art. 11, Anexo IV) "
+            "y el sistema de gestión de riesgos (Art. 9). Estos documentos requieren meses "
+            "de trabajo: conviene iniciarlos ahora.",
+            "**Preparación (6-12 meses):** Implementar el registro de actividad (Art. 12), "
+            "el protocolo de supervisión humana (Art. 14) y el sistema de gestión de calidad (Art. 17).",
+            f"**Antes del despliegue ({anexo_iii} para el Anexo III; {anexo_i} para el Anexo I, "
+            f"según el {norma_omnibus}):** Completar la evaluación de conformidad (Art. 43), "
+            "registrar el sistema en la base de datos de la UE (Art. 49) y obtener el marcado CE (Art. 47-48).",
+            "**De forma continua:** Supervisión poscomercialización (Art. 72), notificación "
+            "de incidentes (Art. 73) y actualización de la documentación técnica.",
+        ]
+
+        pasos_implementador = [
+            "**Inmediato:** Obtener del proveedor las instrucciones de uso y verificar que el "
+            "sistema se utiliza estrictamente conforme a ellas (Art. 26.1).",
+            "**Inmediato:** Encomendar la supervisión humana a personas con la competencia, la "
+            "formación y la autoridad necesarias, y garantizar que pueden intervenir o detener "
+            "el sistema (Art. 26.2).",
+            "**Preparación (0-6 meses):** Comprobar que los datos de entrada que su organización "
+            "controla son pertinentes y suficientemente representativos para el uso previsto (Art. 26.3).",
+            "**Preparación (0-6 meses):** Establecer la conservación de los registros generados "
+            "automáticamente por el sistema durante al menos seis meses, siempre que tenga control "
+            "técnico sobre ellos (Art. 26.6).",
+            f"**Antes del despliegue ({anexo_iii} para el Anexo III; {anexo_i} para el Anexo I, "
+            f"según el {norma_omnibus}):** En el ámbito laboral, informar previamente a los "
+            "trabajadores afectados y a sus representantes de que el sistema se va a utilizar (Art. 26.7).",
+            "**Antes del despliegue, cuando proceda:** Realizar la evaluación de impacto sobre los "
+            "derechos fundamentales (Art. 27) si su organización es un organismo público, una entidad "
+            "privada que presta servicios públicos, o responsable del despliegue de un sistema del "
+            "Anexo III punto 5(b) (scoring crediticio) o 5(c) (precios y evaluación de riesgo en "
+            "seguros de vida y salud).",
+            "**De forma continua:** Monitorizar el funcionamiento del sistema durante su uso y "
+            "notificar al proveedor cualquier riesgo identificado (Art. 26.5).",
+            "**De forma continua:** Notificar al proveedor y, cuando proceda, a las autoridades "
+            "nacionales competentes cualquier incidente grave o mal funcionamiento que afecte a la "
+            "seguridad o a los derechos fundamentales (Art. 26.10).",
+            "**De forma continua:** Cooperar plenamente con las autoridades nacionales competentes "
+            "en cualquier inspección o investigación sobre el sistema (Art. 26.11).",
+        ]
+
+        bloques_por_rol: dict[str, tuple[str, list[str]]] = {
+            "proveedor": ("Obligaciones como proveedor (Art. 16)", pasos_proveedor),
+            "implementador": ("Obligaciones como implementador (Art. 26)", pasos_implementador),
+            "distribuidor": (
+                "Obligaciones como distribuidor (Art. 24)",
+                [
+                    "**Antes de comercializar:** Verificar que el sistema lleva el marcado CE y "
+                    "va acompañado de la documentación requerida (Art. 24).",
+                    "**Antes de comercializar:** No comercializar el sistema si no cumple los "
+                    "requisitos del AI Act (Art. 24).",
+                    "**De forma continua:** Informar al proveedor o al importador de los riesgos "
+                    "que identifique en el sistema (Art. 24).",
+                ],
+            ),
+            "importador": (
+                "Obligaciones como importador (Art. 23)",
+                [
+                    "**Antes de comercializar:** Verificar la conformidad del sistema antes de "
+                    "introducirlo en el mercado de la UE (Art. 23).",
+                    "**Antes de comercializar:** Comprobar que el proveedor no establecido en la UE "
+                    "ha completado la evaluación de conformidad (Art. 23).",
+                    "**Antes de comercializar:** No comercializar el sistema si presenta un riesgo "
+                    "para la salud, la seguridad o los derechos fundamentales (Art. 23).",
+                    "**De forma continua:** Conservar copia de la declaración UE de conformidad y de "
+                    "la documentación técnica (Art. 23).",
+                ],
+            ),
+            "representante_autorizado": (
+                "Obligaciones como representante autorizado (Arts. 22 y 54)",
+                [
+                    "**De forma continua:** Actuar como punto de contacto de las autoridades "
+                    "competentes de la UE (Arts. 22 y 54).",
+                    "**De forma continua:** Garantizar que el proveedor no establecido en la UE ha "
+                    "completado las obligaciones que le impone el AI Act (Arts. 22 y 54).",
+                    "**De forma continua:** Conservar copia del mandato escrito y facilitarlo a las "
+                    "autoridades cuando lo soliciten (Arts. 22 y 54).",
+                ],
+            ),
+            "fabricante": (
+                "Obligaciones como fabricante de producto (Art. 25, Anexo I)",
+                [
+                    f"**Antes del despliegue ({anexo_i} para los productos del Anexo I):** Si el "
+                    "sistema de IA es un componente de seguridad de un producto regulado del Anexo I "
+                    "y se comercializa bajo su nombre o marca, su organización asume todas las "
+                    "obligaciones del proveedor (Art. 25). Se detallan en el bloque «Obligaciones "
+                    "como proveedor».",
+                ],
+            ),
+        }
+
+        def _bloque(encabezado: str, pasos: list[str]) -> str:
+            return f"\n### {encabezado}\n" + "".join(f"\n- {p}" for p in pasos) + "\n"
+
+        if not roles:
+            texto = _bloque(
+                "Acciones comunes a cualquier rol",
+                [
+                    "**Inmediato:** Determinar el rol de su entidad bajo el AI Act (proveedor, "
+                    "implementador, distribuidor, importador, representante autorizado o fabricante) "
+                    "en la pestaña «Evaluador y clasificador»: las obligaciones aplicables dependen "
+                    "del rol.",
+                    paso_responsable,
+                    paso_art_4,
+                ],
+            )
+            texto += (
+                "\n> No se ha podido determinar el rol de su entidad. Los dos bloques siguientes "
+                "son alternativos: solo le aplica el que corresponda a su rol.\n"
+            )
+            texto += _bloque("Si su entidad es proveedora del sistema (Art. 16)", pasos_proveedor)
+            texto += _bloque("Si su entidad es implementadora del sistema (Art. 26)", pasos_implementador)
+            return texto
+
+        texto = _bloque("Acciones comunes a cualquier rol", [paso_responsable, paso_art_4])
+        for r in roles:
+            encabezado, pasos = bloques_por_rol[r]
+            texto += _bloque(encabezado, pasos)
         return texto
 
     def _seccion_revision_profesional(self, num: int, puntos: list[str]) -> str:
