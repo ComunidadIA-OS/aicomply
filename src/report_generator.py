@@ -21,6 +21,7 @@ from pathlib import Path
 from config import NIVELES_RIESGO
 from prompts import PROMPT_VERSION as _PROMPT_VERSION
 from src.calendario import cargar_calendario, obtener_obligacion, obtener_version
+from src.reconciliacion import GRAVEDAD_BLOQUEANTE, motivo_no_calculable
 
 _CORPUS_VERSION_FILE = Path(__file__).parent.parent / "data" / "CORPUS_VERSION"
 try:
@@ -232,12 +233,15 @@ class GeneradorInforme:
         carencias = cumplimiento_data.get("carencias_detectadas", [])
         puntos_revision = cumplimiento_data.get("puntos_revision_profesional", [])
         resumen = cumplimiento_data.get("resumen_cumplimiento", "")
+        incoherencias = cumplimiento_data.get("incoherencias", [])
 
         secciones = [
             self._cabecera("Informe de cumplimiento", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
-            self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol),
-            self._seccion_obligaciones_detalladas(2, obligaciones, roles_multiples, clasificacion),
+            self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol, incoherencias),
+            self._seccion_obligaciones_detalladas(
+                2, obligaciones, roles_multiples, clasificacion, incoherencias
+            ),
             self._seccion_carencias(3, carencias),
             self._seccion_plan_accion(4, clasificacion, carencias, rol, roles_multiples),
             self._seccion_revision_profesional(5, indeterminados + puntos_revision),
@@ -267,16 +271,22 @@ class GeneradorInforme:
         carencias = cumplimiento_data.get("carencias_detectadas", [])
         puntos_revision = cumplimiento_data.get("puntos_revision_profesional", [])
         resumen_cumpl = cumplimiento_data.get("resumen_cumplimiento", "")
+        incoherencias = cumplimiento_data.get("incoherencias", [])
 
         secciones = [
             self._cabecera("Informe completo", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
-            self._resumen_ejecutivo_completo(descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl),
+            self._resumen_ejecutivo_completo(
+                descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl,
+                incoherencias,
+            ),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
             self._seccion_obligaciones_preliminares(
                 3, obligaciones_prev, clasificacion, rol, roles_multiples
             ),
-            self._seccion_obligaciones_detalladas(4, obligaciones, roles_multiples, clasificacion),
+            self._seccion_obligaciones_detalladas(
+                4, obligaciones, roles_multiples, clasificacion, incoherencias
+            ),
             self._seccion_carencias(5, carencias),
             self._seccion_plan_accion(6, clasificacion, carencias, rol, roles_multiples),
             self._seccion_revision_profesional(7, indeterminados + puntos_revision),
@@ -326,8 +336,26 @@ class GeneradorInforme:
             texto += f" Estados adicionales aplicables: {', '.join(estados)}."
         return texto
 
+    @staticmethod
+    def _aviso_incoherencias(incoherencias: list[dict] | None) -> str:
+        """La advertencia del resumen ejecutivo, que es lo primero que se lee.
+
+        La queja de fondo del recorrido manual era esta: el informe llevaba la contradicción
+        dentro, pero quien abría por la portada leía «cumple». Si el registro no es fiable, hay
+        que decirlo antes que ninguna otra cosa, no dos secciones más abajo.
+        """
+        if not incoherencias:
+            return ""
+        return (
+            "\n\n**Aviso sobre la fiabilidad de este análisis:** "
+            + motivo_no_calculable(incoherencias)
+            + " Este informe no publica un grado de cumplimiento; el detalle de lo detectado "
+            "está en el análisis de obligaciones."
+        )
+
     def _resumen_ejecutivo_cumplimiento(
-        self, resumen: str, clasificacion: str, rol: str
+        self, resumen: str, clasificacion: str, rol: str,
+        incoherencias: list[dict] | None = None,
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
         clas_norm = (clasificacion or "").upper().strip()
@@ -348,7 +376,7 @@ class GeneradorInforme:
             )
         if resumen:
             texto += f"\n\n{resumen}"
-        return texto
+        return texto + self._aviso_incoherencias(incoherencias)
 
     def _resumen_ejecutivo_completo(
         self,
@@ -358,6 +386,7 @@ class GeneradorInforme:
         roles_multiples: list[str],
         estados: list[str],
         resumen_cumpl: str,
+        incoherencias: list[dict] | None = None,
     ) -> str:
         texto = f"## 1. Resumen ejecutivo\n\n"
         rol_display = _capitalizar_roles(rol)
@@ -370,10 +399,10 @@ class GeneradorInforme:
         clas_norm = (clasificacion or "").upper().strip()
         if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
             texto += f"\n\n{_TEXTO_SIN_OBLIGACIONES.get(clas_norm, '')}"
-        else:
-            if resumen_cumpl:
-                texto += f"\n\n{resumen_cumpl}"
-        return texto
+            return texto
+        if resumen_cumpl:
+            texto += f"\n\n{resumen_cumpl}"
+        return texto + self._aviso_incoherencias(incoherencias)
 
     def _seccion_clasificacion(
         self,
@@ -581,8 +610,42 @@ class GeneradorInforme:
 
         return "".join(_bloque(*bloques_por_rol[r]) for r in roles)
 
+    def _bloque_incoherencias(self, incoherencias: list[dict]) -> str:
+        """Las incoherencias del registro, en el sitio donde iría la cifra que invalidan.
+
+        Va dentro de «Análisis de obligaciones» y no en una sección numerada propia: así el
+        aviso queda pegado al número que desmiente, y no se renumeran las secciones siguientes.
+        """
+        if not incoherencias:
+            return ""
+        bloqueantes = sum(
+            1 for i in incoherencias if i.get("gravedad") == GRAVEDAD_BLOQUEANTE
+        )
+        texto = (
+            f"\n\n**Incoherencias detectadas en el registro ({len(incoherencias)}, "
+            f"{bloqueantes} de ellas determinantes):**\n"
+        )
+        for inc in incoherencias:
+            etiqueta = (
+                "Determinante" if inc.get("gravedad") == GRAVEDAD_BLOQUEANTE else "Indicio"
+            )
+            texto += f"\n- **[{etiqueta}]** {inc.get('mensaje', '')}"
+            for linea in inc.get("detalle", []):
+                texto += f"\n  - {linea}"
+        texto += (
+            "\n\nRevise el análisis de la pestaña Cumplimiento antes de usar este informe: "
+            "las obligaciones que sí figuran a continuación son correctas, pero puede que no "
+            "estén todas."
+        )
+        return texto
+
     def _seccion_obligaciones_detalladas(
-        self, num: int, obligaciones: list[dict], roles_multiples: list[str], clasificacion: str = ""
+        self,
+        num: int,
+        obligaciones: list[dict],
+        roles_multiples: list[str],
+        clasificacion: str = "",
+        incoherencias: list[dict] | None = None,
     ) -> str:
         clas_norm = (clasificacion or "").upper().strip()
         if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
@@ -618,6 +681,17 @@ class GeneradorInforme:
                 "No se identifican obligaciones legales evaluables del AI Act para este caso. "
                 "Se incluyen recomendaciones voluntarias y medidas prudenciales."
             )
+        elif incoherencias:
+            # Sin cifra: el porcentaje se calcularía sobre un registro que la aplicación tiene
+            # motivos para creer incompleto, y es exactamente el fallo que dio un 100 % en la
+            # misma página que documentaba una carencia legal. Los recuentos sí se mantienen:
+            # son hechos sobre lo que sí se registró.
+            texto += (
+                "**Grado de cumplimiento legal:** No calculable  \n"
+                f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
+                f"No cubiertas: {len(car_leg)} | No aplica: {len(no_ap_leg)}  \n"
+                f"*{motivo_no_calculable(incoherencias)}*"
+            )
         else:
             pct = round(((len(cub_leg) * 2 + len(par_leg)) / (evaluadas_leg * 2) * 100) if evaluadas_leg else 0)
             texto += (
@@ -630,6 +704,8 @@ class GeneradorInforme:
                     f"  \n*Recomendaciones/medidas prudenciales pendientes: {rec_pen} "
                     "(no computan en el porcentaje legal)*"
                 )
+
+        texto += self._bloque_incoherencias(incoherencias or [])
 
         if roles_multiples and len(roles_multiples) > 1:
             texto += (
@@ -1474,7 +1550,9 @@ class GeneradorInforme:
             _obl_estado: str | None = None
             _obl_art: str = ""
             _obl_desc: list[str] = []
-            _metricas_pct: int = 0
+            # None significa «no calculable», que no es lo mismo que cero: si el markdown no
+            # trae porcentaje, la barra no se dibuja en vez de dibujarse vacía.
+            _metricas_pct: int | None = 0
             _metricas_counts: list[int] = []
             _metricas_emitidas = False
 
@@ -1542,7 +1620,7 @@ class GeneradorInforme:
                 pdf.ln(1)
                 pdf.set_text_color(30, 30, 30)
 
-            def _render_metricas(pct: int, counts: list[int]) -> None:
+            def _render_metricas(pct: int | None, counts: list[int]) -> None:
                 if len(counts) < 4:
                     return
                 cub, par, mej, sin = counts[0], counts[1], counts[2], counts[3]
@@ -1574,9 +1652,20 @@ class GeneradorInforme:
 
                 pdf.set_y(y0 + card_h + 4)
 
-                # Barra de progreso
+                # Barra de progreso. Sin porcentaje no se dibuja: una barra vacía se lee como
+                # un 0 % de cumplimiento, que sería otra cifra falsa en vez de ninguna.
                 pdf.set_font("Helvetica", "", 9)
                 pdf.set_text_color(60, 60, 60)
+                if pct is None:
+                    pdf.cell(CW * 0.72, 5, "Grado de cumplimiento legal", align="L")
+                    pdf.set_font("Helvetica", "B", 9)
+                    pdf.set_text_color(150, 150, 150)
+                    pdf.cell(CW * 0.28, 5, _limpiar("No calculable"), align="R",
+                             new_x="LMARGIN", new_y="NEXT")
+                    pdf.ln(3)
+                    pdf.set_text_color(30, 30, 30)
+                    return
+
                 pdf.cell(CW * 0.72, 5, "Grado de cumplimiento legal estimado", align="L")
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(*_C_AZUL)
@@ -1743,8 +1832,7 @@ class GeneradorInforme:
 
                 elif "Grado de cumplimiento" in linea_s and _seccion == "obligaciones":
                     m_pct = re.search(r"(\d+)\s*%", linea_s)
-                    if m_pct:
-                        _metricas_pct = int(m_pct.group(1))
+                    _metricas_pct = int(m_pct.group(1)) if m_pct else None
 
                 elif linea_s.startswith("Cubiertas:") and _seccion == "obligaciones":
                     nums = re.findall(r"\d+", linea_s)
