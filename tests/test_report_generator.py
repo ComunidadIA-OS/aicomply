@@ -13,9 +13,11 @@
 # limitations under the License.
 
 import re
+from pathlib import Path
 
 import pytest
 
+from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.calendario import obtener_version
 from src.report_generator import GeneradorInforme, _limpiar
 
@@ -485,6 +487,20 @@ def _plan_para(**campos) -> str:
     return _plan_de_accion(GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO))
 
 
+# B18: los apartados del Art. 26 que sí son del responsable del despliegue. El 26.3 (cláusula
+# de «no afecta a otras obligaciones»), el 26.8 (registro del Art. 49, solo autoridades
+# públicas), el 26.9 (EIDF) y el 26.10 (identificación biométrica remota posterior con fines
+# policiales) NO son obligaciones a exigir a una PYME industrial.
+_APARTADOS_ART_26_IMPLEMENTADOR = ("26.1", "26.2", "26.4", "26.5", "26.6", "26.7",
+                                   "26.11", "26.12")
+_APARTADOS_ART_26_AJENOS = ("26.3", "26.8", "26.9", "26.10")
+
+
+def _cita_apartado(texto: str, apartado: str) -> bool:
+    """¿Cita `texto` ese apartado exacto? '26.1' no puede casar dentro de '26.11'."""
+    return re.search(rf"Art\. {re.escape(apartado)}(?!\d)", texto) is not None
+
+
 class TestPlanAccionPorRol:
     """B9: el plan de ALTO no puede pedirle a un implementador obligaciones del proveedor."""
 
@@ -498,9 +514,10 @@ class TestPlanAccionPorRol:
     def test_implementador_recibe_las_obligaciones_del_art_26(self):
         plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
         assert "Obligaciones como implementador (Art. 26)" in plan
-        for apartado in ("Art. 26.1", "Art. 26.2", "Art. 26.3", "Art. 26.5",
-                         "Art. 26.6", "Art. 26.7", "Art. 26.10", "Art. 26.11"):
-            assert apartado in plan, f"Falta el {apartado} en el plan del implementador"
+        for apartado in _APARTADOS_ART_26_IMPLEMENTADOR:
+            assert _cita_apartado(plan, apartado), (
+                f"Falta el Art. {apartado} en el plan del implementador"
+            )
         assert "Art. 27" in plan  # evaluación de impacto, cuando proceda
 
     def test_proveedor_si_recibe_las_obligaciones_del_proveedor(self):
@@ -611,9 +628,10 @@ class TestObligacionesPreliminaresPorRol:
     def test_implementador_recibe_las_obligaciones_del_art_26(self):
         seccion = _preliminares_para(rol="implementador", roles_multiples=["implementador"])
         assert "Obligaciones como implementador (Art. 26)" in seccion
-        for apartado in ("Art. 26.1", "Art. 26.2", "Art. 26.3", "Art. 26.5",
-                         "Art. 26.6", "Art. 26.7", "Art. 26.10", "Art. 26.11"):
-            assert apartado in seccion, f"Falta el {apartado} en la sección 3 del implementador"
+        for apartado in _APARTADOS_ART_26_IMPLEMENTADOR:
+            assert _cita_apartado(seccion, apartado), (
+                f"Falta el Art. {apartado} en la sección 3 del implementador"
+            )
         assert "Art. 27" in seccion  # evaluación de impacto, cuando proceda
 
     def test_proveedor_si_recibe_las_obligaciones_del_proveedor(self):
@@ -691,3 +709,72 @@ class TestObligacionesPreliminaresPorRol:
         seccion = _preliminares(md)
         assert "Obligaciones como implementador (Art. 26)" in seccion
         assert "Art. 43" not in seccion
+
+
+# ── Numeración de los apartados del Art. 26 (regresión B18) ───────────────────
+
+
+class TestApartadosArt26:
+    """B18: tres apartados citados con el número equivocado y el 26.11 real ausente.
+
+    Contrastado con el Reglamento (UE) 2024/1689 consolidado a 27 de julio de 2026:
+    la pertinencia de los datos de entrada es el 26.4 (no el 26.3), la notificación de
+    incidentes graves es el 26.5 (no el 26.10, que es identificación biométrica remota
+    posterior con fines policiales) y la cooperación con las autoridades es el 26.12
+    (no el 26.11, que es informar a las personas físicas afectadas).
+    """
+
+    def test_el_plan_del_implementador_cita_los_apartados_correctos(self):
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        for apartado in _APARTADOS_ART_26_AJENOS:
+            assert not _cita_apartado(plan, apartado), (
+                f"El Art. {apartado} no es una obligación del implementador de este catálogo"
+            )
+
+    def test_la_seccion_3_del_implementador_cita_los_apartados_correctos(self):
+        seccion = _preliminares_para(rol="implementador", roles_multiples=["implementador"])
+        for apartado in _APARTADOS_ART_26_AJENOS:
+            assert not _cita_apartado(seccion, apartado), (
+                f"El Art. {apartado} no es una obligación del implementador de este catálogo"
+            )
+
+    def test_el_catalogo_del_prompt_cita_los_mismos_apartados_que_el_informe(self):
+        """El prompt y el informe son dos copias a mano de la misma lista: deben coincidir."""
+        bloque = SYSTEM_PROMPT_CUMPLIMIENTO.split(
+            "ALTO RIESGO — Rol Implementador (Art. 26):")[1].split("ALTO RIESGO — Rol Distribuidor")[0]
+        for apartado in _APARTADOS_ART_26_IMPLEMENTADOR:
+            assert _cita_apartado(bloque, apartado), f"Falta el Art. {apartado} en el catálogo"
+        for apartado in _APARTADOS_ART_26_AJENOS:
+            assert not _cita_apartado(bloque, apartado), (
+                f"El Art. {apartado} no debería estar en el catálogo del implementador"
+            )
+
+    def test_las_dos_caras_del_26_5_se_distinguen(self):
+        """El 26.5 tiene dos obligaciones separables: vigilar el uso y notificar incidentes
+        graves. Fundirlas en una haría que una PYME con auditorías periódicas y sin
+        procedimiento del Art. 73 quedase registrada como cubierta."""
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert plan.count("(Art. 26.5)") == 2
+        assert "Art. 73" in plan
+        assert "incidentes graves" in plan.lower()
+
+    def test_el_implementador_debe_informar_a_las_personas_afectadas(self):
+        """El 26.11 real: para un sistema que criba currículums es la obligación más
+        visible frente al candidato, y no estaba en el catálogo."""
+        plan = _plan_para(rol="implementador", roles_multiples=["implementador"])
+        assert _cita_apartado(plan, "26.11")
+        assert "personas físicas" in plan
+        assert "Anexo III" in plan
+
+    def test_ningun_apartado_ajeno_sobrevive_en_prompts_ni_src(self):
+        """Los apartados están escritos a mano en varios sitios; el fallo era una copia
+        desincronizada. Este test recorre el código fuente entero, no solo el informe."""
+        raiz = Path(__file__).resolve().parent.parent
+        obsoletos = re.compile(r"Art\. 26\.3(?!\d)|Art\. 26\.10(?!\d)|Art\. 26\.11 — [Cc]ooperación")
+        for fichero in [*(raiz / "prompts").rglob("*.py"), *(raiz / "src").rglob("*.py")]:
+            if "__pycache__" in fichero.parts:
+                continue
+            texto = fichero.read_text(encoding="utf-8")
+            assert not obsoletos.search(texto), (
+                f"{fichero.relative_to(raiz)} sigue citando un apartado obsoleto del Art. 26"
+            )

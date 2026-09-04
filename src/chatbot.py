@@ -64,7 +64,7 @@ _PROMPT_EXTRAER_CLASIFICACION = """Basándote en toda la conversación de evalua
   "sector": "sector de la empresa",
   "obligaciones_preliminares": ["obligación ya identificada (Art. X)"]
 }
-REGLA OBLIGATORIA PARA obligaciones_preliminares: cita el ARTÍCULO, nunca el apartado. Escribe "(Art. 26)", nunca "(Art. 26.1)" ni "(Art. 26.3)". Esta lista es preliminar; la precisión de apartado la aporta después el análisis de cumplimiento, y un apartado equivocado aquí contradice ese análisis dentro del mismo informe.
+REGLA OBLIGATORIA PARA obligaciones_preliminares: cita el ARTÍCULO, nunca el apartado. Escribe "(Art. 26)", nunca "(Art. 26.1)" ni "(Art. 26.5)". Esta lista es preliminar; la precisión de apartado la aporta después el análisis de cumplimiento, y un apartado equivocado aquí contradice ese análisis dentro del mismo informe.
 REGLA OBLIGATORIA PARA roles_multiples: lista los roles que la conversación CONFIRMÓ, y solo esos. Tienes la conversación entera delante: un rol cuenta como confirmado cuando la persona lo respondió o aceptó una inferencia sobre él, no cuando resulte plausible por el sector, por la clasificación o por el tipo de sistema.
 - Si la organización ha desarrollado o encargado el sistema Y lo utiliza internamente bajo su propia autoridad, incluye AMBOS: ["proveedor", "implementador"]. El campo "rol" debe reflejar los mismos roles: "proveedor / implementador". Las dos condiciones tienen que constar en la conversación; una sola no basta.
 - Si solo consta un rol, incluye únicamente ese: p. ej. ["implementador"]. El campo "rol" = "implementador".
@@ -449,7 +449,7 @@ class AIComplyChat:
     _ALIAS_ROLES = {"provider": "proveedor", "deployer": "implementador"}
     _SEP_ROLES = re.compile(r"\s*/\s*|\s+[ey]\s+|\s*,\s*|_")
 
-    # Recorta el apartado SOLO del Art. 26: "Art. 26.3" → "Art. 26".
+    # Recorta el apartado SOLO del Art. 26: "Art. 26.5" → "Art. 26".
     _RE_APARTADO_ART_26 = re.compile(r"(Art\.?\s*26)(?:\.\d+)+", re.IGNORECASE)
 
     @classmethod
@@ -464,7 +464,7 @@ class AIComplyChat:
         que el error no solo se imprimía: se propagaba.
 
         El recorte es SELECTIVO a propósito, no lo generalices:
-        - El Art. 26 tiene once apartados parecidos entre sí, es donde se observó el fallo,
+        - El Art. 26 tiene doce apartados parecidos entre sí, es donde se observó el fallo,
           y su precisión aquí es redundante porque el análisis de cumplimiento la da bien.
         - "Art. 50.1" → "Art. 50" perdería información real: los cuatro apartados del
           Art. 50 son obligaciones distintas y de roles distintos.

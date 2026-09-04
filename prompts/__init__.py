@@ -17,6 +17,10 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.2 (2026-09-04): apartados del Art. 26 renumerados según el consolidado a 27-07-2026
+#                          —datos de entrada 26.3→26.4, incidentes graves 26.10→26.5,
+#                          cooperación 26.11→26.12— y añadido el 26.11 real: informar a las
+#                          personas físicas sobre las que decide un sistema del Anexo III
 # 2026.09.1 (2026-09-03): Art. 49 del Rol Implementador convertido en obligación condicional
 #                          —solo aplica al implementador que es organismo público o actúa en
 #                          su nombre; el privado la recibe como no_aplica, no como carencia—;
@@ -33,4 +37,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.1"
+PROMPT_VERSION = "2026.09.2"

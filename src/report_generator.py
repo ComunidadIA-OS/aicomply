@@ -493,17 +493,20 @@ class GeneradorInforme:
             "Uso del sistema conforme a las instrucciones del proveedor (Art. 26.1)",
             "Supervisión humana encomendada a personas con la competencia, la formación y "
             "la autoridad necesarias (Art. 26.2)",
-            "Datos de entrada pertinentes y suficientemente representativos para el uso "
-            "previsto (Art. 26.3)",
-            "Monitorización del funcionamiento del sistema y notificación de riesgos al "
-            "proveedor (Art. 26.5)",
+            "Datos de entrada pertinentes y suficientemente representativos en vista de la "
+            "finalidad prevista, en la medida en que se ejerza el control sobre ellos (Art. 26.4)",
+            "Vigilancia del funcionamiento del sistema e información al proveedor; suspensión "
+            "del uso y aviso a la autoridad de vigilancia del mercado si presenta un riesgo "
+            "(Art. 26.5)",
+            "Notificación de los incidentes graves al proveedor y a la autoridad de vigilancia "
+            "del mercado, conforme al Art. 73 (Art. 26.5)",
             "Conservación de los registros generados automáticamente durante al menos seis "
             "meses (Art. 26.6)",
             "En el ámbito laboral, información previa a los trabajadores afectados y a sus "
             "representantes (Art. 26.7)",
-            "Notificación de incidentes graves al proveedor y, cuando proceda, a las "
-            "autoridades nacionales competentes (Art. 26.10)",
-            "Cooperación con las autoridades nacionales competentes (Art. 26.11)",
+            "Información a las personas físicas de que están expuestas a un sistema del Anexo III "
+            "que toma o ayuda a tomar decisiones sobre ellas (Art. 26.11)",
+            "Cooperación con las autoridades nacionales competentes (Art. 26.12)",
             "Evaluación de impacto sobre los derechos fundamentales, cuando proceda "
             "(Art. 27)",
         ]
@@ -852,25 +855,31 @@ class GeneradorInforme:
             "formación y la autoridad necesarias, y garantizar que pueden intervenir o detener "
             "el sistema (Art. 26.2).",
             "**Preparación (0-6 meses):** Comprobar que los datos de entrada que su organización "
-            "controla son pertinentes y suficientemente representativos para el uso previsto (Art. 26.3).",
+            "controla son pertinentes y suficientemente representativos en vista de la finalidad "
+            "prevista (Art. 26.4).",
             "**Preparación (0-6 meses):** Establecer la conservación de los registros generados "
             "automáticamente por el sistema durante al menos seis meses, siempre que tenga control "
             "técnico sobre ellos (Art. 26.6).",
             f"**Antes del despliegue ({anexo_iii} para el Anexo III; {anexo_i} para el Anexo I, "
             f"según el {norma_omnibus}):** En el ámbito laboral, informar previamente a los "
             "trabajadores afectados y a sus representantes de que el sistema se va a utilizar (Art. 26.7).",
+            "**Antes del despliegue:** Si el sistema es del Anexo III y toma decisiones o ayuda a "
+            "tomar decisiones relacionadas con personas físicas, informar a esas personas de que "
+            "están expuestas a la utilización de un sistema de IA de alto riesgo (Art. 26.11).",
             "**Antes del despliegue, cuando proceda:** Realizar la evaluación de impacto sobre los "
             "derechos fundamentales (Art. 27) si su organización es un organismo público, una entidad "
             "privada que presta servicios públicos, o responsable del despliegue de un sistema del "
             "Anexo III punto 5(b) (scoring crediticio) o 5(c) (precios y evaluación de riesgo en "
             "seguros de vida y salud).",
-            "**De forma continua:** Monitorizar el funcionamiento del sistema durante su uso y "
-            "notificar al proveedor cualquier riesgo identificado (Art. 26.5).",
-            "**De forma continua:** Notificar al proveedor y, cuando proceda, a las autoridades "
-            "nacionales competentes cualquier incidente grave o mal funcionamiento que afecte a la "
-            "seguridad o a los derechos fundamentales (Art. 26.10).",
-            "**De forma continua:** Cooperar plenamente con las autoridades nacionales competentes "
-            "en cualquier inspección o investigación sobre el sistema (Art. 26.11).",
+            "**De forma continua:** Vigilar el funcionamiento del sistema conforme a las "
+            "instrucciones de uso e informar al proveedor; si el sistema presenta un riesgo, "
+            "suspender su uso e informar al proveedor o distribuidor y a la autoridad de "
+            "vigilancia del mercado (Art. 26.5).",
+            "**De forma continua:** Notificar los incidentes graves al proveedor y, a "
+            "continuación, al importador o distribuidor y a la autoridad de vigilancia del "
+            "mercado, conforme al procedimiento del Art. 73 (Art. 26.5).",
+            "**De forma continua:** Cooperar con las autoridades nacionales competentes en "
+            "cualquier medida que estas adopten en relación con el sistema (Art. 26.12).",
         ]
 
         bloques_por_rol: dict[str, tuple[str, list[str]]] = {
