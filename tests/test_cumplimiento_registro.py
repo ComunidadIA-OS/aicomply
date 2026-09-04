@@ -275,6 +275,7 @@ class TestResetear:
         assert bot.total_narrado is None
         assert bot.ordinal_narrado_max is None
         assert bot.resumen_final_narrado == []
+        assert bot.registro_reconstruido is False
 
 
 # ── I: conflictos de estado (recalificaciones) ───────────────────────────────
@@ -581,6 +582,24 @@ class TestTrazaNarrada:
         assert [ln["articulo"] for ln in resumen] == ["Art. 4", "Art. 26.6", "Art. 27"]
         assert [ln["estado"] for ln in resumen] == ["cubierta", "parcial", "no_aplica"]
 
+    @pytest.mark.parametrize("linea,articulo", [
+        ("- **Art. 4 — Alfabetización en IA**: CUBIERTA", "Art. 4"),
+        ("- Art. 26.5 (vigilancia) — Vigilar el funcionamiento: PARCIAL", "Art. 26.5"),
+        ("1. Art. 27 — Evaluación de impacto: NO APLICA", "Art. 27"),
+        ("- Art. 26.6 — Conservación: **CARENCIA**", "Art. 26.6"),
+    ])
+    def test_m_tolera_las_formas_que_el_modelo_usa_de_hecho(self, linea, articulo):
+        """Una línea que no case no da error: da silencio, y el silencio se leería como que no
+        falta nada. La negrita y el paréntesis del catálogo son las variantes más probables."""
+        bot = _chatbot()
+        bot._procesar_bloques(linea)
+        assert [ln["articulo"] for ln in bot.resumen_final_narrado] == [articulo]
+
+    def test_m_tolera_la_negrita_en_el_ordinal(self):
+        bot = _chatbot()
+        bot._procesar_bloques("**Obligación 4 de 11**: conservación de registros.")
+        assert bot.total_narrado == 11
+
     def test_m_acumula_entre_turnos_sin_duplicar(self):
         """Si el modelo repite una lista parcial, quedarse con la última perdería lo anterior."""
         bot = _chatbot()
@@ -634,6 +653,22 @@ class TestIncoherenciasEnLasDosRamas:
             i["gravedad"] == "bloqueante"
             for i in resultado["incoherencias"] if i["codigo"] == "registro_reconstruido"
         )
+
+    def test_n_la_marca_de_reconstruido_sobrevive_a_la_rama_principal(self):
+        """La importación de sesión (app.py) reconstruye desde el historial y mete el resultado
+        directamente en obligaciones_registradas. Sin la marca, esas obligaciones raspadas de
+        prosa pasarían después por la rama estructurada como si vinieran de bloques.
+        """
+        bot = _chatbot()
+        bot.historial = [
+            {"role": "assistant", "content": "Registrado: Art. 9 — Gestión de riesgos: CUBIERTA"},
+        ]
+        bot.obligaciones_registradas = bot._reconstruir_obligaciones_desde_historial()
+
+        resultado = bot.extraer_cumplimiento()
+
+        assert bot.registro_reconstruido is True
+        assert "registro_reconstruido" in {i["codigo"] for i in resultado["incoherencias"]}
 
 
 # ── O: el catálogo declara claves estables y no las repite ───────────────────

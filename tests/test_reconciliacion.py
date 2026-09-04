@@ -101,6 +101,33 @@ class TestCarencias:
         assert inc["gravedad"] == GRAVEDAD_BLOQUEANTE
         assert any("Art. 26.6" in d for d in inc["detalle"])
 
+    def test_a_carencia_no_declarada_no_salta_si_las_carencias_no_citan_articulo(self):
+        """El contrato del cierre pide «una descripción breve», no una referencia.
+
+        Sin esta guarda, un análisis sano cuyas carencias estuvieran redactadas en prosa llana
+        levantaba una bloqueante y se quedaba sin porcentaje. La dirección contraria
+        (_carencias_huerfanas) ya la tenía: la asimetría era un error.
+        """
+        incoherencias = reconciliar(
+            [_obl("Art. 27", "Evaluación de impacto", "carencia")],
+            ["No se ha realizado la evaluación de impacto sobre derechos fundamentales"],
+            [],
+            _SIN_NARRACION,
+        )
+        assert "carencia_no_declarada" not in _codigos(incoherencias)
+
+    def test_a_el_detalle_dice_si_el_articulo_falta_o_esta_con_otro_estado(self):
+        """Son dos problemas distintos y el aviso no puede afirmar el primero cuando es el
+        segundo: una obligación perdida no es lo mismo que una contradicción entre canales."""
+        incoherencias = reconciliar(
+            [_obl("Art. 26.6", "Conservación de registros", "parcial")],
+            ["Los logs del Art. 26.6 solo se conservan tres meses"],
+            [],
+            _SIN_NARRACION,
+        )
+        detalle = " ".join(_de(incoherencias, "carencia_huerfana")["detalle"])
+        assert "consta como parcial" in detalle
+
     def test_a_una_recomendacion_no_adoptada_no_es_carencia_legal(self):
         """El Art. 95 en estado carencia es una recomendación pendiente, y el prompt pide
         explícitamente no listarla entre las carencias."""
@@ -263,6 +290,38 @@ class TestRegistroCoherente:
         )
         assert "colapso_identidad" not in _codigos(incoherencias)
 
+    def test_d_una_recalificacion_sin_clave_se_marca_como_colapso(self):
+        """Falso positivo conocido y asumido, documentado aquí para que se vea.
+
+        Sin clave del catálogo, una recalificación cuya descripción el modelo reescribe es
+        indistinguible de dos obligaciones con el mismo título: las dos son «una entrada
+        sustituida por otra que describe algo distinto». Se avisa en vez de callar, y el mensaje
+        no afirma cuál de las dos es. La salida limpia es que el modelo emita la clave, que es
+        lo que ataca la causa.
+        """
+        previa = _obl("Art. 26.6", "Conservación de registros", "parcial",
+                      descripcion="Solo conserva tres meses de logs.")
+        nueva = _obl("Art. 26.6", "Conservación de registros", "cubierta",
+                     descripcion="Aporta política de doce meses.")
+        incoherencias = reconciliar(
+            [nueva], [], [{"previa": previa, "nueva": nueva, "turno": 4}],
+            _COHERENTE["narracion"],
+        )
+        assert "colapso_identidad" in _codigos(incoherencias)
+        assert "Revise cuál de las dos" in _de(incoherencias, "colapso_identidad")["mensaje"]
+
+    def test_d_con_clave_esa_misma_recalificacion_no_es_colapso(self):
+        """La clave es la identidad: reformular una obligación ya identificada no la duplica."""
+        previa = _obl("Art. 26.6", "Conservación", "parcial", descripcion="Tres meses.")
+        nueva = _obl("Art. 26.6", "Conservación de registros", "cubierta",
+                     descripcion="Doce meses documentados.")
+        previa["clave"] = nueva["clave"] = "26.6-conservacion-registros"
+        incoherencias = reconciliar(
+            [nueva], [], [{"previa": previa, "nueva": nueva, "turno": 4}],
+            _COHERENTE["narracion"],
+        )
+        assert "colapso_identidad" not in _codigos(incoherencias)
+
     def test_d_el_registro_reconstruido_es_bloqueante(self):
         incoherencias = reconciliar(
             _COHERENTE["obligaciones"],
@@ -363,14 +422,57 @@ class TestInformeConIncoherencias:
         md = GeneradorInforme().generar_informe_cumplimiento(_CLASIF, datos)
         assert "100 %" in md
 
-    def test_e_el_pdf_no_dibuja_una_barra_al_cero(self):
+    def test_e_el_pdf_no_dibuja_una_barra_al_cero(self, monkeypatch):
         """Sin porcentaje la barra no se pinta: una barra vacía se lee como 0 % de cumplimiento,
-        que sería otra cifra falsa en vez de ninguna."""
+        que sería otra cifra falsa en vez de ninguna.
+
+        Se espía lo que fpdf dibuja porque el texto del PDF sale comprimido: buscarlo en los
+        bytes daría siempre negativo y el test pasaría con el código roto.
+        """
+        import fpdf  # noqa: PLC0415
+
+        textos: list[str] = []
+        original = fpdf.FPDF.cell
+
+        def _espia(self, *args, **kwargs):
+            texto = kwargs.get("text", kwargs.get("txt"))
+            if texto is None and len(args) >= 3:
+                texto = args[2]
+            textos.append(str(texto or ""))
+            return original(self, *args, **kwargs)
+
+        monkeypatch.setattr(fpdf.FPDF, "cell", _espia)
+
         incoherencias = reconciliar(
             [_obl("Art. 4", "Alfabetización", "cubierta")], [], [],
             {"total_declarado": 11, "ordinal_max": 11, "resumen_final": []},
         )
         md = GeneradorInforme().generar_informe_completo(_CLASIF, _cumplimiento(incoherencias))
         pdf = GeneradorInforme().exportar_pdf(md, clasificacion_data=_CLASIF)
+
         assert pdf[:4] == b"%PDF"
-        assert _RE_PORCENTAJE.search(md) is None
+        assert any("No calculable" in t for t in textos)
+        assert not any(_RE_PORCENTAJE.fullmatch(t.strip()) for t in textos), (
+            f"el PDF dibujó un porcentaje: {[t for t in textos if '%' in t]}"
+        )
+
+    def test_e_el_pdf_sano_sigue_dibujando_su_porcentaje(self, monkeypatch):
+        """Contraprueba del anterior: sin ella, un espía que no ve nada lo daría por bueno."""
+        import fpdf  # noqa: PLC0415
+
+        textos: list[str] = []
+        original = fpdf.FPDF.cell
+
+        def _espia(self, *args, **kwargs):
+            texto = kwargs.get("text", kwargs.get("txt"))
+            if texto is None and len(args) >= 3:
+                texto = args[2]
+            textos.append(str(texto or ""))
+            return original(self, *args, **kwargs)
+
+        monkeypatch.setattr(fpdf.FPDF, "cell", _espia)
+
+        md = GeneradorInforme().generar_informe_completo(_CLASIF, _cumplimiento([]))
+        GeneradorInforme().exportar_pdf(md, clasificacion_data=_CLASIF)
+
+        assert any(_RE_PORCENTAJE.fullmatch(t.strip()) for t in textos)

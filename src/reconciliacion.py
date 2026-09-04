@@ -127,8 +127,10 @@ def _colapso_identidad(desplazadas: list[dict]) -> list[dict]:
         incoherencias.append(_incoherencia(
             "colapso_identidad",
             GRAVEDAD_BLOQUEANTE,
-            f"Dos obligaciones distintas se registraron con la misma identidad "
-            f"({_etiqueta(nueva)}). La segunda desplazó a la primera y el recuento bajó en una.",
+            f"Una entrada del registro ({_etiqueta(nueva)}) fue sustituida por otra que "
+            "describe algo distinto: o son dos obligaciones del catálogo con el mismo título, "
+            "y entonces el recuento bajó en una, o es la misma obligación reescrita al "
+            "recalificarla. Revise cuál de las dos.",
             [
                 f"Desplazada (turno {evento.get('turno', '?')}): {_etiqueta(previa)} — "
                 f"{str(previa.get('estado', '')).upper()} — {previa.get('descripcion', '')}",
@@ -153,6 +155,9 @@ def _carencias_huerfanas(obligaciones: list[dict], carencias: list[str]) -> list
         _articulo_de(o) for o in obligaciones if o.get("estado") == "carencia"
     }
     articulos_en_carencia.discard("")
+    estados_por_articulo = {
+        _articulo_de(o): str(o.get("estado", "")) for o in obligaciones if _articulo_de(o)
+    }
 
     huerfanas = [
         c for c in carencias
@@ -160,12 +165,27 @@ def _carencias_huerfanas(obligaciones: list[dict], carencias: list[str]) -> list
     ]
     if not huerfanas:
         return []
+
+    # El detalle dice si el artículo falta del registro o si está con otro estado: son dos
+    # problemas distintos —una obligación perdida y una contradicción entre canales— y
+    # afirmar el primero cuando es el segundo sería sobreactuar.
+    detalle = []
+    for c in huerfanas:
+        registrados = [
+            f"{art} consta como {estados_por_articulo[art]}"
+            for art in sorted(_articulos_citados(c))
+            if art in estados_por_articulo
+        ]
+        contexto = f" — {'; '.join(registrados)}" if registrados else " — sin obligación registrada"
+        detalle.append(f"{c}{contexto}")
+
     return [_incoherencia(
         "carencia_huerfana",
         GRAVEDAD_BLOQUEANTE,
-        f"{len(huerfanas)} carencia(s) del resumen no tienen obligación correspondiente en "
-        "estado carencia: se imprimirían como área de mejora sin contar en el denominador.",
-        list(huerfanas),
+        f"{len(huerfanas)} carencia(s) del resumen no se corresponden con ninguna obligación "
+        "registrada como carencia: se imprimirían como área de mejora sin contar en el "
+        "denominador.",
+        detalle,
     )]
 
 
@@ -175,7 +195,17 @@ def _carencias_no_declaradas(obligaciones: list[dict], carencias: list[str]) -> 
     Produce la contradicción a la inversa —el contador dice que hay incumplimientos y la
     sección de áreas de mejora aparece vacía o corta—, y es el mismo desajuste entre los dos
     canales, <<<OBLIGACION>>> y <<<CIERRE>>>, que nunca se reconciliaron.
+
+    La comprobación se salta entera si alguna carencia no cita artículo, con la misma guarda
+    que _carencias_huerfanas y por el mismo motivo: el contrato del bloque de cierre pide «una
+    descripción breve», no una referencia, así que una carencia en prosa llana es normal y no
+    se le puede atribuir un artículo. Sin esta guarda, un análisis sano cuyas carencias no
+    citaran el artículo levantaría una bloqueante — y la asimetría entre las dos direcciones
+    era un error, no una decisión.
     """
+    if any(not _articulos_citados(c) for c in carencias):
+        return []
+
     citados: set[str] = set()
     for c in carencias:
         citados |= _articulos_citados(c)

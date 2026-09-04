@@ -30,6 +30,7 @@ from config import (
 )
 from src.chatbot import AIComplyChat
 from src.llm.factory import crear_provider, crear_provider_desde_env
+from src.reconciliacion import reconciliar
 from src.security import mensaje_error_seguro, validar_base_url
 from src.tabs.cumplimiento import _inicializar_chatbot_cumplimiento, mostrar_tab_cumplimiento
 from src.tabs.evaluador import mostrar_tab_evaluador
@@ -141,6 +142,14 @@ _CAMPOS_REGISTRO_CUMPLIMIENTO = (
     "puntos_revision_registrados",
     "conflictos_registrados",
     "resumen_cumplimiento_registrado",
+    # Sin estos cuatro, una incoherencia detectada antes de exportar desaparecía al reimportar:
+    # la entrada desplazada por un colapso y la traza narrada no se pueden reconstruir desde los
+    # mensajes, igual que el registro. Una sesión reanudada volvería a publicar el porcentaje.
+    "obligaciones_desplazadas",
+    "total_narrado",
+    "ordinal_narrado_max",
+    "resumen_final_narrado",
+    "registro_reconstruido",
 )
 
 
@@ -191,6 +200,35 @@ def _importar_sesion(raw: bytes, provider) -> None:
             )
 
         st.session_state.chatbot_cumplimiento = chatbot_cumpl
+
+    _reconciliar_cumplimiento_importado()
+
+
+def _reconciliar_cumplimiento_importado() -> None:
+    """Recalcula las incoherencias de un cumplimiento_data que llegue sin ellas.
+
+    Una sesión exportada antes de esta funcionalidad trae el análisis pero no su auditoría, y el
+    informe, que lee la clave con .get(..., []), publicaría el porcentaje sobre exactamente el
+    registro que motivó todo esto. Recalcular con lo que haya es siempre más honesto que asumir
+    que no hay nada que declarar: sin traza narrada la reconciliación devuelve «no verificable»,
+    que es la respuesta correcta para un análisis del que ya no sabemos cómo se construyó.
+    """
+    datos = st.session_state.get("cumplimiento_data") or {}
+    if not datos or "incoherencias" in datos:
+        return
+
+    chatbot = st.session_state.get("chatbot_cumplimiento")
+    narracion = chatbot._narracion() if chatbot is not None else {
+        "total_declarado": None, "ordinal_max": None, "resumen_final": [],
+    }
+    datos["incoherencias"] = reconciliar(
+        datos.get("obligaciones", []),
+        datos.get("carencias_detectadas", []),
+        list(getattr(chatbot, "obligaciones_desplazadas", [])) if chatbot else [],
+        narracion,
+        reconstruido=bool(getattr(chatbot, "registro_reconstruido", False)),
+    )
+    st.session_state.cumplimiento_data = datos
 
 
 # ── Inicialización del estado de sesión ───────────────────────────────────────

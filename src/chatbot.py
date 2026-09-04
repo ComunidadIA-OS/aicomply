@@ -110,14 +110,21 @@ _RE_REGISTRADO = re.compile(
 # catálogo aplicable y que no cambia durante el análisis; compararla con el número de
 # registradas es la comprobación que faltaba cuando el asistente narraba once y el registro
 # guardaba dos.
-_RE_ORDINAL_NARRADO = re.compile(r"Obligaci[óo]n\s+(\d+)\s*(?:de|/)\s*(\d+)", re.IGNORECASE)
+_RE_ORDINAL_NARRADO = re.compile(
+    r"Obligaci[óo]n\s*\**\s*(\d+)\s*(?:de|/)\s*(\d+)", re.IGNORECASE
+)
 
 # Las líneas del resumen final: "- Art. 26.6 — Conservación de registros: PARCIAL". Es hermana
 # de _RE_REGISTRADO y no la misma porque aquella exige el prefijo "Registrado:", que el resumen
 # final no lleva.
+#
+# Tolera el markdown y los paréntesis que el modelo usa de hecho —"- **Art. 4 — Alfabetización**:
+# CUBIERTA", "- Art. 26.5 (vigilancia) — ...: CUBIERTA"— porque aquí una línea que no case no
+# produce un error visible: produce silencio, y el silencio se leería como que no falta nada.
 _RE_LINEA_RESUMEN = re.compile(
-    r"^[ \t]*(?:[-*•]|\d+[.)])[ \t]*(?P<art>Art\.?\s*\d[\w.\-]*)\s*[—–\-:]\s*"
-    r"(?P<titulo>[^:\n]+?):\s*"
+    r"^[ \t]*(?:[-*•]|\d+[.)])[ \t]*\**[ \t]*"
+    r"(?P<art>Art\.?\s*\d[\w.\-]*)(?:\s*\([^)\n]*\))?\s*\**\s*[—–\-:]\s*"
+    r"(?P<titulo>[^:\n]+?)\s*\**\s*:\s*\**\s*"
     r"(?P<estado>CUBIERTA|PARCIAL|CARENCIA|NO[_ ]?CUBIERTA|NO[_ ]?APLICA)",
     re.IGNORECASE | re.MULTILINE,
 )
@@ -261,6 +268,8 @@ class AIComplyChat:
         self.total_narrado: int | None = None
         self.ordinal_narrado_max: int | None = None
         self.resumen_final_narrado: list[dict] = []
+        # True cuando las obligaciones salen de raspar prosa y no de bloques estructurados.
+        self.registro_reconstruido: bool = False
 
     @property
     def _system_base(self) -> str:
@@ -401,7 +410,7 @@ class AIComplyChat:
                 continue
             linea = {
                 "articulo": m.group("art").strip(),
-                "titulo": m.group("titulo").strip(),
+                "titulo": m.group("titulo").strip().strip("*").strip(),
                 "estado": estado,
             }
             clave = (linea["articulo"].lower(), linea["titulo"].lower())
@@ -726,6 +735,7 @@ class AIComplyChat:
                     carencias,
                     list(self.obligaciones_desplazadas),
                     self._narracion(),
+                    reconstruido=self.registro_reconstruido,
                 ),
             }
 
@@ -773,7 +783,15 @@ class AIComplyChat:
         return self._parsear_json(texto, {"obligaciones": [], "carencias_detectadas": []})
 
     def _reconstruir_obligaciones_desde_historial(self) -> list[dict]:
-        """Último recurso: busca en el historial líneas 'Registrado: Art. X — Título: ESTADO'."""
+        """Último recurso: busca en el historial líneas 'Registrado: Art. X — Título: ESTADO'.
+
+        Marca el registro como reconstruido, y no solo devuelve la lista, porque quien llama no
+        siempre es extraer_cumplimiento: la importación de sesión (app.py) usa este mismo camino
+        para las sesiones exportadas antes de que el registro se persistiera, y mete el resultado
+        directamente en obligaciones_registradas. Sin la marca, esas obligaciones —raspadas de
+        prosa— pasarían después por la rama estructurada como si vinieran de bloques, y el
+        informe volvería a publicar un porcentaje sobre ellas.
+        """
         reconstruidas: dict[tuple, dict] = {}
         for msg in self.historial:
             if msg.get("role") != "assistant":
@@ -793,6 +811,8 @@ class AIComplyChat:
                     "descripcion": "",
                     "rol": "",
                 }
+        if reconstruidas:
+            self.registro_reconstruido = True
         return list(reconstruidas.values())
 
     def _parsear_json(self, texto: str, fallback: dict) -> dict:
@@ -832,3 +852,4 @@ class AIComplyChat:
         self.total_narrado = None
         self.ordinal_narrado_max = None
         self.resumen_final_narrado = []
+        self.registro_reconstruido = False
