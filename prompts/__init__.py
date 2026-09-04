@@ -17,6 +17,12 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.3 (2026-09-04): el bloque <<<OBLIGACION>>> admite el campo "clave", que copia la
+#                          clave estable que ahora lleva cada entrada del catálogo del
+#                          implementador y del Art. 4. Sin ella las dos entradas del
+#                          Art. 26.5 colapsaban en una si el modelo les daba el mismo
+#                          título. Fijado además el significado de la M de "Obligación N
+#                          de M": el total del catálogo, no lo registrado hasta el momento
 # 2026.09.2 (2026-09-04): apartados del Art. 26 renumerados según el consolidado a 27-07-2026
 #                          —datos de entrada 26.3→26.4, incidentes graves 26.10→26.5,
 #                          cooperación 26.11→26.12— y añadido el 26.11 real: informar a las
@@ -37,4 +43,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.2"
+PROMPT_VERSION = "2026.09.3"
