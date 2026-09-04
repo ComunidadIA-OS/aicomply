@@ -22,11 +22,15 @@ Cubre los casos de prueba del bug de doble rol Proveedor / Implementador:
   E - Implementador con modificación sustancial → señal Art. 25
 """
 
+import json
+import logging
+
 import pytest
 
-from src.chatbot import AIComplyChat
+from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
+from src.chatbot import _PROMPT_EXTRAER_CLASIFICACION, AIComplyChat
 from src.report_generator import GeneradorInforme, _capitalizar_roles
-
+from tests.conftest import MockProvider
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -293,3 +297,150 @@ class TestPdfRolPortada:
         # El encabezado Markdown debe tener ambas partes capitalizadas
         assert "Proveedor / Implementador" in md
         assert "Proveedor / implementador" not in md
+
+
+# ── Regresión B15: no se añade un rol que el árbol no confirmó ────────────────
+
+class TestRolNoConfirmado:
+    """El evaluador añadía 'proveedor' a un implementador puro (hallazgo B15).
+
+    El árbol había cerrado el rol dos veces como implementadora —adquirido de un tercero,
+    sin modificaciones— y el informe final lo amplió a doble rol, pasando de 10 obligaciones
+    a 23. La defensa vive en los prompts; aquí se fija lo que el código sí puede garantizar.
+    """
+
+    def test_estrechamiento_rol_hacia_roles_multiples(self):
+        """'rol' con un rol de más se estrecha hacia el array, no al revés."""
+        datos = {"rol": "proveedor / implementador", "roles_multiples": ["implementador"]}
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["rol"] == "implementador"
+        assert result["roles_multiples"] == ["implementador"]
+
+    def test_estrechamiento_con_varios_roles_restantes(self):
+        """Al estrechar hacia un array de varios, 'rol' los recompone con ' / '."""
+        datos = {
+            "rol": "proveedor / implementador",
+            "roles_multiples": ["implementador", "distribuidor"],
+        }
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["rol"] == "implementador / distribuidor"
+        assert result["roles_multiples"] == ["implementador", "distribuidor"]
+
+    def test_el_doble_rol_legitimo_sobrevive(self):
+        """Guarda del caso legítimo: desarrollado Y usado internamente siguen siendo dos roles."""
+        datos = {"rol": "proveedor", "roles_multiples": ["proveedor", "implementador"]}
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["roles_multiples"] == ["proveedor", "implementador"]
+        assert result["rol"] == "proveedor / implementador"
+
+    def test_el_normalizador_no_inventa_proveedor(self):
+        """Un implementador único sale igual de la normalización."""
+        datos = {"rol": "implementador", "roles_multiples": ["implementador"]}
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["roles_multiples"] == ["implementador"]
+        assert "proveedor" not in result["rol"]
+
+    def test_el_estado_art_25_no_convierte_el_rol_por_si_solo(self):
+        """'Convertirse en proveedor' es un estado, no un rol: no entra en roles_multiples."""
+        datos = {
+            "rol": "implementador",
+            "roles_multiples": ["implementador"],
+            "estados_adicionales": ["Convertirse en proveedor"],
+        }
+        result = AIComplyChat._normalizar_clasificacion_data(datos)
+        assert result["roles_multiples"] == ["implementador"]
+        assert "proveedor" not in result["rol"]
+
+    def test_la_discrepancia_se_registra(self, caplog):
+        """El estrechamiento no es silencioso: deja warning con los dos valores."""
+        datos = {"rol": "proveedor / implementador", "roles_multiples": ["implementador"]}
+        with caplog.at_level(logging.WARNING, logger="src.chatbot"):
+            AIComplyChat._normalizar_clasificacion_data(datos)
+        assert "Discrepancia de rol" in caplog.text
+        assert "proveedor" in caplog.text
+        assert "implementador" in caplog.text
+
+    @pytest.mark.parametrize("datos", [
+        {"rol": "implementador", "roles_multiples": ["implementador"]},
+        {"rol": "proveedor", "roles_multiples": ["proveedor", "implementador"]},
+        {"rol": "proveedor / implementador", "roles_multiples": ["proveedor", "implementador"]},
+        {"rol": "implementador", "roles_multiples": []},
+    ])
+    def test_sin_discrepancia_no_hay_warning(self, datos, caplog):
+        """Cuando los dos campos coinciden, el log queda limpio."""
+        with caplog.at_level(logging.WARNING, logger="src.chatbot"):
+            AIComplyChat._normalizar_clasificacion_data(datos)
+        assert "Discrepancia de rol" not in caplog.text
+
+
+class TestImplementadorUnicoExtremoAExtremo:
+    """De la extracción al informe: un implementador único no recibe obligaciones de proveedor."""
+
+    _JSON_IMPLEMENTADOR = json.dumps({
+        "clasificacion": "ALTO",
+        "rol": "implementador",
+        "roles_multiples": ["implementador"],
+        "estados_adicionales": [],
+        "descripcion_sistema": "Sistema adquirido a un tercero y usado sin modificaciones.",
+        "sector": "Industria",
+        "obligaciones_preliminares": [],
+        "puntos_indeterminados": [],
+        "nodos_recorridos": [
+            {"pregunta": "Tipo de entidad", "respuesta": "Implementador",
+             "origen": "respuesta directa"},
+            {"pregunta": "Modificaciones que convierten en proveedor (Art. 25)",
+             "respuesta": "Ninguna", "origen": "respuesta directa"},
+        ],
+    })
+
+    def _clasificacion_extraida(self):
+        chat = AIComplyChat(MockProvider(self._JSON_IMPLEMENTADOR))
+        chat.historial = [
+            {"role": "user", "content": "Compramos el sistema a un proveedor externo."},
+            {"role": "assistant", "content": "Su organización actúa como implementadora."},
+        ]
+        return chat.extraer_clasificacion()
+
+    def test_la_extraccion_conserva_el_rol_unico(self):
+        datos = self._clasificacion_extraida()
+        assert datos["roles_multiples"] == ["implementador"]
+        assert datos["rol"] == "implementador"
+
+    def test_el_informe_no_atribuye_obligaciones_de_proveedor(self):
+        """Ni Anexo IV, ni SGC, ni marcado CE: los Arts. 9-15, 43 y 49 son del proveedor."""
+        md = GeneradorInforme().generar_informe_completo(
+            self._clasificacion_extraida(), _cumpl_vacio()
+        )
+        for articulo in ("Art. 9", "Art. 10", "Art. 11", "Art. 12", "Art. 13",
+                         "Art. 14", "Art. 15", "Art. 43", "Art. 49"):
+            assert articulo not in md, f"{articulo} es obligación de proveedor"
+        assert "**Rol de la entidad:** Implementador" in md
+
+
+# ── Los prompts conservan las reglas simétricas ───────────────────────────────
+
+class TestReglasEnLosPrompts:
+    """Impide que las reglas de B15 desaparezcan de los prompts en una edición futura.
+
+    No prueban que el modelo las obedezca —eso exige una llamada real y no es determinista—:
+    solo que el texto sigue ahí.
+    """
+
+    def test_el_arbol_prohibe_anadir_roles_no_confirmados(self):
+        assert "REGLA SIMÉTRICA — No añadir roles no confirmados:" in SYSTEM_PROMPT_CHATBOT
+        assert "el rol determinado en #E1 es DEFINITIVO" in SYSTEM_PROMPT_CHATBOT
+
+    def test_el_informe_final_no_redefine_el_rol(self):
+        assert "REGLA CRÍTICA — El informe no redefine el rol:" in SYSTEM_PROMPT_CHATBOT
+
+    def test_la_plantilla_copiable_del_doble_rol_no_vuelve(self):
+        """La frase hecha de §2.5 es la que se pegó donde no tocaba; se retiró a propósito."""
+        assert "actúa como proveedora e implementadora del sistema" not in SYSTEM_PROMPT_CHATBOT
+
+    def test_la_extraccion_acota_roles_multiples(self):
+        assert "lista los roles que la conversación CONFIRMÓ" in _PROMPT_EXTRAER_CLASIFICACION
+        assert "NO AÑADAS un rol que la conversación no confirmara" in _PROMPT_EXTRAER_CLASIFICACION
+
+    def test_el_ejemplo_del_json_de_extraccion_no_es_dual(self):
+        """El ejemplo dual hacía del doble rol la forma por defecto de la respuesta."""
+        assert '"roles_multiples": ["proveedor", "implementador"]' not in _PROMPT_EXTRAER_CLASIFICACION
