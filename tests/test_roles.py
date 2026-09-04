@@ -192,9 +192,9 @@ class TestApartadosPreliminares:
 
     @pytest.mark.parametrize("entrada,esperado", [
         ("Supervisión humana (Art. 26.1)", "Supervisión humana (Art. 26)"),
-        ("Conservación de registros (Art. 26.5)", "Conservación de registros (Art. 26)"),
-        ("Notificación de incidentes (Art. 26.10)", "Notificación de incidentes (Art. 26)"),
-        ("Art. 26.3: datos de entrada", "Art. 26: datos de entrada"),
+        ("Conservación de registros (Art. 26.6)", "Conservación de registros (Art. 26)"),
+        ("Cooperación con las autoridades (Art. 26.12)", "Cooperación con las autoridades (Art. 26)"),
+        ("Art. 26.4: datos de entrada", "Art. 26: datos de entrada"),
         ("Uso conforme a instrucciones (art 26.1)", "Uso conforme a instrucciones (art 26)"),
     ])
     def test_el_apartado_del_art_26_se_recorta(self, entrada, esperado):
