@@ -28,6 +28,7 @@ _CLASIFICACIONES_SOLO_EVAL = frozenset({
     "FUERA_DE_ALCANCE",
 })
 from src.llm.provider import LLMProvider
+from src.reconciliacion import GRAVEDAD_BLOQUEANTE
 from src.security import envolver_contenido_no_confiable, mensaje_error_seguro, rate_limiter
 
 _NIVELES_OPCIONES: dict[str, str] = {
@@ -176,6 +177,32 @@ def _mostrar_conflictos(conflictos: list[dict]) -> None:
                 f"{str(c.get('estado_anterior', '')).upper()} → "
                 f"{str(c.get('estado_nuevo', '')).upper()} (turno {c.get('turno', '?')})"
             )
+
+
+def _mostrar_incoherencias(incoherencias: list[dict]) -> None:
+    """Avisa de que el registro puede no reflejar todo lo que se evaluó.
+
+    Va ENCIMA de los contadores a propósito: el modo de fallo que arregla esta pantalla era
+    precisamente que se leyeran unas métricas impecables calculadas sobre un registro
+    incompleto. Ver el aviso después de la cifra es verlo tarde.
+    """
+    if not incoherencias:
+        return
+
+    for inc in incoherencias:
+        determinante = inc.get("gravedad") == GRAVEDAD_BLOQUEANTE
+        encabezado = (
+            "**El registro de obligaciones es incoherente.** "
+            if determinante
+            else "**El registro pudo perder obligaciones.** "
+        )
+        aviso = st.error if determinante else st.warning
+        aviso(encabezado + inc.get("mensaje", ""))
+        detalle = inc.get("detalle", [])
+        if detalle:
+            with st.expander("Ver detalle", expanded=False):
+                for linea in detalle:
+                    st.caption(f"- {linea}")
 
 
 def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
@@ -387,6 +414,8 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
         par_leg = sum(1 for o in legales if o.get("estado") == "parcial")
         car_leg = sum(1 for o in legales if o.get("estado") == "carencia")
         rec_pen = sum(1 for o in (recomendaciones + vigilancias) if o.get("estado") == "carencia")
+
+        _mostrar_incoherencias(datos.get("incoherencias", []))
 
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Obligaciones cubiertas", cub_leg)

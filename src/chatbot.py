@@ -38,6 +38,7 @@ from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 from src.calendario import aplicar_calendario
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
+from src.reconciliacion import reconciliar
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +106,29 @@ _RE_REGISTRADO = re.compile(
     r"(?P<estado>CUBIERTA|PARCIAL|CARENCIA|NO[_ ]?CUBIERTA|NO[_ ]?APLICA)",
     re.IGNORECASE,
 )
+# La cuenta que narra el modelo, "Obligación 3 de 11". El prompt fija que M es el total del
+# catálogo aplicable y que no cambia durante el análisis; compararla con el número de
+# registradas es la comprobación que faltaba cuando el asistente narraba once y el registro
+# guardaba dos.
+_RE_ORDINAL_NARRADO = re.compile(
+    r"Obligaci[óo]n\s*\**\s*(\d+)\s*(?:de|/)\s*(\d+)", re.IGNORECASE
+)
+
+# Las líneas del resumen final: "- Art. 26.6 — Conservación de registros: PARCIAL". Es hermana
+# de _RE_REGISTRADO y no la misma porque aquella exige el prefijo "Registrado:", que el resumen
+# final no lleva.
+#
+# Tolera el markdown y los paréntesis que el modelo usa de hecho —"- **Art. 4 — Alfabetización**:
+# CUBIERTA", "- Art. 26.5 (vigilancia) — ...: CUBIERTA"— porque aquí una línea que no case no
+# produce un error visible: produce silencio, y el silencio se leería como que no falta nada.
+_RE_LINEA_RESUMEN = re.compile(
+    r"^[ \t]*(?:[-*•]|\d+[.)])[ \t]*\**[ \t]*"
+    r"(?P<art>Art\.?\s*\d[\w.\-]*)(?:\s*\([^)\n]*\))?\s*\**\s*[—–\-:]\s*"
+    r"(?P<titulo>[^:\n]+?)\s*\**\s*:\s*\**\s*"
+    r"(?P<estado>CUBIERTA|PARCIAL|CARENCIA|NO[_ ]?CUBIERTA|NO[_ ]?APLICA)",
+    re.IGNORECASE | re.MULTILINE,
+)
+
 _NORM_ESTADO = {
     "cubierta": "cubierta",
     "parcial": "parcial",
@@ -137,16 +161,38 @@ def _normalizar_estado(valor: object) -> str | None:
     return estado if estado in _ESTADOS_VALIDOS else None
 
 
-def _clave_obligacion(obl: dict) -> tuple[str, str, str]:
-    """Identidad de una obligación: artículo, título y rol.
+def _clave_obligacion(obl: dict) -> tuple[str, ...]:
+    """Identidad de una obligación: la clave del catálogo si viene, y si no (artículo, título, rol).
 
-    El rol forma parte de la clave porque el catálogo repite artículos entre roles: el
-    Art. 49 aparece bajo Proveedor y bajo Implementador, y el "titulo" que emite el modelo
+    El rol forma parte de la clave de respaldo porque el catálogo repite artículos entre roles:
+    el Art. 49 aparece bajo Proveedor y bajo Implementador, y el "titulo" que emite el modelo
     es un nombre breve que puede coincidir en ambos. Sin el rol, en un caso de doble rol la
     segunda entrada machacaría a la primera y la diferencia de estado entre roles se leería
     como una recalificación que no ha ocurrido.
+
+    El rol no basta cuando el catálogo repite el artículo DENTRO de un mismo rol: el Art. 26.5
+    del implementador son dos obligaciones —vigilancia del funcionamiento e incidentes graves—
+    que solo se distinguen por un título que redacta el modelo. Si emite las dos con el mismo
+    título, la segunda desplaza a la primera y el recuento baja sin avisar. Por eso el catálogo
+    lleva ahora una clave estable por entrada ("26.5-vigilancia", "26.5-incidentes") y el prompt
+    pide devolverla en el bloque.
+
+    La clave se normaliza antes de comparar: el modelo la copia a mano y "26.5-Vigilancia" y
+    "26.5 vigilancia" son la misma. Y no se exige nunca: una clave ausente cae al triple de
+    siempre, que es el comportamiento seguro. La que sí hace daño es una clave inventada o
+    distinta entre turnos para la misma obligación, y contra eso no hay defensa en código sin
+    meter el catálogo dentro (ver el aviso del prompt).
     """
+    clave = _normalizar_clave(obl.get("clave"))
+    if clave:
+        return (clave,)
     return (obl.get("articulo", ""), obl.get("titulo", ""), obl.get("rol", ""))
+
+
+def _normalizar_clave(valor: object) -> str:
+    """Minúsculas, sin espacios de sobra y con los separadores unificados a guion."""
+    bruto = str(valor or "").strip().lower()
+    return re.sub(r"[\s_]+", "-", bruto)
 
 
 def formatear_obligaciones_registradas(obligaciones: list[dict]) -> str:
@@ -169,9 +215,13 @@ def formatear_obligaciones_registradas(obligaciones: list[dict]) -> str:
     for i, obl in enumerate(obligaciones, start=1):
         rol = obl.get("rol", "")
         etiqueta_rol = f" [{rol}]" if rol else ""
+        # La clave se imprime para que el modelo la copie en vez de reinventarla en el
+        # siguiente turno: una clave distinta para la misma obligación la duplicaría.
+        clave = _normalizar_clave(obl.get("clave"))
+        etiqueta_clave = f" [clave: {clave}]" if clave else ""
         lineas.append(
             f"{i:2d}. {obl.get('articulo', '?')} — {obl.get('titulo', '')}{etiqueta_rol}: "
-            f"{str(obl.get('estado', '')).upper()}"
+            f"{str(obl.get('estado', '')).upper()}{etiqueta_clave}"
         )
     lineas += [
         "",
@@ -207,11 +257,19 @@ class AIComplyChat:
         self._system_prompt_override = system_prompt_override
         self._max_historial = max_historial
         self.obligaciones_registradas: list[dict] = []
+        self.obligaciones_desplazadas: list[dict] = []
         self.carencias_registradas: list[str] = []
         self.puntos_revision_registrados: list[str] = []
         self.conflictos_registrados: list[dict] = []
         self.resumen_cumplimiento_registrado: str = ""
         self.ultima_respuesta_truncada: bool = False
+        # Traza narrada: lo que el modelo cuenta en prosa sobre su propio avance. No es fuente
+        # de datos —el registro lo es— sino el único contraste externo del que disponemos.
+        self.total_narrado: int | None = None
+        self.ordinal_narrado_max: int | None = None
+        self.resumen_final_narrado: list[dict] = []
+        # True cuando las obligaciones salen de raspar prosa y no de bloques estructurados.
+        self.registro_reconstruido: bool = False
 
     @property
     def _system_base(self) -> str:
@@ -308,8 +366,72 @@ class AIComplyChat:
             "mejora": _ORDEN_ESTADO.get(nuevo, -1) > _ORDEN_ESTADO.get(anterior, -1),
         })
 
+    def _registrar_desplazada(self, previa: dict, nueva: dict) -> None:
+        """Guarda íntegra la entrada que otra acaba de sustituir en el registro.
+
+        Es distinto de _registrar_conflicto y por eso se anota aparte. Un conflicto es un cambio
+        de estado sobre la MISMA obligación; esto es la constancia de que una entrada dejó de
+        existir, ocurra o no un cambio de estado. La diferencia importaba: cuando las dos
+        entradas traían el mismo estado —dos obligaciones distintas del catálogo con el mismo
+        título, el caso de los dos Art. 26.5— la sustitución no dejaba ningún rastro y el
+        recuento bajaba en silencio.
+
+        Se conserva el payload entero, no un resumen, para que la reconciliación pueda decir qué
+        se perdió y no solo que se perdió algo. Quién de las dos es un colapso y quién una
+        reemisión inocua lo decide src/reconciliacion.py; aquí no se filtra nada.
+        """
+        self.obligaciones_desplazadas.append({
+            "previa": dict(previa),
+            "nueva": dict(nueva),
+            "turno": sum(1 for m in self.historial if m.get("role") == "assistant") + 1,
+        })
+
+    def _leer_traza_narrada(self, texto: str) -> None:
+        """Recoge del texto en bruto del turno lo que el modelo cuenta sobre su propio avance.
+
+        Se lee aquí, y no escaneando self.historial después, porque este es el punto donde se ve
+        el turno completo antes de cualquier recorte y antes de que se limpien los bloques.
+
+        Lo capturado NO entra nunca en el registro: no añade obligaciones, no corrige estados y
+        no cambia recuentos. Solo sirve para contrastar, en src/reconciliacion.py, lo que el
+        modelo dice haber evaluado contra lo que la aplicación pudo guardar.
+        """
+        for m in _RE_ORDINAL_NARRADO.finditer(texto):
+            ordinal, total = int(m.group(1)), int(m.group(2))
+            self.total_narrado = total
+            self.ordinal_narrado_max = max(self.ordinal_narrado_max or 0, ordinal)
+
+        # El resumen final se acumula entre turnos en vez de quedarse con el del último: si el
+        # modelo va repitiendo una lista parcial, quedarse solo con la última vista perdería las
+        # obligaciones que nombró antes, que son justo las que interesa echar en falta.
+        for m in _RE_LINEA_RESUMEN.finditer(texto):
+            estado = _normalizar_estado(m.group("estado"))
+            if estado is None:
+                continue
+            linea = {
+                "articulo": m.group("art").strip(),
+                "titulo": m.group("titulo").strip().strip("*").strip(),
+                "estado": estado,
+            }
+            clave = (linea["articulo"].lower(), linea["titulo"].lower())
+            self.resumen_final_narrado = [
+                ln for ln in self.resumen_final_narrado
+                if (ln["articulo"].lower(), ln["titulo"].lower()) != clave
+            ]
+            self.resumen_final_narrado.append(linea)
+
+    def _narracion(self) -> dict:
+        """La traza narrada, en la forma que espera src/reconciliacion.reconciliar()."""
+        return {
+            "total_declarado": self.total_narrado,
+            "ordinal_max": self.ordinal_narrado_max,
+            "resumen_final": list(self.resumen_final_narrado),
+        }
+
     def _procesar_bloques(self, texto: str) -> str:
         """Extrae bloques machine-readable del texto, persiste su contenido y devuelve texto limpio."""
+        self._leer_traza_narrada(texto)
+
         for m in _RE_BLOQUE_OBLIGACION.finditer(texto):
             try:
                 obl = json.loads(m.group(1))
@@ -325,6 +447,16 @@ class AIComplyChat:
                     )
                     continue
                 obl["estado"] = estado
+                if not _normalizar_clave(obl.get("clave")):
+                    # No se descarta ni se exige: el respaldo funciona. Se avisa porque es el
+                    # único camino en el que la identidad depende de un título que redacta el
+                    # modelo, y hoy no sabemos con qué frecuencia se pisa.
+                    logger.warning(
+                        "Bloque OBLIGACION sin clave de catálogo (%s — %s); la identidad cae a "
+                        "(articulo, titulo, rol): dos obligaciones del mismo apartado con el "
+                        "mismo título colapsarían en una.",
+                        obl.get("articulo"), obl.get("titulo"),
+                    )
                 clave = _clave_obligacion(obl)
                 previa = next(
                     (o for o in self.obligaciones_registradas if _clave_obligacion(o) == clave),
@@ -332,6 +464,7 @@ class AIComplyChat:
                 )
                 if previa is not None:
                     self._registrar_conflicto(previa, obl)
+                    self._registrar_desplazada(previa, obl)
                     self.obligaciones_registradas = [
                         o for o in self.obligaciones_registradas
                         if _clave_obligacion(o) != clave
@@ -592,13 +725,28 @@ class AIComplyChat:
 
         La fuente de verdad son los bloques <<<OBLIGACION>>> y <<<CIERRE>>> capturados
         turno a turno por _procesar_bloques. Solo llama al LLM si no hay registros.
+
+        Las dos ramas devuelven "incoherencias", y no solo la principal. La de respaldo es el
+        camino más degradado que tiene la aplicación —las obligaciones salen de raspar prosa, no
+        de bloques estructurados—, así que dejarla sin la clave habría hecho que el informe
+        leyera .get("incoherencias", []), no encontrara nada y volviera a publicar el porcentaje
+        precisamente donde menos se sostiene.
         """
         if self.obligaciones_registradas:
+            obligaciones = list(self.obligaciones_registradas)
+            carencias = list(self.carencias_registradas)
             return {
-                "obligaciones": list(self.obligaciones_registradas),
-                "carencias_detectadas": list(self.carencias_registradas),
+                "obligaciones": obligaciones,
+                "carencias_detectadas": carencias,
                 "puntos_revision_profesional": self._puntos_revision_con_conflictos(),
                 "resumen_cumplimiento": self.resumen_cumplimiento_registrado or "",
+                "incoherencias": reconciliar(
+                    obligaciones,
+                    carencias,
+                    list(self.obligaciones_desplazadas),
+                    self._narracion(),
+                    reconstruido=self.registro_reconstruido,
+                ),
             }
 
         resultado_fallback = self._extraer_cumplimiento_legacy()
@@ -606,6 +754,13 @@ class AIComplyChat:
             reconstruido = self._reconstruir_obligaciones_desde_historial()
             if reconstruido:
                 resultado_fallback["obligaciones"] = reconstruido
+        resultado_fallback["incoherencias"] = reconciliar(
+            resultado_fallback.get("obligaciones", []),
+            resultado_fallback.get("carencias_detectadas", []),
+            [],
+            self._narracion(),
+            reconstruido=True,
+        )
         return resultado_fallback
 
     def _puntos_revision_con_conflictos(self) -> list[str]:
@@ -638,7 +793,15 @@ class AIComplyChat:
         return self._parsear_json(texto, {"obligaciones": [], "carencias_detectadas": []})
 
     def _reconstruir_obligaciones_desde_historial(self) -> list[dict]:
-        """Último recurso: busca en el historial líneas 'Registrado: Art. X — Título: ESTADO'."""
+        """Último recurso: busca en el historial líneas 'Registrado: Art. X — Título: ESTADO'.
+
+        Marca el registro como reconstruido, y no solo devuelve la lista, porque quien llama no
+        siempre es extraer_cumplimiento: la importación de sesión (app.py) usa este mismo camino
+        para las sesiones exportadas antes de que el registro se persistiera, y mete el resultado
+        directamente en obligaciones_registradas. Sin la marca, esas obligaciones —raspadas de
+        prosa— pasarían después por la rama estructurada como si vinieran de bloques, y el
+        informe volvería a publicar un porcentaje sobre ellas.
+        """
         reconstruidas: dict[tuple, dict] = {}
         for msg in self.historial:
             if msg.get("role") != "assistant":
@@ -658,6 +821,8 @@ class AIComplyChat:
                     "descripcion": "",
                     "rol": "",
                 }
+        if reconstruidas:
+            self.registro_reconstruido = True
         return list(reconstruidas.values())
 
     def _parsear_json(self, texto: str, fallback: dict) -> dict:
@@ -688,8 +853,13 @@ class AIComplyChat:
         self.nivel_riesgo = None
         self.evaluacion_completa = False
         self.obligaciones_registradas = []
+        self.obligaciones_desplazadas = []
         self.carencias_registradas = []
         self.puntos_revision_registrados = []
         self.conflictos_registrados = []
         self.resumen_cumplimiento_registrado = ""
         self.ultima_respuesta_truncada = False
+        self.total_narrado = None
+        self.ordinal_narrado_max = None
+        self.resumen_final_narrado = []
+        self.registro_reconstruido = False
