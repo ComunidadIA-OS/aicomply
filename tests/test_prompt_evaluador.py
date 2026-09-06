@@ -26,7 +26,11 @@ artículo en dos pestañas consecutivas.
   B21 - el evaluador se inventaba los apartados del Art. 26
 """
 
+import re
+
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
+
+_RE_APARTADO_26 = re.compile(r"Art\.?\s*26\.\d")
 
 
 class TestArt49NoEsDelImplementador:
@@ -75,6 +79,58 @@ class TestArt49NoEsDelImplementador:
     def test_el_art_71_tambien_queda_cubierto(self):
         """El recorrido citó «Art. 49 y Art. 71»: si la regla no lo nombra, se cuela por ahí."""
         assert "Arts. 49 y 71" in _bloque_regla_art_49()
+
+
+class TestArt26SinApartados:
+    """B21. El evaluador citó «Art. 26.2» para la pertinencia de los datos de entrada (es el
+    26.4) y «Art. 26.4» para los incidentes graves (es el 26.5).
+
+    Este prompt no tiene el catálogo del Art. 26 apartado por apartado y no debe tenerlo:
+    duplicarlo crearía una segunda fuente que se desincronizaría de
+    system_prompt_cumplimiento.py, que es donde vive verificado contra el consolidado. La
+    salida barata es la de B10: citar el artículo y nunca el apartado.
+    """
+
+    def test_el_catalogo_de_entidades_prohibe_los_apartados(self):
+        linea = _linea_que_contiene("- Implementador (Art. 26):")
+        assert 'Cita SIEMPRE "Art. 26" a secas, NUNCA un apartado' in linea
+        assert "sin añadirle número de apartado" in linea
+
+    def test_el_formato_del_informe_prohibe_los_apartados(self):
+        linea = _linea_que_contiene("2. Tus obligaciones:")
+        assert "Para el Art. 26, sin apartado" in linea
+        assert '"(Art. 26)"' in linea
+
+    def test_la_prohibicion_esta_en_los_dos_sitios(self):
+        """Que no dependa solo del formato del informe: la conversación es lo que el usuario lee
+        en pantalla, y es donde se vieron los apartados inventados."""
+        assert SYSTEM_PROMPT_CHATBOT.count('nunca "(Art. 26.2)"') == 2
+
+    def test_no_se_cita_ningun_apartado_del_art_26_fuera_de_las_reglas(self):
+        """El guardián de verdad: si alguien añade un "Art. 26.3" al árbol en una edición
+        futura, salta aquí.
+
+        Se excluyen los tres contextos donde un apartado sí es deliberado: las dos
+        prohibiciones, que citan apartados como ejemplo de lo que NO hay que escribir, y la
+        regla del Art. 49, que cita el 26.8 como base legal de cuándo el implementador sí
+        registra. Fuera de ahí, el prompt no numera apartados del Art. 26.
+        """
+        sancionadas = (
+            "- Implementador (Art. 26):",
+            "2. Tus obligaciones:",
+            "El responsable del despliegue solo registra",
+        )
+        resto = [
+            ln for ln in SYSTEM_PROMPT_CHATBOT.splitlines()
+            if not any(marca in ln for marca in sancionadas)
+        ]
+        intrusos = [ln for ln in resto if _RE_APARTADO_26.search(ln)]
+        assert not intrusos, f"apartados del Art. 26 fuera de las reglas: {intrusos}"
+
+    def test_el_catalogo_del_art_26_no_se_ha_duplicado_aqui(self):
+        """Duplicarlo crea una segunda fuente que se desincroniza; vive en cumplimiento."""
+        assert "26.11" not in SYSTEM_PROMPT_CHATBOT
+        assert "26.12" not in SYSTEM_PROMPT_CHATBOT
 
 
 def _bloque_regla_art_49() -> str:

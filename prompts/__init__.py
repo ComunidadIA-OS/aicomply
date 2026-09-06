@@ -22,7 +22,10 @@
 #                          notificación a la NCA (Arts. 6.4 y 49.2), que son del proveedor:
 #                          con la misma forma que ya tenía el catálogo de cumplimiento
 #                          —preguntar primero y prohibición explícita— para que las dos
-#                          pestañas no den respuestas opuestas sobre el mismo artículo
+#                          pestañas no den respuestas opuestas sobre el mismo artículo.
+#                          El evaluador cita además el Art. 26 sin apartado: no tiene el
+#                          catálogo por apartados y los numeraba de memoria (26.2 por 26.4,
+#                          26.4 por 26.5). El detalle lo aporta la pestaña Cumplimiento
 # 2026.09.3 (2026-09-04): el bloque <<<OBLIGACION>>> admite el campo "clave", que copia la
 #                          clave estable que ahora lleva cada entrada del catálogo del
 #                          implementador y del Art. 4. Sin ella las dos entradas del
