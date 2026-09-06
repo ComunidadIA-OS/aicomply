@@ -727,4 +727,16 @@ class TestClavesDelCatalogo:
     def test_o_el_prompt_fija_que_la_m_es_el_total_del_catalogo(self):
         """Si M saliera del registro, compararla con las registradas no detectaría nada nunca."""
         assert "Obligación N de M" in SYSTEM_PROMPT_CUMPLIMIENTO
-        assert "NO es el número de obligaciones registradas" in SYSTEM_PROMPT_CUMPLIMIENTO
+        assert "M NO es el número de obligaciones registradas" in SYSTEM_PROMPT_CUMPLIMIENTO
+
+    def test_o_la_m_incluye_las_obligaciones_transversales(self):
+        """El Art. 4 no está en el bloque de ningún rol, y se evalúa igual.
+
+        Con una M que contara solo las entradas del bloque del rol, un análisis impecable de
+        implementador narraría 11 y registraría 12, y el indicio de recuento saltaría por la
+        dirección «registradas > narrado» sin que hubiera nada que mal.
+        """
+        bloque = SYSTEM_PROMPT_CUMPLIMIENTO.split('El formato del anuncio')[1].split("\n")[0]
+        assert "transversales" in bloque
+        assert "Art. 4" in bloque
+        assert "No es solo el número de entradas del bloque de tu rol" in bloque
