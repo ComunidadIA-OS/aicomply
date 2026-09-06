@@ -29,6 +29,7 @@ from config import (
     OPENAI_COMPATIBLE_MODEL,
 )
 from src.chatbot import AIComplyChat
+from src.clasificaciones import normalizar_clasificacion
 from src.llm.factory import crear_provider, crear_provider_desde_env
 from src.reconciliacion import reconciliar
 from src.security import mensaje_error_seguro, validar_base_url
@@ -176,13 +177,15 @@ def _importar_sesion(raw: bytes, provider) -> None:
         if k in datos:
             st.session_state[k] = datos[k]
 
+    _canonizar_clasificacion_importada()
+
     chatbot_eval = AIComplyChat(provider=provider)
     chatbot_eval.historial = list(datos.get("mensajes_evaluador") or [])
     chatbot_eval.evaluacion_completa = bool(datos.get("evaluacion_completada"))
     st.session_state.chatbot_evaluador = chatbot_eval
 
     mensajes_cumpl = datos.get("mensajes_cumplimiento") or []
-    clas_data = datos.get("clasificacion_data") or {}
+    clas_data = st.session_state.get("clasificacion_data") or {}
     if mensajes_cumpl or datos.get("cumplimiento_completado"):
         chatbot_cumpl = _inicializar_chatbot_cumplimiento(provider, clas_data)
         chatbot_cumpl.historial = list(mensajes_cumpl)
@@ -202,6 +205,28 @@ def _importar_sesion(raw: bytes, provider) -> None:
         st.session_state.chatbot_cumplimiento = chatbot_cumpl
 
     _reconciliar_cumplimiento_importado()
+
+
+def _canonizar_clasificacion_importada() -> None:
+    """Pasa la clasificación de una sesión importada por el mismo normalizador que la del modelo.
+
+    Importar un fichero es una frontera igual que la salida del LLM: los datos vienen de
+    fuera y entran directos a session_state, saltándose _normalizar_clasificacion_data. Una
+    sesión exportada antes de que el vocabulario se unificara trae "NO_IA" o "FUERA DE
+    ALCANCE", que ninguna pestaña reconoce hoy: el sistema seguiría el camino ordinario y se
+    le ofrecería Cumplimiento a algo que no es un sistema de IA.
+
+    Se llama a normalizar_clasificacion, no se reimplementa: el principio de B1 es que haya
+    un solo normalizador, y dos fronteras no son excusa para dos copias.
+    """
+    clas_data = st.session_state.get("clasificacion_data")
+    if not isinstance(clas_data, dict):
+        return
+
+    bruta = clas_data.get("clasificacion")
+    canonica = normalizar_clasificacion(bruta)
+    if canonica and canonica != bruta:
+        st.session_state["clasificacion_data"] = {**clas_data, "clasificacion": canonica}
 
 
 def _reconciliar_cumplimiento_importado() -> None:

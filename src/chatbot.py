@@ -36,6 +36,7 @@ def _backoff_rate_limit(exc: Exception) -> float:
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 from src.calendario import aplicar_calendario
+from src.clasificaciones import normalizar_clasificacion
 from src.llm.provider import LLMProvider
 from src.rag.retriever import formatear_contexto_rag
 from src.reconciliacion import reconciliar
@@ -664,6 +665,11 @@ class AIComplyChat:
           renderers de UI e informe muestren todos los roles.
         - Reconcilia los dos campos cuando SÍ discrepan: 'rol' pasa a contener exactamente los
           roles de 'roles_multiples'. Ver _reconciliar_rol.
+        - Canoniza 'clasificacion' hacia el vocabulario de src/clasificaciones.py, para
+          que las pestañas y el informe la reciban ya en su forma única. Es la misma
+          razón por la que los roles se normalizan aquí y no en cada consumidor: cuatro
+          normalizadores acaban arreglándose en tres.
+
         - Delega en _normalizar_obligaciones_preliminares el recorte del apartado del
           Art. 26 en 'obligaciones_preliminares'.
 
@@ -676,6 +682,11 @@ class AIComplyChat:
         y sin "Convertirse en proveedor" en estados_adicionales—, de modo que cualquier regla
         que marcase uno marcaría también el otro. El contrapeso vive en los prompts.
         """
+        clasificacion_raw = datos.get("clasificacion")
+        clasificacion_norm = normalizar_clasificacion(clasificacion_raw)
+        if clasificacion_norm and clasificacion_norm != clasificacion_raw:
+            datos = {**datos, "clasificacion": clasificacion_norm}
+
         rol_raw = (datos.get("rol") or "").strip()
         partes = [
             cls._ALIAS_ROLES.get(p, p)

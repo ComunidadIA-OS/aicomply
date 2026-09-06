@@ -16,16 +16,8 @@ import base64
 
 import streamlit as st
 
-_CLASIFICACIONES_SOLO_EVAL = frozenset({
-    "EXCLUIDO",
-    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
-    "NO ES SISTEMA DE IA",
-    "NO_IA",
-    "FUERA DE ALCANCE",
-    "FUERA_DE_ALCANCE",
-})
-
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
+from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
 from src.tabs.avisos import avisar_si_truncada, marcar_truncada
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable
@@ -268,6 +260,32 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
         st.rerun()
 
 
+def _aviso_siguiente_paso(clasificacion: str) -> None:
+    """Indica qué toca después según la clasificación obtenida.
+
+    El texto de por qué no hay obligaciones lo aporta src/clasificaciones.py, no este
+    fichero: EXCLUIDO y NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA cierran el recorrido por
+    razones distintas —Art. 2 y Art. 3.1— y aquí se daba la segunda para las dos (B1).
+    Lo que sí es propio de esta pestaña es la indicación de a dónde ir.
+    """
+    if es_sin_obligaciones(clasificacion):
+        st.info(
+            f"{texto_sin_obligaciones(clasificacion)} "
+            "No procede iniciar una evaluación de cumplimiento bajo el AI Act. "
+            "Puede generar únicamente el **Informe de evaluación** en la pestaña **Informe** "
+            "para documentar esta conclusión."
+        )
+    elif clasificacion.upper().strip() == "PROHIBIDO":
+        st.warning(
+            "El sistema ha sido clasificado como **práctica prohibida** (Art. 5 AI Act). "
+            "Aun así, puede continuar a la evaluación de cumplimiento para documentar las medidas necesarias: "
+            "cese, rediseño, retirada, remediación y revisión profesional."
+        )
+        st.info("Proceda a la pestaña **Cumplimiento** para documentar las medidas de remediación.")
+    else:
+        st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
+
+
 def mostrar_tab_evaluador(provider: LLMProvider) -> None:
     """Renderiza la pestaña Evaluador y clasificador (Pestaña 1)."""
     _inicializar_estado(provider)
@@ -369,22 +387,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
             f"Evaluación completada — Clasificación: **{clasificacion}** | Rol: **{roles_str}**"
         )
 
-        if clasificacion.upper() in _CLASIFICACIONES_SOLO_EVAL:
-            st.info(
-                "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
-                "No procede iniciar una evaluación de cumplimiento bajo el AI Act. "
-                "Puede generar únicamente el **Informe de evaluación** en la pestaña **Informe** "
-                "para documentar esta conclusión."
-            )
-        elif clasificacion.upper() == "PROHIBIDO":
-            st.warning(
-                "El sistema ha sido clasificado como **práctica prohibida** (Art. 5 AI Act). "
-                "Aun así, puede continuar a la evaluación de cumplimiento para documentar las medidas necesarias: "
-                "cese, rediseño, retirada, remediación y revisión profesional."
-            )
-            st.info("Proceda a la pestaña **Cumplimiento** para documentar las medidas de remediación.")
-        else:
-            st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
+        _aviso_siguiente_paso(clasificacion)
 
         indeterminados = datos.get("puntos_indeterminados", [])
         if indeterminados:
