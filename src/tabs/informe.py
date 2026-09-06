@@ -16,18 +16,10 @@ from datetime import date
 
 import streamlit as st
 
+from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
 from src.report_generator import GeneradorInforme
 
 _FECHA_HOY = date.today().strftime("%Y-%m-%d")
-
-_CLASIFICACIONES_SOLO_EVAL = frozenset({
-    "EXCLUIDO",
-    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
-    "NO ES SISTEMA DE IA",
-    "NO_IA",
-    "FUERA DE ALCANCE",
-    "FUERA_DE_ALCANCE",
-})
 
 _TITULOS_INFORME = {
     "clasificacion": "Informe de clasificación",
@@ -113,14 +105,24 @@ def _seccion_informe_clasificacion(eval_ok: bool) -> None:
         _botones_descarga(st.session_state[clave_md], "clasificacion")
 
 
-def _seccion_informe_cumplimiento(cumpl_ok: bool, es_caso_especial: bool) -> None:
-    """Sección del informe de cumplimiento (se desbloquea con Pestaña 2)."""
+def _seccion_informe_cumplimiento(
+    cumpl_ok: bool, es_caso_especial: bool, clasificacion: str
+) -> None:
+    """Sección del informe de cumplimiento (se desbloquea con Pestaña 2).
+
+    Recibe la clasificación además del booleano porque los dos casos especiales cierran
+    el recorrido por razones distintas y el aviso tiene que decir la que toca (B1).
+
+    Sin valor por defecto a propósito: un tercer llamador que la olvide debe romper aquí
+    y no imprimir el texto genérico de motivo desconocido, que es la salida para cuando
+    no hay alternativa. Aquí la hay, porque el dato está en session_state.
+    """
     st.subheader("Informe de cumplimiento")
     st.caption("Incluye: obligaciones por artículo, áreas de mejora y recomendaciones de acción.")
 
     if es_caso_especial:
         st.info(
-            "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+            f"{texto_sin_obligaciones(clasificacion)} "
             "No procede generar informe de cumplimiento. "
             "Consulte el **Informe de clasificación** para documentar esta conclusión."
         )
@@ -163,14 +165,19 @@ def _seccion_informe_cumplimiento(cumpl_ok: bool, es_caso_especial: bool) -> Non
         _botones_descarga(st.session_state[clave_md], "cumplimiento")
 
 
-def _seccion_informe_completo(eval_ok: bool, cumpl_ok: bool, es_caso_especial: bool) -> None:
-    """Sección del informe completo (se desbloquea con Pestañas 1 y 2)."""
+def _seccion_informe_completo(
+    eval_ok: bool, cumpl_ok: bool, es_caso_especial: bool, clasificacion: str
+) -> None:
+    """Sección del informe completo (se desbloquea con Pestañas 1 y 2).
+
+    La clasificación es obligatoria por la misma razón que en _seccion_informe_cumplimiento.
+    """
     st.subheader("Informe completo")
     st.caption("Incluye clasificación, obligaciones, áreas de mejora, recomendaciones y puntos de revisión.")
 
     if es_caso_especial:
         st.info(
-            "El sistema evaluado no cumple la definición de sistema de IA conforme al Art. 3.1 del AI Act. "
+            f"{texto_sin_obligaciones(clasificacion)} "
             "No procede generar informe completo. "
             "Use el **Informe de clasificación** para obtener el informe completo de su caso."
         )
@@ -227,9 +234,9 @@ def mostrar_tab_informe() -> None:
     )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
 
-    # Para EXCLUIDO / NO_IA el flujo termina en evaluación; PROHIBIDO sí pasa a cumplimiento
+    # EXCLUIDO y NO CUMPLE LA DEFINICIÓN terminan en evaluación; PROHIBIDO sí pasa a cumplimiento
     clasificacion_actual = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "").upper()
-    es_caso_especial = eval_ok and clasificacion_actual in _CLASIFICACIONES_SOLO_EVAL
+    es_caso_especial = eval_ok and es_sin_obligaciones(clasificacion_actual)
 
     # Indicadores de progreso
     col1, col2, col3 = st.columns(3)
@@ -244,7 +251,7 @@ def mostrar_tab_informe() -> None:
         _seccion_informe_clasificacion(eval_ok)
 
     with st.expander("Informe de cumplimiento", expanded=cumpl_ok and not st.session_state.get("informe_md_completo")):
-        _seccion_informe_cumplimiento(cumpl_ok, es_caso_especial)
+        _seccion_informe_cumplimiento(cumpl_ok, es_caso_especial, clasificacion_actual)
 
     with st.expander("Informe completo", expanded=(eval_ok and cumpl_ok)):
-        _seccion_informe_completo(eval_ok, cumpl_ok, es_caso_especial)
+        _seccion_informe_completo(eval_ok, cumpl_ok, es_caso_especial, clasificacion_actual)

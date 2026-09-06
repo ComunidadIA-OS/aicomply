@@ -21,6 +21,7 @@ from pathlib import Path
 from config import NIVELES_RIESGO
 from prompts import PROMPT_VERSION as _PROMPT_VERSION
 from src.calendario import cargar_calendario, obtener_obligacion, obtener_version
+from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
 from src.reconciliacion import GRAVEDAD_BLOQUEANTE, motivo_no_calculable
 
 _CORPUS_VERSION_FILE = Path(__file__).parent.parent / "data" / "CORPUS_VERSION"
@@ -29,27 +30,9 @@ try:
 except OSError:
     _CORPUS_VERSION = "desconocida"
 
-_CLASIFICACIONES_SIN_OBLIGACIONES = frozenset({
-    "EXCLUIDO",
-    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
-    "NO ES SISTEMA DE IA",
-    "NO_IA",
-    "FUERA DE ALCANCE",
-    "FUERA_DE_ALCANCE",
-})
-
-_TEXTO_SIN_OBLIGACIONES: dict[str, str] = {
-    "EXCLUIDO": (
-        "El sistema evaluado está **fuera del ámbito de aplicación** del AI Act (Art. 2). "
-        "No se identifican obligaciones del Reglamento (UE) 2024/1689. "
-        "Pueden aplicar otras normativas sectoriales o de protección de datos."
-    ),
-    "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA": (
-        "El sistema evaluado **no cumple la definición de sistema de IA** del Art. 3.1 del AI Act. "
-        "El Reglamento (UE) 2024/1689 no es aplicable. "
-        "Pueden aplicar otras normativas según el tipo de tecnología utilizada."
-    ),
-}
+# El conjunto y los textos viven en src/clasificaciones.py: estaban duplicados byte a byte
+# en este fichero y en las tres pestañas, y la interfaz se había desincronizado del informe
+# (hallazgo B1). Se importan es_sin_obligaciones() y texto_sin_obligaciones().
 
 _AVISO_LEGAL_MD = (
     "---\n\n"
@@ -366,8 +349,8 @@ class GeneradorInforme:
                 "Documenta las medidas necesarias: cese, rediseño, retirada, remediación "
                 "y revisión profesional."
             )
-        elif clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
-            texto += _TEXTO_SIN_OBLIGACIONES.get(clas_norm, "")
+        elif es_sin_obligaciones(clas_norm):
+            texto += texto_sin_obligaciones(clas_norm)
             return texto
         else:
             texto += (
@@ -397,8 +380,8 @@ class GeneradorInforme:
         if estados:
             texto += f" Estados adicionales: {', '.join(estados)}."
         clas_norm = (clasificacion or "").upper().strip()
-        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
-            texto += f"\n\n{_TEXTO_SIN_OBLIGACIONES.get(clas_norm, '')}"
+        if es_sin_obligaciones(clas_norm):
+            texto += f"\n\n{texto_sin_obligaciones(clas_norm)}"
             return texto
         if resumen_cumpl:
             texto += f"\n\n{resumen_cumpl}"
@@ -648,10 +631,10 @@ class GeneradorInforme:
         incoherencias: list[dict] | None = None,
     ) -> str:
         clas_norm = (clasificacion or "").upper().strip()
-        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+        if es_sin_obligaciones(clas_norm):
             return (
                 f"## {num}. Análisis de obligaciones\n\n"
-                + _TEXTO_SIN_OBLIGACIONES.get(clas_norm, "No aplica análisis de obligaciones.")
+                + texto_sin_obligaciones(clas_norm)
             )
         if not obligaciones:
             return (
@@ -806,7 +789,7 @@ class GeneradorInforme:
                     texto += f"\n- … y {len(carencias) - 5} área(s) más — ver sección de análisis."
             return texto
 
-        if clas_norm in _CLASIFICACIONES_SIN_OBLIGACIONES:
+        if es_sin_obligaciones(clas_norm):
             texto += (
                 "\n**Este sistema no está sujeto al AI Act.**  \n"
                 "No se requieren acciones de cumplimiento del Reglamento (UE) 2024/1689. "
