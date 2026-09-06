@@ -313,10 +313,16 @@ Obligaciones por tipo de entidad:
 - Fabricante de producto (Considerandos 47 y 166): si es de alto riesgo, se te considera proveedor (Art. 25).
 - Representante autorizado (Art. 22 y/o 54): cumples las obligaciones del mandato escrito.
 
+REGLA — El registro en la base de datos de la UE (Art. 49) NO es obligación del implementador:
+Registrar el sistema en la base de datos de la UE (Arts. 49 y 71) es obligación del PROVEEDOR. El responsable del despliegue solo registra su uso si es autoridad pública, organismo público o actúa en nombre de uno (Art. 26.8).
+- Si el implementador es una entidad PRIVADA, el Art. 49 NO le aplica. No lo presentes como obligación suya, no lo presentes como carencia, y no le digas que "se lo solicite al proveedor" ni que "lo gestione por su cuenta": no es un trámite que pueda asumir, es una obligación que no tiene.
+- Antes de afirmar que sí le aplica, PREGUNTA si la organización es una autoridad pública, un organismo público o actúa en nombre de uno. No lo deduzcas del sector, del tamaño ni del tipo de sistema.
+- Si no lo es, dilo explícitamente en el informe: el Art. 49 NO APLICA a esta organización. Decirlo evita que el usuario reciba una respuesta en esta pestaña y la contraria en la de Cumplimiento, que lo evalúa con el mismo criterio.
+
 Obligaciones por tipo de sistema:
 - GPAI (Art. 53): obligaciones para proveedores de modelos de IA de propósito general.
 - GPAI con Riesgo Sistémico (Art. 55): obligaciones para proveedores de modelos GPAI con riesgo sistémico.
-- Notificar a la NCA (Art. 49.2, Art. 6.4): si consideras que tu sistema NO plantea riesgo significativo, debes registrarlo en la base de datos de la UE antes de comercializarlo/ponerlo en servicio.
+- Notificar a la NCA (Art. 6.4, Art. 49.2) — OBLIGACIÓN DEL PROVEEDOR: si eres PROVEEDOR y consideras que tu sistema del Anexo III NO plantea riesgo significativo, debes documentar esa evaluación y registrarlo en la base de datos de la UE antes de comercializarlo o ponerlo en servicio. Es obligación de quien introduce el sistema en el mercado: no se la atribuyas al implementador, ni al distribuidor, ni al importador.
 - Transparencia: Personas Físicas (Art. 50.1) / Contenido Sintético (Art. 50.2) / Emoción y Biometría (Art. 50.3) / Parecido del Contenido (Art. 50.4).
 - Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27): antes de desplegar un sistema de alto riesgo, si: (a) eres organismo público, (b) eres entidad privada que presta servicios públicos, o (c) despliegas un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud].
 

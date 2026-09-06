@@ -17,6 +17,12 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.4 (2026-09-06): el prompt del evaluador deja de atribuir al implementador el
+#                          registro en la base de datos de la UE (Arts. 49 y 71) y la
+#                          notificación a la NCA (Arts. 6.4 y 49.2), que son del proveedor:
+#                          con la misma forma que ya tenía el catálogo de cumplimiento
+#                          —preguntar primero y prohibición explícita— para que las dos
+#                          pestañas no den respuestas opuestas sobre el mismo artículo
 # 2026.09.3 (2026-09-04): el bloque <<<OBLIGACION>>> admite el campo "clave", que copia la
 #                          clave estable que ahora lleva cada entrada del catálogo del
 #                          implementador y del Art. 4. Sin ella las dos entradas del
@@ -43,4 +49,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.3"
+PROMPT_VERSION = "2026.09.4"
