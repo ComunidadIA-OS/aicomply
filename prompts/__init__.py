@@ -17,6 +17,18 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.6 (2026-09-06): el catálogo pasa a ser la única lista del recorrido de cumplimiento
+#                          (punto 9 nuevo, renumerados persistencia y cierre a 11 y 12). Las
+#                          «Obligaciones ya identificadas en la evaluación» que llegan en
+#                          {contexto_evaluacion} informan del ESTADO, no de si la obligación
+#                          entra: el modelo leyó la conclusión del evaluador sobre el Art. 49
+#                          como asunto cerrado, anunció once obligaciones y se saltó la
+#                          duodécima en silencio, sin que la reconciliación pudiera verlo.
+#                          Una condicional que no encaja se registra "no_aplica" y nunca se
+#                          omite; cuando la evaluación ya trae la respuesta se presenta, se
+#                          dice que quedó resuelta y se registra sin repreguntar. Mismo
+#                          mecanismo y misma redacción que las decisiones 9 y 10 de
+#                          SPEC-ART-111 para el Art. 50.2
 # 2026.09.5 (2026-09-06): la evaluación de impacto sobre los derechos fundamentales (Art. 27)
 #                          pasa a obligación condicional con la misma forma que ya tenía el
 #                          Art. 49 —preguntar primero, "no_aplica" explícito y prohibición de
@@ -61,4 +73,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.5"
+PROMPT_VERSION = "2026.09.6"
