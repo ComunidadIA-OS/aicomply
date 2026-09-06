@@ -29,11 +29,11 @@ El problema es que el **41% de las PYMEs españolas ya usa IA de forma regular**
 
 AIComply guía a PYMEs industriales a través de tres fases secuenciales:
 
-1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que emite una de las siguientes **seis clasificaciones**: PROHIBIDO, ALTO, LIMITADO, MÍNIMO, NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA o EXCLUIDO. Identifica también el rol de la organización (proveedor, implementador, distribuidor, importador) y detecta **roles múltiples simultáneos** (Considerando 83).
+1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que emite una de las **seis clasificaciones** que se detallan más abajo. Identifica también el rol de la organización (proveedor, implementador, distribuidor, importador) y detecta **roles múltiples simultáneos** (Considerando 83).
 
 2. **Análisis de cumplimiento** — Una vez clasificado el sistema, el asistente recorre las obligaciones concretas aplicables según el nivel de riesgo y el rol, detectando cuáles están cubiertas, cuáles parcialmente y cuáles son áreas de mejora pendientes.
 
-3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional.
+3. **Informe** — Genera tres tipos de informe exportables en PDF y texto plano: solo clasificación, solo cumplimiento, o informe completo. Los informes incluyen un plan de acción priorizado y los puntos que requieren revisión profesional, y advierten en el resumen ejecutivo cuando el registro de obligaciones no permite calcular un grado de cumplimiento fiable.
 
 AIComply emite una de las **siguientes seis clasificaciones**, según el árbol de decisión del Reglamento (UE) 2024/1689:
 
@@ -46,23 +46,23 @@ AIComply emite una de las **siguientes seis clasificaciones**, según el árbol 
 
 **Flujos diferenciados por clasificación.** El sistema adapta el recorrido según el resultado del evaluador: para sistemas clasificados como NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA, el asistente informa de la conclusión y ofrece continuar con la evaluación de otro sistema — no se genera ningún informe ni se accede a las pestañas de Cumplimiento e Informe. Para sistemas clasificados como EXCLUIDO, la pestaña de Cumplimiento se omite (no procede analizar obligaciones del AI Act) y se genera únicamente el informe de clasificación documentando la conclusión. Para sistemas clasificados como PROHIBIDO, el análisis de cumplimiento permite documentar medidas de remediación (cese, rediseño, retirada y revisión profesional).
 
-Además, el evaluador detecta y gestiona **roles múltiples** (Considerando 83): una misma entidad puede actuar simultáneamente como Proveedor e Implementador, y AIComply recorre la evaluación una vez por cada rol con obligaciones diferenciadas.
-
 ## Características destacadas
 
 **Entrada por documentación técnica.** Además de describir el sistema en lenguaje natural, el evaluador acepta subir el README o ficha técnica del sistema a evaluar (formatos .md, .txt, .rst). AIComply extrae automáticamente una descripción estructurada del propósito, sector, decisiones que toma el sistema y tipo de datos que procesa, y la presenta al usuario para confirmación antes de iniciar el árbol de decisión.
 
-**Trazabilidad auditable mediante bloques machine-readable.** Cada respuesta del modelo de cumplimiento emite, además del texto natural, bloques JSON estructurados embebidos (`<<<OBLIGACION>>>{...}<<<FIN>>>` y `<<<CIERRE>>>{...}<<<FIN>>>`) que el sistema parsea y persiste en estado tipado. Cada obligación queda registrada con su artículo, estado (cubierta/parcial/carencia/no_aplica), tipo (obligación/recomendación/vigilancia) y rol asociado. El informe final indica si cada respuesta provino de entrada directa del usuario, inferencia confirmada por el modelo o nodo marcado como [INDETERMINADO]. Esto permite reconstruir deterministicamente por qué se llegó a la clasificación final y facilita la revisión por un asesor jurídico.
+**Registro estructurado del cumplimiento, contrastado por la aplicación.** Cada respuesta del modelo de cumplimiento emite, además del texto natural, bloques JSON estructurados embebidos (`<<<OBLIGACION>>>{...}<<<FIN>>>` y `<<<CIERRE>>>{...}<<<FIN>>>`) que la aplicación parsea y persiste en estado tipado, aparte de la prosa que redacta el modelo. Cada obligación queda registrada con su artículo, estado (cubierta/parcial/carencia/no_aplica), tipo (obligación/recomendación/vigilancia) y rol asociado. Sobre ese registro, [`src/reconciliacion.py`](src/reconciliacion.py) contrasta la cuenta que mantiene la aplicación con lo que el modelo narra al cerrar el análisis: cuando divergen, la incoherencia se declara en el informe en vez de repararse. El grado de cumplimiento deja entonces de publicarse —pasa a «No calculable», con el motivo— y el aviso encabeza el resumen ejecutivo en lugar de quedar sepultado en el detalle. Un registro que no se sostiene no produce una cifra.
+
+**Traza del recorrido del árbol: especificada, todavía no implementada.** La traza que indica, para cada paso del árbol de decisión, si la respuesta vino directamente del usuario, de una inferencia confirmada o quedó marcada como [INDETERMINADO] —tanto la que el asistente muestra al cerrar el recorrido como la sección «Trazabilidad de la información» del informe— la redacta el modelo al final, junto con el resto del texto. No la construye la aplicación a partir de los pasos efectivamente recorridos, y puede por tanto acreditar un paso que no ocurrió: en un recorrido de revisión de septiembre de 2026 certificó como «inferencia confirmada» un nodo sobre el ámbito del Art. 27 que nunca llegó a preguntarse. La causa es que el árbol de decisión vive íntegro en los prompts y la aplicación no tiene hoy noción de «nodo»: no sabe cuáles había ni cuáles faltan, así que tampoco puede echar de menos el que falta. La especificación de la solución está cerrada —inventario de nodos con sus precondiciones, registro propio de la aplicación alimentado durante el recorrido, y un paso sin constancia que aparece como «no evaluado» en lugar de omitirse— y la implementación es trabajo en curso. Hasta entonces, esa traza debe leerse como lo que es: redacción del modelo, no evidencia. El registro de obligaciones descrito arriba sí lo mantiene y lo contrasta la aplicación; el del recorrido del árbol, todavía no.
 
 **Roles múltiples diferenciados.** Cuando la entidad evaluada actúa simultáneamente como Proveedor, Implementador, Distribuidor o Importador (Considerando 83 del AI Act), el sistema recorre la evaluación una vez por cada rol y entrega un informe con las obligaciones de cada uno por separado, sin mezclarlas.
 
-**Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), grado de cumplimiento estimado y plan de acción priorizado por horizonte temporal.
+**Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), grado de cumplimiento estimado —o la marca «No calculable» con su motivo, cuando la reconciliación detecta que el registro está incompleto o es incoherente— y plan de acción priorizado por horizonte temporal.
 
 ## Seguridad por diseño
 
 AIComply sigue un modelo de seguridad mínimo viable adecuado para una herramienta de demostración y evaluación que no persiste datos ni gestiona autenticación. Los principios aplicados son:
 
-**Sin persistencia de datos.** Ninguna conversación ni documento analizado se almacena entre sesiones. Todo ocurre en memoria durante la sesión activa.
+**Sin persistencia de datos.** La aplicación no almacena nada por su cuenta: ni conversaciones, ni documentos analizados, ni claves de API. Todo ocurre en memoria durante la sesión activa. La única excepción es explícita y la provoca el usuario: el botón «Guardar sesión» de la barra lateral descarga un fichero JSON con la evaluación completa en su propio disco, para poder reanudarla más tarde. Ese fichero puede contener información confidencial —la interfaz lo advierte al generarlo— y su custodia corresponde al usuario.
 
 **Modelo BYOK (Bring Your Own Key).** La herramienta no incluye claves de API propias. El usuario aporta su propia clave mediante variables de entorno o el selector interactivo de la interfaz. Las claves nunca se incluyen en el código fuente.
 
@@ -94,15 +94,16 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Casos de ejemplo completos
 
-El repositorio incluye cinco casos de uso reales evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema, la conversación completa con el evaluador, el análisis de cumplimiento y los tres tipos de informe (clasificación, cumplimiento e informe completo) exportados en PDF y texto plano.
+El repositorio incluye seis casos de uso representativos de PYMEs industriales —sistemas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de evaluación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
 
 | Caso | Clasificación | Sistema |
 |------|---------------|---------|
-| [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Sistema fuera del ámbito del AI Act |
+| [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Hoja de cálculo con reglas deterministas de stock |
 | [`01-riesgo-minimo`](ejemplos/01-riesgo-minimo) | MÍNIMO | Optimización de hornos industriales |
 | [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Chatbot B2B |
 | [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Filtrado automatizado de CVs |
 | [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
+| [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Visión artificial militar — fuera del ámbito (Art. 2) |
 
 Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para el aviso sobre su antigüedad**.
 
@@ -241,7 +242,7 @@ ANTHROPIC_MODEL=claude-sonnet-4-6
 ```bash
 LLM_PROVIDER=openai_compatible
 OPENAI_COMPATIBLE_BASE_URL=http://localhost:1234/v1
-OPENAI_COMPATIBLE_MODEL=llama-3.1-8b-instruct
+OPENAI_COMPATIBLE_MODEL=llama-3.3-70b-instruct
 ```
 
 **Groq (servicio externo rápido):**
@@ -353,6 +354,9 @@ aicomply/
 ├── pyproject.toml                      # Metadatos y dependencias del paquete
 ├── src/
 │   ├── chatbot.py                      # Lógica de conversación con el LLM
+│   ├── calendario.py                   # Carga del calendario normativo e inyección en prompts e informe
+│   ├── clasificaciones.py              # Clasificaciones que cierran el recorrido sin obligaciones
+│   ├── reconciliacion.py               # Contraste del registro de cumplimiento; declara las incoherencias
 │   ├── security.py                     # Errores seguros, rate limiting, validación SSRF
 │   ├── report_generator.py             # Generación de informes (PDF + texto)
 │   ├── tabs/
@@ -371,14 +375,19 @@ aicomply/
 │   ├── system_prompts.py               # Prompt del evaluador (árbol de decisión)
 │   └── system_prompt_cumplimiento.py   # Prompt del análisis de cumplimiento
 ├── data/
+│   ├── calendario.json                 # Fechas de aplicación del AI Act — fuente única
+│   ├── CORPUS_VERSION                  # Versión del corpus, independiente del versionado del código
 │   ├── ai_act/
 │   │   └── ai_act_articles.json        # 25 artículos del AI Act estructurados
-│   └── docs/                           # Corpus adicional (27 documentos JSON)
+│   └── docs/                           # Corpus adicional (26 documentos JSON)
 ├── scripts/
 │   └── ingest_txt.py                   # Convierte .txt legales a JSON para el RAG
+├── tests/                              # Suite de tests unitarios (pytest)
+├── docs/
+│   └── EIPD.md                         # Evaluación de Impacto en Protección de Datos (RGPD Art. 35)
 ├── assets/                             # Capturas de pantalla para el README
 ├── ejemplos/                           # Seis ejemplos completos de evaluación con AIComply
-│   ├── 00-no-ia/                       # Sistema fuera del ámbito del AI Act
+│   ├── 00-no-ia/                       # No cumple la definición del Art. 3.1 — hoja de cálculo determinista
 │   ├── 01-riesgo-minimo/               # Riesgo mínimo — optimización de hornos
 │   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
 │   ├── 03-alto-riesgo/                 # Alto riesgo — filtrado de CVs
@@ -413,7 +422,7 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 | Vectorstore TF-IDF (`src/rag/`) | **Original** | Recuperación semántica sin dependencias de FAISS |
 | Prompts de sistema (`prompts/`) | **Original** | Instrucciones especializadas para evaluador y cumplimiento |
 | Corpus JSON del AI Act (`data/ai_act/`) | **Original** | 25 artículos estructurados con metadatos normativos |
-| Corpus legal normalizado (`data/docs/`) | **Original** | 27 documentos legales convertidos a formato RAG |
+| Corpus legal normalizado (`data/docs/`) | **Original** | 26 documentos legales convertidos a formato RAG |
 
 ## Stack tecnológico
 
@@ -437,11 +446,13 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 - [x] Soporte de múltiples roles simultáneos
 - [x] 25 artículos del AI Act estructurados en el RAG
 - [x] Corpus normativo completo: AESIA, Anteproyecto de Ley ES, GDPR/AEPD, directrices Comisión Europea
-- [x] Suite de 141 tests unitarios: árbol de decisión, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento, seguridad (SSRF + rate limiting) y vectorstore RAG
-- [x] Bloques machine-readable para trazabilidad determinista del análisis de cumplimiento
+- [x] Suite de 410 tests unitarios: guardianes de texto sobre los prompts del evaluador y de cumplimiento, calendario normativo, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento y su reconciliación, módulo de clasificaciones, seguridad (SSRF + rate limiting) y vectorstore RAG. Los guardianes comprueban que las reglas del árbol de decisión siguen escritas en el prompt; que el modelo las obedezca se valida a mano contra los casos de [`ejemplos/`](ejemplos/README.md)
+- [x] Bloques machine-readable para el registro estructurado del análisis de cumplimiento
+- [x] Reconciliación del registro de cumplimiento: las incoherencias se declaran en el informe y el grado de cumplimiento se retira cuando el registro no se sostiene
 - [x] Flujos diferenciados para clasificaciones especiales (NO IA, EXCLUIDO, PROHIBIDO)
+- [x] Persistencia de evaluaciones — guardar y reanudar sesiones
+- [ ] Traza del recorrido del árbol construida por la aplicación desde los pasos efectivamente recorridos, en lugar de redactada por el modelo — especificación cerrada, implementación pendiente
 - [ ] Flujo guiado para la Evaluación de Impacto sobre Derechos Fundamentales (Art. 27)
-- [ ] Persistencia de evaluaciones — guardar y reanudar sesiones
 - [ ] Mejora exportación PDF con fuente Unicode completa
 
 ### v2.x
@@ -451,6 +462,7 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 
 ### Limitaciones conocidas
 
+- **La traza del recorrido del árbol no la construye la aplicación.** La redacta el modelo al cerrar el informe, así que puede acreditar un paso que no ocurrió. El registro de obligaciones de cumplimiento sí lo mantiene y lo contrasta la aplicación; el del recorrido del árbol, todavía no. Detalle en [Características destacadas](#características-destacadas).
 - **Modelos locales pequeños no soportados de facto.** Aunque la arquitectura acepta cualquier endpoint compatible con OpenAI, modelos de 8B parámetros o inferiores no producen resultados fiables en el árbol de decisión del AI Act. Mejorar la robustez con modelos pequeños requeriría rediseñar los prompts del sistema y posiblemente añadir una capa de validación de salida — trabajo pendiente para futuras versiones.
 - **Coste de modelos grandes en hosting compartido.** Servir un modelo 70B+ vía Ollama o vLLM para uso multiusuario tiene un coste de infraestructura no trivial. Para despliegues compartidos, Anthropic Claude vía API resulta hoy más práctico económicamente.
 
@@ -477,11 +489,11 @@ Este dataset es, que sepamos, el primer corpus estructurado y reutilizable del A
 
 ### Corpus normativo reutilizable
 
-El conjunto de datos legales procesados por AIComply ([`data/`](data/README.md)) es reutilizable por terceros sin necesidad de instalar la aplicación: 25 artículos clave del AI Act + 27 documentos complementarios (más de 2.000 fragmentos) en JSON estructurado, bajo licencia Apache 2.0. Detalles y ejemplo de uso en [`data/README.md`](data/README.md).
+El conjunto de datos legales procesados por AIComply ([`data/`](data/README.md)) es reutilizable por terceros sin necesidad de instalar la aplicación: 25 artículos clave del AI Act + 26 documentos complementarios (más de 2.000 fragmentos) en JSON estructurado, bajo licencia Apache 2.0. Detalles y ejemplo de uso en [`data/README.md`](data/README.md).
 
 ### Corpus legal normalizado para RAG (`data/docs/`)
 
-27 documentos legales (AI Act completo, guías AESIA, GDPR/AEPD, anteproyecto de Ley ES, directrices Comisión Europea) convertidos a JSON con metadatos homogéneos (`titulo`, `fuente`, `tipo`, `fecha`, `url`, `documentos`). Formato listo para indexar con cualquier vectorstore.
+26 documentos legales (AI Act completo, guías AESIA, GDPR/AEPD, anteproyecto de Ley ES, directrices Comisión Europea) convertidos a JSON con metadatos homogéneos (`titulo`, `fuente`, `tipo`, `fecha`, `url`, `documentos`). Formato listo para indexar con cualquier vectorstore.
 
 ### Herramienta de ingesta de documentos legales (`scripts/ingest_txt.py`)
 
@@ -520,7 +532,7 @@ de forma independiente del resto de la aplicación:
 - **Corpus estructurado del AI Act** ([`data/ai_act/ai_act_articles.json`](data/ai_act/ai_act_articles.json))
   — 25 artículos clave del Reglamento (UE) 2024/1689 en JSON con metadatos
   normativos (nivel de riesgo, rol aplicable, requisitos clave, palabras clave).
-- **Corpus legal normalizado para RAG** ([`data/docs/`](data/docs/)) — 27 documentos
+- **Corpus legal normalizado para RAG** ([`data/docs/`](data/docs/)) — 26 documentos
   legales (AI Act, guías AESIA, GDPR/AEPD, directrices Comisión Europea,
   anteproyecto Ley ES) en JSON con metadatos homogéneos.
 - **Herramienta de ingesta de documentos legales** ([`scripts/ingest_txt.py`](scripts/ingest_txt.py))
