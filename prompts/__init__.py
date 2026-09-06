@@ -17,6 +17,15 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.5 (2026-09-06): la evaluación de impacto sobre los derechos fundamentales (Art. 27)
+#                          pasa a obligación condicional con la misma forma que ya tenía el
+#                          Art. 49 —preguntar primero, "no_aplica" explícito y prohibición de
+#                          registrarla como carencia—, en el catálogo de cumplimiento y en el
+#                          prompt del evaluador. El Art. 27.1 solo alcanza a organismos de
+#                          Derecho público, entidades privadas que prestan servicios públicos y
+#                          responsables del despliegue del Anexo III punto 5(b) y 5(c): el
+#                          empleo es el punto 4, y se declaraba carencia prioritaria de una
+#                          PYME privada contra la condición que el propio informe imprimía
 # 2026.09.4 (2026-09-06): el prompt del evaluador deja de atribuir al implementador el
 #                          registro en la base de datos de la UE (Arts. 49 y 71) y la
 #                          notificación a la NCA (Arts. 6.4 y 49.2), que son del proveedor:
@@ -52,4 +61,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.4"
+PROMPT_VERSION = "2026.09.5"

@@ -22,6 +22,8 @@ Los dos hallazgos que las motivan son la misma historia: un arreglo que se aplic
 cumplimiento y no a este, de modo que el usuario recibía respuestas opuestas sobre el mismo
 artículo en dos pestañas consecutivas.
 
+  B17 - el evaluador presentaba la evaluación de impacto del Art. 27 como obligación de un
+        implementador privado de un sistema de empleo
   B19 - el evaluador atribuía al implementador el registro en la base de datos de la UE
   B21 - el evaluador se inventaba los apartados del Art. 26
 """
@@ -81,6 +83,42 @@ class TestArt49NoEsDelImplementador:
         assert "Arts. 49 y 71" in _bloque_regla_art_49()
 
 
+class TestArt27NoAplicaATodoImplementador:
+    """B17. En el recorrido del 4 de septiembre, con una PYME privada que criba currículums, el
+    evaluador afirmó que «el Art. 27 exige que los implementadores privados que despliegan
+    sistemas de alto riesgo del Anexo III realicen una evaluación de impacto». Eso no está en el
+    Reglamento: el empleo es el Anexo III punto 4 y el Art. 27.1 solo alcanza al punto 5(b) y
+    5(c), a los organismos de Derecho público y a las entidades privadas que prestan servicios
+    públicos.
+    """
+
+    def test_la_regla_del_art_27_sigue_en_el_prompt(self):
+        assert (
+            "REGLA — La evaluación de impacto sobre los derechos fundamentales (Art. 27) NO es "
+            "obligación de todo implementador:"
+        ) in SYSTEM_PROMPT_CHATBOT
+
+    def test_la_regla_ordena_preguntar_antes_de_afirmar(self):
+        bloque = _bloque_regla_art_27()
+        assert "PREGUNTA" in bloque
+        assert "organismos de Derecho público" in bloque
+        assert "entidades privadas que prestan servicios públicos" in bloque
+        assert "punto 5, letras b) y c)" in bloque
+
+    def test_la_regla_prohibe_ademas_de_condicionar(self):
+        bloque = _bloque_regla_art_27()
+        assert "NO le aplica" in bloque
+        assert "no lo presentes como carencia" in bloque.lower()
+
+    def test_la_regla_desactiva_la_afirmacion_inventada_del_recorrido(self):
+        """El enunciado correcto ya estaba en el catálogo y no impidió la afirmación contraria:
+        hace falta nombrar el caso que falló."""
+        bloque = _bloque_regla_art_27()
+        assert "Anexo III punto 4" in bloque, "el empleo debe quedar excluido por su punto"
+        assert "criba currículums" in bloque
+        assert "esa regla no está en el Reglamento" in bloque
+
+
 class TestArt26SinApartados:
     """B21. El evaluador citó «Art. 26.2» para la pertinencia de los datos de entrada (es el
     26.4) y «Art. 26.4» para los incidentes graves (es el 26.5).
@@ -131,6 +169,13 @@ class TestArt26SinApartados:
         """Duplicarlo crea una segunda fuente que se desincroniza; vive en cumplimiento."""
         assert "26.11" not in SYSTEM_PROMPT_CHATBOT
         assert "26.12" not in SYSTEM_PROMPT_CHATBOT
+
+
+def _bloque_regla_art_27() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split(
+        "REGLA — La evaluación de impacto sobre los derechos fundamentales"
+    )[1]
+    return bloque.split("REGLA — El registro en la base de datos de la UE")[0]
 
 
 def _bloque_regla_art_49() -> str:

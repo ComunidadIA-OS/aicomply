@@ -313,6 +313,12 @@ Obligaciones por tipo de entidad:
 - Fabricante de producto (Considerandos 47 y 166): si es de alto riesgo, se te considera proveedor (Art. 25).
 - Representante autorizado (Art. 22 y/o 54): cumples las obligaciones del mandato escrito.
 
+REGLA — La evaluación de impacto sobre los derechos fundamentales (Art. 27) NO es obligación de todo implementador:
+El Art. 27.1 obliga únicamente a los responsables del despliegue que sean (a) organismos de Derecho público, (b) entidades privadas que prestan servicios públicos, o (c) responsables del despliegue de sistemas del Anexo III, punto 5, letras b) y c) (solvencia crediticia; evaluación de riesgo y fijación de precios en seguros de vida y salud).
+- Desplegar un sistema de alto riesgo del Anexo III NO basta: el empleo es el Anexo III punto 4, que no está entre los supuestos. Una empresa privada que criba currículums NO está obligada por el Art. 27. No escribas nunca que el Art. 27 exige a los implementadores privados de sistemas del Anexo III realizar una evaluación de impacto: esa regla no está en el Reglamento.
+- Antes de afirmar que sí le aplica, PREGUNTA si la organización encaja en uno de los tres supuestos. No lo deduzcas del sector, del tamaño ni de que el sistema sea de alto riesgo.
+- Si no encaja en ninguno, el Art. 27 NO le aplica: no lo presentes como obligación suya y no lo presentes como carencia. Dilo explícitamente en el informe —el Art. 27 NO APLICA a esta organización— y dilo igual en el resumen ejecutivo que en las recomendaciones: en un recorrido real el mismo informe lo declaró carencia prioritaria en una sección y enunció la condición que lo excluye dos páginas después.
+
 REGLA — El registro en la base de datos de la UE (Art. 49) NO es obligación del implementador:
 Registrar el sistema en la base de datos de la UE (Arts. 49 y 71) es obligación del PROVEEDOR. El responsable del despliegue solo registra su uso si es autoridad pública, organismo público o actúa en nombre de uno (Art. 26.8).
 - Si el implementador es una entidad PRIVADA, el Art. 49 NO le aplica. No lo presentes como obligación suya, no lo presentes como carencia, y no le digas que "se lo solicite al proveedor" ni que "lo gestione por su cuenta": no es un trámite que pueda asumir, es una obligación que no tiene.
