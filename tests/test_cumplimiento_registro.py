@@ -33,6 +33,7 @@ Cubre:
 """
 
 import json
+import logging
 import re
 
 import pytest
@@ -537,6 +538,48 @@ class TestClaveDeCatalogo:
 
         assert len(bot.obligaciones_registradas) == 2
         assert bot.obligaciones_desplazadas == []
+
+    def test_l_un_bloque_sin_clave_deja_aviso_y_se_registra_igual(self, caplog):
+        """Instrumentación, no validación: el respaldo funciona y la clave no es obligatoria.
+
+        Se avisa porque el camino del triple es el único en el que la identidad depende de un
+        título que redacta el modelo, y es el que produce el falso positivo de colapso ante una
+        recalificación reescrita. La corrida del recorrido manual dirá si se pisa alguna vez.
+        """
+        bot = _chatbot()
+        with caplog.at_level(logging.WARNING, logger="src.chatbot"):
+            bot._procesar_bloques(
+                _bloque_obl("Art. 26.5", "Vigilancia", "cubierta", rol="implementador")
+            )
+
+        assert len(bot.obligaciones_registradas) == 1
+        assert "sin clave de catálogo" in caplog.text
+        assert "Art. 26.5" in caplog.text and "Vigilancia" in caplog.text
+
+    @pytest.mark.parametrize("clave", ["", "   "])
+    def test_l_una_clave_vacia_cuenta_como_ausente(self, caplog, clave):
+        bot = _chatbot()
+        payload = json.loads(
+            _bloque_obl("Art. 26.5", "Vigilancia", "cubierta").split("<<<OBLIGACION>>>")[1]
+            .split("<<<FIN>>>")[0]
+        )
+        payload["clave"] = clave
+        with caplog.at_level(logging.WARNING, logger="src.chatbot"):
+            bot._procesar_bloques(f"<<<OBLIGACION>>>{json.dumps(payload)}<<<FIN>>>")
+
+        assert len(bot.obligaciones_registradas) == 1
+        assert "sin clave de catálogo" in caplog.text
+
+    def test_l_con_clave_no_hay_aviso(self, caplog):
+        bot = _chatbot()
+        with caplog.at_level(logging.WARNING, logger="src.chatbot"):
+            bot._procesar_bloques(_bloque_obl(
+                "Art. 26.5", "Vigilancia", "cubierta", rol="implementador",
+                clave="26.5-vigilancia",
+            ))
+
+        assert len(bot.obligaciones_registradas) == 1
+        assert "sin clave de catálogo" not in caplog.text
 
     def test_l_la_clave_registrada_se_inyecta_en_el_prompt(self):
         """Para que el modelo la copie en el turno siguiente en vez de reinventarla."""

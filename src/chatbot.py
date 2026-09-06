@@ -447,6 +447,16 @@ class AIComplyChat:
                     )
                     continue
                 obl["estado"] = estado
+                if not _normalizar_clave(obl.get("clave")):
+                    # No se descarta ni se exige: el respaldo funciona. Se avisa porque es el
+                    # único camino en el que la identidad depende de un título que redacta el
+                    # modelo, y hoy no sabemos con qué frecuencia se pisa.
+                    logger.warning(
+                        "Bloque OBLIGACION sin clave de catálogo (%s — %s); la identidad cae a "
+                        "(articulo, titulo, rol): dos obligaciones del mismo apartado con el "
+                        "mismo título colapsarían en una.",
+                        obl.get("articulo"), obl.get("titulo"),
+                    )
                 clave = _clave_obligacion(obl)
                 previa = next(
                     (o for o in self.obligaciones_registradas if _clave_obligacion(o) == clave),
