@@ -29,6 +29,9 @@ artículo en dos pestañas consecutivas.
   B25 - el Art. 50 se atribuía a quien se tuviera delante. Por el lado del evaluador, una ruta
         de #R4 mandaba la función del Art. 50.2 (del proveedor) a la etiqueta del Art. 50.4
         (del responsable del despliegue)
+  B26 - la ruta comodín de #R4 salía a FIN sin mirar el alto riesgo, así que una función de
+        transparencia de más hacía que el implementador de alto riesgo no llegara a #R5 y se
+        saltara la pregunta del Art. 27
 
 Y uno del recorrido manual del 7 de septiembre de 2026, sin número de auditoría todavía: el
 evaluador fechaba el informe en «Junio de 2025», dato que nadie le dio.
@@ -361,7 +364,80 @@ class TestRutasDelR4NombranSuApartado:
             assert etiqueta in self._ETIQUETAS
 
 
+class TestNingunaRutaDelR4SeSaltaElR5:
+    """B26. Lo anterior comprueba las ETIQUETAS; esto comprueba el ENCAMINAMIENTO, que es la
+    propiedad que faltaba. #R5 es la única puerta del Art. 27 y solo se llega a ella desde #R4:
+    una ruta de #R4 que salga a FIN sin haber mirado antes si el sistema es de alto riesgo se
+    lleva por delante la pregunta del Art. 27.
+
+    Es lo que hacía el comodín «cualquier otra función que aplique»: iba a FIN siempre, así que
+    un implementador de alto riesgo cuyo sistema además interactuara con personas (Art. 50.1) o
+    produjera ultrasuplantaciones (Art. 50.4) nunca llegaba a #R5, mientras que el mismo
+    implementador sin ninguna función del Art. 50 sí llegaba. Tener una obligación de
+    transparencia de más hacía desaparecer una pregunta.
+    """
+
+    def test_ninguna_ruta_disparada_por_una_funcion_sale_a_fin_sin_mirar_el_alto_riesgo(self):
+        """La propiedad, escrita sobre todas las rutas y no sobre la que falló: da igual qué
+        función se añada a #R4 en el futuro, si su ruta acaba en FIN tiene que haber acotado
+        antes el caso de alto riesgo."""
+        for ruta in _rutas_disparadas_por_una_funcion():
+            if not _sale_a_fin(ruta):
+                continue
+            assert "sin alto riesgo" in ruta, (
+                f"esta ruta sale a FIN sin distinguir el alto riesgo, así que se salta #R5 y "
+                f"con él la pregunta del Art. 27: {ruta!r}"
+            )
+
+    def test_toda_ruta_que_va_al_r5_lo_condiciona_al_alto_riesgo(self):
+        """La mitad simétrica: #R5 solo tiene sentido para un implementador de alto riesgo, así
+        que tampoco puede llegarse allí sin haberlo comprobado."""
+        for ruta in _rutas_disparadas_por_una_funcion():
+            if "#R5" not in ruta:
+                continue
+            assert "+ alto riesgo" in ruta, f"va a #R5 sin exigir alto riesgo: {ruta!r}"
+
+    def test_cada_funcion_tiene_sus_dos_ramas(self):
+        """La forma de las líneas 287 y 288, exigida a todas: cada etiqueta necesita su salida a
+        #R5 y su salida a FIN. Sin la rama que falta, el caso que le toca queda sin ruta y lo
+        resuelve el modelo por su cuenta."""
+        al_r5 = {e for r in _rutas_disparadas_por_una_funcion() if "#R5" in r
+                 for e, _ in _RE_MENCION.findall(r)}
+        a_fin = {e for r in _rutas_disparadas_por_una_funcion() if _sale_a_fin(r)
+                 for e, _ in _RE_MENCION.findall(r)}
+        for etiqueta in TestRutasDelR4NombranSuApartado._ETIQUETAS:
+            assert etiqueta in al_r5, f"«{etiqueta}» no tiene ruta de alto riesgo hacia #R5"
+            assert etiqueta in a_fin, f"«{etiqueta}» no tiene ruta sin alto riesgo hacia FIN"
+
+    def test_la_regla_de_encaminamiento_esta_escrita_en_el_bloque(self):
+        """Las rutas son una tabla y el modelo no la aplica como una tabla: la regla en prosa es
+        lo que cubre la combinación que a nadie se le ocurrió tabular."""
+        bloque = _rutas_del_r4()
+        assert "REGLA DE ENCAMINAMIENTO" in bloque
+        assert "NUNCA quita una pregunta" in bloque
+        assert "La única salida a FIN desde #R4 es que el sistema NO sea de alto riesgo" in bloque
+
+    def test_el_r5_sigue_siendo_la_unica_puerta_del_art_27(self):
+        """Si el Art. 27 dejara de depender de #R5, esta clase estaría vigilando un pasillo que
+        ya no lleva a ninguna parte."""
+        bloque_r5 = SYSTEM_PROMPT_CHATBOT.split("#R5 · ")[1].split("\n\n")[0]
+        assert "Art. 27" in bloque_r5
+        assert "Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo" in bloque_r5
+
+
 _RE_MENCION = re.compile(r"Transparencia: ([^(→\n]+?) \(Art\. (50\.\d)\)")
+
+
+def _rutas_disparadas_por_una_funcion() -> list[str]:
+    """Las rutas de #R4 menos las dos de «ninguna función aplica», que son las únicas a las que
+    no se les puede exigir una etiqueta de transparencia."""
+    rutas = [ln for ln in _rutas_del_r4().splitlines() if ln.startswith("- ")]
+    assert rutas, "#R4 debería seguir teniendo rutas"
+    return [ln for ln in rutas if "Ninguna aplica" not in ln]
+
+
+def _sale_a_fin(ruta: str) -> bool:
+    return "→ FIN" in ruta
 
 
 def _rutas_del_r4() -> str:

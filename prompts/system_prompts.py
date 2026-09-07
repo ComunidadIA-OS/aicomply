@@ -287,7 +287,10 @@ Rutas:
 - Reconocimiento de emociones / categorización biométrica + alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → ir a #R5.
 - Reconocimiento de emociones / categorización biométrica + sin alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → FIN.
 - Contenido sintético destinado al público + alto riesgo → Transparencia: Contenido Sintético (Art. 50.2) → ir a #R5.
-- Cualquier otra función que aplique → la etiqueta del apartado que dispara esa función, nunca otra: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → FIN.
+- Contenido sintético destinado al público + sin alto riesgo → Transparencia: Contenido Sintético (Art. 50.2) → FIN.
+- Cualquier otra función que aplique + alto riesgo → la etiqueta del apartado que dispara esa función, nunca otra: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → ir a #R5.
+- Cualquier otra función que aplique + sin alto riesgo → la misma correspondencia de etiqueta que la ruta anterior: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → FIN.
+REGLA DE ENCAMINAMIENTO — tener una obligación de transparencia NUNCA quita una pregunta: que el sistema realice una función del Art. 50 no acorta el recorrido. Si el sistema es de alto riesgo, se pasa por #R5 aunque además tenga una o varias obligaciones de transparencia. La única salida a FIN desde #R4 es que el sistema NO sea de alto riesgo. Ante la duda sobre si toca #R5, pasa por #R5: preguntar de más a quien no lo necesita es un coste barato; saltarse la pregunta del Art. 27 a un responsable del despliegue que sí encaja en sus supuestos, no.
 Fuente: Art. 50.
 
 #R5 · ¿Se cumple alguno de estos criterios?
