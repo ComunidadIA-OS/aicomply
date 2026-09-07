@@ -284,10 +284,10 @@ ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no ca
 Rutas:
 - Ninguna aplica + sistema NO es de alto riesgo → FIN. ESCRIBE EL INFORME FINAL COMPLETO AHORA y emite [EVALUACION_COMPLETA]. No hagas más preguntas.
 - Ninguna aplica + sistema ES Implementador de alto riesgo → ir a #R5.
-- Reconocimiento de emociones / categorización biométrica + alto riesgo → Transparencia: Emoción y Biometría → ir a #R5.
-- Reconocimiento de emociones / categorización biométrica + sin alto riesgo → Transparencia: Emoción y Biometría → FIN.
-- Contenido sintético destinado al público + alto riesgo → Transparencia: Parecido del Contenido → ir a #R5.
-- Cualquier otra función que aplique → obligación de transparencia correspondiente → FIN.
+- Reconocimiento de emociones / categorización biométrica + alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → ir a #R5.
+- Reconocimiento de emociones / categorización biométrica + sin alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → FIN.
+- Contenido sintético destinado al público + alto riesgo → Transparencia: Contenido Sintético (Art. 50.2) → ir a #R5.
+- Cualquier otra función que aplique → la etiqueta del apartado que dispara esa función, nunca otra: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → FIN.
 Fuente: Art. 50.
 
 #R5 · ¿Se cumple alguno de estos criterios?

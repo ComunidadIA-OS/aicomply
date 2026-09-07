@@ -26,6 +26,9 @@ artículo en dos pestañas consecutivas.
         implementador privado de un sistema de empleo
   B19 - el evaluador atribuía al implementador el registro en la base de datos de la UE
   B21 - el evaluador se inventaba los apartados del Art. 26
+  B25 - el Art. 50 se atribuía a quien se tuviera delante. Por el lado del evaluador, una ruta
+        de #R4 mandaba la función del Art. 50.2 (del proveedor) a la etiqueta del Art. 50.4
+        (del responsable del despliegue)
 
 Y uno del recorrido manual del 7 de septiembre de 2026, sin número de auditoría todavía: el
 evaluador fechaba el informe en «Junio de 2025», dato que nadie le dio.
@@ -290,6 +293,92 @@ class TestElAltoRiesgoNoConvierteEnProveedor:
         """Hoy no tiene el bloque defectuoso y encamina la conversión por #E2. Que siga así."""
         assert "para todas las preguntas futuras" not in SYSTEM_PROMPT_CHATBOT_LOCAL
         assert "estado Convertirse en proveedor (Art. 25)" in SYSTEM_PROMPT_CHATBOT_LOCAL
+
+
+class TestRutasDelR4NombranSuApartado:
+    """Las cuatro etiquetas de transparencia se llaman por un nombre —«Contenido Sintético»,
+    «Parecido del Contenido»— que no dice su apartado, y el apartado es lo que decide el ROL:
+    50.1 y 50.2 obligan al proveedor, 50.3 y 50.4 al responsable del despliegue. Una ruta que
+    manda la función de un apartado a la etiqueta de otro registra el estado adicional del rol
+    contrario, y eso viaja en obligaciones_preliminares hasta la pestaña Cumplimiento.
+
+    Es lo que pasaba: «Contenido sintético destinado al público» (Art. 50.2, del proveedor)
+    salía etiquetado «Parecido del Contenido» (Art. 50.4, del responsable del despliegue).
+    Hermano de B25 por el otro lado del traspaso.
+    """
+
+    # Nombre de la etiqueta → apartado del Art. 50 que le corresponde, según la línea del
+    # catálogo de resultados que reparte los cuatro apartados entre sus dos destinatarios.
+    _ETIQUETAS = {
+        "Personas Físicas": "50.1",
+        "Contenido Sintético": "50.2",
+        "Emoción y Biometría": "50.3",
+        "Parecido del Contenido": "50.4",
+    }
+
+    def test_el_catalogo_de_resultados_sigue_repartiendo_los_cuatro_apartados(self):
+        """Es la fuente contra la que se contrastan las rutas: si cambia, este test manda
+        mirar las rutas antes de dar por bueno el cambio."""
+        linea = _linea_de_transparencia()
+        for etiqueta, apartado in self._ETIQUETAS.items():
+            assert f"{etiqueta} (Art. {apartado})" in linea, f"falta {etiqueta} en el catálogo"
+        assert "OBLIGACIONES DEL PROVEEDOR" in linea
+        assert "OBLIGACIONES DEL RESPONSABLE DEL DESPLIEGUE" in linea
+
+    def test_ninguna_ruta_nombra_una_etiqueta_con_el_apartado_de_otra(self):
+        """El guardián: en cada mención «Transparencia: <etiqueta> (Art. 50.x)» de las rutas,
+        la x tiene que ser la del apartado de esa etiqueta."""
+        for etiqueta, apartado in _menciones_de_las_rutas():
+            assert self._ETIQUETAS[etiqueta] == apartado, (
+                f"la ruta etiqueta «{etiqueta}» como Art. {apartado}, "
+                f"y le corresponde el Art. {self._ETIQUETAS[etiqueta]}"
+            )
+
+    def test_toda_etiqueta_de_las_rutas_lleva_su_apartado(self):
+        """Sin el apartado escrito al lado, el desajuste vuelve a ser invisible: el nombre de
+        la etiqueta no delata a qué rol pertenece."""
+        rutas = _rutas_del_r4()
+        assert _menciones_de_las_rutas(), "las rutas deberían seguir nombrando etiquetas"
+        for etiqueta in self._ETIQUETAS:
+            for trozo in rutas.split(f"Transparencia: {etiqueta}")[1:]:
+                assert trozo.lstrip().startswith("(Art. 50."), (
+                    f"una mención de «{etiqueta}» en las rutas no lleva su apartado"
+                )
+
+    def test_el_contenido_sintetico_no_vuelve_a_salir_como_parecido_del_contenido(self):
+        """El caso literal que falló, escrito aparte para que el diff lo enseñe."""
+        rutas = _rutas_del_r4()
+        assert (
+            "Contenido sintético destinado al público + alto riesgo → "
+            "Transparencia: Contenido Sintético (Art. 50.2)"
+        ) in rutas
+        assert "destinado al público + alto riesgo → Transparencia: Parecido" not in rutas
+
+    def test_cada_etiqueta_de_las_rutas_existe_en_el_catalogo_de_resultados(self):
+        """Una etiqueta inventada en las rutas no tendría destinatario declarado en ningún
+        sitio, que es la forma silenciosa del mismo fallo."""
+        for etiqueta, _ in _menciones_de_las_rutas():
+            assert etiqueta in self._ETIQUETAS
+
+
+_RE_MENCION = re.compile(r"Transparencia: ([^(→\n]+?) \(Art\. (50\.\d)\)")
+
+
+def _rutas_del_r4() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split("#R4 · ")[1].split("\n#R5 · ")[0]
+    return bloque.split("\nRutas:\n")[1]
+
+
+def _linea_de_transparencia() -> str:
+    lineas = [
+        ln for ln in SYSTEM_PROMPT_CHATBOT.splitlines() if ln.startswith("- Transparencia (Art. 50)")
+    ]
+    assert len(lineas) == 1, f"se esperaba una sola línea de Transparencia, hay {len(lineas)}"
+    return lineas[0]
+
+
+def _menciones_de_las_rutas() -> list[tuple[str, str]]:
+    return _RE_MENCION.findall(_rutas_del_r4())
 
 
 def _bloque_cambio_estado() -> str:
