@@ -1,0 +1,80 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.  
+Sector: Agencias de viajes y turismo  
+Clasificación: LIMITADO  
+Rol de la entidad: Implementador  
+Fecha: 08/09/2026 a las 00:36  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como LIMITADO con rol Implementador.
+
+La agencia cumple todas las obligaciones legales exigibles en este momento. La única área pendiente es una medida prudencial: verificar y exigir contractualmente al proveedor de la herramienta generativa el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026.
+
+2. Análisis de obligaciones
+
+Avance de implementación: 100 %  
+Cubiertas: 1   Parciales: 0   No cubiertas: 0   No aplica: 2  
+Recomendaciones/medidas prudenciales pendientes: 1 (no computan en el porcentaje legal)
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 4 — Alfabetización en IA  
+La empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa.  
+
+No aplica
+
+Art. 50.3 — Transparencia: emociones y biometría  
+Ninguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica.  
+
+Art. 50.4 — Divulgación de contenido artificial  
+El contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público.  
+
+C. Medidas prudenciales y puntos de vigilancia
+
+No computan en el porcentaje de cumplimiento legal.
+
+Art. 50.1 — Vigilancia: información al usuario (chatbot) (Atendida)  
+El chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA.  
+
+Art. 50.2 — Vigilancia: marcado de contenido sintético (Medida prudencial pendiente)  
+No se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico en formato legible por máquina antes del 2 de diciembre de 2026.  
+
+3. Áreas de mejora identificadas
+
+No se identificaron áreas de mejora pendientes.
+
+4. Plan de acción recomendado
+
+Acciones comunes a cualquier rol
+
+- Recomendado: Revisar anualmente las actualizaciones del AI Act y de las directrices de la Comisión Europea.
+
+Obligaciones como responsable del despliegue (Art. 50.3 y 50.4)
+
+- Aplicable actualmente (desde el 2 de agosto de 2026): Si el sistema realiza reconocimiento de emociones o categorización biométrica, informar de su funcionamiento a las personas físicas expuestas a él y tratar sus datos personales conforme al RGPD (Art. 50.3).
+- Aplicable actualmente (desde el 2 de agosto de 2026): Hacer público que el contenido ha sido generado o manipulado artificialmente en los dos supuestos del Art. 50.4: imágenes, audio o vídeo que constituyan una ultrasuplantación (deep fake), y texto publicado con el fin de informar al público sobre asuntos de interés público. Es divulgación al público, no un marcado técnico de la salida del sistema.
+
+Puntos de vigilancia sobre su proveedor (Art. 50.1 y 50.2)
+
+- Verificación (Art. 50.1 — obligación de su proveedor, en vigor desde el 2 de agosto de 2026): Comprobar que el sistema que ha contratado informa a las personas de que están interactuando con una IA, y exigirlo por contrato a su proveedor. La obligación existe y es de él; a su organización le corresponde verificar que la cumple.
+- Verificación (Art. 50.2 — obligación de su proveedor): Comprobar que su proveedor marca los resultados de salida del sistema en un formato legible por máquina que permita detectar que se han generado o manipulado artificialmente, y exigírselo por contrato. La fecha depende de cuándo se introdujo el sistema en el mercado: si es posterior al 2 de agosto de 2026, la obligación ya es exigible desde su comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el plazo vence el 2 de diciembre de 2026.
+
+5. Puntos que requieren revisión profesional
+
+- Verificar con el proveedor de la herramienta generativa que aplicará el marcado técnico en formato legible por máquina a los contenidos generados (Art. 50.2) antes del 2 de diciembre de 2026, y recogerlo por escrito en el contrato.
+- Verificar la recalificación de Art. 4 — Alfabetización en IA [transversal]: se registró como PARCIAL y después se cambió a CUBIERTA (turno 3).
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.8 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 00:36.

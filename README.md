@@ -147,7 +147,7 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
 
-> **Aviso:** los casos [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros cuatro todavía no:** sus carpetas conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+> **Aviso:** los casos [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado), [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros tres todavía no:** las carpetas del `00`, el `01` y el `04` conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 
