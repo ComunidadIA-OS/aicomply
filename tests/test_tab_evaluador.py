@@ -24,7 +24,12 @@ sobrevive al recorte del historial.
 import pytest
 import streamlit as st
 
-from src.tabs.evaluador import _inicializar_estado
+from src.tabs.avisos import CLAVE_DOC_RECORTADA
+from src.tabs.evaluador import (
+    _MAX_DOC_CARACTERES,
+    _inicializar_estado,
+    _preparar_documentacion,
+)
 
 _CLAVES = (
     "intro_vista",
@@ -33,6 +38,7 @@ _CLAVES = (
     "evaluacion_completada",
     "clasificacion_data",
     "readme_tecnico",
+    CLAVE_DOC_RECORTADA,
 )
 
 
@@ -58,3 +64,35 @@ def test_una_sesion_con_documentacion_se_la_pasa_al_chatbot(mock_provider):
         st.session_state.chatbot_evaluador.documentacion_aportada
         == "Red neuronal entrenada con imágenes térmicas."
     )
+
+
+class TestPrepararDocumentacion:
+    """El recorte de 6.000 caracteres dejó de ser inofensivo cuando la documentación pasó a
+    consultarse antes de cada pregunta del árbol: lo que se corta son respuestas que el
+    modelo no encontrará y volverá a preguntar."""
+
+    def test_lo_que_cabe_pasa_entero_y_sin_aviso(self):
+        texto = "ficha corta"
+        assert _preparar_documentacion(texto) == texto
+        assert CLAVE_DOC_RECORTADA not in st.session_state
+
+    def test_lo_que_no_cabe_se_recorta_al_limite(self):
+        recortado = _preparar_documentacion("x" * 20_000)
+        assert len(recortado) == _MAX_DOC_CARACTERES
+
+    def test_el_recorte_no_es_silencioso(self):
+        """El punto del arreglo: el corte ya existía, el aviso no."""
+        _preparar_documentacion("x" * 20_000)
+        assert st.session_state[CLAVE_DOC_RECORTADA] == (20_000, _MAX_DOC_CARACTERES)
+
+    def test_el_aviso_cuenta_los_caracteres_del_documento_entero(self):
+        """No los del recortado: la cifra que le falta al usuario es la que aportó."""
+        _preparar_documentacion("x" * 18_432)
+        originales, _ = st.session_state[CLAVE_DOC_RECORTADA]
+        assert originales == 18_432
+
+    def test_el_limite_del_aviso_es_el_del_recorte(self):
+        """Si alguien mueve uno y no el otro, el aviso miente sobre lo que se ha guardado."""
+        recortado = _preparar_documentacion("x" * 20_000)
+        _, conservados = st.session_state[CLAVE_DOC_RECORTADA]
+        assert conservados == len(recortado)

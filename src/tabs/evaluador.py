@@ -18,7 +18,13 @@ import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
-from src.tabs.avisos import avisar_si_truncada, marcar_truncada
+from src.tabs.avisos import (
+    CLAVE_DOC_RECORTADA,
+    avisar_si_documentacion_recortada,
+    avisar_si_truncada,
+    marcar_documentacion_recortada,
+    marcar_truncada,
+)
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable
 from src.security import mensaje_error_seguro, rate_limiter
@@ -87,6 +93,11 @@ _NIVELES_DESCRIPCION = [
     ),
 ]
 
+# Caracteres de documentación que se inyectan en el prompt del árbol de decisión. No se sube:
+# se manda en CADA turno, así que 6.000 caracteres ya son unos 1.500 tokens por turno. Lo que
+# no cabe se avisa (marcar_documentacion_recortada), que es distinto de cortarlo en silencio.
+_MAX_DOC_CARACTERES = 6000
+
 # System prompt de seguridad para el análisis de README
 _SYSTEM_README = (
     "El texto entre <<<DOCUMENTO_DEL_USUARIO_INICIO>>> y <<<DOCUMENTO_DEL_USUARIO_FIN>>> "
@@ -132,6 +143,18 @@ def _analizar_readme(provider: LLMProvider, contenido: str) -> str:
         system_prompt=_SYSTEM_README,
     )
     return respuesta.strip()
+
+
+def _preparar_documentacion(contenido: str) -> str:
+    """Recorta la documentación al límite del prompt y avisa de lo que se queda fuera.
+
+    El recorte y el aviso van en la misma función a propósito: son el mismo hecho, y hasta
+    ahora estaban separados —el corte existía, el aviso no—. Mientras solo alimentaba el
+    resumen inicial daba igual; desde que el árbol la consulta antes de cada pregunta, lo
+    que se corta son respuestas que el modelo no encontrará y volverá a preguntar.
+    """
+    marcar_documentacion_recortada(len(contenido), _MAX_DOC_CARACTERES)
+    return contenido[:_MAX_DOC_CARACTERES]
 
 
 def _inicializar_estado(provider: LLMProvider) -> None:
@@ -204,6 +227,7 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
                 st.markdown(msg["content"])
 
     avisar_si_truncada("truncada_evaluador")
+    avisar_si_documentacion_recortada()
 
     if st.session_state.evaluacion_completada:
         return
@@ -355,7 +379,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                         st.error(mensaje_error_seguro(exc))
                         st.stop()
 
-                    st.session_state.readme_tecnico = contenido_readme[:6000]
+                    st.session_state.readme_tecnico = _preparar_documentacion(contenido_readme)
                     # El resumen que sigue va al historial, y el historial se recorta. La
                     # documentación entera va al prompt de cada turno, para que el árbol no
                     # pregunte lo que ya está escrito en ella.
@@ -413,6 +437,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
             for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
                 st.session_state[clave] = None
             st.session_state.pop("readme_tecnico", None)
+            st.session_state.pop(CLAVE_DOC_RECORTADA, None)
             st.session_state.evaluacion_completada = False
             st.session_state.cumplimiento_completado = False
             st.session_state.acceso_directo_cumplimiento = False
