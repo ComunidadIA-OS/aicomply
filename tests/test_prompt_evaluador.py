@@ -352,10 +352,12 @@ class TestRutasDelR4NombranSuApartado:
         """El caso literal que falló, escrito aparte para que el diff lo enseñe."""
         rutas = _rutas_del_r4()
         assert (
-            "Contenido sintético destinado al público + alto riesgo → "
+            "Contenido sintético destinado al público + implementador de alto riesgo → "
             "Transparencia: Contenido Sintético (Art. 50.2)"
         ) in rutas
-        assert "destinado al público + alto riesgo → Transparencia: Parecido" not in rutas
+        assert "destinado al público + implementador de alto riesgo → Transparencia: Parecido" not in (
+            rutas
+        )
 
     def test_cada_etiqueta_de_las_rutas_existe_en_el_catalogo_de_resultados(self):
         """Una etiqueta inventada en las rutas no tendría destinatario declarado en ningún
@@ -375,27 +377,48 @@ class TestNingunaRutaDelR4SeSaltaElR5:
     produjera ultrasuplantaciones (Art. 50.4) nunca llegaba a #R5, mientras que el mismo
     implementador sin ninguna función del Art. 50 sí llegaba. Tener una obligación de
     transparencia de más hacía desaparecer una pregunta.
+
+    La condición es «implementador de alto riesgo», no «alto riesgo» a secas: el Art. 27.1
+    obliga a los responsables del despliegue y no a los proveedores, y #R5 lo dice en su cierre.
+    Escrita a secas, las rutas mandaban a #R5 al PROVEEDOR de un sistema de alto riesgo con
+    función de transparencia, a un nodo que dice que no debería estar ahí — y una contradicción
+    dentro del prompt la resuelve el modelo, no nosotros. Es la familia de B19 y B25: el Art. 27
+    acabando atribuido a un proveedor.
     """
 
-    def test_ninguna_ruta_disparada_por_una_funcion_sale_a_fin_sin_mirar_el_alto_riesgo(self):
+    _CONDICION = "implementador de alto riesgo"
+
+    def test_ninguna_ruta_disparada_por_una_funcion_sale_a_fin_sin_mirar_la_condicion(self):
         """La propiedad, escrita sobre todas las rutas y no sobre la que falló: da igual qué
         función se añada a #R4 en el futuro, si su ruta acaba en FIN tiene que haber acotado
-        antes el caso de alto riesgo."""
+        antes el caso del implementador de alto riesgo."""
         for ruta in _rutas_disparadas_por_una_funcion():
             if not _sale_a_fin(ruta):
                 continue
-            assert "sin alto riesgo" in ruta, (
-                f"esta ruta sale a FIN sin distinguir el alto riesgo, así que se salta #R5 y "
-                f"con él la pregunta del Art. 27: {ruta!r}"
+            assert f"no es {self._CONDICION}" in ruta.lower(), (
+                f"esta ruta sale a FIN sin excluir al implementador de alto riesgo, así que se "
+                f"salta #R5 y con él la pregunta del Art. 27: {ruta!r}"
             )
 
-    def test_toda_ruta_que_va_al_r5_lo_condiciona_al_alto_riesgo(self):
-        """La mitad simétrica: #R5 solo tiene sentido para un implementador de alto riesgo, así
-        que tampoco puede llegarse allí sin haberlo comprobado."""
-        for ruta in _rutas_disparadas_por_una_funcion():
+    def test_toda_ruta_que_va_al_r5_exige_implementador_de_alto_riesgo(self):
+        """La mitad simétrica, y la precisión que cierra la contradicción con el cierre de #R5:
+        no basta «+ alto riesgo», tiene que decir de qué rol. Sobre TODAS las rutas, incluida la
+        de «ninguna función aplica», que es la que ya lo decía bien."""
+        rutas = [r for r in _todas_las_rutas_del_r4() if "#R5" in r]
+        assert len(rutas) == 4, f"se esperaban cuatro rutas hacia #R5, hay {len(rutas)}"
+        for ruta in rutas:
+            assert self._CONDICION in ruta.lower(), (
+                f"manda a #R5 sin exigir el rol de implementador, así que un PROVEEDOR de alto "
+                f"riesgo acabaría en la pregunta del Art. 27, que no es suya: {ruta!r}"
+            )
+
+    def test_ninguna_ruta_condiciona_el_r5_al_alto_riesgo_a_secas(self):
+        """El literal que se está retirando. Sin esto, basta con volver a escribir «+ alto
+        riesgo» en una ruta para reabrir la contradicción sin que salte nada."""
+        for ruta in _todas_las_rutas_del_r4():
             if "#R5" not in ruta:
                 continue
-            assert "+ alto riesgo" in ruta, f"va a #R5 sin exigir alto riesgo: {ruta!r}"
+            assert "+ alto riesgo" not in ruta.lower(), f"vuelve a la condición a secas: {ruta!r}"
 
     def test_cada_funcion_tiene_sus_dos_ramas(self):
         """La forma de las líneas 287 y 288, exigida a todas: cada etiqueta necesita su salida a
@@ -406,8 +429,8 @@ class TestNingunaRutaDelR4SeSaltaElR5:
         a_fin = {e for r in _rutas_disparadas_por_una_funcion() if _sale_a_fin(r)
                  for e, _ in _RE_MENCION.findall(r)}
         for etiqueta in TestRutasDelR4NombranSuApartado._ETIQUETAS:
-            assert etiqueta in al_r5, f"«{etiqueta}» no tiene ruta de alto riesgo hacia #R5"
-            assert etiqueta in a_fin, f"«{etiqueta}» no tiene ruta sin alto riesgo hacia FIN"
+            assert etiqueta in al_r5, f"«{etiqueta}» no tiene ruta de implementador hacia #R5"
+            assert etiqueta in a_fin, f"«{etiqueta}» no tiene la rama que sale a FIN"
 
     def test_la_regla_de_encaminamiento_esta_escrita_en_el_bloque(self):
         """Las rutas son una tabla y el modelo no la aplica como una tabla: la regla en prosa es
@@ -415,7 +438,27 @@ class TestNingunaRutaDelR4SeSaltaElR5:
         bloque = _rutas_del_r4()
         assert "REGLA DE ENCAMINAMIENTO" in bloque
         assert "NUNCA quita una pregunta" in bloque
-        assert "La única salida a FIN desde #R4 es que el sistema NO sea de alto riesgo" in bloque
+        assert (
+            "La única salida a FIN desde #R4 es NO ser implementador de un sistema de alto riesgo"
+        ) in bloque
+
+    def test_la_regla_en_prosa_dice_lo_mismo_que_el_cierre_del_r5(self):
+        """La contradicción concreta que se cierra aquí: la regla decía «el sistema es de alto
+        riesgo» y el cierre de #R5 decía «eres Implementador de un sistema de alto riesgo». Dos
+        textos sobre la misma puerta, y el modelo eligiendo cuál obedecer. Que no pueda
+        reabrirse cambiando solo uno de los dos: los dos tienen que exigir el mismo rol, y la
+        regla tiene que decir además que el proveedor NO pasa por #R5."""
+        regla = _normalizar(_regla_de_encaminamiento())
+        cierre = _normalizar(_cierre_del_r5())
+        for texto in (regla, cierre):
+            assert "implementador de un sistema de alto riesgo" in texto.lower(), (
+                f"no exige el rol de implementador: {texto!r}"
+            )
+        assert "Art. 27.1" in cierre
+        # La mitad que solo puede vivir en la regla: el cierre de #R5 describe quién llega, pero
+        # no puede impedir que las rutas manden a alguien más.
+        assert "NO a los proveedores" in regla
+        assert "un PROVEEDOR de un sistema de alto riesgo sale a FIN" in regla
 
     def test_el_r5_sigue_siendo_la_unica_puerta_del_art_27(self):
         """Si el Art. 27 dejara de depender de #R5, esta clase estaría vigilando un pasillo que
@@ -428,16 +471,35 @@ class TestNingunaRutaDelR4SeSaltaElR5:
 _RE_MENCION = re.compile(r"Transparencia: ([^(→\n]+?) \(Art\. (50\.\d)\)")
 
 
+def _todas_las_rutas_del_r4() -> list[str]:
+    rutas = [ln for ln in _rutas_del_r4().splitlines() if ln.startswith("- ")]
+    assert rutas, "#R4 debería seguir teniendo rutas"
+    return rutas
+
+
 def _rutas_disparadas_por_una_funcion() -> list[str]:
     """Las rutas de #R4 menos las dos de «ninguna función aplica», que son las únicas a las que
     no se les puede exigir una etiqueta de transparencia."""
-    rutas = [ln for ln in _rutas_del_r4().splitlines() if ln.startswith("- ")]
-    assert rutas, "#R4 debería seguir teniendo rutas"
-    return [ln for ln in rutas if "Ninguna aplica" not in ln]
+    return [ln for ln in _todas_las_rutas_del_r4() if "Ninguna aplica" not in ln]
 
 
 def _sale_a_fin(ruta: str) -> bool:
     return "→ FIN" in ruta
+
+
+def _regla_de_encaminamiento() -> str:
+    return _rutas_del_r4().split("REGLA DE ENCAMINAMIENTO")[1].split("\nFuente:")[0]
+
+
+def _cierre_del_r5() -> str:
+    """La última línea de #R5: la que dice quién llega hasta aquí y de dónde sale el Art. 27."""
+    bloque = SYSTEM_PROMPT_CHATBOT.split("#R5 · ")[1].split("\n\n")[0]
+    return bloque.splitlines()[-1]
+
+
+def _normalizar(texto: str) -> str:
+    """Colapsa saltos y sangrías: la regla va en un párrafo largo y el cierre en una línea."""
+    return " ".join(texto.split())
 
 
 def _rutas_del_r4() -> str:
