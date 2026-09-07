@@ -17,6 +17,29 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.8 (2026-09-08): el árbol conserva el estado ya establecido y deja de convertir en
+#                          proveedor al implementador por el solo hecho de que el sistema sea
+#                          de alto riesgo. El Art. 50 se reparte por rol en el catálogo de
+#                          cumplimiento —50.1 y 50.2 obligan al proveedor; 50.3 y 50.4, al
+#                          responsable del despliegue—, con clave en cada entrada: a una
+#                          agencia de viajes implementadora se le imputó como carencia legal
+#                          con fecha límite el Art. 50.2, que no es suya. Al responsable del
+#                          despliegue el 50.1 y el 50.2 no se le retiran de la vista: se
+#                          presentan como obligación de su proveedor y punto de vigilancia
+#                          suyo, fuera del cómputo del porcentaje y nunca como carencia.
+#                          Corregido además el texto del 50.4, que describía la obligación del
+#                          50.2: no es marcado legible por máquina, es hacer público que el
+#                          contenido se ha generado o manipulado artificialmente, y solo en
+#                          sus dos supuestos —ultrasuplantación y texto de interés público—.
+#                          En el evaluador, el nodo #R4 dice de quién es cada función del Art.
+#                          50 y tres correcciones de encaminamiento: la ruta del contenido
+#                          sintético llevaba la etiqueta del 50.4 (del responsable del
+#                          despliegue) a una función del 50.2 (del proveedor); la ruta comodín
+#                          salía a FIN sin mirar el alto riesgo, así que una obligación de
+#                          transparencia de más hacía que el implementador de alto riesgo no
+#                          llegara a #R5 y se saltara la pregunta del Art. 27; y las ocho
+#                          rutas usan ya el mismo predicado, «implementador de alto riesgo»,
+#                          que es el que exige el cierre de #R5 y el Art. 27.1
 # 2026.09.7 (2026-09-07): el informe del evaluador deja de llevar fecha —la estampa la
 #                          aplicación, que es quien la sabe— tras abrir con «Fecha de
 #                          evaluación: Junio de 2025» un recorrido hecho el 7 de septiembre de
@@ -85,4 +108,22 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.7"
+PROMPT_VERSION = "2026.09.8"
+
+# Huella del contenido de cada prompt en el momento de estampar PROMPT_VERSION.
+#
+# La regla de arriba —incrementar al modificar los prompts— vivía solo en ese comentario, y
+# entre 2026.09.7 y 2026.09.8 se incumplió en seis commits seguidos: los dos recorridos del
+# ejemplo 02, el que imputaba una carencia legal falsa del Art. 50.2 y el que reparte el Art.
+# 50 por rol, salieron con el mismo «Prompt v2026.09.7» en el pie (hallazgo B30). Ahora la
+# regla la sostiene tests/test_prompt_version.py, que recalcula estas huellas y falla si
+# alguna no cuadra.
+#
+# Al cambiar un prompt: sube PROMPT_VERSION, añade su entrada de historial y pega aquí la
+# huella nueva, que el test imprime en el mensaje de fallo. No la actualices sola: sin subir
+# la versión, el pie de los informes vuelve a nombrar dos estados distintos con una cadena.
+PROMPT_HASHES = {
+    "system_prompts.py": "55c93f76e4235155d875b1eb280ad4f4a68e862f21cd0448c5c798e9e050a603",
+    "system_prompts_local.py": "86db6ae44fa04b51877b45ffbab297d5bd871f077976ebcd94821da9457aa499",
+    "system_prompt_cumplimiento.py": "a8073685385eb19a467e53a20e83d608bb2af25080c128793469bcdaa01fff3c",
+}
