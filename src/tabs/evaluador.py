@@ -22,6 +22,7 @@ from src.tabs.avisos import (
     CLAVE_DOC_RECORTADA,
     avisar_si_documentacion_recortada,
     avisar_si_truncada,
+    formatear_miles,
     marcar_documentacion_recortada,
     marcar_truncada,
 )
@@ -96,7 +97,13 @@ _NIVELES_DESCRIPCION = [
 # Caracteres de documentación que se inyectan en el prompt del árbol de decisión. No se sube:
 # se manda en CADA turno, así que 6.000 caracteres ya son unos 1.500 tokens por turno. Lo que
 # no cabe se avisa (marcar_documentacion_recortada), que es distinto de cortarlo en silencio.
+# Este es el ÚNICO recorte del contenido: los dos topes de entrada de abajo rechazan, no
+# recortan, para que la cifra que el aviso presenta como aportada sea la que aportó el usuario.
 _MAX_DOC_CARACTERES = 6000
+
+# Techos de entrada. Por encima de ellos la aplicación falla ruidosamente y no carga nada.
+_MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
+_MAX_PEGADO_CARACTERES = 500_000  # mismo orden de magnitud, por la otra vía de entrada
 
 # System prompt de seguridad para el análisis de README
 _SYSTEM_README = (
@@ -163,6 +170,26 @@ def _preparar_documentacion(contenido: str) -> str:
     """
     marcar_documentacion_recortada(len(contenido), _MAX_DOC_CARACTERES)
     return contenido[:_MAX_DOC_CARACTERES]
+
+
+def _error_texto_pegado(caracteres: int) -> str | None:
+    """Mensaje de error si el texto pegado no cabe por la vía de entrada, o None.
+
+    El área de texto no lleva `max_chars`: Streamlit recorta ahí en silencio, y ese corte
+    invisible envenenaba la cifra del aviso —quien pegaba 20.000 caracteres leía «se han
+    conservado los primeros 6.000 de los 8.000 aportados», una cifra fabricada por el propio
+    recorte del widget—. Bajar el tope al del prompt lo habría empeorado: con
+    len(contenido) == 6.000 exactos, marcar_documentacion_recortada nunca vería recorte y el
+    aviso no saltaría jamás. Así que se valida y se rechaza, como en la vía de fichero, y
+    _preparar_documentacion queda como el único recorte del contenido.
+    """
+    if caracteres <= _MAX_PEGADO_CARACTERES:
+        return None
+    return (
+        f"El texto pegado supera el límite de {formatear_miles(_MAX_PEGADO_CARACTERES)} "
+        f"caracteres ({formatear_miles(caracteres)}). Pegue solo la parte relevante de la "
+        "documentación."
+    )
 
 
 def _cargar_documentacion(
@@ -386,10 +413,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     height=120,
                     placeholder="Pegue el contenido de su README o documentación técnica...",
                     key="readme_paste",
-                    max_chars=8000,
                 )
-
-            _MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
 
             contenido_readme = ""
             if archivo:
@@ -399,7 +423,11 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     contenido_readme = archivo.read().decode("utf-8", errors="replace")
                     st.caption(f"Archivo cargado: {archivo.name} ({len(contenido_readme)} caracteres)")
             elif texto_pegado:
-                contenido_readme = texto_pegado
+                error_pegado = _error_texto_pegado(len(texto_pegado))
+                if error_pegado:
+                    st.error(error_pegado)
+                else:
+                    contenido_readme = texto_pegado
 
             if contenido_readme:
                 if st.button("Analizar documentación e iniciar evaluación", type="primary"):

@@ -34,7 +34,10 @@ from src.security import envolver_contenido_no_confiable
 from src.tabs.avisos import CLAVE_DOC_RECORTADA
 from src.tabs.evaluador import (
     _MAX_DOC_CARACTERES,
+    _MAX_PEGADO_CARACTERES,
+    _MAX_UPLOAD_BYTES,
     _cargar_documentacion,
+    _error_texto_pegado,
     _inicializar_estado,
     _preparar_documentacion,
 )
@@ -213,6 +216,20 @@ class TestCargarDocumentacion:
         assert "readme_tecnico" not in st.session_state
         assert chatbot.documentacion_aportada == ""
 
+    def test_un_texto_pegado_enorme_avisa_con_la_cifra_real(self):
+        """La cifra del aviso es la que aportó el usuario, no la de ningún tope intermedio.
+
+        Con el `max_chars=8000` que llevaba el área de texto, quien pegaba 20.000 caracteres
+        leía «se han conservado los primeros 6.000 de los 8.000 aportados»: Streamlit
+        recortaba antes, en silencio, y la aplicación presentaba como aportado un número que
+        se había fabricado ella con su propio recorte.
+        """
+        _cargar_documentacion(SpyProvider(), self._chatbot(), "x" * 20_000)
+
+        originales, conservados = st.session_state[CLAVE_DOC_RECORTADA]
+        assert originales == 20_000
+        assert conservados == _MAX_DOC_CARACTERES
+
     def test_un_fallo_del_proveedor_no_deja_el_aviso_puesto(self):
         """El aviso se marca al recortar, antes de llamar al modelo: si la llamada falla,
         anunciaría el recorte de una documentación que no está en sesión."""
@@ -220,3 +237,38 @@ class TestCargarDocumentacion:
             _cargar_documentacion(ProviderQueFalla(), self._chatbot(), "x" * 20_000)
 
         assert CLAVE_DOC_RECORTADA not in st.session_state
+
+
+class TestTechoDelTextoPegado:
+    """Las dos vías de entrada se comportan igual ante un documento demasiado grande: la de
+    fichero ya fallaba ruidosamente por encima de 500 KB, la de pegado callaba."""
+
+    def test_lo_normal_no_da_error(self):
+        assert _error_texto_pegado(6_000) is None
+
+    def test_muy_por_encima_del_limite_del_prompt_tampoco(self):
+        """El techo de entrada no es el del prompt: 20.000 caracteres entran, se recortan
+        para el prompt y el aviso lo dice. Lo que no puede es rechazarlos en silencio."""
+        assert _error_texto_pegado(20_000) is None
+
+    def test_justo_en_el_techo_entra(self):
+        assert _error_texto_pegado(_MAX_PEGADO_CARACTERES) is None
+
+    def test_por_encima_del_techo_hay_error(self):
+        error = _error_texto_pegado(_MAX_PEGADO_CARACTERES + 1)
+        assert error is not None
+
+    def test_el_error_dice_el_techo_y_lo_que_se_pego(self):
+        error = _error_texto_pegado(812_430)
+        assert "500.000" in error
+        assert "812.430" in error
+
+    def test_el_techo_de_pegado_acompana_al_de_subida(self):
+        """Mismo orden de magnitud: la vía de entrada no debería decidir cuánto cabe."""
+        assert _MAX_PEGADO_CARACTERES == _MAX_UPLOAD_BYTES
+
+    def test_el_techo_deja_sitio_de_sobra_al_recorte_del_prompt(self):
+        """Si el techo bajara hasta el límite del prompt, len(contenido) valdría exactamente
+        el límite, marcar_documentacion_recortada no vería recorte y el aviso no saltaría
+        nunca. El techo rechaza; el que recorta es _preparar_documentacion."""
+        assert _MAX_PEGADO_CARACTERES > _MAX_DOC_CARACTERES

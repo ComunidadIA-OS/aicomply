@@ -58,7 +58,7 @@ TEXTO_DOCUMENTACION_RECORTADA = (
 )
 
 
-def _miles(n: int) -> str:
+def formatear_miles(n: int) -> str:
     """Formato español de millares: 6.000, no 6,000."""
     return f"{n:,}".replace(",", ".")
 
@@ -97,6 +97,6 @@ def avisar_si_documentacion_recortada() -> None:
     originales, conservados = datos
     st.warning(
         TEXTO_DOCUMENTACION_RECORTADA.format(
-            conservados=_miles(conservados), originales=_miles(originales)
+            conservados=formatear_miles(conservados), originales=formatear_miles(originales)
         )
     )
