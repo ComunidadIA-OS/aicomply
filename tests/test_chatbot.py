@@ -24,20 +24,27 @@ _SYSTEM = "system prompt de prueba"
 
 
 class SpyProvider:
-    """Provider de test (duck typing) que captura el system_prompt recibido."""
+    """Provider de test (duck typing) que captura el system_prompt y los mensajes recibidos.
+
+    Guarda los mensajes porque lo que importa de la ventana del historial no es lo que
+    devuelva un helper interno, sino lo que acaba viendo el modelo.
+    """
 
     es_local = False
 
     def __init__(self, respuesta: str = "respuesta de prueba"):
         self.respuesta = respuesta
         self.ultimo_system_prompt: str = ""
+        self.ultimos_mensajes: list[dict] = []
 
     def chat(self, _messages, system_prompt: str = "") -> str:
         self.ultimo_system_prompt = system_prompt
+        self.ultimos_mensajes = list(_messages)
         return self.respuesta
 
     def chat_stream(self, _messages, system_prompt: str = ""):
         self.ultimo_system_prompt = system_prompt
+        self.ultimos_mensajes = list(_messages)
         yield self.respuesta
 
 

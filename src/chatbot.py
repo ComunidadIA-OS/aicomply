@@ -373,16 +373,69 @@ class AIComplyChat:
 
         Conserva siempre los dos primeros mensajes (descripción inicial del sistema)
         y los (max_mensajes-2) más recientes para mantener el contexto inmediato.
+
+        El recorte DEJA RASTRO. Antes no lo hacía, y esa es la mitad de B3: el prompt del
+        evaluador ordena en mayúsculas no repreguntar un nodo ya cerrado, pero si el nodo se ha
+        caído de la ventana el modelo no puede obedecer y nadie se entera de por qué. Una línea
+        de log no es que el usuario se entere —eso llega con el registro de nodos de
+        SPEC-TRAZA-AUDITABLE—, pero deja rastro donde antes no había ninguno.
+
+        Los dos avisos están en niveles distintos a propósito:
+
+        - El conteo va en INFO porque recortar es ESPERADO, no anómalo. En Cumplimiento es
+          rutina: formatear_obligaciones_registradas() existe precisamente porque la ventana se
+          queda corta en un recorrido de 22 obligaciones. Emitirlo como WARNING llenaría el log
+          de alarmas en cada recorrido sano, y un detector que salta en el caso sano enseña a
+          desconfiar del aviso hasta que deja de servir para nada.
+        - El de la ventana sin bloque reciente va en WARNING porque es una ASERCIÓN DEFENSIVA:
+          no puede dispararse mientras el historial alterne pregunta→respuesta, que es lo único
+          que la aplicación genera. Si aparece, la suposición rota está en quien escribe el
+          historial —no en esta función—, y ahí es donde hay que ir a mirar.
+
+        No se avisa en cambio de que la ventana empiece por una respuesta huérfana: eso lo
+        impide el realineado de aquí abajo, así que el aviso sería inalcanzable y anunciaría una
+        vigilancia que no existe. Esa es la diferencia con el anterior: aquel lo garantiza esta
+        misma función; este depende de un invariante que se mantiene fuera.
+
+        El bloque reciente empieza en el arranque de un intercambio, y cuál es ese arranque
+        depende del flujo: con documentación aportada el historial empieza por el resumen que
+        redacta la aplicación, que es un mensaje del ASISTENTE (src/tabs/evaluador.py), y los
+        intercambios van pregunta→respuesta; sin documentación empieza por el usuario y van
+        mensaje→respuesta. Por eso el corte se alinea con el rol de historial[0] y no con "user"
+        fijo: con "user" fijo, en el flujo con documentación se descartaba la pregunta y se
+        conservaba la respuesta, y el modelo recibía un "Nada" sin saber a qué contestaba. Eso
+        no es pérdida de contexto, es contexto engañoso.
         """
         limite = max_mensajes if max_mensajes is not None else self._max_historial
         if len(self.historial) <= limite:
             return self.historial
+
         primeros = self.historial[:2]
         resto = self.historial[-(limite - 2):]
-        # Garantizar que el primer mensaje del bloque reciente sea del usuario
-        while resto and resto[0]["role"] != "user":
+
+        rol_de_arranque = self.historial[0]["role"]
+        while resto and resto[0]["role"] != rol_de_arranque:
             resto = resto[1:]
-        return primeros + resto
+
+        ventana = primeros + resto
+        logger.info(
+            "Historial recortado: %d de %d mensajes quedan fuera de la ventana (límite %d). "
+            "El modelo ya no ve esos turnos, así que no puede aplicar sobre ellos las reglas "
+            "de no retroceso del prompt.",
+            len(self.historial) - len(ventana), len(self.historial), limite,
+        )
+        if not resto:
+            # Aserción defensiva: con la alternancia pregunta→respuesta que produce la
+            # aplicación, el realineado descarta como mucho un mensaje y resto nunca se vacía.
+            # Si esto salta, alguien ha escrito en el historial una tirada de mensajes del
+            # mismo rol y el modelo va a responder viendo solo la descripción inicial.
+            logger.warning(
+                "La ventana ha perdido el bloque reciente COMPLETO al realinearlo con el "
+                "arranque de intercambio (rol %r): solo quedan los dos primeros mensajes. "
+                "El historial no alterna pregunta/respuesta; revise quién lo ha escrito.",
+                rol_de_arranque,
+            )
+        return ventana
 
     def _registrar_conflicto(self, previa: dict, nueva: dict) -> None:
         """Anota la recalificación de una obligación ya registrada.

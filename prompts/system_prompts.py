@@ -219,9 +219,13 @@ Fuente: Art. 6 punto 3.
 - Si se marca alguna → estado ALTO RIESGO → ir a #S1
 Fuente: Art. 25 punto 3, Anexo I.
 
-CONDICIONES DE CAMBIO DE ESTADO (aplican en #HR3, #HR5 y #HR6 cuando el resultado es ALTO RIESGO):
-Si la entidad es Proveedor: estado ALTO RIESGO → ir a #S1.
-Si la entidad es cualquier otra: además de ALTO RIESGO, pasa a Convertirse en proveedor para todas las preguntas futuras → ir a #S1.
+CONDICIONES DE CAMBIO DE ESTADO (aplican en #HR3, #HR5 y #HR6):
+El estado ALTO RIESGO NO cambia el rol por sí solo, en ningún nodo. La conversión en proveedor la activan únicamente:
+- #E2, cuando se marca alguna de las TRES circunstancias tasadas del Art. 25.1: poner su nombre o marca en un sistema de alto riesgo ya introducido en el mercado o puesto en servicio; modificarlo sustancialmente de manera que siga siendo de alto riesgo; o modificar la finalidad prevista de un sistema que no se consideraba de alto riesgo de tal manera que pase a serlo.
+- La conjunción #E3 + #HR6, cuando se cumplen las DOS circunstancias del Art. 25.3: que el sistema de IA de alto riesgo se introduzca en el mercado junto con el producto bajo el nombre o la marca del fabricante del producto, o que se ponga en servicio bajo su nombre o marca después de que el producto haya sido introducido en el mercado.
+Desplegar, distribuir o importar un sistema de alto riesgo NO es ninguna de esas circunstancias y NO convierte en proveedor: el rol sigue siendo el que quedó fijado en #E1. Un responsable del despliegue de un sistema del Anexo III recibe las obligaciones del Art. 26, no las del Art. 16.
+En todos los casos → ir a #S1.
+Fuente: Art. 25 puntos 1 y 3.
 
 BLOQUE #S — Ámbito de aplicación
 NOTA PARA EL BLOQUE #S: Este bloque únicamente determina si el Reglamento es territorialmente aplicable. NO redefine el tipo de entidad ni el rol ya establecidos en el Bloque #E. NUNCA vuelvas a preguntar por el tipo de entidad en este bloque ni en los siguientes.

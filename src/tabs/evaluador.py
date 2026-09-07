@@ -105,6 +105,19 @@ _MAX_DOC_CARACTERES = 6000
 _MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
 _MAX_PEGADO_CARACTERES = 500_000  # mismo orden de magnitud, por la otra vía de entrada
 
+# Ventana de historial del evaluador. Tiene que sostener un recorrido COMPLETO del Anexo III,
+# incluido el doble rol: el árbol obliga a una pasada por rol y las reglas de no retroceso del
+# prompt son inaplicables sobre un nodo que ya no está en el contexto. El recuento de nodos da
+# 34 mensajes de suelo para el doble rol, sin una sola pregunta de aclaración.
+#
+# 60 y no 50 por la asimetría del error, no por el margen: quedarse corto devuelve el bucle
+# —la evaluación no cierra y se quema un recorrido pagado—, y pasarse cuesta ~20 % más de
+# tokens por turno. Los dos costes no son del mismo orden.
+#
+# tests/test_ventana_evaluador.py ata este número al recuento de nodos del árbol y falla si
+# el árbol crece.
+MAX_HISTORIAL_EVALUADOR = 60
+
 # System prompt de seguridad para el análisis de README
 _SYSTEM_README = (
     "El texto entre <<<DOCUMENTO_DEL_USUARIO_INICIO>>> y <<<DOCUMENTO_DEL_USUARIO_FIN>>> "
@@ -192,6 +205,17 @@ def _error_texto_pegado(caracteres: int) -> str | None:
     )
 
 
+def crear_chatbot_evaluador(provider: LLMProvider) -> AIComplyChat:
+    """Único constructor del chatbot del evaluador. Espejo de _inicializar_chatbot_cumplimiento.
+
+    Existe por lo que pasó en B3: el fallo no fue que 10 fuera un mal número, fue que el
+    evaluador dependiera de un número que nadie eligió para él. Cumplimiento pasaba su valor
+    explícito y sobrevivió; el evaluador se quedaba con el defecto en seis sitios de llamada
+    distintos. Con una sola factoría no hay nada que desincronizar.
+    """
+    return AIComplyChat(provider=provider, max_historial=MAX_HISTORIAL_EVALUADOR)
+
+
 def _cargar_documentacion(
     provider: LLMProvider, chatbot: AIComplyChat, contenido: str
 ) -> str:
@@ -226,7 +250,7 @@ def _inicializar_estado(provider: LLMProvider) -> None:
     if "mensajes_evaluador" not in st.session_state:
         st.session_state.mensajes_evaluador = []
     if "chatbot_evaluador" not in st.session_state:
-        chatbot = AIComplyChat(provider=provider)
+        chatbot = crear_chatbot_evaluador(provider)
         # Una sesión que ya traía documentación (recarga de la página) la recupera aquí, igual
         # que hace la pestaña Cumplimiento al construir su chatbot.
         chatbot.documentacion_aportada = st.session_state.get("readme_tecnico", "")
@@ -501,7 +525,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
             st.session_state.cumplimiento_completado = False
             st.session_state.acceso_directo_cumplimiento = False
             st.session_state.intro_vista = False
-            st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+            st.session_state.chatbot_evaluador = crear_chatbot_evaluador(provider)
             st.session_state.chatbot_cumplimiento = None
             st.rerun()
         return

@@ -28,13 +28,12 @@ from config import (
     OPENAI_COMPATIBLE_BASE_URL,
     OPENAI_COMPATIBLE_MODEL,
 )
-from src.chatbot import AIComplyChat
 from src.clasificaciones import normalizar_clasificacion
 from src.llm.factory import crear_provider, crear_provider_desde_env
 from src.reconciliacion import reconciliar
 from src.security import mensaje_error_seguro, validar_base_url
 from src.tabs.cumplimiento import _inicializar_chatbot_cumplimiento, mostrar_tab_cumplimiento
-from src.tabs.evaluador import mostrar_tab_evaluador
+from src.tabs.evaluador import crear_chatbot_evaluador, mostrar_tab_evaluador
 from src.tabs.informe import mostrar_tab_informe
 
 st.set_page_config(
@@ -179,7 +178,7 @@ def _importar_sesion(raw: bytes, provider) -> None:
 
     _canonizar_clasificacion_importada()
 
-    chatbot_eval = AIComplyChat(provider=provider)
+    chatbot_eval = crear_chatbot_evaluador(provider)
     chatbot_eval.historial = list(datos.get("mensajes_evaluador") or [])
     chatbot_eval.evaluacion_completa = bool(datos.get("evaluacion_completada"))
     st.session_state.chatbot_evaluador = chatbot_eval
@@ -289,7 +288,9 @@ def _init_session() -> None:
 
     if "chatbot_evaluador" not in st.session_state:
         if st.session_state.get("provider_configurado") and st.session_state.get("provider"):
-            st.session_state.chatbot_evaluador = AIComplyChat(provider=st.session_state.provider)
+            st.session_state.chatbot_evaluador = crear_chatbot_evaluador(
+                st.session_state.provider
+            )
         else:
             st.session_state.chatbot_evaluador = None
 
@@ -506,7 +507,7 @@ def mostrar_selector_provider() -> None:
             provider = crear_provider(config_provider)
             st.session_state.provider = provider
             st.session_state.provider_configurado = True
-            st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+            st.session_state.chatbot_evaluador = crear_chatbot_evaluador(provider)
             st.rerun()
         except Exception as exc:
             st.error(mensaje_error_seguro(exc))
@@ -589,7 +590,7 @@ with st.sidebar:
         st.session_state.evaluacion_completada = False
         st.session_state.cumplimiento_completado = False
         st.session_state.acceso_directo_cumplimiento = False
-        st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+        st.session_state.chatbot_evaluador = crear_chatbot_evaluador(provider)
         st.session_state.chatbot_cumplimiento = None
         st.rerun()
 

@@ -222,6 +222,81 @@ class TestElInformeNoLlevaFecha:
         assert "No inventes ningún otro dato" in SYSTEM_PROMPT_CHATBOT_LOCAL
 
 
+class TestElAltoRiesgoNoConvierteEnProveedor:
+    """El árbol convertía en proveedor a todo implementador de un sistema de alto riesgo.
+
+    El bloque de condiciones de cambio de estado decía que si la entidad no es Proveedor,
+    «además de ALTO RIESGO, pasa a Convertirse en proveedor para todas las preguntas futuras».
+    El Art. 25.1 solo convierte en tres circunstancias tasadas —poner nombre o marca,
+    modificación sustancial, o cambio de la finalidad prevista que vuelva el sistema de alto
+    riesgo— y desplegar no es ninguna de ellas.
+
+    Doble consecuencia: jurídicamente, toda PYME implementadora del Anexo III salía con las
+    obligaciones del Art. 16 en vez de las del Art. 26; mecánicamente, cambiar el rol activaba
+    la sección 2.5 y con ella un recorrido completo por cada rol, alargando el recorrido justo
+    cuando la ventana del historial ya no lo sostenía (ver tests/test_ventana_evaluador.py).
+    """
+
+    def test_el_alto_riesgo_ya_no_convierte_al_que_no_es_proveedor(self):
+        assert (
+            "pasa a Convertirse en proveedor para todas las preguntas futuras"
+            not in SYSTEM_PROMPT_CHATBOT
+        ), "la conversión automática por ALTO RIESGO no está en el Art. 25"
+
+    def test_el_bloque_lo_dice_en_positivo_y_no_solo_lo_calla(self):
+        """B15 y B17: borrar sin sustituir deja el hueco por el que el modelo vuelve a deducir."""
+        bloque = _bloque_cambio_estado()
+        assert "NO cambia el rol por sí solo" in bloque
+        assert "Art. 25.1" in bloque and "Art. 25.3" in bloque
+        assert "TRES circunstancias" in bloque and "DOS circunstancias" in bloque
+
+    def test_el_bloque_desactiva_la_salida_que_se_vio_en_el_recorrido(self):
+        bloque = _bloque_cambio_estado()
+        assert "Desplegar, distribuir o importar" in bloque
+        assert "NO convierte en proveedor" in bloque
+        assert "Art. 26" in bloque, "hay que decir qué obligaciones le tocan, no solo cuáles no"
+
+    def test_ningun_nodo_del_bloque_hr_cambia_el_rol(self):
+        """#HR6 no convierte «por ser ALTO RIESGO»: cierra el test del Art. 25.3 que abrió #E3.
+
+        Si se escribe como que un nodo del bloque #HR cambia el rol, dentro de tres semanas
+        alguien lo lee así y volvemos al punto de partida.
+        """
+        bloque = _bloque_cambio_estado()
+        assert "en ningún nodo" in bloque
+        assert "#E3 + #HR6" in bloque, "la conversión del fabricante es la conjunción, no #HR6"
+
+    # ── La otra dirección: lo que el árbol SÍ debe seguir convirtiendo ──────────────
+
+    def test_e2_sigue_activando_la_conversion_del_art_25_1(self):
+        """Una regla comprobada solo en la dirección que se acaba de arreglar es media regla."""
+        assert "se activa el estado Convertirse en proveedor (Art. 25)" in SYSTEM_PROMPT_CHATBOT
+
+    def test_e2_conserva_las_tres_circunstancias_tasadas(self):
+        bloque = SYSTEM_PROMPT_CHATBOT.split("#E2 ·")[1].split("#E3 ·")[0]
+        assert "Poner un nombre o marca diferente en el sistema" in bloque
+        assert "Modificar la finalidad prevista" in bloque
+        assert "Realizar una modificación sustancial" in bloque
+
+    def test_la_ruta_del_fabricante_de_producto_sigue_en_pie(self):
+        assert "#E3 · (Solo Fabricante de producto)" in SYSTEM_PROMPT_CHATBOT
+        assert "#HR6 · (Fabricante de producto)" in SYSTEM_PROMPT_CHATBOT
+
+    def test_la_regla_simetrica_de_roles_sigue_en_el_prompt(self):
+        """El rol solo lo fijan #E1 y #E2; es la regla que el bloque contradecía."""
+        assert "REGLA SIMÉTRICA — No añadir roles no confirmados:" in SYSTEM_PROMPT_CHATBOT
+
+    def test_el_prompt_local_no_gana_la_conversion_generica(self):
+        """Hoy no tiene el bloque defectuoso y encamina la conversión por #E2. Que siga así."""
+        assert "para todas las preguntas futuras" not in SYSTEM_PROMPT_CHATBOT_LOCAL
+        assert "estado Convertirse en proveedor (Art. 25)" in SYSTEM_PROMPT_CHATBOT_LOCAL
+
+
+def _bloque_cambio_estado() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split("CONDICIONES DE CAMBIO DE ESTADO")[1]
+    return bloque.split("BLOQUE #S")[0]
+
+
 def _seccion_7() -> str:
     bloque = SYSTEM_PROMPT_CHATBOT.split("7. FORMATO DEL INFORME FINAL")[1]
     return bloque.split("8. REGLAS DE SEGURIDAD Y LÍMITES")[0]
