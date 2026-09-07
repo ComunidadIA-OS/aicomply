@@ -129,8 +129,16 @@ Para comenzar: ¿puede describirme brevemente qué hace el sistema de IA que qui
 
 
 def _analizar_readme(provider: LLMProvider, contenido: str) -> str:
-    """Extrae una descripción del sistema de IA a partir del README."""
-    contenido_envuelto = envolver_contenido_no_confiable(contenido[:8000])
+    """Extrae una descripción del sistema de IA a partir del README.
+
+    Recibe la documentación YA recortada por _preparar_documentacion, y no vuelve a
+    recortarla: el resumen que sale de aquí y el documento que se inyecta en cada turno
+    tienen que ser el mismo texto. Cuando este análisis leía 8.000 caracteres y el árbol
+    recibía 6.000, un documento intermedio producía un resumen que el usuario confirmaba
+    —y que a partir de ahí es un hecho aceptado de la conversación— sobre párrafos que la
+    documentación inyectada ya no contenía: el modelo podía repreguntarlos o contradecirlos.
+    """
+    contenido_envuelto = envolver_contenido_no_confiable(contenido)
     respuesta = provider.chat(
         messages=[
             {
@@ -155,6 +163,33 @@ def _preparar_documentacion(contenido: str) -> str:
     """
     marcar_documentacion_recortada(len(contenido), _MAX_DOC_CARACTERES)
     return contenido[:_MAX_DOC_CARACTERES]
+
+
+def _cargar_documentacion(
+    provider: LLMProvider, chatbot: AIComplyChat, contenido: str
+) -> str:
+    """Recorta la documentación, la analiza, la deja en sesión y devuelve el resumen.
+
+    Los tres pasos van juntos porque lo que importa es su orden: se recorta primero y se
+    analiza lo recortado, de forma que el resumen que el usuario confirmará y el documento
+    que se inyecta en cada turno son el mismo texto.
+
+    Si el proveedor falla, propaga la excepción sin dejar la sesión a medias: no se carga
+    documentación y se retira el aviso de recorte que ya se había marcado, que si no quedaría
+    anunciando el recorte de un documento que no está.
+    """
+    documentacion = _preparar_documentacion(contenido)
+    try:
+        descripcion = _analizar_readme(provider, documentacion)
+    except Exception:
+        st.session_state.pop(CLAVE_DOC_RECORTADA, None)
+        raise
+
+    st.session_state.readme_tecnico = documentacion
+    # El resumen va al historial, y el historial se recorta. La documentación va al prompt
+    # de cada turno, para que el árbol no pregunte lo que ya está escrito en ella.
+    chatbot.documentacion_aportada = documentacion
+    return descripcion
 
 
 def _inicializar_estado(provider: LLMProvider) -> None:
@@ -374,16 +409,12 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                         st.stop()
                     try:
                         with st.spinner("Analizando documentación..."):
-                            descripcion = _analizar_readme(provider, contenido_readme)
+                            descripcion = _cargar_documentacion(
+                                provider, chatbot, contenido_readme
+                            )
                     except Exception as exc:
                         st.error(mensaje_error_seguro(exc))
                         st.stop()
-
-                    st.session_state.readme_tecnico = _preparar_documentacion(contenido_readme)
-                    # El resumen que sigue va al historial, y el historial se recorta. La
-                    # documentación entera va al prompt de cada turno, para que el árbol no
-                    # pregunte lo que ya está escrito en ella.
-                    chatbot.documentacion_aportada = st.session_state.readme_tecnico
 
                     mensaje_inicio = (
                         "He analizado la documentación técnica proporcionada. "
