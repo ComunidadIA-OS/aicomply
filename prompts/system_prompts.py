@@ -282,7 +282,7 @@ ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no ca
 - Ninguna de las anteriores
 
 Rutas:
-- Ninguna aplica + sistema NO es de alto riesgo → FIN. ESCRIBE EL INFORME FINAL COMPLETO AHORA y emite [EVALUACION_COMPLETA]. No hagas más preguntas.
+- Ninguna aplica + no es implementador de alto riesgo → FIN. ESCRIBE EL INFORME FINAL COMPLETO AHORA y emite [EVALUACION_COMPLETA]. No hagas más preguntas.
 - Ninguna aplica + sistema ES Implementador de alto riesgo → ir a #R5.
 - Reconocimiento de emociones / categorización biométrica + implementador de alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → ir a #R5.
 - Reconocimiento de emociones / categorización biométrica + no es implementador de alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → FIN.

@@ -384,17 +384,40 @@ class TestNingunaRutaDelR4SeSaltaElR5:
     función de transparencia, a un nodo que dice que no debería estar ahí — y una contradicción
     dentro del prompt la resuelve el modelo, no nosotros. Es la familia de B19 y B25: el Art. 27
     acabando atribuido a un proveedor.
+
+    Y el predicado es el mismo en las OCHO rutas, sin excepción. La de «ninguna función aplica»
+    decía «sistema NO es de alto riesgo» mientras su pareja decía «ES Implementador de alto
+    riesgo»: un proveedor de un sistema de alto riesgo sin función del Art. 50 no encajaba
+    literalmente en ninguna de las dos. Lo resolvía la regla en prosa, pero un par que no usa el
+    predicado de los demás es por donde la contradicción se reabre, así que estas comprobaciones
+    se hacen sobre todas las rutas y ninguna queda exenta.
     """
 
     _CONDICION = "implementador de alto riesgo"
+    # 8 = las 6 rutas originales de #R4 más las dos ramas que salieron al partir el comodín y
+    # al darle al contenido sintético la suya. Fijar el número es lo que impide que una ruta
+    # nueva entre sin predicado y no la mire nadie.
+    _TOTAL_RUTAS = 8
 
-    def test_ninguna_ruta_disparada_por_una_funcion_sale_a_fin_sin_mirar_la_condicion(self):
-        """La propiedad, escrita sobre todas las rutas y no sobre la que falló: da igual qué
-        función se añada a #R4 en el futuro, si su ruta acaba en FIN tiene que haber acotado
-        antes el caso del implementador de alto riesgo."""
-        for ruta in _rutas_disparadas_por_una_funcion():
-            if not _sale_a_fin(ruta):
-                continue
+    def test_las_rutas_se_reparten_en_dos_destinos_y_no_falta_ninguna(self):
+        """El recuento que sostiene a los dos tests siguientes: si una ruta no fuera ni a #R5 ni
+        a FIN, o si apareciera una nueva, las comprobaciones de abajo la pasarían por alto."""
+        rutas = _todas_las_rutas_del_r4()
+        assert len(rutas) == self._TOTAL_RUTAS, (
+            f"se esperaban {self._TOTAL_RUTAS} rutas en #R4, hay {len(rutas)}: si has añadido o "
+            f"quitado una, ajusta el recuento y comprueba que lleva el predicado de las demás"
+        )
+        al_r5 = [r for r in rutas if "#R5" in r]
+        a_fin = [r for r in rutas if _sale_a_fin(r)]
+        assert len(al_r5) + len(a_fin) == len(rutas), "hay rutas sin destino, o con los dos"
+
+    def test_toda_ruta_que_sale_a_fin_excluye_al_implementador_de_alto_riesgo(self):
+        """Sobre las OCHO, no solo sobre las disparadas por una función: da igual qué ruta se
+        añada a #R4 en el futuro, si acaba en FIN tiene que haber excluido antes al implementador
+        de alto riesgo, o se lleva por delante la pregunta del Art. 27."""
+        rutas = [r for r in _todas_las_rutas_del_r4() if _sale_a_fin(r)]
+        assert rutas, "#R4 debería seguir teniendo salidas a FIN"
+        for ruta in rutas:
             assert f"no es {self._CONDICION}" in ruta.lower(), (
                 f"esta ruta sale a FIN sin excluir al implementador de alto riesgo, así que se "
                 f"salta #R5 y con él la pregunta del Art. 27: {ruta!r}"
@@ -402,14 +425,23 @@ class TestNingunaRutaDelR4SeSaltaElR5:
 
     def test_toda_ruta_que_va_al_r5_exige_implementador_de_alto_riesgo(self):
         """La mitad simétrica, y la precisión que cierra la contradicción con el cierre de #R5:
-        no basta «+ alto riesgo», tiene que decir de qué rol. Sobre TODAS las rutas, incluida la
-        de «ninguna función aplica», que es la que ya lo decía bien."""
+        no basta «+ alto riesgo», tiene que decir de qué rol. También sobre las OCHO."""
         rutas = [r for r in _todas_las_rutas_del_r4() if "#R5" in r]
-        assert len(rutas) == 4, f"se esperaban cuatro rutas hacia #R5, hay {len(rutas)}"
+        assert rutas, "#R4 debería seguir teniendo salidas a #R5"
         for ruta in rutas:
             assert self._CONDICION in ruta.lower(), (
                 f"manda a #R5 sin exigir el rol de implementador, así que un PROVEEDOR de alto "
                 f"riesgo acabaría en la pregunta del Art. 27, que no es suya: {ruta!r}"
+            )
+
+    def test_ninguna_ruta_usa_un_predicado_distinto_del_de_las_demas(self):
+        """El hueco concreto que se cierra aquí: «sistema NO es de alto riesgo» decía casi lo
+        mismo que «no es implementador de alto riesgo» y dejaba fuera justo al proveedor de un
+        sistema de alto riesgo. Las ocho rutas nombran el rol o no pasan."""
+        for ruta in _todas_las_rutas_del_r4():
+            assert self._CONDICION in ruta.lower(), (
+                f"esta ruta no usa el predicado de las demás, así que hay un caso que no encaja "
+                f"en ninguna rama y lo resuelve el modelo: {ruta!r}"
             )
 
     def test_ninguna_ruta_condiciona_el_r5_al_alto_riesgo_a_secas(self):
