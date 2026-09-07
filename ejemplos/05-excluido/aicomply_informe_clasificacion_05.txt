@@ -1,0 +1,41 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: TermoVigía TV-2 es un sistema de imagen térmica con detección automática de siluetas que clasifica presencias en el campo de visión —personas, vehículos ligeros y pesados— y las señala visualmente al operador sin tomar decisiones autónomas. Opera exclusivamente en el sector de la defensa militar, destinado a la vigilancia perimetral de instalaciones castrenses y al apoyo a operaciones de las Fuerzas Armadas españolas. Es desarrollado y suministrado por Óptica Aplicada del Norte S.L. bajo contrato plurianual con el Ministerio de Defensa, siendo las Fuerzas Armadas el único usuario final y operador del sistema.  
+Sector: Defensa militar  
+Clasificación: EXCLUIDO  
+Rol de la entidad: Proveedor  
+Fecha: 07/09/2026 a las 20:20  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como EXCLUIDO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Proveedor.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: EXCLUIDO  
+Descripción: Sistema de IA fuera del ámbito de aplicación del Reglamento (UE) 2024/1689 (Art. 2)
+
+Rol principal de la entidad: Proveedor
+
+3. Obligaciones identificadas durante la evaluación
+
+- El AI Act no es aplicable a este sistema (Art. 2 — fuera del ámbito de aplicación)
+- No se identifican obligaciones del Reglamento (UE) 2024/1689
+- Acción recomendada: documentar esta evaluación para acreditarla si fuera necesario
+- Verificar si aplican otras normativas sectoriales (protección de datos, seguridad del producto, etc.)
+- Revisar la clasificación si el sistema o su uso cambia en el futuro
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 20:20.

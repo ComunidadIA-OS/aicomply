@@ -94,7 +94,7 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Casos de ejemplo completos
 
-El repositorio incluye seis casos de uso representativos de PYMEs industriales —sistemas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de evaluación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
+El repositorio incluye seis casos de uso representativos de PYMEs industriales —sistemas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de clasificación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
 
 | Caso | Clasificación | Sistema |
 |------|---------------|---------|
@@ -103,7 +103,7 @@ El repositorio incluye seis casos de uso representativos de PYMEs industriales �
 | [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Chatbot B2B |
 | [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Cribado automatizado de candidaturas |
 | [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
-| [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Visión artificial militar — fuera del ámbito (Art. 2) |
+| [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Imagen térmica militar — fuera del ámbito (Art. 2.3) |
 
 Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para el aviso sobre su antigüedad**.
 
@@ -147,7 +147,7 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
 
-> **Aviso:** salvo el caso [`03-alto-riesgo`](ejemplos/03-alto-riesgo), regenerado con la versión actual, los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+> **Aviso:** salvo los casos [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido), regenerados con la versión actual, los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 
@@ -392,7 +392,7 @@ aicomply/
 │   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
 │   ├── 03-alto-riesgo/                 # Alto riesgo — cribado de candidaturas
 │   ├── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
-│   └── 05-excluido/                    # Excluido Art. 2 — visión artificial militar
+│   └── 05-excluido/                    # Excluido Art. 2.3 — imagen térmica militar
 ├── LICENSE
 ├── README.md
 ├── CONTRIBUTING.md
