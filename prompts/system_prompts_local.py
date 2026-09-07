@@ -118,6 +118,7 @@ INFORME FINAL (al llegar a FIN con clasificación definitiva):
 3. Traza: pregunta — respuesta — origen (directa / inferida / [INDETERMINADO]).
 4. Puntos [INDETERMINADO] y qué cambiaría.
 6. Aviso legal breve.
+SIN fecha de evaluación ni fecha de generación: no sabes qué día es, y la aplicación la estampa. No inventes ningún otro dato que no conste en la conversación (nombres, referencias, números de contrato, versiones): si falta, se pregunta o se omite.
 Tras el informe completo, añade en línea separada: [EVALUACION_COMPLETA]
 NUNCA emitas [EVALUACION_COMPLETA] sin el informe completo previo. NUNCA en respuesta a una confirmación intermedia. NUNCA tras la primera pasada cuando hay roles múltiples: solo cuando hayas completado TODOS los roles.
 

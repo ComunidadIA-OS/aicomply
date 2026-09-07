@@ -26,11 +26,15 @@ artículo en dos pestañas consecutivas.
         implementador privado de un sistema de empleo
   B19 - el evaluador atribuía al implementador el registro en la base de datos de la UE
   B21 - el evaluador se inventaba los apartados del Art. 26
+
+Y uno del recorrido manual del 7 de septiembre de 2026, sin número de auditoría todavía: el
+evaluador fechaba el informe en «Junio de 2025», dato que nadie le dio.
 """
 
 import re
 
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
+from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 
 _RE_APARTADO_26 = re.compile(r"Art\.?\s*26\.\d")
 
@@ -169,6 +173,63 @@ class TestArt26SinApartados:
         """Duplicarlo crea una segunda fuente que se desincroniza; vive en cumplimiento."""
         assert "26.11" not in SYSTEM_PROMPT_CHATBOT
         assert "26.12" not in SYSTEM_PROMPT_CHATBOT
+
+
+class TestElInformeNoLlevaFecha:
+    """En el recorrido manual del 7 de septiembre —que se hizo el 7 de septiembre de 2026— el
+    informe que el modelo redactó en el chat abría con «Fecha de evaluación: Junio de 2025».
+    Nadie le dio esa fecha: la rellenó porque un informe formal suele llevar una. El informe
+    que genera la aplicación la estampa bien, así que el arreglo es que el modelo no la
+    escriba, no que la acierte.
+    """
+
+    def test_la_regla_de_la_fecha_sigue_en_el_prompt(self):
+        assert "REGLA CRÍTICA — El informe no lleva fecha:" in SYSTEM_PROMPT_CHATBOT
+
+    def test_la_regla_nombra_la_cadena_que_salio_en_el_recorrido(self):
+        bloque = _bloque_regla_fecha()
+        assert '"Fecha de evaluación"' in bloque
+        assert "la aplicación" in bloque, "debe decir quién sí sabe la fecha"
+
+    def test_la_regla_deja_vivas_las_fechas_del_calendario(self):
+        """Las etiquetas temporales de la sección 6 son fechas legítimas: si la regla las
+        arrastrase, el informe perdería el «Aplicable próximamente — 2 dic 2027»."""
+        assert "calendario regulatorio de la sección 6" in _bloque_regla_fecha()
+
+    def test_el_formato_del_informe_no_pide_ninguna_fecha(self):
+        """El guardián de verdad: que no vuelva a aparecer una fecha entre los puntos que se
+        le piden al informe. Se miran solo los puntos numerados de la sección 7; las reglas
+        que van debajo hablan de fechas precisamente para prohibirlas."""
+        puntos = [
+            ln for ln in _seccion_7().splitlines()
+            if re.match(r"^\d+\.\s", ln)
+        ]
+        assert puntos, "la estructura del informe debería seguir siendo una lista numerada"
+        intrusos = [ln for ln in puntos if "fecha" in ln.lower()]
+        assert not intrusos, f"el formato del informe pide fechas: {intrusos}"
+
+    def test_la_regla_general_de_no_inventar_contexto(self):
+        assert "REGLA CRÍTICA — No inventes datos de contexto:" in SYSTEM_PROMPT_CHATBOT
+        bloque = SYSTEM_PROMPT_CHATBOT.split("REGLA CRÍTICA — No inventes datos de contexto:")[1]
+        bloque = bloque.split("REGLA CRÍTICA — El informe no redefine el rol:")[0]
+        for dato in ("fechas", "nombres", "referencias", "contrato"):
+            assert dato in bloque, f"la regla debería nombrar {dato}"
+        assert "se pregunta" in bloque, "omitir o preguntar, no rellenar"
+
+    def test_el_prompt_local_lleva_la_misma_prohibicion(self):
+        """El fallo es del modelo, no del proveedor: con un modelo local pasaría igual."""
+        assert "SIN fecha de evaluación" in SYSTEM_PROMPT_CHATBOT_LOCAL
+        assert "No inventes ningún otro dato" in SYSTEM_PROMPT_CHATBOT_LOCAL
+
+
+def _seccion_7() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split("7. FORMATO DEL INFORME FINAL")[1]
+    return bloque.split("8. REGLAS DE SEGURIDAD Y LÍMITES")[0]
+
+
+def _bloque_regla_fecha() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split("REGLA CRÍTICA — El informe no lleva fecha:")[1]
+    return bloque.split("REGLA CRÍTICA — No inventes datos de contexto:")[0]
 
 
 def _bloque_regla_art_27() -> str:
