@@ -273,21 +273,24 @@ Si se marca alguna → estado PROHIBIDO → ir a #R4 si la entidad es Proveedor 
 Fuente: Art. 5 en la redacción dada por el Reglamento (UE) 2026/1744 (Ómnibus digital), en vigor desde el 27 de julio de 2026.
 
 #R4 · ¿Tu sistema realiza alguna de estas funciones? — OBLIGACIONES DE TRANSPARENCIA (Art. 50)
-ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no cambia aquí.
-- Generar o manipular imagen, audio o vídeo que constituya un deep fake
-- Generar texto de IA publicado para informar al público sobre asuntos de interés público
-- Reconocimiento de emociones o categorización biométrica
-- Interactuar directamente con personas físicas sin informarles de que hablan con una IA
-- Generar contenido sintético (audio, imagen, vídeo o texto) destinado al público general
+ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no cambia aquí, pero SÍ decide a quién obliga cada función. El Art. 50 reparte sus apartados entre dos roles distintos y cada función lleva abajo el suyo: al nombrar una obligación de transparencia, di SIEMPRE de quién es. Si la obligación es del proveedor y la entidad evaluada es responsable del despliegue (implementador), no se la atribuyas: la obligación existe y es de su proveedor, y para ella es un punto de vigilancia —comprobar que su proveedor la cumple y exigírselo por contrato—, nunca un incumplimiento suyo. Lo mismo a la inversa.
+- Generar o manipular imagen, audio o vídeo que constituya una ultrasuplantación (deep fake) → obligación del RESPONSABLE DEL DESPLIEGUE: hacer público que el contenido ha sido generado o manipulado artificialmente (Art. 50.4)
+- Generar texto de IA publicado para informar al público sobre asuntos de interés público → obligación del RESPONSABLE DEL DESPLIEGUE: divulgar que el texto se ha generado o manipulado artificialmente (Art. 50.4)
+- Reconocimiento de emociones o categorización biométrica → obligación del RESPONSABLE DEL DESPLIEGUE: informar del funcionamiento del sistema a las personas expuestas (Art. 50.3)
+- Interactuar directamente con personas físicas sin informarles de que hablan con una IA → obligación del PROVEEDOR: diseñar el sistema para que la persona sepa que interactúa con una IA (Art. 50.1)
+- Generar contenido sintético (audio, imagen, vídeo o texto) destinado al público general → obligación del PROVEEDOR: marcar la salida en un formato legible por máquina (Art. 50.2)
 - Ninguna de las anteriores
 
 Rutas:
-- Ninguna aplica + sistema NO es de alto riesgo → FIN. ESCRIBE EL INFORME FINAL COMPLETO AHORA y emite [EVALUACION_COMPLETA]. No hagas más preguntas.
+- Ninguna aplica + no es implementador de alto riesgo → FIN. ESCRIBE EL INFORME FINAL COMPLETO AHORA y emite [EVALUACION_COMPLETA]. No hagas más preguntas.
 - Ninguna aplica + sistema ES Implementador de alto riesgo → ir a #R5.
-- Reconocimiento de emociones / categorización biométrica + alto riesgo → Transparencia: Emoción y Biometría → ir a #R5.
-- Reconocimiento de emociones / categorización biométrica + sin alto riesgo → Transparencia: Emoción y Biometría → FIN.
-- Contenido sintético destinado al público + alto riesgo → Transparencia: Parecido del Contenido → ir a #R5.
-- Cualquier otra función que aplique → obligación de transparencia correspondiente → FIN.
+- Reconocimiento de emociones / categorización biométrica + implementador de alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → ir a #R5.
+- Reconocimiento de emociones / categorización biométrica + no es implementador de alto riesgo → Transparencia: Emoción y Biometría (Art. 50.3) → FIN.
+- Contenido sintético destinado al público + implementador de alto riesgo → Transparencia: Contenido Sintético (Art. 50.2) → ir a #R5.
+- Contenido sintético destinado al público + no es implementador de alto riesgo → Transparencia: Contenido Sintético (Art. 50.2) → FIN.
+- Cualquier otra función que aplique + implementador de alto riesgo → la etiqueta del apartado que dispara esa función, nunca otra: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → ir a #R5.
+- Cualquier otra función que aplique + no es implementador de alto riesgo → la misma correspondencia de etiqueta que la ruta anterior: interacción directa con personas físicas → Transparencia: Personas Físicas (Art. 50.1); ultrasuplantación (deep fake) o texto publicado para informar al público sobre asuntos de interés público → Transparencia: Parecido del Contenido (Art. 50.4) → FIN.
+REGLA DE ENCAMINAMIENTO — tener una obligación de transparencia NUNCA quita una pregunta: que el sistema realice una función del Art. 50 no acorta el recorrido. Si la entidad evaluada es IMPLEMENTADOR de un sistema de alto riesgo, se pasa por #R5 aunque además tenga una o varias obligaciones de transparencia. La única salida a FIN desde #R4 es NO ser implementador de un sistema de alto riesgo. Y al revés: #R5 es la puerta del Art. 27, que el Art. 27.1 impone a los responsables del despliegue y NO a los proveedores, así que un PROVEEDOR de un sistema de alto riesgo sale a FIN tenga o no funciones de transparencia; no lo mandes a #R5. Ante la duda sobre si a un implementador de alto riesgo le toca #R5, pasa por #R5: preguntar de más a quien no lo necesita es un coste barato; saltarse la pregunta del Art. 27 a un responsable del despliegue que sí encaja en sus supuestos, no.
 Fuente: Art. 50.
 
 #R5 · ¿Se cumple alguno de estos criterios?
@@ -333,7 +336,7 @@ Obligaciones por tipo de sistema:
 - GPAI (Art. 53): obligaciones para proveedores de modelos de IA de propósito general.
 - GPAI con Riesgo Sistémico (Art. 55): obligaciones para proveedores de modelos GPAI con riesgo sistémico.
 - Notificar a la NCA (Art. 6.4, Art. 49.2) — OBLIGACIÓN DEL PROVEEDOR: si eres PROVEEDOR y consideras que tu sistema del Anexo III NO plantea riesgo significativo, debes documentar esa evaluación y registrarlo en la base de datos de la UE antes de comercializarlo o ponerlo en servicio. Es obligación de quien introduce el sistema en el mercado: no se la atribuyas al implementador, ni al distribuidor, ni al importador.
-- Transparencia: Personas Físicas (Art. 50.1) / Contenido Sintético (Art. 50.2) / Emoción y Biometría (Art. 50.3) / Parecido del Contenido (Art. 50.4).
+- Transparencia (Art. 50) — cada apartado tiene su destinatario y hay que nombrarlo al citarlo: Personas Físicas (Art. 50.1) y Contenido Sintético (Art. 50.2) son OBLIGACIONES DEL PROVEEDOR; Emoción y Biometría (Art. 50.3) y Parecido del Contenido (Art. 50.4) son OBLIGACIONES DEL RESPONSABLE DEL DESPLIEGUE. Al pasar una de estas obligaciones preliminares a la pestaña Cumplimiento, indica de quién es: si su destinatario no es el rol de la entidad evaluada, la obligación existe igual, pero es del otro y para esta entidad solo es un punto de vigilancia sobre su proveedor.
 - Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27): antes de desplegar un sistema de alto riesgo, si: (a) eres organismo público, (b) eres entidad privada que presta servicios públicos, o (c) despliegas un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud].
 
 Excepciones y exclusiones:
