@@ -5,7 +5,7 @@
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/built%20with-Streamlit-FF4B4B)](https://streamlit.io/)
 
-**Asistente conversacional en español para evaluar el cumplimiento de sistemas de IA con el AI Act europeo (Reglamento UE 2024/1689), orientado a PYMEs industriales.**
+**Asistente conversacional en español para evaluar el cumplimiento de sistemas de IA con el AI Act europeo (Reglamento UE 2024/1689), orientado a PYMEs.**
 
 Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y cualquier **API compatible con OpenAI** (LM Studio, vLLM, Groq, Together AI, Mistral API...).
 
@@ -23,11 +23,11 @@ Con la entrada en vigor del Ómnibus se actualizan tanto las fechas que maneja l
 
 El problema es que el **41% de las PYMEs españolas ya usa IA de forma regular** (IONOS/YouGov, 2026) — la tasa más alta de Europa — pero la mayoría no sabe si sus sistemas están sujetos al reglamento, qué nivel de riesgo tienen ni qué obligaciones concretas les aplican. La asesoría legal especializada en AI Act tiene un coste prohibitivo para una PYME. Las herramientas existentes están en inglés, son cuestionarios estáticos o están diseñadas para grandes corporaciones.
 
-**Escenario ilustrativo:** MECALSA S.L. (empresa representativa de PYME industrial), fabricante con 85 empleados, ha implantado un sistema de visión artificial para el control de calidad en línea de producción. ¿Es alto riesgo? ¿Qué documentación técnica necesita? ¿Debe nombrar un responsable de supervisión humana? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y la exposición regulatoria es real ahora.
+**Escenario ilustrativo:** un operador logístico español de 140 empleados (caso ficticio, el mismo del ejemplo [`03-alto-riesgo`](ejemplos/03-alto-riesgo)) ha comprado a un proveedor externo una herramienta de cribado de candidaturas para cubrir los puestos de almacén. El sistema puntúa los currículums y descarta automáticamente los que quedan por debajo de un umbral, antes de que nadie los lea. ¿Es alto riesgo, si la empresa no lo ha desarrollado y solo lo usa tal cual se lo entregaron? ¿Tiene que informar al comité de empresa y a los propios candidatos? ¿Cuánto tiempo debe conservar los registros que genera el sistema, si están en los servidores del proveedor? Sin orientación, la empresa no puede responder ninguna de estas preguntas — y la exposición regulatoria es real ahora.
 
 ## Descripción
 
-AIComply guía a PYMEs industriales a través de tres fases secuenciales:
+AIComply guía a PYMEs a través de tres fases secuenciales:
 
 1. **Evaluador y clasificador** — Árbol de decisión conversacional basado en el Reglamento (UE) 2024/1689 que emite una de las **seis clasificaciones** que se detallan más abajo. Identifica también el rol de la organización (proveedor, implementador, distribuidor, importador) y detecta **roles múltiples simultáneos** (Considerando 83).
 
@@ -86,7 +86,7 @@ Para más detalle, consulte [SECURITY.md](SECURITY.md).
 | [Audlex](https://www.audlex.com/) | SaaS | ES / EN | No — cuestionario estático | No | Sí | Desde 69 €/mes |
 | [COMPL-AI](https://github.com/compl-ai/compl-ai) (ETH Zurich) | CLI Python | EN | No | No | No — investigadores | Open source |
 | [Systima Comply](https://dev.to/systima/open-source-eu-ai-act-compliance-scanning-for-cicd-4ogj) | CLI / GitHub Action | EN | No | No | No — equipos dev | Open source |
-| **AIComply** | **App web** | **ES** | **Sí** | **Sí — AESIA, Ley ES, GDPR/AEPD** | **Sí — industrial** | **Open source, gratuita** |
+| **AIComply** | **App web** | **ES** | **Sí** | **Sí — AESIA, Ley ES, GDPR/AEPD** | **Sí** | **Open source, gratuita** |
 
 AIComply es, que sepamos, la única herramienta open source conversacional en español que cubre clasificación de riesgo, análisis de obligaciones y generación de informe con corpus normativo español (AESIA, anteproyecto de Ley de IA española, directrices de la Comisión Europea de mayo de 2026).
 
@@ -94,16 +94,16 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Casos de ejemplo completos
 
-El repositorio incluye seis casos de uso representativos de PYMEs industriales —sistemas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de clasificación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
+El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y empresas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de clasificación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
 
-| Caso | Clasificación | Sistema |
-|------|---------------|---------|
-| [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Hoja de cálculo con reglas deterministas de stock |
-| [`01-riesgo-minimo`](ejemplos/01-riesgo-minimo) | MÍNIMO | Optimización de hornos industriales |
-| [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Chatbot B2B |
-| [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Cribado automatizado de candidaturas |
-| [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
-| [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Imagen térmica militar — fuera del ámbito (Art. 2.3) |
+| Caso | Clasificación | Empresa | Sistema |
+|------|---------------|---------|---------|
+| [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Tienda online de material de oficina | «Motor de recomendación» que en realidad es una tabla de reglas fijas escrita a mano |
+| [`01-riesgo-minimo`](ejemplos/01-riesgo-minimo) | MÍNIMO | Cadena de panaderías con obrador | Previsión de la demanda diaria por producto y tienda |
+| [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Agencia de viajes | Chatbot web contratado a un tercero, más textos e imágenes generados para redes sociales |
+| [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Operador logístico | Cribado de candidaturas comprado a un proveedor, con descarte automático bajo umbral (Anexo III, punto 4 — empleo) |
+| [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Contact center | Análisis de voz para inferir el estado emocional de los agentes (Art. 5.1.f) |
+| [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Fabricante de sistemas de imagen térmica | Detección de presencias sobre vídeo térmico, de uso exclusivamente militar — fuera del ámbito (Art. 2.3) |
 
 Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para el aviso sobre su antigüedad**.
 
@@ -147,7 +147,7 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
 
-> **Aviso:** salvo los casos [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido), regenerados con la versión actual, los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+> **Aviso:** los casos [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros cuatro todavía no:** sus carpetas conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 
@@ -387,11 +387,11 @@ aicomply/
 │   └── EIPD.md                         # Evaluación de Impacto en Protección de Datos (RGPD Art. 35)
 ├── assets/                             # Capturas de pantalla para el README
 ├── ejemplos/                           # Seis ejemplos completos de evaluación con AIComply
-│   ├── 00-no-ia/                       # No cumple la definición del Art. 3.1 — hoja de cálculo determinista
-│   ├── 01-riesgo-minimo/               # Riesgo mínimo — optimización de hornos
-│   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
+│   ├── 00-no-ia/                       # No cumple la definición del Art. 3.1 — recomendador de reglas fijas
+│   ├── 01-riesgo-minimo/               # Riesgo mínimo — previsión de demanda en panadería
+│   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot web y contenido generado
 │   ├── 03-alto-riesgo/                 # Alto riesgo — cribado de candidaturas
-│   ├── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
+│   ├── 04-prohibido/                   # Práctica prohibida — inferencia de emociones en el trabajo
 │   └── 05-excluido/                    # Excluido Art. 2.3 — imagen térmica militar
 ├── LICENSE
 ├── README.md
