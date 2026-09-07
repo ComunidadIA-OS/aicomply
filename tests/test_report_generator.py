@@ -419,6 +419,48 @@ class TestPorcentajeSinEvaluar:
         assert "0 %" in md
 
 
+class TestEtiquetaDeLaMetrica:
+    """B6: la cifra mide avance de trabajo, no conformidad jurídica.
+
+    En el Anexo III no existe el cumplimiento parcial. Un «60 % de cumplimiento legal»
+    en un informe que documenta tres carencias invita a leer «vamos bien» donde la
+    lectura correcta es «faltan obligaciones por implementar».
+    """
+
+    _CON_CARENCIAS = {
+        "obligaciones": [
+            _obl("Art. 9",  "Gestión de riesgos",   "cubierta"),
+            _obl("Art. 10", "Gobernanza de datos",  "parcial"),
+            _obl("Art. 11", "Documentación técnica", "carencia"),
+        ],
+        "carencias_detectadas": [],
+        "puntos_revision_profesional": [],
+        "resumen_cumplimiento": "",
+    }
+
+    def test_la_metrica_se_llama_avance_de_implementacion(self):
+        md = GeneradorInforme().generar_informe_cumplimiento(
+            _CLASIFICACION, self._CON_CARENCIAS
+        )
+        assert "**Avance de implementación:** 50 %" in md
+        assert "cumplimiento legal estimado" not in md
+
+    def test_los_recuentos_siguen_debajo_de_la_cifra(self):
+        """La etiqueta cambia; lo que hay debajo son hechos y no se toca."""
+        md = GeneradorInforme().generar_informe_cumplimiento(
+            _CLASIFICACION, self._CON_CARENCIAS
+        )
+        assert "Cubiertas: 1 | Parciales: 1 | No cubiertas: 1 | No aplica: 0" in md
+
+    def test_el_pdf_se_exporta_con_la_nueva_etiqueta(self):
+        """Humo: el PDF saca el porcentaje parseando esta línea del markdown, así que la
+        exportación tiene que seguir recorriéndola sin romperse."""
+        md = GeneradorInforme().generar_informe_cumplimiento(
+            _CLASIFICACION, self._CON_CARENCIAS
+        )
+        assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
+
+
 # ── Calendario normativo en el informe (regresión A1, A2, A3) ─────────────────
 
 class TestCalendarioEnElInforme:

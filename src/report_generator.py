@@ -676,9 +676,13 @@ class GeneradorInforme:
                 f"*{motivo_no_calculable(incoherencias)}*"
             )
         else:
+            # La cifra mide avance de trabajo, no conformidad: en el Anexo III no existe el
+            # cumplimiento parcial, o se cumplen todas las obligaciones aplicables o no se
+            # cumple. Con la etiqueta anterior, un informe que documenta tres carencias
+            # legales abría con «60 % de cumplimiento legal», que se lee «vamos bien».
             pct = round(((len(cub_leg) * 2 + len(par_leg)) / (evaluadas_leg * 2) * 100) if evaluadas_leg else 0)
             texto += (
-                f"**Grado de cumplimiento legal estimado:** {pct} %  \n"
+                f"**Avance de implementación:** {pct} %  \n"
                 f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
                 f"No cubiertas: {len(car_leg)} | No aplica: {len(no_ap_leg)}"
             )
@@ -1649,7 +1653,7 @@ class GeneradorInforme:
                     pdf.set_text_color(30, 30, 30)
                     return
 
-                pdf.cell(CW * 0.72, 5, "Grado de cumplimiento legal estimado", align="L")
+                pdf.cell(CW * 0.72, 5, _limpiar("Avance de implementación"), align="L")
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(*_C_AZUL)
                 pdf.cell(CW * 0.28, 5, f"{pct} %", align="R",
@@ -1813,7 +1817,13 @@ class GeneradorInforme:
                                    new_x="LMARGIN", new_y="NEXT")
                     pdf.ln(1)
 
-                elif "Grado de cumplimiento" in linea_s and _seccion == "obligaciones":
+                elif (
+                    ("Avance de implementación" in linea_s or "Grado de cumplimiento" in linea_s)
+                    and _seccion == "obligaciones"
+                ):
+                    # Las dos etiquetas: «Avance de implementación» es la del caso con cifra;
+                    # «Grado de cumplimiento legal» sigue siendo la del «No calculable» —y la
+                    # de los informes en markdown guardados antes de este cambio.
                     m_pct = re.search(r"(\d+)\s*%", linea_s)
                     _metricas_pct = int(m_pct.group(1)) if m_pct else None
 
