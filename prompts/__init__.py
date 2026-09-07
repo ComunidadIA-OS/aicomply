@@ -17,6 +17,18 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.7 (2026-09-07): el informe del evaluador deja de llevar fecha —la estampa la
+#                          aplicación, que es quien la sabe— tras abrir con «Fecha de
+#                          evaluación: Junio de 2025» un recorrido hecho el 7 de septiembre de
+#                          2026; con ella, la prohibición general de rellenar con valores
+#                          plausibles cualquier dato de contexto que no conste en la
+#                          conversación. Las dos van también, en una línea, al prompt local.
+#                          La documentación técnica aportada se inyecta ahora en el prompt del
+#                          evaluador en cada turno, envuelta como dato no confiable, con la
+#                          instrucción de buscar en ella antes de preguntar y de confirmar
+#                          siempre con el usuario: con una ficha que decía «red neuronal de
+#                          detección de objetos entrenada con imágenes térmicas», el evaluador
+#                          preguntaba igualmente si había aprendizaje automático
 # 2026.09.6 (2026-09-06): el catálogo pasa a ser la única lista del recorrido de cumplimiento
 #                          (punto 9 nuevo, renumerados persistencia y cierre a 11 y 12). Las
 #                          «Obligaciones ya identificadas en la evaluación» que llegan en
@@ -73,4 +85,4 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.6"
+PROMPT_VERSION = "2026.09.7"

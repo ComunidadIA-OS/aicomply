@@ -141,7 +141,11 @@ def _inicializar_estado(provider: LLMProvider) -> None:
     if "mensajes_evaluador" not in st.session_state:
         st.session_state.mensajes_evaluador = []
     if "chatbot_evaluador" not in st.session_state:
-        st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+        chatbot = AIComplyChat(provider=provider)
+        # Una sesión que ya traía documentación (recarga de la página) la recupera aquí, igual
+        # que hace la pestaña Cumplimiento al construir su chatbot.
+        chatbot.documentacion_aportada = st.session_state.get("readme_tecnico", "")
+        st.session_state.chatbot_evaluador = chatbot
     if "evaluacion_completada" not in st.session_state:
         st.session_state.evaluacion_completada = False
     if "clasificacion_data" not in st.session_state:
@@ -352,6 +356,10 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                         st.stop()
 
                     st.session_state.readme_tecnico = contenido_readme[:6000]
+                    # El resumen que sigue va al historial, y el historial se recorta. La
+                    # documentación entera va al prompt de cada turno, para que el árbol no
+                    # pregunte lo que ya está escrito en ella.
+                    chatbot.documentacion_aportada = st.session_state.readme_tecnico
 
                     mensaje_inicio = (
                         "He analizado la documentación técnica proporcionada. "
