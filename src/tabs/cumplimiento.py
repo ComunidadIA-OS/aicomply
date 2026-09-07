@@ -17,7 +17,11 @@ import streamlit as st
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.chatbot import AIComplyChat, _RE_BLOQUE_CIERRE, _RE_BLOQUE_OBLIGACION
-from src.tabs.avisos import avisar_si_truncada, marcar_truncada
+from src.tabs.avisos import (
+    avisar_si_documentacion_recortada,
+    avisar_si_truncada,
+    marcar_truncada,
+)
 from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
 from src.llm.provider import LLMProvider
 from src.reconciliacion import GRAVEDAD_BLOQUEANTE
@@ -228,6 +232,9 @@ def _mostrar_chat_cumplimiento(chatbot: AIComplyChat) -> None:
                 st.markdown(content)
 
     avisar_si_truncada("truncada_cumplimiento")
+    # Esta pestaña no recorta nada: hereda el readme_tecnico que ya viene cortado del
+    # Evaluador y lo mete en su propio prompt. El corte es el mismo y el silencio también.
+    avisar_si_documentacion_recortada()
     _mostrar_conflictos(chatbot.conflictos_registrados)
 
     if st.session_state.cumplimiento_completado:

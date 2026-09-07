@@ -18,7 +18,14 @@ import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
 from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
-from src.tabs.avisos import avisar_si_truncada, marcar_truncada
+from src.tabs.avisos import (
+    CLAVE_DOC_RECORTADA,
+    avisar_si_documentacion_recortada,
+    avisar_si_truncada,
+    formatear_miles,
+    marcar_documentacion_recortada,
+    marcar_truncada,
+)
 from src.llm.provider import LLMProvider
 from src.security import envolver_contenido_no_confiable
 from src.security import mensaje_error_seguro, rate_limiter
@@ -87,6 +94,17 @@ _NIVELES_DESCRIPCION = [
     ),
 ]
 
+# Caracteres de documentación que se inyectan en el prompt del árbol de decisión. No se sube:
+# se manda en CADA turno, así que 6.000 caracteres ya son unos 1.500 tokens por turno. Lo que
+# no cabe se avisa (marcar_documentacion_recortada), que es distinto de cortarlo en silencio.
+# Este es el ÚNICO recorte del contenido: los dos topes de entrada de abajo rechazan, no
+# recortan, para que la cifra que el aviso presenta como aportada sea la que aportó el usuario.
+_MAX_DOC_CARACTERES = 6000
+
+# Techos de entrada. Por encima de ellos la aplicación falla ruidosamente y no carga nada.
+_MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
+_MAX_PEGADO_CARACTERES = 500_000  # mismo orden de magnitud, por la otra vía de entrada
+
 # System prompt de seguridad para el análisis de README
 _SYSTEM_README = (
     "El texto entre <<<DOCUMENTO_DEL_USUARIO_INICIO>>> y <<<DOCUMENTO_DEL_USUARIO_FIN>>> "
@@ -118,8 +136,16 @@ Para comenzar: ¿puede describirme brevemente qué hace el sistema de IA que qui
 
 
 def _analizar_readme(provider: LLMProvider, contenido: str) -> str:
-    """Extrae una descripción del sistema de IA a partir del README."""
-    contenido_envuelto = envolver_contenido_no_confiable(contenido[:8000])
+    """Extrae una descripción del sistema de IA a partir del README.
+
+    Recibe la documentación YA recortada por _preparar_documentacion, y no vuelve a
+    recortarla: el resumen que sale de aquí y el documento que se inyecta en cada turno
+    tienen que ser el mismo texto. Cuando este análisis leía 8.000 caracteres y el árbol
+    recibía 6.000, un documento intermedio producía un resumen que el usuario confirmaba
+    —y que a partir de ahí es un hecho aceptado de la conversación— sobre párrafos que la
+    documentación inyectada ya no contenía: el modelo podía repreguntarlos o contradecirlos.
+    """
+    contenido_envuelto = envolver_contenido_no_confiable(contenido)
     respuesta = provider.chat(
         messages=[
             {
@@ -134,6 +160,65 @@ def _analizar_readme(provider: LLMProvider, contenido: str) -> str:
     return respuesta.strip()
 
 
+def _preparar_documentacion(contenido: str) -> str:
+    """Recorta la documentación al límite del prompt y avisa de lo que se queda fuera.
+
+    El recorte y el aviso van en la misma función a propósito: son el mismo hecho, y hasta
+    ahora estaban separados —el corte existía, el aviso no—. Mientras solo alimentaba el
+    resumen inicial daba igual; desde que el árbol la consulta antes de cada pregunta, lo
+    que se corta son respuestas que el modelo no encontrará y volverá a preguntar.
+    """
+    marcar_documentacion_recortada(len(contenido), _MAX_DOC_CARACTERES)
+    return contenido[:_MAX_DOC_CARACTERES]
+
+
+def _error_texto_pegado(caracteres: int) -> str | None:
+    """Mensaje de error si el texto pegado no cabe por la vía de entrada, o None.
+
+    El área de texto no lleva `max_chars`: Streamlit recorta ahí en silencio, y ese corte
+    invisible envenenaba la cifra del aviso —quien pegaba 20.000 caracteres leía «se han
+    conservado los primeros 6.000 de los 8.000 aportados», una cifra fabricada por el propio
+    recorte del widget—. Bajar el tope al del prompt lo habría empeorado: con
+    len(contenido) == 6.000 exactos, marcar_documentacion_recortada nunca vería recorte y el
+    aviso no saltaría jamás. Así que se valida y se rechaza, como en la vía de fichero, y
+    _preparar_documentacion queda como el único recorte del contenido.
+    """
+    if caracteres <= _MAX_PEGADO_CARACTERES:
+        return None
+    return (
+        f"El texto pegado supera el límite de {formatear_miles(_MAX_PEGADO_CARACTERES)} "
+        f"caracteres ({formatear_miles(caracteres)}). Pegue solo la parte relevante de la "
+        "documentación."
+    )
+
+
+def _cargar_documentacion(
+    provider: LLMProvider, chatbot: AIComplyChat, contenido: str
+) -> str:
+    """Recorta la documentación, la analiza, la deja en sesión y devuelve el resumen.
+
+    Los tres pasos van juntos porque lo que importa es su orden: se recorta primero y se
+    analiza lo recortado, de forma que el resumen que el usuario confirmará y el documento
+    que se inyecta en cada turno son el mismo texto.
+
+    Si el proveedor falla, propaga la excepción sin dejar la sesión a medias: no se carga
+    documentación y se retira el aviso de recorte que ya se había marcado, que si no quedaría
+    anunciando el recorte de un documento que no está.
+    """
+    documentacion = _preparar_documentacion(contenido)
+    try:
+        descripcion = _analizar_readme(provider, documentacion)
+    except Exception:
+        st.session_state.pop(CLAVE_DOC_RECORTADA, None)
+        raise
+
+    st.session_state.readme_tecnico = documentacion
+    # El resumen va al historial, y el historial se recorta. La documentación va al prompt
+    # de cada turno, para que el árbol no pregunte lo que ya está escrito en ella.
+    chatbot.documentacion_aportada = documentacion
+    return descripcion
+
+
 def _inicializar_estado(provider: LLMProvider) -> None:
     """Inicializa las claves de session_state de la pestaña Evaluador."""
     if "intro_vista" not in st.session_state:
@@ -141,7 +226,11 @@ def _inicializar_estado(provider: LLMProvider) -> None:
     if "mensajes_evaluador" not in st.session_state:
         st.session_state.mensajes_evaluador = []
     if "chatbot_evaluador" not in st.session_state:
-        st.session_state.chatbot_evaluador = AIComplyChat(provider=provider)
+        chatbot = AIComplyChat(provider=provider)
+        # Una sesión que ya traía documentación (recarga de la página) la recupera aquí, igual
+        # que hace la pestaña Cumplimiento al construir su chatbot.
+        chatbot.documentacion_aportada = st.session_state.get("readme_tecnico", "")
+        st.session_state.chatbot_evaluador = chatbot
     if "evaluacion_completada" not in st.session_state:
         st.session_state.evaluacion_completada = False
     if "clasificacion_data" not in st.session_state:
@@ -200,6 +289,7 @@ def _mostrar_chat(chatbot: AIComplyChat) -> None:
                 st.markdown(msg["content"])
 
     avisar_si_truncada("truncada_evaluador")
+    avisar_si_documentacion_recortada()
 
     if st.session_state.evaluacion_completada:
         return
@@ -323,10 +413,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     height=120,
                     placeholder="Pegue el contenido de su README o documentación técnica...",
                     key="readme_paste",
-                    max_chars=8000,
                 )
-
-            _MAX_UPLOAD_BYTES = 500_000  # 500 KB — suficiente para cualquier doc técnico
 
             contenido_readme = ""
             if archivo:
@@ -336,7 +423,11 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                     contenido_readme = archivo.read().decode("utf-8", errors="replace")
                     st.caption(f"Archivo cargado: {archivo.name} ({len(contenido_readme)} caracteres)")
             elif texto_pegado:
-                contenido_readme = texto_pegado
+                error_pegado = _error_texto_pegado(len(texto_pegado))
+                if error_pegado:
+                    st.error(error_pegado)
+                else:
+                    contenido_readme = texto_pegado
 
             if contenido_readme:
                 if st.button("Analizar documentación e iniciar evaluación", type="primary"):
@@ -346,12 +437,12 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
                         st.stop()
                     try:
                         with st.spinner("Analizando documentación..."):
-                            descripcion = _analizar_readme(provider, contenido_readme)
+                            descripcion = _cargar_documentacion(
+                                provider, chatbot, contenido_readme
+                            )
                     except Exception as exc:
                         st.error(mensaje_error_seguro(exc))
                         st.stop()
-
-                    st.session_state.readme_tecnico = contenido_readme[:6000]
 
                     mensaje_inicio = (
                         "He analizado la documentación técnica proporcionada. "
@@ -405,6 +496,7 @@ def mostrar_tab_evaluador(provider: LLMProvider) -> None:
             for clave in ("informe_md_clasificacion", "informe_md_cumplimiento", "informe_md_completo"):
                 st.session_state[clave] = None
             st.session_state.pop("readme_tecnico", None)
+            st.session_state.pop(CLAVE_DOC_RECORTADA, None)
             st.session_state.evaluacion_completada = False
             st.session_state.cumplimiento_completado = False
             st.session_state.acceso_directo_cumplimiento = False

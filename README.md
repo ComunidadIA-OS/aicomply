@@ -56,7 +56,7 @@ AIComply emite una de las **siguientes seis clasificaciones**, según el árbol 
 
 **Roles múltiples diferenciados.** Cuando la entidad evaluada actúa simultáneamente como Proveedor, Implementador, Distribuidor o Importador (Considerando 83 del AI Act), el sistema recorre la evaluación una vez por cada rol y entrega un informe con las obligaciones de cada uno por separado, sin mezclarlas.
 
-**Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), grado de cumplimiento estimado —o la marca «No calculable» con su motivo, cuando la reconciliación detecta que el registro está incompleto o es incoherente— y plan de acción priorizado por horizonte temporal.
+**Informe PDF profesional.** Los informes exportables incluyen portada, aviso legal destacado, cabecera y pie de página con paginación, cajas de colores por estado de cada obligación (cubierta / parcial / área de mejora / no evaluada), avance de implementación —o la marca «No calculable» con su motivo, cuando la reconciliación detecta que el registro está incompleto o es incoherente— y plan de acción priorizado por horizonte temporal.
 
 ## Seguridad por diseño
 
