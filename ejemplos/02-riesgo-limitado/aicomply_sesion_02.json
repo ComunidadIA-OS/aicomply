@@ -1,0 +1,455 @@
+{
+  "_version": "1",
+  "_app": "aicomply",
+  "clasificacion_data": {
+    "clasificacion": "LIMITADO",
+    "estados_adicionales": [],
+    "rol": "implementador",
+    "roles_multiples": [
+      "implementador"
+    ],
+    "nodos_recorridos": [
+      {
+        "pregunta": "¿Cumple la definición de sistema de IA (Art. 3.1)?",
+        "respuesta": "Sí, el chatbot infiere respuestas, no sigue reglas fijas",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Tipo de entidad",
+        "respuesta": "Implementador",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Ha modificado el sistema, puesto su marca o cambiado su finalidad original?",
+        "respuesta": "No",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Alto riesgo Anexo III — decisiones sobre personas, biometría, servicios esenciales?",
+        "respuesta": "No",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Los usuarios saben que interactúan con una IA?",
+        "respuesta": "Sí, se avisa desde el principio",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿El chatbot genera contenido sintético destinado al público general?",
+        "respuesta": "No, solo responde preguntas concretas",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Cumple la definición de sistema de IA (Art. 3.1) — herramienta generativa?",
+        "respuesta": "Sí, genera contenido por inferencia automática",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Tipo de entidad — herramienta generativa",
+        "respuesta": "Implementador",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Ha modificado la herramienta, puesto su marca o cambiado su finalidad original?",
+        "respuesta": "No",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿Alto riesgo — herramienta generativa?",
+        "respuesta": "No",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "¿Las imágenes suplantan a personas reales identificables (ultrasuplantación Art. 50.4)?",
+        "respuesta": "No, las imágenes son anónimas y no en primer plano",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿El contenido generado es de interés público (noticias, opinión, información política)?",
+        "respuesta": "No, es exclusivamente contenido promocional y publicitario",
+        "origen": "respuesta directa"
+      }
+    ],
+    "puntos_indeterminados": [],
+    "descripcion_sistema": "Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.",
+    "sector": "Agencias de viajes y turismo",
+    "obligaciones_preliminares": [
+      "Alfabetización en IA del personal que trabaja con ambos sistemas (Art. 4)",
+      "Verificar que el proveedor del chatbot cumple la obligación de informar a los usuarios de que interactúan con una IA (Art. 50)",
+      "Verificar que el proveedor de la herramienta generativa aplica el marcado en formato legible por máquina a los textos e imágenes generados (Art. 50)"
+    ]
+  },
+  "cumplimiento_data": {
+    "obligaciones": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "La empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa."
+      },
+      {
+        "articulo": "Art. 50.3",
+        "titulo": "Transparencia: emociones y biometría",
+        "clave": "50.3-emociones-biometria",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Ninguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica."
+      },
+      {
+        "articulo": "Art. 50.4",
+        "titulo": "Divulgación de contenido artificial",
+        "clave": "50.4-divulgacion-contenido-artificial",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público."
+      },
+      {
+        "articulo": "Art. 50.1",
+        "titulo": "Vigilancia: información al usuario (chatbot)",
+        "clave": "50.1-vigilancia-proveedor",
+        "estado": "cubierta",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "El chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA."
+      },
+      {
+        "articulo": "Art. 50.2",
+        "titulo": "Vigilancia: marcado de contenido sintético",
+        "clave": "50.2-vigilancia-proveedor",
+        "estado": "carencia",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "No se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico en formato legible por máquina antes del 2 de diciembre de 2026."
+      }
+    ],
+    "carencias_detectadas": [],
+    "puntos_revision_profesional": [
+      "Verificar con el proveedor de la herramienta generativa que aplicará el marcado técnico en formato legible por máquina a los contenidos generados (Art. 50.2) antes del 2 de diciembre de 2026, y recogerlo por escrito en el contrato.",
+      "Verificar la recalificación de Art. 4 — Alfabetización en IA [transversal]: se registró como PARCIAL y después se cambió a CUBIERTA (turno 3)."
+    ],
+    "resumen_cumplimiento": "La agencia cumple todas las obligaciones legales exigibles en este momento. La única área pendiente es una medida prudencial: verificar y exigir contractualmente al proveedor de la herramienta generativa el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026.",
+    "incoherencias": []
+  },
+  "mensajes_evaluador": [
+    {
+      "role": "user",
+      "content": "Somos una agencia de viajes española con tres oficinas y 18 empleados. Tenemos un chatbot en nuestra web, contratado a un proveedor externo y en servicio desde 2025, que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente. Además usamos una herramienta comercial de IA generativa para crear textos e imágenes promocionales que publicamos en nuestras redes sociales. No tomamos decisiones automáticas sobre personas, no tratamos datos biométricos y no hacemos selección de personal con IA."
+    },
+    {
+      "role": "assistant",
+      "content": "Bienvenido. Antes de comenzar, un aviso breve: este análisis es una orientación basada en el Reglamento (UE) 2024/1689 (AI Act), no un dictamen jurídico vinculante. Los resultados deben contrastarse con un profesional especializado.\n\nMe ha dado una descripción muy completa. Veo que tiene dos sistemas distintos que conviene evaluar por separado, ya que pueden tener clasificaciones y obligaciones diferentes:\n\n— Un **chatbot** en su web, contratado a un proveedor externo, que responde consultas e interactúa directamente con clientes.\n\n— Una **herramienta de IA generativa** para crear textos e imágenes promocionales que publica en redes sociales.\n\nEmpezamos por el chatbot.\n\n---\n\nAntes de entrar en el árbol de decisión, necesito confirmar que estamos ante un \"sistema de IA\" en el sentido del Reglamento. Por lo que describe, el chatbot infiere respuestas a partir de las consultas de los usuarios —no sigue simplemente reglas fijas escritas a mano— y genera recomendaciones o respuestas personalizadas. ¿Es así como funciona, o en realidad opera con respuestas predefinidas y menús fijos sin ningún tipo de inferencia automática?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. El chatbot cumple la definición de sistema de IA del Art. 3.1, así que procedemos.\n\n---\n\nRespecto al tipo de entidad: el chatbot lo han contratado a un proveedor externo y lo usan en su propia actividad bajo su autoridad. Eso los sitúa como **responsable del despliegue** (lo que la Ley llama \"implementador\"). ¿Es correcto? ¿O en algún momento han modificado el sistema, le han puesto su propia marca o han cambiado su finalidad original?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Anotado. Su rol para el chatbot es **Implementador**. Esto conlleva desde ya la obligación de garantizar un nivel suficiente de alfabetización en IA entre el personal que trabaje con el sistema (Art. 4).\n\n---\n\nPasamos a ver si el chatbot entra en alguna categoría de alto riesgo. Dado que me ha confirmado que no tratan datos biométricos, no hacen selección de personal con IA y no toman decisiones automáticas sobre personas, las categorías de transporte, productos regulados, maquinaria industrial, biometría, empleo, infraestructuras críticas, aplicación de la ley, migración o administración de justicia claramente no encajan con un chatbot de consultas turísticas.\n\nLa única categoría que podría plantear alguna duda es **acceso y disfrute de servicios esenciales**. Sin embargo, una agencia de viajes privada que ofrece consultas sobre destinos y disponibilidad no presta servicios públicos esenciales, por lo que tampoco aplica.\n\n¿Hay algún aspecto del chatbot que no haya mencionado y que pudiera implicar toma de decisiones sobre personas, acceso a crédito, seguros u otros servicios que considera esenciales? Si no es así, confirmo que el chatbot **no es un sistema de alto riesgo**."
+    },
+    {
+      "role": "user",
+      "content": "Confirma"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. El chatbot no es de alto riesgo.\n\n---\n\nAhora una pregunta importante sobre el propio chatbot. Dado que interactúa directamente con sus clientes a través de la web, ¿los usuarios saben en todo momento que están hablando con una inteligencia artificial, o podría algún usuario pensar que está hablando con un agente humano?"
+    },
+    {
+      "role": "user",
+      "content": "Se avisa desde el principio"
+    },
+    {
+      "role": "assistant",
+      "content": "Bien. Aunque el aviso existe, conviene saber que la obligación de diseñar el sistema para que los usuarios sepan que interactúan con una IA recae sobre el **proveedor** del chatbot (Art. 50.1), no sobre ustedes. Su papel como implementadores es verificar que su proveedor cumple con esa obligación, lo cual es un buen punto para incluir en el contrato.\n\n---\n\nÚltima pregunta para cerrar la evaluación del chatbot: ¿el chatbot genera algún tipo de contenido sintético —textos, imágenes, audio o vídeo— destinado al público general, más allá de responder preguntas concretas de los usuarios?"
+    },
+    {
+      "role": "user",
+      "content": "Sólo responde preguntas"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Con eso cerramos la evaluación del chatbot.\n\n---\n\nPasamos ahora al segundo sistema: la **herramienta de IA generativa** para crear textos e imágenes promocionales que publican en redes sociales.\n\nDel mismo modo que antes, confirmo que esta herramienta cumple la definición de sistema de IA: infiere y genera contenido de forma automática a partir de instrucciones, no sigue reglas fijas. ¿Es correcto?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Procedemos con la evaluación de este segundo sistema.\n\nEn este caso, la herramienta también la han contratado a un proveedor externo y la usan bajo su propia autoridad para generar contenido que publican en sus redes. Su rol es igualmente **Implementador**. ¿Es correcto, o han modificado la herramienta, le han puesto su marca o cambiado su finalidad original?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto "
+    },
+    {
+      "role": "assistant",
+      "content": "Anotado. Rol de **Implementador** también para este sistema.\n\n---\n\nEste sistema genera textos e imágenes que publican en redes sociales, dirigidos al público general. Eso es exactamente lo que el Art. 50.2 regula: contenido sintético destinado al público. La obligación de marcar ese contenido en un formato legible por máquina recae sobre el **proveedor** de la herramienta, no sobre ustedes directamente.\n\nSin embargo, como implementadores, les corresponde verificar que su proveedor cumple con esa obligación. Es un punto importante para revisar en el contrato.\n\nUna pregunta relacionada: ¿alguno de los textos o imágenes que generan y publican podrían hacer creer a alguien que son personas o entidades reales que no han participado en su creación, es decir, lo que la Ley llama una \"ultrasuplantación\" o *deep fake*? Por ejemplo, imágenes de personas reales manipuladas o voces sintéticas que imitan a alguien concreto."
+    },
+    {
+      "role": "user",
+      "content": "Las imágenes promocionales son contenido generado o manipulado y se publican al público. Pero no son de personas y si aparecen, son anónimas y no en primer plano."
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. Al no tratarse de imágenes que suplanten a personas reales identificables ni manipular su apariencia de forma engañosa, no estamos ante una ultrasuplantación en el sentido del Art. 50.4. Ese punto queda descartado.\n\n---\n\nPara cerrar la evaluación de este segundo sistema, una última pregunta. ¿Alguno de los textos que generan con esta herramienta se publica con la intención de informar al público sobre asuntos de interés público —noticias, opinión, información política o similar— o se trata exclusivamente de contenido promocional y publicitario de su agencia?"
+    },
+    {
+      "role": "user",
+      "content": "Es contenido promocional y publicitario "
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Con eso cerramos la evaluación de los dos sistemas. Tengo todo lo necesario para elaborar el informe final unificado.\n\n---\n\n## Informe de evaluación — AI Act (Reglamento (UE) 2024/1689)\n\n---\n\n### 1. Resumen ejecutivo\n\nSu agencia de viajes actúa como **Implementadora** de dos sistemas de IA: un chatbot de atención al cliente y una herramienta de IA generativa para contenido promocional. Ninguno de los dos sistemas es de alto riesgo. Las obligaciones principales que les aplican son la alfabetización en IA del personal y la vigilancia contractual sobre las obligaciones de transparencia que recaen sobre sus proveedores.\n\n---\n\n### 2. Sus obligaciones\n\n**Obligaciones comunes a ambos sistemas**\n\n- **Alfabetización en IA (Art. 4) — Aplicable actualmente (desde el 2 de febrero de 2025):** Deben garantizar que el personal que trabaja con ambos sistemas tenga un nivel suficiente de conocimiento sobre IA: qué hace cada herramienta, cómo funciona y cuáles son sus limitaciones. No se exige formación técnica avanzada, sino comprensión adecuada al uso que se hace.\n\n**Chatbot de atención al cliente**\n\n- **Vigilancia sobre transparencia hacia usuarios (Art. 50.1) — Aplicable actualmente (desde el 2 de agosto de 2026):** La obligación de informar a los usuarios de que interactúan con una IA recae sobre su proveedor, no sobre ustedes. Sin embargo, como implementadores, deben verificar que su proveedor cumple con esta obligación y conviene que quede recogida expresamente en el contrato.\n\n**Herramienta de IA generativa para contenido promocional**\n\n- **Vigilancia sobre marcado de contenido sintético (Art. 50.2) — Aplicable actualmente (desde el 2 de agosto de 2026):** La obligación de marcar en formato legible por máquina los textos e imágenes generados por IA recae sobre el proveedor de la herramienta. Como implementadores, deben comprobar que su proveedor aplica ese marcado y reflejarlo en el contrato.\n\n  Una nota práctica: dado que la herramienta estaba en servicio desde 2025, es decir, antes del 2 de agosto de 2026, su proveedor dispuso de un periodo de gracia hasta el 2 de diciembre de 2026 para cumplir con el marcado. A partir de esa fecha, la obligación es plenamente exigible.\n\n**Lo que no les aplica**\n\n- El Art. 27 (evaluación de impacto sobre derechos fundamentales) no les aplica: su agencia es una entidad privada que no presta servicios públicos y ninguno de sus sistemas pertenece a las categorías del Anexo III punto 5 letras b) o c).\n- El Art. 49 (registro en la base de datos de la UE) no les aplica: es una obligación del proveedor, no del implementador privado.\n\n---\n\n### 3. Recorrido realizado (traza auditable)\n\n**Sistema 1 — Chatbot de atención al cliente**\n\n- Definición de sistema de IA (Art. 3.1): cumple la definición — el chatbot infiere respuestas, no sigue reglas fijas (inferencia confirmada por el usuario).\n- Tipo de entidad: Implementador — sistema contratado a proveedor externo, usado bajo autoridad propia (respuesta directa).\n- Modificaciones del sistema (Art. 25): ninguna — no han puesto su marca, no han modificado la finalidad ni realizado modificación sustancial (respuesta directa).\n- Alto riesgo Anexo I, Sección B (transporte): no aplica (inferencia confirmada).\n- Alto riesgo Anexo I, Sección A (productos regulados, maquinaria): no aplica (inferencia confirmada).\n- Alto riesgo Anexo III: ninguna categoría aplicable — chatbot de consultas turísticas sin decisiones sobre personas, biometría ni servicios esenciales (respuesta directa).\n- Ámbito territorial (Art. 2): aplicable — entidad establecida en España, sistema en servicio en la UE (inferencia confirmada).\n- Exclusiones (Art. 2): ninguna aplicable (inferencia confirmada).\n- Prácticas prohibidas (Art. 5): ninguna (inferencia confirmada).\n- Transparencia Art. 50.1 — interacción con personas físicas: el sistema avisa desde el inicio; obligación del proveedor, punto de vigilancia para el implementador (respuesta directa).\n- Transparencia Art. 50.2 — contenido sintético: el chatbot solo responde preguntas, no genera contenido para el público (respuesta directa). No aplica.\n- Evaluación de impacto Art. 27: no aplica — entidad privada sin servicios públicos ni sistemas del Anexo III punto 5 b) o c).\n\n**Sistema 2 — Herramienta de IA generativa para contenido promocional**\n\n- Definición de sistema de IA (Art. 3.1): cumple la definición — genera contenido de forma automática por inferencia (inferencia confirmada por el usuario).\n- Tipo de entidad: Implementador — herramienta contratada a proveedor externo, usada bajo autoridad propia (respuesta directa).\n- Modificaciones del sistema (Art. 25): ninguna (respuesta directa).\n- Alto riesgo: no aplica — herramienta de generación de contenido promocional sin decisiones sobre personas (inferencia confirmada).\n- Ámbito territorial (Art. 2): aplicable (inferencia confirmada).\n- Exclusiones (Art. 2): ninguna aplicable (inferencia confirmada).\n- Prácticas prohibidas (Art. 5): ninguna (inferencia confirmada).\n- Transparencia Art. 50.2 — contenido sintético destinado al público: aplica; obligación del proveedor, punto de vigilancia para el implementador (respuesta directa).\n- Transparencia Art. 50.4 — ultrasuplantación: no aplica — las imágenes no suplantan a personas reales identificables (respuesta directa).\n- Transparencia Art. 50.4 — texto de interés público: no aplica — el contenido es exclusivamente promocional (respuesta directa).\n- Evaluación de impacto Art. 27: no aplica — mismas razones que el sistema 1.\n\n---\n\n### 4. Puntos que requieren revisión profesional\n\nNo se han identificado nodos indeterminados en esta evaluación. El recorrido se completó con respuestas directas o inferencias confirmadas en todos los puntos relevantes.\n\nComo recomendación práctica, conviene revisar los contratos con ambos proveedores para asegurarse de que recogen expresamente sus obligaciones de transparencia (Art. 50.1 para el chatbot y Art. 50.2 para la herramienta generativa). Si esos contratos no lo contemplan, tienen margen para exigirlo.\n\n---\n\n### 5. Aviso legal\n\nEste informe es una orientación preliminar basada en el Reglamento (UE) 2024/1689 y el Reglamento (UE) 2026/1744, elaborada a partir de la información facilitada. No constituye asesoramiento jurídico vinculante. Se recomienda contrastar las conclusiones con un profesional especializado en derecho de las tecnologías o cumplimiento normativo antes de tomar decisiones."
+    }
+  ],
+  "mensajes_cumplimiento": [
+    {
+      "role": "user",
+      "content": "Vamos"
+    },
+    {
+      "role": "assistant",
+      "content": "**Aviso legal:** La información que proporciono tiene carácter orientativo y no constituye asesoramiento jurídico vinculante. Para decisiones con impacto legal, consulte con un profesional especializado.\n\n---\n\n**Clasificación confirmada: RIESGO LIMITADO**\n**Rol confirmado: Implementador**\n\nSu empresa opera dos sistemas de IA contratados a proveedores externos: un chatbot de atención al cliente y una herramienta generativa para contenido promocional. Ambos están en servicio desde 2025.\n\nEl análisis recorrerá todas las obligaciones aplicables a su clasificación y rol. En total evaluaremos **5 obligaciones**.\n\n---\n\n**Obligación 1 de 5: Alfabetización en IA del personal — Art. 4**\n[Obligación legal] [Aplicable actualmente — desde 2 feb 2025]\n\n**Qué significa para su empresa:** Todas las personas que trabajan con el chatbot o con la herramienta generativa deben tener conocimientos suficientes sobre cómo funcionan esos sistemas, qué pueden hacer y qué limitaciones tienen.\n\n**Pregunta directa:** ¿Ha realizado su empresa alguna acción formativa o informativa dirigida al personal que usa o supervisa estos dos sistemas?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. Sin embargo, necesito un poco más de detalle para determinar el estado correcto.\n\n**Obligación 1 de 5 — Art. 4 — Alfabetización en IA**\n\n¿Esa formación cubre los dos sistemas (chatbot y herramienta generativa) e incluye tanto las capacidades como las limitaciones de cada uno, o solo aborda alguno de ellos de forma parcial?"
+    },
+    {
+      "role": "user",
+      "content": "Ambos"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. La obligación de alfabetización en IA queda cubierta para los dos sistemas.\n\n\n\n---\n\n**Obligación 2 de 5: Transparencia ante el usuario — Art. 50.3**\n[Obligación legal] [Aplicable actualmente — desde 2 ago 2026]\n\n**Qué significa para su empresa:** Si alguno de sus sistemas de IA analiza las emociones de los usuarios o los clasifica por características biométricas, debe informar a esas personas de ello y tratar sus datos conforme al RGPD.\n\n**Definición técnica:** Reconocimiento de emociones: sistema que identifica o infiere estados emocionales a partir de datos como expresiones faciales, voz o comportamiento. Categorización biométrica: clasificación de personas según rasgos físicos, fisiológicos o de comportamiento.\n\n**Pregunta directa:** ¿Alguno de sus dos sistemas (chatbot o herramienta generativa) realiza reconocimiento de emociones o categorización biométrica de los usuarios?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. El Art. 50.3 no aplica a su caso, ya que ninguno de sus sistemas realiza reconocimiento de emociones ni categorización biométrica.\n\n\n\n---\n\n**Obligación 3 de 5: Divulgación de contenido artificial — Art. 50.4**\n[Obligación legal] [Aplicable actualmente — desde 2 ago 2026]\n\n**Qué significa para su empresa:** Si publica imágenes, audio, vídeo o texto generado por IA que suplante la identidad de una persona real (deep fake) o texto destinado a informar al público sobre asuntos de interés público, debe indicar explícitamente que ese contenido ha sido generado de forma artificial.\n\n**Definición técnica:** Esta obligación cubre dos supuestos concretos: (a) contenido que constituya una ultrasuplantación de identidad (deep fake); (b) texto publicado con el fin de informar al público sobre asuntos de interés público. El contenido puramente comercial o publicitario sin ultrasuplantaciones queda fuera de su ámbito.\n\n**Pregunta directa:** ¿Los textos e imágenes que genera su herramienta de IA y publica en redes sociales incluyen alguna vez ultrasuplantaciones de personas reales o textos destinados a informar sobre asuntos de interés público?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. El Art. 50.4 no aplica a su caso, ya que el contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público.\n\n---\n\n**Obligación 4 de 5: Vigilancia sobre el proveedor del chatbot — Art. 50.1**\n[Medida prudencial] [Aplicable actualmente — desde 2 ago 2026]\n\n**Qué significa para su empresa:** La obligación de informar a los usuarios de que interactúan con una IA recae legalmente sobre el proveedor del chatbot, no sobre usted. Sin embargo, como implementadora, le conviene verificar que su proveedor la cumple y exigírselo contractualmente.\n\n**Pregunta directa:** ¿Ha comprobado que el chatbot contratado informa a sus clientes de que están interactuando con un sistema de IA, y lo tiene recogido en el contrato con el proveedor?"
+    },
+    {
+      "role": "user",
+      "content": "Hay un mensaje al inicio "
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. ¿Ese mensaje inicial indica explícitamente que el usuario está hablando con un sistema de IA, o simplemente da la bienvenida al servicio sin mencionarlo?"
+    },
+    {
+      "role": "user",
+      "content": "Que se está interactuando con una IA"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. La medida prudencial sobre el Art. 50.1 queda cubierta: el chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA.\n\n---\n\n**Obligación 5 de 5: Vigilancia sobre el proveedor de la herramienta generativa — Art. 50.2**\n[Medida prudencial]\n\nAntes de asignar la etiqueta temporal, necesito una aclaración.\n\n**Pregunta directa:** ¿La herramienta de IA generativa que usa para crear textos e imágenes promocionales estaba ya disponible en el mercado antes del 2 de agosto de 2026, o fue lanzada por su proveedor a partir de esa fecha?"
+    },
+    {
+      "role": "user",
+      "content": "Fue lanzada en 2025"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. Al estar en el mercado antes del 2 de agosto de 2026, el proveedor dispone del periodo de gracia del Art. 111.4 y debe cumplir a más tardar el 2 de diciembre de 2026.\n\n[Medida prudencial] [Aplicable próximamente — 2 dic 2026]\n\n**Qué significa para su empresa:** La obligación de marcar en formato legible por máquina los textos e imágenes generados artificialmente recae sobre el proveedor de la herramienta, no sobre usted. Sin embargo, como implementadora, le conviene verificar antes del 2 de diciembre de 2026 que su proveedor aplica ese marcado y exigírselo contractualmente.\n\n**Pregunta directa:** ¿Ha verificado con su proveedor que aplicará el marcado técnico en formato legible por máquina a los contenidos generados, o lo tiene recogido en el contrato?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Registrado. La medida prudencial sobre el Art. 50.2 queda pendiente: no se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico antes del 2 de diciembre de 2026.\n\n---\n\n## Resumen final del análisis\n\n| Obligación | Estado |\n|---|---|\n| Art. 4 — Alfabetización en IA del personal | CUBIERTA |\n| Art. 50.3 — Transparencia: emociones y biometría | NO APLICA |\n| Art. 50.4 — Divulgación de contenido artificial | NO APLICA |\n| Art. 50.1 — Vigilancia: información al usuario (chatbot) | CUBIERTA |\n| Art. 50.2 — Vigilancia: marcado de contenido sintético | PENDIENTE |\n\n---\n\n**Obligaciones legales aplicables**\n\n- Art. 4 — Alfabetización en IA: **CUBIERTA**\n- Art. 50.3 — Reconocimiento de emociones y biometría: **NO APLICA**\n- Art. 50.4 — Divulgación de contenido artificial: **NO APLICA**\n\n**Medidas prudenciales**\n\n- Art. 50.1 — Verificación del cumplimiento del proveedor del chatbot: **CUBIERTA**\n- Art. 50.2 — Verificación del marcado técnico del proveedor generativo: **PENDIENTE** — Debe resolverse antes del 2 de diciembre de 2026.\n\n---\n\nSu empresa presenta un nivel de cumplimiento sólido para las obligaciones legales exigibles en este momento. La única acción pendiente es de carácter prudencial: contacte con su proveedor de la herramienta generativa para confirmar que aplicará el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026 y recójanlo por escrito en el contrato.\n\nEl análisis está completo. Puede generar el informe en la pestaña **Informe**."
+    }
+  ],
+  "evaluacion_completada": true,
+  "cumplimiento_completado": true,
+  "acceso_directo_cumplimiento": false,
+  "informe_md_clasificacion": "# AIComply — Informe de clasificación\n\n**Sistema evaluado:** Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.  \n**Sector:** Agencias de viajes y turismo  \n**Clasificación:** LIMITADO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 00:02  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **LIMITADO** según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como **Implementador**.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** LIMITADO  \n**Descripción:** Sistema de IA de riesgo limitado (Art. 50)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA del personal que trabaja con ambos sistemas (Art. 4)\n- Verificar que el proveedor del chatbot cumple la obligación de informar a los usuarios de que interactúan con una IA (Art. 50)\n- Verificar que el proveedor de la herramienta generativa aplica el marcado en formato legible por máquina a los textos e imágenes generados (Art. 50)\n\n## 4. Puntos que requieren revisión profesional\n\nNo se identificaron puntos específicos que requieran revisión profesional.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 00:02.*",
+  "informe_md_cumplimiento": "# AIComply — Informe de cumplimiento\n\n**Sistema evaluado:** Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.  \n**Sector:** Agencias de viajes y turismo  \n**Clasificación:** LIMITADO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 00:02  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEste informe recoge el análisis de cumplimiento de un sistema clasificado como **LIMITADO** con rol **Implementador**.\n\nLa agencia cumple todas las obligaciones legales exigibles en este momento. La única área pendiente es una medida prudencial: verificar y exigir contractualmente al proveedor de la herramienta generativa el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026.\n\n## 2. Análisis de obligaciones\n\n**Avance de implementación:** 100 %  \nCubiertas: 1 | Parciales: 0 | No cubiertas: 0 | No aplica: 2  \n*Recomendaciones/medidas prudenciales pendientes: 1 (no computan en el porcentaje legal)*\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nLa empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa.  \n\n\n### No aplica\n\n**Art. 50.3 — Transparencia: emociones y biometría**  \nNinguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica.  \n\n**Art. 50.4 — Divulgación de contenido artificial**  \nEl contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público.  \n\n\n### C. Medidas prudenciales y puntos de vigilancia\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Art. 50.1 — Vigilancia: información al usuario (chatbot)** (Atendida)  \nEl chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA.  \n\n**Art. 50.2 — Vigilancia: marcado de contenido sintético** (Medida prudencial pendiente)  \nNo se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico en formato legible por máquina antes del 2 de diciembre de 2026.  \n\n\n## 3. Áreas de mejora identificadas\n\nNo se identificaron áreas de mejora pendientes.\n\n## 4. Plan de acción recomendado\n\n- **Aplicable actualmente:** Añadir aviso claro en la interfaz de que el sistema usa IA antes de cada interacción (Art. 50.1 — en vigor desde el 2 de agosto de 2026).\n- **Marcado de contenido sintético (Art. 50.2)** si el sistema genera texto, imagen, audio o vídeo. La fecha depende de cuándo se introdujo el sistema en el mercado: si es posterior al 2 de agosto de 2026, la obligación ya es exigible desde su comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el plazo vence el 2 de diciembre de 2026.\n- **Recomendado:** Revisar anualmente las actualizaciones del AI Act y de las directrices de la Comisión Europea.\n\n## 5. Puntos que requieren revisión profesional\n\n- Verificar con el proveedor de la herramienta generativa que aplicará el marcado técnico en formato legible por máquina a los contenidos generados (Art. 50.2) antes del 2 de diciembre de 2026, y recogerlo por escrito en el contrato.\n- Verificar la recalificación de Art. 4 — Alfabetización en IA [transversal]: se registró como PARCIAL y después se cambió a CUBIERTA (turno 3).\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 00:02.*",
+  "informe_md_completo": "# AIComply — Informe completo\n\n**Sistema evaluado:** Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.  \n**Sector:** Agencias de viajes y turismo  \n**Clasificación:** LIMITADO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 00:02  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **LIMITADO** según el AI Act europeo. La entidad actúa como **Implementador**.\n\nLa agencia cumple todas las obligaciones legales exigibles en este momento. La única área pendiente es una medida prudencial: verificar y exigir contractualmente al proveedor de la herramienta generativa el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** LIMITADO  \n**Descripción:** Sistema de IA de riesgo limitado (Art. 50)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA del personal que trabaja con ambos sistemas (Art. 4)\n- Verificar que el proveedor del chatbot cumple la obligación de informar a los usuarios de que interactúan con una IA (Art. 50)\n- Verificar que el proveedor de la herramienta generativa aplica el marcado en formato legible por máquina a los textos e imágenes generados (Art. 50)\n\n## 4. Análisis de obligaciones\n\n**Avance de implementación:** 100 %  \nCubiertas: 1 | Parciales: 0 | No cubiertas: 0 | No aplica: 2  \n*Recomendaciones/medidas prudenciales pendientes: 1 (no computan en el porcentaje legal)*\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nLa empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa.  \n\n\n### No aplica\n\n**Art. 50.3 — Transparencia: emociones y biometría**  \nNinguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica.  \n\n**Art. 50.4 — Divulgación de contenido artificial**  \nEl contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público.  \n\n\n### C. Medidas prudenciales y puntos de vigilancia\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Art. 50.1 — Vigilancia: información al usuario (chatbot)** (Atendida)  \nEl chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA.  \n\n**Art. 50.2 — Vigilancia: marcado de contenido sintético** (Medida prudencial pendiente)  \nNo se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico en formato legible por máquina antes del 2 de diciembre de 2026.  \n\n\n## 5. Áreas de mejora identificadas\n\nNo se identificaron áreas de mejora pendientes.\n\n## 6. Plan de acción recomendado\n\n- **Aplicable actualmente:** Añadir aviso claro en la interfaz de que el sistema usa IA antes de cada interacción (Art. 50.1 — en vigor desde el 2 de agosto de 2026).\n- **Marcado de contenido sintético (Art. 50.2)** si el sistema genera texto, imagen, audio o vídeo. La fecha depende de cuándo se introdujo el sistema en el mercado: si es posterior al 2 de agosto de 2026, la obligación ya es exigible desde su comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el plazo vence el 2 de diciembre de 2026.\n- **Recomendado:** Revisar anualmente las actualizaciones del AI Act y de las directrices de la Comisión Europea.\n\n## 7. Puntos que requieren revisión profesional\n\n- Verificar con el proveedor de la herramienta generativa que aplicará el marcado técnico en formato legible por máquina a los contenidos generados (Art. 50.2) antes del 2 de diciembre de 2026, y recogerlo por escrito en el contrato.\n- Verificar la recalificación de Art. 4 — Alfabetización en IA [transversal]: se registró como PARCIAL y después se cambió a CUBIERTA (turno 3).\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 00:02.*",
+  "cumplimiento_registro": {
+    "obligaciones_registradas": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "La empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa."
+      },
+      {
+        "articulo": "Art. 50.3",
+        "titulo": "Transparencia: emociones y biometría",
+        "clave": "50.3-emociones-biometria",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Ninguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica."
+      },
+      {
+        "articulo": "Art. 50.4",
+        "titulo": "Divulgación de contenido artificial",
+        "clave": "50.4-divulgacion-contenido-artificial",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El contenido generado es puramente comercial y publicitario, sin ultrasuplantaciones ni textos de interés público."
+      },
+      {
+        "articulo": "Art. 50.1",
+        "titulo": "Vigilancia: información al usuario (chatbot)",
+        "clave": "50.1-vigilancia-proveedor",
+        "estado": "cubierta",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "El chatbot muestra un mensaje inicial que informa explícitamente al usuario de que interactúa con una IA."
+      },
+      {
+        "articulo": "Art. 50.2",
+        "titulo": "Vigilancia: marcado de contenido sintético",
+        "clave": "50.2-vigilancia-proveedor",
+        "estado": "carencia",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "No se ha verificado ni exigido contractualmente al proveedor que aplique el marcado técnico en formato legible por máquina antes del 2 de diciembre de 2026."
+      }
+    ],
+    "carencias_registradas": [],
+    "puntos_revision_registrados": [
+      "Verificar con el proveedor de la herramienta generativa que aplicará el marcado técnico en formato legible por máquina a los contenidos generados (Art. 50.2) antes del 2 de diciembre de 2026, y recogerlo por escrito en el contrato."
+    ],
+    "conflictos_registrados": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "rol": "transversal",
+        "estado_anterior": "parcial",
+        "estado_nuevo": "cubierta",
+        "turno": 3,
+        "mejora": true
+      }
+    ],
+    "resumen_cumplimiento_registrado": "La agencia cumple todas las obligaciones legales exigibles en este momento. La única área pendiente es una medida prudencial: verificar y exigir contractualmente al proveedor de la herramienta generativa el marcado técnico del Art. 50.2 antes del 2 de diciembre de 2026.",
+    "obligaciones_desplazadas": [
+      {
+        "previa": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "parcial",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "Pendiente de confirmar el estado real; se registrará tras la respuesta del usuario"
+        },
+        "nueva": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "cubierta",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "La empresa ha realizado acciones formativas que cubren ambos sistemas, incluyendo capacidades y limitaciones."
+        },
+        "turno": 3
+      },
+      {
+        "previa": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "cubierta",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "La empresa ha realizado acciones formativas que cubren ambos sistemas, incluyendo capacidades y limitaciones."
+        },
+        "nueva": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "cubierta",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "La empresa ha realizado formación sobre capacidades y limitaciones de ambos sistemas para el personal que los usa y supervisa."
+        },
+        "turno": 9
+      },
+      {
+        "previa": {
+          "articulo": "Art. 50.3",
+          "titulo": "Transparencia — emociones y biometría",
+          "clave": "50.3-emociones-biometria",
+          "estado": "no_aplica",
+          "tipo": "obligacion",
+          "rol": "implementador",
+          "descripcion": "Ninguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica, por lo que este apartado no resulta aplicable."
+        },
+        "nueva": {
+          "articulo": "Art. 50.3",
+          "titulo": "Transparencia: emociones y biometría",
+          "clave": "50.3-emociones-biometria",
+          "estado": "no_aplica",
+          "tipo": "obligacion",
+          "rol": "implementador",
+          "descripcion": "Ninguno de los dos sistemas realiza reconocimiento de emociones ni categorización biométrica."
+        },
+        "turno": 9
+      }
+    ],
+    "total_narrado": 5,
+    "ordinal_narrado_max": 5,
+    "resumen_final_narrado": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "estado": "cubierta"
+      },
+      {
+        "articulo": "Art. 50.3",
+        "titulo": "Reconocimiento de emociones y biometría",
+        "estado": "no_aplica"
+      },
+      {
+        "articulo": "Art. 50.4",
+        "titulo": "Divulgación de contenido artificial",
+        "estado": "no_aplica"
+      },
+      {
+        "articulo": "Art. 50.1",
+        "titulo": "Verificación del cumplimiento del proveedor del chatbot",
+        "estado": "cubierta"
+      }
+    ],
+    "registro_reconstruido": false
+  }
+}

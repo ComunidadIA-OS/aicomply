@@ -1,0 +1,39 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: Agencia de viajes española con dos sistemas de IA: un chatbot contratado a proveedor externo que responde consultas sobre destinos y disponibilidad y ayuda a pedir cita con un agente, y una herramienta de IA generativa también contratada externamente para crear textos e imágenes promocionales que se publican en redes sociales. Ambos sistemas están en servicio desde 2025 y la agencia actúa como implementadora en los dos casos.  
+Sector: Agencias de viajes y turismo  
+Clasificación: LIMITADO  
+Rol de la entidad: Implementador  
+Fecha: 08/09/2026 a las 00:36  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como LIMITADO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: LIMITADO  
+Descripción: Sistema de IA de riesgo limitado (Art. 50)
+
+Rol principal de la entidad: Implementador
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA del personal que trabaja con ambos sistemas (Art. 4)
+- Verificar que el proveedor del chatbot cumple la obligación de informar a los usuarios de que interactúan con una IA (Art. 50)
+- Verificar que el proveedor de la herramienta generativa aplica el marcado en formato legible por máquina a los textos e imágenes generados (Art. 50)
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.8 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 00:36.
