@@ -823,18 +823,19 @@ class GeneradorInforme:
                 texto += f"\n- {linea}"
             return texto
 
+        # LIMITADO, como ALTO, se construye por bloques según el rol: los apartados del
+        # Art. 50 no son todos del mismo rol —50.1 y 50.2 obligan al proveedor, 50.3 y 50.4
+        # al responsable del despliegue— y el informe no puede pedirle a uno lo del otro
+        # (hallazgo B12).
+        if clas_norm == "LIMITADO":
+            texto += self._plan_limitado(
+                _roles_plan(rol, roles_multiples), _art_50, _art_50_2,
+            )
+            for linea in self._pasos_carencias(carencias):
+                texto += f"\n- {linea}"
+            return texto
+
         pasos_por_nivel = {
-            "LIMITADO": [
-                "**Aplicable actualmente:** Añadir aviso claro en la interfaz de que el sistema "
-                f"usa IA antes de cada interacción (Art. 50.1 — en vigor desde el {_art_50}).",
-                "**Marcado de contenido sintético (Art. 50.2)** si el sistema genera texto, imagen, "
-                f"audio o vídeo. La fecha depende de cuándo se introdujo el sistema en el mercado: si es "
-                f"posterior al {_art_50_2['fecha_legible']}, la obligación ya es exigible desde su "
-                f"comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el plazo "
-                f"vence el {_art_50_2['fecha_gracia_legible']}.",
-                "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y de las "
-                "directrices de la Comisión Europea.",
-            ],
             "MINIMO": [
                 "**[Obligación legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal "
                 "que usa o supervisa el sistema tiene formación suficiente sobre sus capacidades y limitaciones.",
@@ -872,6 +873,114 @@ class GeneradorInforme:
                 f"  - … y {len(carencias) - 5} área(s) adicional(es) — ver sección de obligaciones."
             )
         return pasos
+
+    def _plan_limitado(
+        self,
+        roles: list[str],
+        art_50: str,
+        art_50_2: dict,
+    ) -> str:
+        """Bloques del plan de acción de LIMITADO, según el rol identificado.
+
+        Los cuatro apartados del Art. 50 no son del mismo rol: el 50.1 y el 50.2 obligan
+        a los PROVEEDORES; el 50.3 y el 50.4, a los RESPONSABLES DEL DESPLIEGUE. Mismo
+        origen y misma forma que `_plan_alto`: los pasos salen del catálogo de
+        `prompts/system_prompt_cumplimiento.py` y las fechas, de `data/calendario.json`.
+
+        A un responsable del despliegue el 50.1 y el 50.2 NO se le retiran: cambian de
+        «hágalo» a «verifique que su proveedor lo hace y exíjaselo por contrato», que es
+        el tratamiento de vigilancia del catálogo. El plan nunca puede quitarle a nadie
+        una obligación que sí tiene; solo puede decir a quién le toca ejecutarla.
+        """
+        # El condicional de la fecha de mercado del Art. 50.2 (Art. 111.4) es el mismo
+        # tanto si la obligación se ejecuta como si se verifica: una sola redacción.
+        plazo_50_2 = (
+            "La fecha depende de cuándo se introdujo el sistema en el mercado: si es "
+            f"posterior al {art_50_2['fecha_legible']}, la obligación ya es exigible desde su "
+            "comercialización; si el sistema ya estaba en el mercado antes de esa fecha, el "
+            f"plazo vence el {art_50_2['fecha_gracia_legible']}."
+        )
+
+        pasos_proveedor = [
+            f"**Aplicable actualmente (desde el {art_50}):** Añadir aviso claro en la interfaz "
+            "de que el sistema usa IA antes de cada interacción, salvo que resulte evidente por "
+            "el contexto (Art. 50.1).",
+            "**Marcado de contenido sintético (Art. 50.2)** si el sistema genera texto, imagen, "
+            "audio o vídeo: los resultados de salida deben quedar marcados en un formato legible "
+            f"por máquina que permita detectar que se han generado o manipulado artificialmente. "
+            f"{plazo_50_2}",
+        ]
+
+        pasos_vigilancia = [
+            f"**Verificación (Art. 50.1 — obligación de su proveedor, en vigor desde el {art_50}):** "
+            "Comprobar que el sistema que ha contratado informa a las personas de que están "
+            "interactuando con una IA, y exigirlo por contrato a su proveedor. La obligación "
+            "existe y es de él; a su organización le corresponde verificar que la cumple.",
+            "**Verificación (Art. 50.2 — obligación de su proveedor):** Comprobar que su proveedor "
+            "marca los resultados de salida del sistema en un formato legible por máquina que "
+            "permita detectar que se han generado o manipulado artificialmente, y exigírselo por "
+            f"contrato. {plazo_50_2}",
+        ]
+
+        pasos_implementador = [
+            f"**Aplicable actualmente (desde el {art_50}):** Si el sistema realiza reconocimiento "
+            "de emociones o categorización biométrica, informar de su funcionamiento a las "
+            "personas físicas expuestas a él y tratar sus datos personales conforme al RGPD "
+            "(Art. 50.3).",
+            f"**Aplicable actualmente (desde el {art_50}):** Hacer público que el contenido ha "
+            "sido generado o manipulado artificialmente en los dos supuestos del Art. 50.4: "
+            "imágenes, audio o vídeo que constituyan una ultrasuplantación (deep fake), y texto "
+            "publicado con el fin de informar al público sobre asuntos de interés público. Es "
+            "divulgación al público, no un marcado técnico de la salida del sistema.",
+        ]
+
+        paso_recomendado = (
+            "**Recomendado:** Revisar anualmente las actualizaciones del AI Act y de las "
+            "directrices de la Comisión Europea."
+        )
+
+        def _bloque(encabezado: str, pasos: list[str]) -> str:
+            return f"\n### {encabezado}\n" + "".join(f"\n- {p}" for p in pasos) + "\n"
+
+        es_proveedor = "proveedor" in roles
+        es_implementador = "implementador" in roles
+
+        texto = _bloque("Acciones comunes a cualquier rol", [paso_recomendado])
+
+        if es_proveedor:
+            texto += _bloque(
+                "Obligaciones como proveedor (Art. 50.1 y 50.2)", pasos_proveedor
+            )
+        if es_implementador:
+            texto += _bloque(
+                "Obligaciones como responsable del despliegue (Art. 50.3 y 50.4)",
+                pasos_implementador,
+            )
+            # Regla de doble rol del catálogo: si además es proveedor, el 50.1 y el 50.2 ya
+            # están arriba en primera persona y la verificación sería duplicarlos.
+            if not es_proveedor:
+                texto += _bloque(
+                    "Puntos de vigilancia sobre su proveedor (Art. 50.1 y 50.2)",
+                    pasos_vigilancia,
+                )
+
+        if not es_proveedor and not es_implementador:
+            # Rol no determinado, o un rol al que el Art. 50 no dirige apartados
+            # (distribuidor, importador…). Como en `_plan_alto`, los bloques se presentan
+            # como alternativos: la herramienta no concede exenciones, informa.
+            texto += (
+                "\n> No consta que su entidad sea proveedora ni responsable del despliegue de "
+                "este sistema. Los bloques siguientes son alternativos: le aplica el que "
+                "corresponda a su rol.\n"
+            )
+            texto += _bloque(
+                "Si su entidad es proveedora del sistema (Art. 50.1 y 50.2)", pasos_proveedor
+            )
+            texto += _bloque(
+                "Si su entidad es responsable del despliegue (Art. 50.3 y 50.4)",
+                pasos_implementador + pasos_vigilancia,
+            )
+        return texto
 
     def _plan_alto(
         self,

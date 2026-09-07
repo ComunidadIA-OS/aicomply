@@ -634,6 +634,150 @@ class TestPlanAccionPorRol:
         assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
 
 
+# ── Plan de acción de LIMITADO por rol (regresión B12) ───────────────────────
+
+def _plan_limitado_para(**campos) -> str:
+    """Plan de acción del informe completo de LIMITADO con los roles indicados."""
+    clas = dict(_CLASIFICACION, clasificacion="LIMITADO", **campos)
+    return _plan_de_accion(GeneradorInforme().generar_informe_completo(clas, _CUMPLIMIENTO))
+
+
+# Las instrucciones en primera persona del 50.1 y del 50.2: lo que un responsable del
+# despliegue NO debe recibir, porque esos dos apartados obligan al proveedor.
+_ORDENES_DEL_PROVEEDOR = (
+    "Añadir aviso claro en la interfaz",
+    "los resultados de salida deben quedar marcados",
+)
+
+# Los cinco casos de rol que el plan de LIMITADO distingue: cada uno de los dos roles del
+# Art. 50 por separado, los dos juntos, el rol sin determinar y un rol al que el Art. 50 no
+# dirige apartados (distribuidor), que cae en la misma rama que el indeterminado.
+_TODOS_LOS_CASOS_DE_ROL = (
+    {"rol": "implementador", "roles_multiples": ["implementador"]},
+    {"rol": "proveedor", "roles_multiples": ["proveedor"]},
+    {"rol": "proveedor/implementador", "roles_multiples": ["proveedor", "implementador"]},
+    {"rol": "", "roles_multiples": []},
+    {"rol": "distribuidor", "roles_multiples": ["distribuidor"]},
+)
+
+
+class TestPlanLimitadoPorRol:
+    """B12, la misma familia que B9 pero en el Art. 50. `pasos_por_nivel["LIMITADO"]` era
+    texto fijo por clasificación y no miraba el rol, así que a una agencia de viajes
+    implementadora el informe le decía en la sección 2.C que el Art. 50.1 es obligación de su
+    proveedor y que a ella le toca verificarlo, y tres párrafos más abajo le ordenaba «añadir
+    aviso claro en la interfaz de que el sistema usa IA». El documento se contradecía a sí
+    mismo en dos secciones consecutivas.
+
+    La dirección del error importa: que un paso pase de «hágalo» a «verifique que su proveedor
+    lo hace» es correcto; que desaparezca, no. Por eso cada test que comprueba una ausencia
+    tiene al lado otro que comprueba que el contenido sigue estando en su forma de vigilancia.
+    """
+
+    def test_el_implementador_no_recibe_las_ordenes_del_50_1_ni_del_50_2(self):
+        plan = _plan_limitado_para(rol="implementador", roles_multiples=["implementador"])
+        for orden in _ORDENES_DEL_PROVEEDOR:
+            assert orden not in plan, f"le ordena en primera persona algo del proveedor: {orden!r}"
+
+    def test_el_implementador_si_recibe_los_dos_puntos_de_vigilancia(self):
+        """La otra mitad, y la que impide que el arreglo se pase de frenada: el 50.1 y el 50.2
+        no se le retiran de la vista, cambian de forma."""
+        plan = _plan_limitado_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Puntos de vigilancia sobre su proveedor (Art. 50.1 y 50.2)" in plan
+        assert "Art. 50.1 — obligación de su proveedor" in plan
+        assert "Art. 50.2 — obligación de su proveedor" in plan
+        assert plan.count("exigirlo por contrato") + plan.count("exigírselo por contrato") == 2
+
+    def test_el_implementador_recibe_sus_apartados_propios(self):
+        """El 50.3 y el 50.4 son suyos, y antes no aparecían en el plan de ningún rol."""
+        plan = _plan_limitado_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Obligaciones como responsable del despliegue (Art. 50.3 y 50.4)" in plan
+        assert "Art. 50.3" in plan
+        assert "ultrasuplantación (deep fake)" in plan
+        assert "interés público" in plan
+
+    def test_el_proveedor_si_recibe_las_ordenes_del_50_1_y_del_50_2(self):
+        plan = _plan_limitado_para(rol="proveedor", roles_multiples=["proveedor"])
+        assert "Obligaciones como proveedor (Art. 50.1 y 50.2)" in plan
+        for orden in _ORDENES_DEL_PROVEEDOR:
+            assert orden in plan
+
+    def test_el_proveedor_no_recibe_los_puntos_de_vigilancia(self):
+        """Verificar que su proveedor cumple no tiene sentido para quien ES el proveedor."""
+        plan = _plan_limitado_para(rol="proveedor", roles_multiples=["proveedor"])
+        assert "Puntos de vigilancia sobre su proveedor" not in plan
+
+    def test_el_doble_rol_no_duplica_el_50_1_ni_el_50_2(self):
+        """La regla de doble rol del catálogo: si concurren los dos roles, el 50.1 y el 50.2 son
+        obligaciones suyas en primera persona y la verificación sería decir dos veces lo mismo."""
+        plan = _plan_limitado_para(rol="proveedor/implementador",
+                                   roles_multiples=["proveedor", "implementador"])
+        assert "Obligaciones como proveedor (Art. 50.1 y 50.2)" in plan
+        assert "Obligaciones como responsable del despliegue (Art. 50.3 y 50.4)" in plan
+        assert "Puntos de vigilancia sobre su proveedor" not in plan
+        for orden in _ORDENES_DEL_PROVEEDOR:
+            assert plan.count(orden) == 1
+
+    def test_sin_rol_determinado_se_presentan_los_dos_bloques_como_alternativos(self):
+        """Como en `_plan_alto`: sin rol no se elige por el usuario, se le dice que elija. La
+        herramienta no concede exenciones, informa."""
+        plan = _plan_limitado_para(rol="", roles_multiples=[])
+        assert "Los bloques siguientes son alternativos" in plan
+        assert "Si su entidad es proveedora del sistema (Art. 50.1 y 50.2)" in plan
+        assert "Si su entidad es responsable del despliegue (Art. 50.3 y 50.4)" in plan
+        for orden in _ORDENES_DEL_PROVEEDOR:
+            assert orden in plan
+
+    def test_ningun_rol_pierde_el_50_1_ni_el_50_2(self):
+        """El guardián de la dirección del error. El plan viejo llevaba el 50.1 y el 50.2 para
+        todo el mundo; el nuevo puede cambiar quién los ejecuta —orden para el proveedor,
+        verificación para el responsable del despliegue— pero no puede hacerlos desaparecer del
+        documento de ningún rol."""
+        for campos in _TODOS_LOS_CASOS_DE_ROL:
+            plan = _plan_limitado_para(**campos)
+            for apartado in ("Art. 50.1", "Art. 50.2"):
+                assert apartado in plan, f"{apartado} desaparece del plan con {campos}"
+
+    def test_el_50_3_y_el_50_4_llegan_a_quien_los_tiene(self):
+        """La mitad complementaria. Un proveedor puro NO los recibe, y es correcto: obligan al
+        responsable del despliegue y ahí el proveedor no tiene ni siquiera un punto de
+        vigilancia, al revés de lo que le pasa al implementador con el 50.1 y el 50.2."""
+        for campos in _TODOS_LOS_CASOS_DE_ROL:
+            plan = _plan_limitado_para(**campos)
+            tiene_despliegue = "implementador" in (campos["roles_multiples"] or [])
+            solo_proveedor = campos["roles_multiples"] == ["proveedor"]
+            for apartado in ("Art. 50.3", "Art. 50.4"):
+                if solo_proveedor:
+                    assert apartado not in plan, f"{apartado} no es del proveedor: {campos}"
+                elif tiene_despliegue or not campos["roles_multiples"]:
+                    assert apartado in plan, f"falta {apartado} con {campos}"
+
+    def test_el_condicional_de_la_fecha_del_50_2_sigue_en_los_dos_roles(self):
+        """Verificado en el recorrido del 7 de septiembre y fuera del alcance de B12: el plazo
+        del Art. 111.4 acompaña al 50.2 tanto si se ejecuta como si se verifica."""
+        for campos in (
+            {"rol": "implementador", "roles_multiples": ["implementador"]},
+            {"rol": "proveedor", "roles_multiples": ["proveedor"]},
+        ):
+            plan = _plan_limitado_para(**campos)
+            assert "La fecha depende de cuándo se introdujo el sistema en el mercado" in plan
+            assert "2 de agosto de 2026" in plan
+            assert "ya estaba en el mercado antes de esa fecha" in plan
+            assert "2 de diciembre de 2026" in plan
+
+    def test_el_plan_de_limitado_sigue_listando_las_areas_de_mejora(self):
+        plan = _plan_limitado_para(rol="implementador", roles_multiples=["implementador"])
+        assert "Áreas de mejora detectadas (2):" in plan
+
+    def test_el_pdf_de_limitado_se_genera_con_los_bloques_por_rol(self):
+        md = GeneradorInforme().generar_informe_completo(
+            dict(_CLASIFICACION, clasificacion="LIMITADO",
+                 rol="implementador", roles_multiples=["implementador"]),
+            _CUMPLIMIENTO,
+        )
+        assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
+
+
 # ── Obligaciones preliminares de ALTO por rol (regresión B14) ─────────────────
 
 _ARTS_PROVEEDOR = ("Art. 9", "Art. 10", "Art. 11", "Art. 12", "Art. 13",
@@ -729,7 +873,9 @@ class TestObligacionesPreliminaresPorRol:
         assert "Obligaciones como implementador (Art. 26)" not in seccion
 
     def test_los_niveles_distintos_de_alto_no_cambian(self):
-        """LIMITADO conserva su lista literal: el sesgo de rol del Art. 50 es B12."""
+        """La sección 3 de LIMITADO conserva su lista literal. B12 cerró el sesgo de rol del
+        Art. 50 en el PLAN (sección 4/6, `_plan_limitado`), no aquí: esta lista sigue siendo
+        plana y sin rol, que es el mismo defecto que B14 arregló para ALTO en esta sección."""
         seccion = _preliminares_para(clasificacion="LIMITADO", rol="implementador",
                                      roles_multiples=["implementador"])
         assert "Art. 50.1" in seccion
