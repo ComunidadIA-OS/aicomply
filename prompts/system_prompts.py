@@ -273,12 +273,12 @@ Si se marca alguna → estado PROHIBIDO → ir a #R4 si la entidad es Proveedor 
 Fuente: Art. 5 en la redacción dada por el Reglamento (UE) 2026/1744 (Ómnibus digital), en vigor desde el 27 de julio de 2026.
 
 #R4 · ¿Tu sistema realiza alguna de estas funciones? — OBLIGACIONES DE TRANSPARENCIA (Art. 50)
-ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no cambia aquí.
-- Generar o manipular imagen, audio o vídeo que constituya un deep fake
-- Generar texto de IA publicado para informar al público sobre asuntos de interés público
-- Reconocimiento de emociones o categorización biométrica
-- Interactuar directamente con personas físicas sin informarles de que hablan con una IA
-- Generar contenido sintético (audio, imagen, vídeo o texto) destinado al público general
+ATENCIÓN: Este bloque NO re-evalúa el rol. El rol quedó fijado en #E1 y no cambia aquí, pero SÍ decide a quién obliga cada función. El Art. 50 reparte sus apartados entre dos roles distintos y cada función lleva abajo el suyo: al nombrar una obligación de transparencia, di SIEMPRE de quién es. Si la obligación es del proveedor y la entidad evaluada es responsable del despliegue (implementador), no se la atribuyas: la obligación existe y es de su proveedor, y para ella es un punto de vigilancia —comprobar que su proveedor la cumple y exigírselo por contrato—, nunca un incumplimiento suyo. Lo mismo a la inversa.
+- Generar o manipular imagen, audio o vídeo que constituya una ultrasuplantación (deep fake) → obligación del RESPONSABLE DEL DESPLIEGUE: hacer público que el contenido ha sido generado o manipulado artificialmente (Art. 50.4)
+- Generar texto de IA publicado para informar al público sobre asuntos de interés público → obligación del RESPONSABLE DEL DESPLIEGUE: divulgar que el texto se ha generado o manipulado artificialmente (Art. 50.4)
+- Reconocimiento de emociones o categorización biométrica → obligación del RESPONSABLE DEL DESPLIEGUE: informar del funcionamiento del sistema a las personas expuestas (Art. 50.3)
+- Interactuar directamente con personas físicas sin informarles de que hablan con una IA → obligación del PROVEEDOR: diseñar el sistema para que la persona sepa que interactúa con una IA (Art. 50.1)
+- Generar contenido sintético (audio, imagen, vídeo o texto) destinado al público general → obligación del PROVEEDOR: marcar la salida en un formato legible por máquina (Art. 50.2)
 - Ninguna de las anteriores
 
 Rutas:
@@ -333,7 +333,7 @@ Obligaciones por tipo de sistema:
 - GPAI (Art. 53): obligaciones para proveedores de modelos de IA de propósito general.
 - GPAI con Riesgo Sistémico (Art. 55): obligaciones para proveedores de modelos GPAI con riesgo sistémico.
 - Notificar a la NCA (Art. 6.4, Art. 49.2) — OBLIGACIÓN DEL PROVEEDOR: si eres PROVEEDOR y consideras que tu sistema del Anexo III NO plantea riesgo significativo, debes documentar esa evaluación y registrarlo en la base de datos de la UE antes de comercializarlo o ponerlo en servicio. Es obligación de quien introduce el sistema en el mercado: no se la atribuyas al implementador, ni al distribuidor, ni al importador.
-- Transparencia: Personas Físicas (Art. 50.1) / Contenido Sintético (Art. 50.2) / Emoción y Biometría (Art. 50.3) / Parecido del Contenido (Art. 50.4).
+- Transparencia (Art. 50) — cada apartado tiene su destinatario y hay que nombrarlo al citarlo: Personas Físicas (Art. 50.1) y Contenido Sintético (Art. 50.2) son OBLIGACIONES DEL PROVEEDOR; Emoción y Biometría (Art. 50.3) y Parecido del Contenido (Art. 50.4) son OBLIGACIONES DEL RESPONSABLE DEL DESPLIEGUE. Al pasar una de estas obligaciones preliminares a la pestaña Cumplimiento, indica de quién es: si su destinatario no es el rol de la entidad evaluada, la obligación existe igual, pero es del otro y para esta entidad solo es un punto de vigilancia sobre su proveedor.
 - Evaluación de Impacto sobre los Derechos Fundamentales (Art. 27): antes de desplegar un sistema de alto riesgo, si: (a) eres organismo público, (b) eres entidad privada que presta servicios públicos, o (c) despliegas un sistema del Anexo III punto 5(b) [scoring crediticio] o 5(c) [precios y evaluación de riesgo en seguros de vida/salud].
 
 Excepciones y exclusiones:
