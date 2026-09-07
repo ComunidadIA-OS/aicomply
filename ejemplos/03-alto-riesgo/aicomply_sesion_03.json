@@ -1,0 +1,602 @@
+{
+  "_version": "1",
+  "_app": "aicomply",
+  "clasificacion_data": {
+    "clasificacion": "ALTO",
+    "estados_adicionales": [],
+    "rol": "implementador",
+    "roles_multiples": [
+      "implementador"
+    ],
+    "nodos_recorridos": [
+      {
+        "pregunta": "Definición de sistema de IA (Art. 3.1)",
+        "respuesta": "Confirmo",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Tipo de entidad",
+        "respuesta": "Correcto",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Modificaciones que activarían conversión en proveedor (Art. 25)",
+        "respuesta": "Nada",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Alto riesgo — Anexo I, Sección B (transporte y vehículos)",
+        "respuesta": "Correcto",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Alto riesgo — Anexo I, Sección A (productos regulados y maquinaria)",
+        "respuesta": "Correcto",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Alto riesgo — Anexo III, punto 4 (Empleo)",
+        "respuesta": "Estoy de acuerdo",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Ámbito territorial (Art. 2)",
+        "respuesta": "Confirmo",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Uso limitado a selección de personal, sin usos adicionales",
+        "respuesta": "Confirmamos",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Prácticas prohibidas (Art. 5)",
+        "respuesta": "Nada",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Obligaciones de transparencia (Art. 50)",
+        "respuesta": "Correcto",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Evaluación de impacto sobre derechos fundamentales (Art. 27)",
+        "respuesta": "Ninguno",
+        "origen": "respuesta directa"
+      }
+    ],
+    "puntos_indeterminados": [],
+    "descripcion_sistema": "Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.",
+    "sector": "Logística y distribución",
+    "obligaciones_preliminares": [
+      "Alfabetización en IA (Art. 4)",
+      "Usar el sistema conforme a las instrucciones del proveedor (Art. 26)",
+      "Asignar supervisión humana cualificada (Art. 26)",
+      "Conservar los registros generados automáticamente (Art. 26)",
+      "Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)",
+      "Garantizar la pertinencia de los datos de entrada (Art. 26)",
+      "Informar a las personas afectadas cuando corresponda (Art. 26)",
+      "Informar a los trabajadores y sus representantes (Art. 26)"
+    ]
+  },
+  "cumplimiento_data": {
+    "obligaciones": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "La formación recibida por el equipo de RR. HH. cubre el manejo técnico del producto, pero no las limitaciones del sistema, los posibles sesgos ni el criterio crítico sobre la puntuación."
+      },
+      {
+        "articulo": "Art. 26.1",
+        "titulo": "Uso conforme a instrucciones del proveedor",
+        "clave": "26.1-instrucciones-uso",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El sistema se usa estrictamente conforme al manual del proveedor. El umbral de 55 puntos es una opción prevista por el producto y no se han realizado ajustes al margen de las instrucciones."
+      },
+      {
+        "articulo": "Art. 26.2",
+        "titulo": "Supervisión humana cualificada",
+        "clave": "26.2-supervision-humana",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe persona designada con autoridad y procedimiento claro para suspender el sistema si detecta un funcionamiento incorrecto."
+      },
+      {
+        "articulo": "Art. 26.4",
+        "titulo": "Pertinencia de los datos de entrada",
+        "clave": "26.4-datos-entrada",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Se introducen todos los CVs recibidos sin revisión formal de si el formulario recoge la información realmente necesaria para cada puesto."
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Vigilancia del funcionamiento",
+        "clave": "26.5-vigilancia",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Se realizan revisiones mensuales informales sin procedimiento escrito ni criterios definidos de detección de anomalías."
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Notificación de incidentes graves",
+        "clave": "26.5-incidentes",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe procedimiento escrito que defina qué constituye un incidente grave ni cómo notificarlo al proveedor o a la AESIA."
+      },
+      {
+        "articulo": "Art. 26.6",
+        "titulo": "Conservación de registros",
+        "clave": "26.6-conservacion-registros",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El contrato con el proveedor garantiza la retención mínima de 6 meses de los registros de funcionamiento."
+      },
+      {
+        "articulo": "Art. 26.7",
+        "titulo": "Información a trabajadores y representantes",
+        "clave": "26.7-informar-trabajadores",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema de IA en los procesos de selección."
+      },
+      {
+        "articulo": "Art. 26.11",
+        "titulo": "Información a personas afectadas",
+        "clave": "26.11-informar-afectados",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El aviso en la oferta de trabajo menciona el uso de IA de forma genérica pero no informa de que el sistema puede descartar candidaturas automáticamente sin revisión humana."
+      },
+      {
+        "articulo": "Art. 26.12",
+        "titulo": "Cooperación con autoridades competentes",
+        "clave": "26.12-cooperacion-autoridades",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe persona designada como punto de contacto para atender requerimientos de la AESIA u otras autoridades competentes."
+      },
+      {
+        "articulo": "Art. 27",
+        "titulo": "Evaluación de impacto sobre derechos fundamentales",
+        "clave": "27-evaluacion-derechos-fundamentales",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Logística Ebro S.L. es una empresa privada que no presta servicios públicos ni opera en los sectores de solvencia crediticia o seguros, por lo que esta obligación no le aplica."
+      },
+      {
+        "articulo": "Art. 49",
+        "titulo": "Registro en la base de datos de la UE",
+        "clave": "49-registro-ue",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El registro es obligación del proveedor. Logística Ebro S.L. es un implementador privado y no está obligada a registrar."
+      }
+    ],
+    "carencias_detectadas": [
+      "Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.",
+      "Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.",
+      "Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.",
+      "Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes."
+    ],
+    "puntos_revision_profesional": [
+      "Verificar si el contrato con Talentia Software cubre expresamente la retención de logs por un mínimo de 6 meses y en qué condiciones.",
+      "Revisar el alcance exacto del aviso publicado en la oferta de trabajo para determinar qué información adicional debe incorporarse para cumplir el Art. 26.11."
+    ],
+    "resumen_cumplimiento": "De las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. La empresa tiene trabajo significativo de adecuación por delante antes del 2 de diciembre de 2027.",
+    "incoherencias": []
+  },
+  "mensajes_evaluador": [
+    {
+      "role": "assistant",
+      "content": "He analizado la documentación técnica proporcionada. Esto es lo que he entendido sobre el sistema:\n\nTalentia Screening 3.2 es una herramienta comercial de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo con el fin de preseleccionar candidatos para puestos operativos de almacén. Opera en el sector de la logística y distribución, dentro de la empresa española Logística Ebro S.L., con sede en Zaragoza; el sistema es desarrollado y mantenido por Talentia Software S.L., y lo utilizan internamente la responsable y dos técnicos del departamento de Recursos Humanos. El sistema toma decisiones que afectan directamente a personas: las candidaturas que no superan el umbral de puntuación fijado en 55 puntos son descartadas de forma automática y definitiva, sin revisión humana posterior, lo que implica que personas reales quedan excluidas de procesos de selección sin intervención de ningún evaluador. En cuanto a los datos procesados, el sistema maneja información personal identificativa, historial laboral y formativo, certificaciones profesionales y disponibilidad horaria, aunque no trata datos de categorías especiales como biométricos, médicos o los contemplados en el artículo 9 del RGPD. El despliegue se realiza en modalidad SaaS a través de la infraestructura en la nube del proveedor, integrado mediante API con el portal de empleo de la empresa, sin que Logística Ebro disponga de copia propia de los registros de funcionamiento ni control sobre su conservación. Cabe señalar que, en la situación actual, ni los candidatos son informados de la existencia del cribado automatizado ni el comité de empresa ha sido notificado de su uso, lo que constituye una laguna relevante desde el punto de vista de transparencia y cumplimiento normativo.\n\nAntes de continuar, ¿es correcta esta descripción? ¿Desea añadir o corregir algo?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Antes de iniciar la evaluación, le indico brevemente que este análisis es una orientación basada en el Reglamento (UE) 2024/1689 (AI Act) y no constituye asesoramiento jurídico vinculante. Le recomiendo contrastar las conclusiones con un profesional especializado.\n\n---\n\nPasemos a la evaluación. Lo primero es confirmar que el sistema entra en la definición de \"sistema de IA\" del Reglamento.\n\nSegún la documentación, Talentia Screening genera una puntuación de adecuación de 0 a 100 para cada candidatura a partir de un modelo entrenado con datos históricos: no aplica un baremo fijo escrito por la empresa, sino que el modelo \"aprende\" de esos datos y produce un resultado que puede variar. Eso encaja con la definición del Art. 3.1: un sistema que infiere de la información de entrada cómo generar resultados —en este caso, una puntuación y una decisión de descarte o paso al siguiente filtro— que influyen en el entorno real de las personas evaluadas.\n\nPor lo tanto, entiendo que Talentia Screening 3.2 sí es un sistema de IA en el sentido del Reglamento. ¿Lo confirma?"
+    },
+    {
+      "role": "user",
+      "content": "Confirmo"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Pasemos al tipo de entidad.\n\nSegún la documentación, Logística Ebro adquirió el sistema a Talentia Software, que es quien lo desarrolla y mantiene. Logística Ebro lo usa tal como viene: no lo ha modificado, no le ha cambiado la finalidad y no lo distribuye con su propia marca. En la interfaz y la documentación sigue siendo Talentia Screening.\n\nPor tanto, entiendo que Logística Ebro actúa como **responsable del despliegue** (implementador): utiliza el sistema bajo su propia autoridad en sus procesos de selección, pero no lo ha desarrollado ni lo comercializa. ¿Es correcto?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Logística Ebro queda registrada como **Implementador**.\n\nAhora necesito verificar si alguna actuación de Logística Ebro sobre el sistema podría cambiar esa clasificación. Según la documentación, no se ha modificado el producto, no se le ha cambiado la finalidad prevista y no se distribuye con la marca de Logística Ebro.\n\n¿Ha realizado o tiene previsto realizar alguna de estas acciones sobre el sistema?\n\n- Ponerle su propio nombre o marca\n- Modificar la finalidad prevista por Talentia Software\n- Realizar una modificación sustancial del sistema"
+    },
+    {
+      "role": "user",
+      "content": "Nada"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Ninguna de esas circunstancias aplica, por lo que el rol de Implementador permanece sin cambios.\n\nPasemos ahora a analizar si el sistema podría clasificarse como de alto riesgo.\n\nLa documentación describe un sistema de cribado de candidaturas para puestos operativos de almacén: mozo de almacén, carretillero y preparador de pedidos. No se trata de maquinaria industrial ni de un componente integrado en un producto regulado, así que las categorías relacionadas con transporte, vehículos, aviación o productos industriales claramente no aplican aquí.\n\nLa categoría relevante en este caso es la del **Anexo III, punto 4: Empleo, gestión de trabajadores y acceso al autoempleo**. El sistema filtra y ordena candidaturas y descarta automáticamente a personas sin revisión humana posterior, lo que encaja directamente con esa categoría.\n\n¿Confirma que el uso de Talentia Screening se limita a los procesos de selección descritos, sin ningún uso adicional en gestión de desempeño, promociones internas u otras decisiones sobre personas ya contratadas?"
+    },
+    {
+      "role": "user",
+      "content": "Confirmamos"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. El sistema entra en la categoría de Empleo del Anexo III.\n\nEl siguiente paso es determinar si plantea un riesgo significativo de daño a la salud, la seguridad o los derechos fundamentales de las personas. Para ello, le expongo los criterios que permitirían concluir que NO hay riesgo significativo:\n\n- El sistema realiza únicamente una tarea procedimental limitada\n- El sistema mejora el resultado de una actividad humana ya completada\n- El sistema detecta patrones sin sustituir ni influir en la valoración humana previa, y existe revisión humana adecuada\n- El sistema realiza solo una tarea preparatoria para una evaluación posterior\n\nEn el caso de Talentia Screening, las candidaturas por debajo del umbral se descartan automáticamente y de forma definitiva: nadie las revisa. Eso significa que el sistema no se limita a preparar o apoyar una decisión humana, sino que toma por sí solo una decisión que excluye a personas reales de un proceso de selección sin posibilidad de revisión. Además, el sistema realiza una valoración individualizada de personas físicas comparando su perfil con un modelo aprendido, lo que constituye elaboración de perfiles.\n\nCuando un sistema realiza elaboración de perfiles de personas físicas, el Reglamento lo considera siempre de alto riesgo, sin excepción.\n\nPor tanto, entiendo que Talentia Screening 3.2 debe clasificarse como sistema de **alto riesgo**. ¿Está de acuerdo con esta valoración?"
+    },
+    {
+      "role": "user",
+      "content": "Estoy de acuerdo "
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Talentia Screening 3.2 queda clasificado como sistema de **alto riesgo** en la categoría de Empleo (Anexo III, punto 4).\n\nContinuamos. El Reglamento es aplicable territorialmente a Logística Ebro porque es una empresa establecida en España, dentro de la UE, y el sistema se utiliza en territorio europeo. ¿Lo confirma?"
+    },
+    {
+      "role": "user",
+      "content": "Confirmo"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. El Reglamento (UE) 2024/1689 es aplicable a Logística Ebro.\n\nContinuamos verificando si el sistema realiza alguna práctica prohibida por el Art. 5. Según la documentación, el sistema procesa únicamente datos declarados por el candidato (experiencia, formación, certificados, disponibilidad) y no trata datos biométricos, de salud ni categorías especiales. No realiza reconocimiento facial, no analiza vídeo ni voz, y no infiere características sensibles como raza, ideología o vida sexual.\n\n¿El sistema realiza alguna de estas funciones?\n\n- Técnicas subliminales, manipulación o engaño\n- Explotación de vulnerabilidades por edad, discapacidad o situación socioeconómica\n- Categorización biométrica para inferir características sensibles\n- Puntuación social\n- Predicción de comportamiento delictivo\n- Reconocimiento de emociones en el trabajo o centros educativos\n- Identificación biométrica remota en tiempo real"
+    },
+    {
+      "role": "user",
+      "content": "Nada"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Ninguna práctica prohibida es aplicable.\n\nPasemos ahora a las obligaciones de transparencia del Art. 50. Según la documentación, el sistema no genera ni manipula imágenes, audio o vídeo, no publica textos para informar al público sobre asuntos de interés general, no realiza reconocimiento de emociones ni categorización biométrica, y no interactúa directamente con los candidatos: estos rellenan un formulario en el portal de empleo sin que el sistema les hable ni se presente como interlocutor.\n\n¿Es correcto que el sistema no realiza ninguna de estas funciones?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. Ninguna obligación específica de transparencia del Art. 50 es aplicable al sistema en sí mismo.\n\nÚltima comprobación. El Art. 27 del Reglamento obliga a ciertos implementadores de sistemas de alto riesgo a realizar una evaluación de impacto sobre los derechos fundamentales antes del despliegue. Esa obligación aplica únicamente si Logística Ebro cumple alguno de estos criterios:\n\n- Es un organismo regido por el derecho público\n- Es una entidad privada que presta servicios públicos\n- Despliega un sistema del Anexo III específicamente en las categorías de scoring crediticio o evaluación de riesgo y fijación de precios en seguros de vida y salud\n\nLogística Ebro es una empresa privada de logística y distribución, y el sistema se usa para selección de personal operativo, no para ninguna de las dos categorías específicas mencionadas. ¿Es correcto que no encaja en ninguno de estos tres supuestos?"
+    },
+    {
+      "role": "user",
+      "content": "Ninguno "
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. El Art. 27 no es aplicable a Logística Ebro.\n\nCon esto queda completado el recorrido del árbol de decisión. A continuación le entrego el informe final.\n\n---\n\n## Informe de evaluación — Talentia Screening 3.2\n\n### 1. Resumen ejecutivo\n\nLogística Ebro S.L. actúa como **implementador** (responsable del despliegue) del sistema de IA Talentia Screening 3.2, desarrollado y mantenido por Talentia Software S.L. El sistema ha sido clasificado como de **alto riesgo** conforme al Art. 6.2 del Reglamento (UE) 2024/1689, por encuadrarse en la categoría de Empleo, gestión de trabajadores y acceso al autoempleo (Anexo III, punto 4), al realizar elaboración de perfiles de candidatos y descartar automáticamente solicitudes sin revisión humana posterior. Como implementador de un sistema de alto riesgo, Logística Ebro tiene obligaciones concretas que debe cumplir antes del 2 de diciembre de 2027.\n\n---\n\n### 2. Sus obligaciones\n\n**A. Aplicables actualmente (desde el 2 de febrero de 2025)**\n\n**Alfabetización en IA (Art. 4)**\nGarantizar que el personal que opera o supervisa el sistema —la responsable de Recursos Humanos y los dos técnicos de selección— dispone de un nivel suficiente de conocimientos sobre el funcionamiento, las limitaciones y los riesgos del sistema. La formación recibida del proveedor sobre el manejo del producto es un punto de partida, pero probablemente no cubre los aspectos de comprensión crítica que exige el Art. 4. Conviene documentar las acciones formativas realizadas.\n\n---\n\n**B. Aplicables a partir del 2 de diciembre de 2027**\n\nLas siguientes obligaciones derivan del Art. 26 del Reglamento, que regula las responsabilidades del implementador de un sistema de alto riesgo. La fecha de aplicación es el 2 de diciembre de 2027, pero su implementación requiere meses de trabajo previo: se recomienda iniciar los preparativos con antelación suficiente.\n\n**Usar el sistema conforme a las instrucciones del proveedor (Art. 26)**\nLogística Ebro debe asegurarse de que el sistema se utiliza dentro de los límites y condiciones que Talentia Software ha establecido en su documentación. Esto incluye el umbral de descarte automático fijado en 55 puntos: si ese parámetro no está expresamente contemplado en las instrucciones del proveedor como opción válida, podría constituir un uso fuera del ámbito previsto.\n\n**Asignar supervisión humana cualificada (Art. 26)**\nLogística Ebro debe designar a personas con la autoridad, los conocimientos y los medios necesarios para supervisar el funcionamiento del sistema durante su operación. En la situación actual, nadie revisa las candidaturas descartadas automáticamente, lo que no cumple este requisito. Será necesario establecer un procedimiento de supervisión que incluya, al menos, revisiones periódicas de los resultados del sistema.\n\n**Conservar los registros generados automáticamente (Art. 26)**\nLa empresa debe asegurarse de que los registros de funcionamiento del sistema se conservan durante el periodo que establezca el Reglamento. En la situación actual, los registros los genera y almacena el proveedor en su infraestructura, y Logística Ebro no tiene copia propia ni control sobre su periodo de conservación. Esto supone una laguna relevante que debe resolverse en el contrato con Talentia Software.\n\n**Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)**\nSi durante el uso del sistema se detecta algún funcionamiento anómalo, resultado discriminatorio o incidente que pueda afectar a los derechos de los candidatos, Logística Ebro debe comunicarlo a Talentia Software. Conviene establecer un procedimiento interno para detectar y escalar este tipo de situaciones.\n\n**Garantizar la pertinencia de los datos de entrada (Art. 26)**\nLos datos que se introducen en el sistema —currículums, formularios de candidatos— deben ser pertinentes y suficientemente representativos para el uso previsto. Logística Ebro debe verificar que el tipo de información que alimenta al sistema es adecuado para evaluar candidatos a los puestos de mozo de almacén, carretillero y preparador de pedidos.\n\n**Informar a las personas afectadas cuando corresponda (Art. 26)**\nLos candidatos que participen en procesos de selección en los que se use el sistema tienen derecho a ser informados de ello. En la situación actual, no se les comunica la existencia del cribado automatizado. Esto debe corregirse, independientemente del plazo regulatorio, ya que también puede tener implicaciones bajo el RGPD (Art. 22).\n\n**Informar a los trabajadores y sus representantes (Art. 26)**\nAntes de desplegar el sistema en procesos que afecten a trabajadores, Logística Ebro debe informar a los representantes de los trabajadores. El comité de empresa no ha sido notificado del uso de la herramienta, lo que debe subsanarse.\n\n---\n\n**C. Lo que NO aplica a Logística Ebro**\n\n- **Art. 27 (Evaluación de impacto sobre los derechos fundamentales):** no aplica, porque Logística Ebro es una entidad privada que no presta servicios públicos y el sistema no se usa en las categorías de scoring crediticio ni seguros de vida y salud.\n- **Art. 49 (Registro en la base de datos de la UE):** no aplica a Logística Ebro como implementador privado. Esta obligación corresponde a Talentia Software como proveedor del sistema.\n\n---\n\n### 3. Recorrido realizado (traza auditable)\n\n- **Definición de sistema de IA (Art. 3.1):** el sistema genera puntuaciones mediante un modelo entrenado con datos históricos, sin baremo fijo. Cumple la definición. (Inferencia confirmada)\n- **Tipo de entidad:** Implementador. Logística Ebro adquirió el sistema a Talentia Software y lo usa bajo su propia autoridad sin modificarlo ni comercializarlo. (Inferencia confirmada)\n- **Modificaciones que activarían conversión en proveedor (Art. 25):** ninguna. No se ha cambiado nombre, marca, finalidad ni se ha realizado modificación sustancial. (Respuesta directa)\n- **Alto riesgo — Anexo I, Sección B (transporte y vehículos):** no aplica. (Inferencia confirmada)\n- **Alto riesgo — Anexo I, Sección A (productos regulados y maquinaria):** no aplica. (Inferencia confirmada)\n- **Alto riesgo — Anexo III, punto 4 (Empleo):** el sistema filtra candidaturas, descarta automáticamente sin revisión humana y realiza elaboración de perfiles de personas físicas. Alto riesgo confirmado. (Inferencia confirmada)\n- **Ámbito territorial (Art. 2):** Logística Ebro está establecida en España y el sistema opera en territorio de la UE. Reglamento aplicable. (Inferencia confirmada)\n- **Prácticas prohibidas (Art. 5):** ninguna aplicable. El sistema no trata datos biométricos ni categorías especiales, ni realiza ninguna de las funciones enumeradas. (Respuesta directa)\n- **Obligaciones de transparencia (Art. 50):** ninguna aplicable al sistema. No genera contenido sintético, no interactúa directamente con personas ni realiza reconocimiento de emociones o categorización biométrica. (Inferencia confirmada)\n- **Evaluación de impacto sobre derechos fundamentales (Art. 27):** no aplica. Logística Ebro es entidad privada, no presta servicios públicos y el sistema no corresponde a las categorías del Anexo III punto 5(b) ni 5(c). (Respuesta directa)\n\n---\n\n### 4. Puntos que requieren revisión profesional\n\n**Umbral de descarte automático y supervisión humana**\nEl umbral fijado en 55 puntos determina que ninguna candidatura por debajo de ese valor llega a ser revisada por una persona. El Reglamento exige que los implementadores garanticen supervisión humana efectiva. Un profesional debe valorar si el procedimiento actual cumple ese requisito o si es necesario introducir revisiones periódicas de los descartes automáticos.\n\n**Conservación de registros**\nLos registros de funcionamiento están en la infraestructura del proveedor y Logística Ebro no controla su conservación. Es necesario revisar el contrato con Talentia Software para garantizar el acceso y la conservación adecuada de esos registros conforme a lo que exija el Reglamento.\n\n**Información a candidatos y al comité de empresa**\nLa ausencia de información a los candidatos sobre el cribado automatizado puede tener implicaciones tanto bajo el AI Act como bajo el RGPD (en particular, el Art. 22 del RGPD sobre decisiones automatizadas). Se recomienda revisar ambas normativas con un profesional antes de la fecha de aplicación regulatoria, y en todo caso subsanar estas lagunas cuanto antes.\n\n**Instrucciones del proveedor**\nConvendría verificar que el uso del umbral configurable de 55 puntos y el descarte automático están expresamente contemplados en las instrucciones de uso de Talentia Software, y no constituyen un uso fuera del ámbito previsto.\n\n---\n\n### 5. Roles adicionales\n\nNo se han identificado roles adicionales. Logística Ebro actúa únicamente como implementador.\n\n---\n\n### 6. Aviso legal\n\nEste informe es una orientación basada en el Reglamento (UE) 2024/1689 (AI Act), modificado por el Reglamento (UE) 2026/1744, y en la información facilitada durante esta consulta. No constituye asesoramiento jurídico vinculante. Las conclusiones pueden variar en función de circunstancias no recogidas en esta evaluación. Se recomienda contrastar este análisis con un abogado o consultor especializado en regulación de inteligencia artificial antes de adoptar decisiones de cumplimiento."
+    }
+  ],
+  "mensajes_cumplimiento": [
+    {
+      "role": "user",
+      "content": "Empezamos"
+    },
+    {
+      "role": "assistant",
+      "content": "## Aviso legal\n\nEste análisis tiene carácter informativo y orientador. No constituye asesoramiento jurídico vinculante. Para decisiones con implicaciones legales, consulte con un profesional del derecho especializado en normativa de inteligencia artificial.\n\n---\n\n## Clasificación confirmada\n\n**Sistema:** Talentia Screening 3.2\n**Empresa:** Logística Ebro S.L.\n**Clasificación:** Alto riesgo (Anexo III, punto 4 — sistemas de IA en el ámbito del empleo)\n**Rol:** Implementador\n\nEl análisis recorrerá **12 obligaciones** aplicables a su clasificación y rol, incluyendo las transversales. Comenzamos.\n\n---\n\n## Obligación 1 de 12: Alfabetización en IA — Art. 4\n\n[Obligación legal] [Aplicable actualmente — desde 2 feb 2025]\n\n**Qué significa para su empresa:** Todas las personas de su organización que usen, supervisen o tomen decisiones basadas en el sistema deben tener conocimientos suficientes sobre qué hace el sistema, cómo funciona y cuáles son sus limitaciones.\n\n**Pregunta directa:** Su documentación menciona que el equipo de Recursos Humanos recibió formación del proveedor sobre el manejo del producto. ¿Esa formación incluyó también las limitaciones del sistema, los posibles sesgos y los riesgos de confiar en su puntuación sin criterio propio, o se centró únicamente en el uso técnico de la herramienta?"
+    },
+    {
+      "role": "user",
+      "content": "Así es "
+    },
+    {
+      "role": "assistant",
+      "content": "Entiendo que la formación se centró únicamente en el uso técnico de la herramienta, sin cubrir limitaciones, sesgos ni criterio crítico sobre la puntuación. Queda registrada como **PARCIAL**.\n\n---\n\n## Obligación 2 de 12: Usar el sistema conforme a las instrucciones del proveedor — Art. 26.1\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben utilizar Talentia Screening exactamente como Talentia Software indica en su manual: sin modificar parámetros de forma no prevista, sin darle usos distintos a los descritos y respetando las condiciones del contrato de servicio.\n\n**Pregunta directa:** Su documentación indica que el manual del proveedor está disponible en la intranet y que el umbral de 55 puntos es una opción que el propio producto ofrece. ¿Existe algún otro ajuste o uso del sistema que se haya realizado al margen de lo que el manual del proveedor describe como uso previsto?"
+    },
+    {
+      "role": "user",
+      "content": "Nada"
+    },
+    {
+      "role": "assistant",
+      "content": "El sistema se usa conforme a las instrucciones del proveedor, sin ajustes al margen del manual. Queda registrada como **CUBIERTA**.\n\n\n\n---\n\n## Obligación 3 de 12: Supervisión humana cualificada — Art. 26.2\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben designar personas con formación y autoridad suficientes para supervisar lo que hace el sistema y, si fuera necesario, poder intervenir o detenerlo. No basta con que alguien lo opere: tiene que poder cuestionarlo y pararlo.\n\n**Pregunta directa:** Su documentación indica que el equipo de Recursos Humanos opera el sistema, pero no menciona un procedimiento formal de supervisión. ¿Existe alguna persona designada expresamente con autoridad para suspender el uso del sistema si detecta un funcionamiento incorrecto, y sabe cómo hacerlo técnicamente?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Entiendo que no existe una persona designada expresamente con autoridad y procedimiento claro para suspender el sistema. Queda registrada como **CARENCIA**.\n\n---\n\n## Obligación 4 de 12: Pertinencia de los datos de entrada — Art. 26.4\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben asegurarse de que los datos que introducen en el sistema —los que el candidato declara en el formulario— son adecuados y suficientemente representativos para evaluar los puestos a los que se aplican. Si los datos de entrada son pobres o inadecuados, la puntuación del sistema no es fiable.\n\n**Definición técnica:** El Art. 26.4 obliga al implementador a garantizar la pertinencia y representatividad de los datos de entrada en la medida en que ejerza control sobre dichos datos.\n\n**Pregunta directa:** ¿Han revisado en algún momento si el formulario que rellenan los candidatos recoge realmente toda la información relevante para evaluar los puestos de mozo de almacén, carretillero y preparador de pedidos, o se usa el formulario estándar del proveedor sin adaptación?"
+    },
+    {
+      "role": "user",
+      "content": "Se meten en el sistema todos los CVs que llegan por la oferta de trabajo "
+    },
+    {
+      "role": "assistant",
+      "content": "Entiendo que los datos de entrada son los currículos recibidos a través de la oferta, sin una revisión formal de si el formulario recoge la información realmente necesaria para cada puesto. Queda registrada como **PARCIAL**.\n\n---\n\n## Obligación 5 de 12: Vigilancia del funcionamiento — Art. 26.5 (vigilancia)\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben vigilar de forma activa y continua que el sistema funciona como se espera. Si detectan que presenta un riesgo para los candidatos, deben informar al proveedor y a la autoridad competente, y suspender su uso de inmediato.\n\n**Pregunta directa:** Su documentación indica expresamente que no existe un procedimiento escrito de seguimiento del funcionamiento del sistema. ¿Es así actualmente, o desde entonces han establecido algún mecanismo de vigilancia, aunque sea informal?"
+    },
+    {
+      "role": "user",
+      "content": "Hacemos auditorías mensuales"
+    },
+    {
+      "role": "assistant",
+      "content": "Gracias por la aclaración. ¿Esas auditorías mensuales están documentadas por escrito e incluyen criterios definidos para detectar funcionamiento anómalo y un protocolo de actuación si se identifica un problema, o son revisiones informales sin procedimiento formalizado?"
+    },
+    {
+      "role": "user",
+      "content": "Revisiones informales"
+    },
+    {
+      "role": "assistant",
+      "content": "Las revisiones informales son un punto de partida positivo, pero sin procedimiento escrito ni criterios definidos no cubren completamente la obligación. Queda registrada como **PARCIAL**.\n\n---\n\n## Obligación 6 de 12: Notificación de incidentes graves — Art. 26.5 (incidentes)\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Si detectan un incidente grave —por ejemplo, que el sistema discrimina sistemáticamente a un grupo de candidatos o toma decisiones claramente erróneas que causan perjuicio— deben comunicárselo al proveedor y a la autoridad de vigilancia del mercado competente.\n\n**Pregunta directa:** ¿Existe algún procedimiento escrito que indique a su equipo qué constituye un incidente grave, a quién comunicarlo dentro de la empresa y cómo notificarlo al proveedor o a la autoridad competente?"
+    },
+    {
+      "role": "user",
+      "content": "¿Quien es la autoridad competente en España?"
+    },
+    {
+      "role": "assistant",
+      "content": "En España, la autoridad competente en materia de supervisión del AI Act es la **Agencia Española de Supervisión de la Inteligencia Artificial (AESIA)**, con sede en A Coruña. Es el organismo nacional designado para recibir notificaciones de incidentes graves relacionados con sistemas de IA de alto riesgo.\n\nDicho esto, volviendo a la obligación: ¿existe actualmente algún procedimiento escrito en su empresa que establezca qué constituye un incidente grave y cómo notificarlo al proveedor y a la AESIA?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Sin procedimiento escrito de notificación de incidentes, esta obligación queda registrada como **CARENCIA**.\n\n---\n\n## Obligación 7 de 12: Conservación de registros — Art. 26.6\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben conservar los registros de funcionamiento del sistema (logs) durante al menos 6 meses, pero solo en la medida en que tengan control técnico sobre ellos.\n\n**Definición técnica:** El Art. 26.6 obliga al implementador a conservar los registros generados automáticamente por el sistema durante al menos 6 meses, siempre que tenga control técnico sobre dichos registros.\n\n**Pregunta directa:** Su documentación indica que los registros los genera y almacena el proveedor en su infraestructura, y que ustedes acceden a ellos desde el panel pero no tienen copia propia ni control sobre su periodo de conservación. ¿Han solicitado al proveedor por escrito que garantice una retención mínima de 6 meses, o han negociado esta condición en el contrato de servicio?"
+    },
+    {
+      "role": "user",
+      "content": "Está en el contrato"
+    },
+    {
+      "role": "assistant",
+      "content": "El contrato con el proveedor garantiza la retención mínima de 6 meses de los registros. Queda registrada como **CUBIERTA**.\n\n---\n\n## Obligación 8 de 12: Información a trabajadores y representantes — Art. 26.7\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Antes de desplegar el sistema, deben informar a los representantes de los trabajadores y a las personas directamente afectadas de que se está utilizando un sistema de IA en los procesos de selección. En su caso, esto incluye al comité de empresa.\n\n**Pregunta directa:** Su documentación indica expresamente que no se ha informado al comité de empresa del uso de la herramienta. ¿Sigue siendo así actualmente?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Sin información al comité de empresa ni a los trabajadores afectados, esta obligación queda registrada como **CARENCIA**.\n\n---\n\n## Obligación 9 de 12: Información a las personas afectadas — Art. 26.11\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Deben informar a los candidatos de que su solicitud está siendo evaluada por un sistema de IA de alto riesgo, antes o en el momento en que se produce esa evaluación.\n\n**Pregunta directa:** Su documentación indica que los candidatos no reciben información específica sobre la existencia del cribado automatizado. ¿Sigue siendo así actualmente, o se ha incorporado algún aviso en el portal de empleo o en las comunicaciones con los candidatos?"
+    },
+    {
+      "role": "user",
+      "content": "Hemos puesto en la oferta de trabajo que las candidaturas se revisarán utilizando IA"
+    },
+    {
+      "role": "assistant",
+      "content": "Es un paso positivo. Para confirmar el estado, necesito una precisión: ¿ese aviso indica explícitamente que el sistema de IA puede descartar automáticamente candidaturas sin revisión humana posterior, o simplemente menciona de forma genérica que se utiliza IA en el proceso?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "El aviso genérico sobre el uso de IA no es suficiente para cubrir esta obligación: los candidatos deben saber que están expuestos a un sistema de IA de alto riesgo que puede determinar el resultado de su candidatura de forma automatizada. Queda registrada como **PARCIAL**.\n\n---\n\n## Obligación 10 de 12: Cooperación con autoridades competentes — Art. 26.12\n\n[Obligación legal] [Aplicable próximamente — 2 dic 2027] [Preparación recomendada]\n\n**Qué significa para su empresa:** Si la AESIA u otra autoridad competente solicita información, documentación o acceso relacionado con el sistema, deben cooperar y facilitar lo que se les requiera.\n\n**Pregunta directa:** ¿Existe en su empresa alguna persona designada como punto de contacto responsable de atender requerimientos de la AESIA u otras autoridades en relación con este sistema?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Sin una persona designada como punto de contacto para las autoridades, esta obligación queda registrada como **CARENCIA**.\n\n---\n\n## Obligación 11 de 12: Evaluación de impacto sobre derechos fundamentales — Art. 27\n\n[Obligación condicional] [Aplicable próximamente — 2 dic 2027]\n\n**Qué significa para su empresa:** Esta obligación solo aplica a organismos públicos, entidades privadas que prestan servicios públicos, o implementadores de sistemas de evaluación de solvencia crediticia o seguros de vida y salud. No aplica por el mero hecho de usar un sistema de alto riesgo en el ámbito del empleo.\n\nSu documentación confirma que Logística Ebro S.L. es una empresa privada que presta servicios logísticos, sin ninguno de los supuestos anteriores. Este punto quedó resuelto en la evaluación previa y queda registrado como **NO APLICA**.\n\n---\n\n## Obligación 12 de 12: Registro en la base de datos de la UE — Art. 49\n\n[Obligación condicional] [Aplicable próximamente — 2 dic 2027]\n\nEl registro en la base de datos de la UE es obligación del proveedor. El implementador solo está obligado a registrar si es un organismo público o actúa en nombre de uno. Logística Ebro S.L. es una empresa privada, por lo que este punto no le aplica. Queda registrado como **NO APLICA**.\n\n---\n\n## Resumen final del análisis\n\nA continuación se detalla el estado de cada obligación evaluada:\n\n**Obligaciones legales**\n\n- Art. 4 — Alfabetización en IA: **PARCIAL**\n- Art. 26.1 — Uso conforme a instrucciones del proveedor: **CUBIERTA**\n- Art. 26.2 — Supervisión humana cualificada: **CARENCIA**\n- Art. 26.4 — Pertinencia de los datos de entrada: **PARCIAL**\n- Art. 26.5 — Vigilancia del funcionamiento: **PARCIAL**\n- Art. 26.5 — Notificación de incidentes graves: **CARENCIA**\n- Art. 26.6 — Conservación de registros: **CUBIERTA**\n- Art. 26.7 — Información a trabajadores y representantes: **CARENCIA**\n- Art. 26.11 — Información a personas afectadas: **PARCIAL**\n- Art. 26.12 — Cooperación con autoridades competentes: **CARENCIA**\n- Art. 27 — Evaluación de impacto sobre derechos fundamentales: **NO APLICA**\n- Art. 49 — Registro en la base de datos de la UE: **NO APLICA**\n\n**Resumen ejecutivo**\n\nDe las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. Las carencias más urgentes son la supervisión humana formalizada, la notificación de incidentes, la información al comité de empresa y la designación de un punto de contacto para las autoridades. Aunque el plazo de aplicación de las obligaciones del Art. 26 es el 2 de diciembre de 2027, la implementación de estas medidas requiere tiempo: se recomienda iniciar los trabajos de adecuación sin demora.\n\nEl análisis está completo. Puede generar el informe detallado en la pestaña **Informe**."
+    }
+  ],
+  "evaluacion_completada": true,
+  "cumplimiento_completado": true,
+  "acceso_directo_cumplimiento": false,
+  "informe_md_clasificacion": "# AIComply — Informe de clasificación\n\n**Sistema evaluado:** Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.  \n**Sector:** Logística y distribución  \n**Clasificación:** ALTO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 07/09/2026 a las 19:51  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **ALTO** según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como **Implementador**.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** ALTO  \n**Descripción:** Sistema de IA de alto riesgo (Artículos 6-17)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA (Art. 4)\n- Usar el sistema conforme a las instrucciones del proveedor (Art. 26)\n- Asignar supervisión humana cualificada (Art. 26)\n- Conservar los registros generados automáticamente (Art. 26)\n- Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)\n- Garantizar la pertinencia de los datos de entrada (Art. 26)\n- Informar a las personas afectadas cuando corresponda (Art. 26)\n- Informar a los trabajadores y sus representantes (Art. 26)\n\n## 4. Puntos que requieren revisión profesional\n\nNo se identificaron puntos específicos que requieran revisión profesional.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 19:51.*",
+  "informe_md_cumplimiento": "# AIComply — Informe de cumplimiento\n\n**Sistema evaluado:** Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.  \n**Sector:** Logística y distribución  \n**Clasificación:** ALTO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 07/09/2026 a las 19:51  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEste informe recoge el análisis de cumplimiento de un sistema clasificado como **ALTO** con rol **Implementador**.\n\nDe las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. La empresa tiene trabajo significativo de adecuación por delante antes del 2 de diciembre de 2027.\n\n## 2. Análisis de obligaciones\n\n**Avance de implementación:** 40 %  \nCubiertas: 2 | Parciales: 4 | No cubiertas: 4 | No aplica: 2\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 26.1 — Uso conforme a instrucciones del proveedor**  \nEl sistema se usa estrictamente conforme al manual del proveedor. El umbral de 55 puntos es una opción prevista por el producto y no se han realizado ajustes al margen de las instrucciones.  \n\n**Art. 26.6 — Conservación de registros**  \nEl contrato con el proveedor garantiza la retención mínima de 6 meses de los registros de funcionamiento.  \n\n\n### Parcialmente cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nLa formación recibida por el equipo de RR. HH. cubre el manejo técnico del producto, pero no las limitaciones del sistema, los posibles sesgos ni el criterio crítico sobre la puntuación.  \n\n**Art. 26.4 — Pertinencia de los datos de entrada**  \nSe introducen todos los CVs recibidos sin revisión formal de si el formulario recoge la información realmente necesaria para cada puesto.  \n\n**Art. 26.5 — Vigilancia del funcionamiento**  \nSe realizan revisiones mensuales informales sin procedimiento escrito ni criterios definidos de detección de anomalías.  \n\n**Art. 26.11 — Información a personas afectadas**  \nEl aviso en la oferta de trabajo menciona el uso de IA de forma genérica pero no informa de que el sistema puede descartar candidaturas automáticamente sin revisión humana.  \n\n\n### No cubiertas\n\n**Art. 26.2 — Supervisión humana cualificada**  \nNo existe persona designada con autoridad y procedimiento claro para suspender el sistema si detecta un funcionamiento incorrecto.  \n\n**Art. 26.5 — Notificación de incidentes graves**  \nNo existe procedimiento escrito que defina qué constituye un incidente grave ni cómo notificarlo al proveedor o a la AESIA.  \n\n**Art. 26.7 — Información a trabajadores y representantes**  \nNo se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema de IA en los procesos de selección.  \n\n**Art. 26.12 — Cooperación con autoridades competentes**  \nNo existe persona designada como punto de contacto para atender requerimientos de la AESIA u otras autoridades competentes.  \n\n\n### No aplica\n\n**Art. 27 — Evaluación de impacto sobre derechos fundamentales**  \nLogística Ebro S.L. es una empresa privada que no presta servicios públicos ni opera en los sectores de solvencia crediticia o seguros, por lo que esta obligación no le aplica.  \n\n**Art. 49 — Registro en la base de datos de la UE**  \nEl registro es obligación del proveedor. Logística Ebro S.L. es un implementador privado y no está obligada a registrar.  \n\n\n## 3. Áreas de mejora identificadas\n\n- Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.\n- Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.\n- Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.\n- Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.\n\n## 4. Plan de acción recomendado\n\n### Acciones comunes a cualquier rol\n\n- **Inmediato:** Designar un responsable de cumplimiento del AI Act e iniciar el inventario del sistema.\n- **Aplicable actualmente (desde el 2 de febrero de 2025):** Garantizar la alfabetización en IA del personal que usa o supervisa el sistema: conocimientos suficientes sobre sus capacidades y limitaciones (Art. 4).\n\n### Obligaciones como implementador (Art. 26)\n\n- **Inmediato:** Obtener del proveedor las instrucciones de uso y verificar que el sistema se utiliza estrictamente conforme a ellas (Art. 26.1).\n- **Inmediato:** Encomendar la supervisión humana a personas con la competencia, la formación y la autoridad necesarias, y garantizar que pueden intervenir o detener el sistema (Art. 26.2).\n- **Preparación (0-6 meses):** Comprobar que los datos de entrada que su organización controla son pertinentes y suficientemente representativos en vista de la finalidad prevista (Art. 26.4).\n- **Preparación (0-6 meses):** Establecer la conservación de los registros generados automáticamente por el sistema durante al menos seis meses, siempre que tenga control técnico sobre ellos (Art. 26.6).\n- **Antes del despliegue (2 de diciembre de 2027 para el Anexo III; 2 de agosto de 2028 para el Anexo I, según el Reglamento (UE) 2026/1744):** En el ámbito laboral, informar previamente a los trabajadores afectados y a sus representantes de que el sistema se va a utilizar (Art. 26.7).\n- **Antes del despliegue:** Si el sistema es del Anexo III y toma decisiones o ayuda a tomar decisiones relacionadas con personas físicas, informar a esas personas de que están expuestas a la utilización de un sistema de IA de alto riesgo (Art. 26.11).\n- **Antes del despliegue, cuando proceda:** Realizar la evaluación de impacto sobre los derechos fundamentales (Art. 27) si su organización es un organismo público, una entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) (scoring crediticio) o 5(c) (precios y evaluación de riesgo en seguros de vida y salud).\n- **De forma continua:** Vigilar el funcionamiento del sistema conforme a las instrucciones de uso e informar al proveedor; si el sistema presenta un riesgo, suspender su uso e informar al proveedor o distribuidor y a la autoridad de vigilancia del mercado (Art. 26.5).\n- **De forma continua:** Notificar los incidentes graves al proveedor y, a continuación, al importador o distribuidor y a la autoridad de vigilancia del mercado, conforme al procedimiento del Art. 73 (Art. 26.5).\n- **De forma continua:** Cooperar con las autoridades nacionales competentes en cualquier medida que estas adopten en relación con el sistema (Art. 26.12).\n\n- **Áreas de mejora detectadas (4):**\n-   - Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.\n-   - Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.\n-   - Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.\n-   - Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.\n\n## 5. Puntos que requieren revisión profesional\n\n- Verificar si el contrato con Talentia Software cubre expresamente la retención de logs por un mínimo de 6 meses y en qué condiciones.\n- Revisar el alcance exacto del aviso publicado en la oferta de trabajo para determinar qué información adicional debe incorporarse para cumplir el Art. 26.11.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 19:51.*",
+  "informe_md_completo": "# AIComply — Informe completo\n\n**Sistema evaluado:** Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.  \n**Sector:** Logística y distribución  \n**Clasificación:** ALTO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 07/09/2026 a las 19:52  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **ALTO** según el AI Act europeo. La entidad actúa como **Implementador**.\n\nDe las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. La empresa tiene trabajo significativo de adecuación por delante antes del 2 de diciembre de 2027.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** ALTO  \n**Descripción:** Sistema de IA de alto riesgo (Artículos 6-17)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA (Art. 4)\n- Usar el sistema conforme a las instrucciones del proveedor (Art. 26)\n- Asignar supervisión humana cualificada (Art. 26)\n- Conservar los registros generados automáticamente (Art. 26)\n- Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)\n- Garantizar la pertinencia de los datos de entrada (Art. 26)\n- Informar a las personas afectadas cuando corresponda (Art. 26)\n- Informar a los trabajadores y sus representantes (Art. 26)\n\n## 4. Análisis de obligaciones\n\n**Avance de implementación:** 40 %  \nCubiertas: 2 | Parciales: 4 | No cubiertas: 4 | No aplica: 2\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 26.1 — Uso conforme a instrucciones del proveedor**  \nEl sistema se usa estrictamente conforme al manual del proveedor. El umbral de 55 puntos es una opción prevista por el producto y no se han realizado ajustes al margen de las instrucciones.  \n\n**Art. 26.6 — Conservación de registros**  \nEl contrato con el proveedor garantiza la retención mínima de 6 meses de los registros de funcionamiento.  \n\n\n### Parcialmente cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nLa formación recibida por el equipo de RR. HH. cubre el manejo técnico del producto, pero no las limitaciones del sistema, los posibles sesgos ni el criterio crítico sobre la puntuación.  \n\n**Art. 26.4 — Pertinencia de los datos de entrada**  \nSe introducen todos los CVs recibidos sin revisión formal de si el formulario recoge la información realmente necesaria para cada puesto.  \n\n**Art. 26.5 — Vigilancia del funcionamiento**  \nSe realizan revisiones mensuales informales sin procedimiento escrito ni criterios definidos de detección de anomalías.  \n\n**Art. 26.11 — Información a personas afectadas**  \nEl aviso en la oferta de trabajo menciona el uso de IA de forma genérica pero no informa de que el sistema puede descartar candidaturas automáticamente sin revisión humana.  \n\n\n### No cubiertas\n\n**Art. 26.2 — Supervisión humana cualificada**  \nNo existe persona designada con autoridad y procedimiento claro para suspender el sistema si detecta un funcionamiento incorrecto.  \n\n**Art. 26.5 — Notificación de incidentes graves**  \nNo existe procedimiento escrito que defina qué constituye un incidente grave ni cómo notificarlo al proveedor o a la AESIA.  \n\n**Art. 26.7 — Información a trabajadores y representantes**  \nNo se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema de IA en los procesos de selección.  \n\n**Art. 26.12 — Cooperación con autoridades competentes**  \nNo existe persona designada como punto de contacto para atender requerimientos de la AESIA u otras autoridades competentes.  \n\n\n### No aplica\n\n**Art. 27 — Evaluación de impacto sobre derechos fundamentales**  \nLogística Ebro S.L. es una empresa privada que no presta servicios públicos ni opera en los sectores de solvencia crediticia o seguros, por lo que esta obligación no le aplica.  \n\n**Art. 49 — Registro en la base de datos de la UE**  \nEl registro es obligación del proveedor. Logística Ebro S.L. es un implementador privado y no está obligada a registrar.  \n\n\n## 5. Áreas de mejora identificadas\n\n- Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.\n- Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.\n- Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.\n- Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.\n\n## 6. Plan de acción recomendado\n\n### Acciones comunes a cualquier rol\n\n- **Inmediato:** Designar un responsable de cumplimiento del AI Act e iniciar el inventario del sistema.\n- **Aplicable actualmente (desde el 2 de febrero de 2025):** Garantizar la alfabetización en IA del personal que usa o supervisa el sistema: conocimientos suficientes sobre sus capacidades y limitaciones (Art. 4).\n\n### Obligaciones como implementador (Art. 26)\n\n- **Inmediato:** Obtener del proveedor las instrucciones de uso y verificar que el sistema se utiliza estrictamente conforme a ellas (Art. 26.1).\n- **Inmediato:** Encomendar la supervisión humana a personas con la competencia, la formación y la autoridad necesarias, y garantizar que pueden intervenir o detener el sistema (Art. 26.2).\n- **Preparación (0-6 meses):** Comprobar que los datos de entrada que su organización controla son pertinentes y suficientemente representativos en vista de la finalidad prevista (Art. 26.4).\n- **Preparación (0-6 meses):** Establecer la conservación de los registros generados automáticamente por el sistema durante al menos seis meses, siempre que tenga control técnico sobre ellos (Art. 26.6).\n- **Antes del despliegue (2 de diciembre de 2027 para el Anexo III; 2 de agosto de 2028 para el Anexo I, según el Reglamento (UE) 2026/1744):** En el ámbito laboral, informar previamente a los trabajadores afectados y a sus representantes de que el sistema se va a utilizar (Art. 26.7).\n- **Antes del despliegue:** Si el sistema es del Anexo III y toma decisiones o ayuda a tomar decisiones relacionadas con personas físicas, informar a esas personas de que están expuestas a la utilización de un sistema de IA de alto riesgo (Art. 26.11).\n- **Antes del despliegue, cuando proceda:** Realizar la evaluación de impacto sobre los derechos fundamentales (Art. 27) si su organización es un organismo público, una entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) (scoring crediticio) o 5(c) (precios y evaluación de riesgo en seguros de vida y salud).\n- **De forma continua:** Vigilar el funcionamiento del sistema conforme a las instrucciones de uso e informar al proveedor; si el sistema presenta un riesgo, suspender su uso e informar al proveedor o distribuidor y a la autoridad de vigilancia del mercado (Art. 26.5).\n- **De forma continua:** Notificar los incidentes graves al proveedor y, a continuación, al importador o distribuidor y a la autoridad de vigilancia del mercado, conforme al procedimiento del Art. 73 (Art. 26.5).\n- **De forma continua:** Cooperar con las autoridades nacionales competentes en cualquier medida que estas adopten en relación con el sistema (Art. 26.12).\n\n- **Áreas de mejora detectadas (4):**\n-   - Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.\n-   - Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.\n-   - Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.\n-   - Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.\n\n## 7. Puntos que requieren revisión profesional\n\n- Verificar si el contrato con Talentia Software cubre expresamente la retención de logs por un mínimo de 6 meses y en qué condiciones.\n- Revisar el alcance exacto del aviso publicado en la oferta de trabajo para determinar qué información adicional debe incorporarse para cumplir el Art. 26.11.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 19:52.*",
+  "cumplimiento_registro": {
+    "obligaciones_registradas": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "La formación recibida por el equipo de RR. HH. cubre el manejo técnico del producto, pero no las limitaciones del sistema, los posibles sesgos ni el criterio crítico sobre la puntuación."
+      },
+      {
+        "articulo": "Art. 26.1",
+        "titulo": "Uso conforme a instrucciones del proveedor",
+        "clave": "26.1-instrucciones-uso",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El sistema se usa estrictamente conforme al manual del proveedor. El umbral de 55 puntos es una opción prevista por el producto y no se han realizado ajustes al margen de las instrucciones."
+      },
+      {
+        "articulo": "Art. 26.2",
+        "titulo": "Supervisión humana cualificada",
+        "clave": "26.2-supervision-humana",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe persona designada con autoridad y procedimiento claro para suspender el sistema si detecta un funcionamiento incorrecto."
+      },
+      {
+        "articulo": "Art. 26.4",
+        "titulo": "Pertinencia de los datos de entrada",
+        "clave": "26.4-datos-entrada",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Se introducen todos los CVs recibidos sin revisión formal de si el formulario recoge la información realmente necesaria para cada puesto."
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Vigilancia del funcionamiento",
+        "clave": "26.5-vigilancia",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Se realizan revisiones mensuales informales sin procedimiento escrito ni criterios definidos de detección de anomalías."
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Notificación de incidentes graves",
+        "clave": "26.5-incidentes",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe procedimiento escrito que defina qué constituye un incidente grave ni cómo notificarlo al proveedor o a la AESIA."
+      },
+      {
+        "articulo": "Art. 26.6",
+        "titulo": "Conservación de registros",
+        "clave": "26.6-conservacion-registros",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El contrato con el proveedor garantiza la retención mínima de 6 meses de los registros de funcionamiento."
+      },
+      {
+        "articulo": "Art. 26.7",
+        "titulo": "Información a trabajadores y representantes",
+        "clave": "26.7-informar-trabajadores",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema de IA en los procesos de selección."
+      },
+      {
+        "articulo": "Art. 26.11",
+        "titulo": "Información a personas afectadas",
+        "clave": "26.11-informar-afectados",
+        "estado": "parcial",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El aviso en la oferta de trabajo menciona el uso de IA de forma genérica pero no informa de que el sistema puede descartar candidaturas automáticamente sin revisión humana."
+      },
+      {
+        "articulo": "Art. 26.12",
+        "titulo": "Cooperación con autoridades competentes",
+        "clave": "26.12-cooperacion-autoridades",
+        "estado": "carencia",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "No existe persona designada como punto de contacto para atender requerimientos de la AESIA u otras autoridades competentes."
+      },
+      {
+        "articulo": "Art. 27",
+        "titulo": "Evaluación de impacto sobre derechos fundamentales",
+        "clave": "27-evaluacion-derechos-fundamentales",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "Logística Ebro S.L. es una empresa privada que no presta servicios públicos ni opera en los sectores de solvencia crediticia o seguros, por lo que esta obligación no le aplica."
+      },
+      {
+        "articulo": "Art. 49",
+        "titulo": "Registro en la base de datos de la UE",
+        "clave": "49-registro-ue",
+        "estado": "no_aplica",
+        "tipo": "obligacion",
+        "rol": "implementador",
+        "descripcion": "El registro es obligación del proveedor. Logística Ebro S.L. es un implementador privado y no está obligada a registrar."
+      }
+    ],
+    "carencias_registradas": [
+      "Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.",
+      "Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.",
+      "Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.",
+      "Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes."
+    ],
+    "puntos_revision_registrados": [
+      "Verificar si el contrato con Talentia Software cubre expresamente la retención de logs por un mínimo de 6 meses y en qué condiciones.",
+      "Revisar el alcance exacto del aviso publicado en la oferta de trabajo para determinar qué información adicional debe incorporarse para cumplir el Art. 26.11."
+    ],
+    "conflictos_registrados": [],
+    "resumen_cumplimiento_registrado": "De las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. La empresa tiene trabajo significativo de adecuación por delante antes del 2 de diciembre de 2027.",
+    "obligaciones_desplazadas": [],
+    "total_narrado": 12,
+    "ordinal_narrado_max": 12,
+    "resumen_final_narrado": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "estado": "parcial"
+      },
+      {
+        "articulo": "Art. 26.1",
+        "titulo": "Uso conforme a instrucciones del proveedor",
+        "estado": "cubierta"
+      },
+      {
+        "articulo": "Art. 26.2",
+        "titulo": "Supervisión humana cualificada",
+        "estado": "carencia"
+      },
+      {
+        "articulo": "Art. 26.4",
+        "titulo": "Pertinencia de los datos de entrada",
+        "estado": "parcial"
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Vigilancia del funcionamiento",
+        "estado": "parcial"
+      },
+      {
+        "articulo": "Art. 26.5",
+        "titulo": "Notificación de incidentes graves",
+        "estado": "carencia"
+      },
+      {
+        "articulo": "Art. 26.6",
+        "titulo": "Conservación de registros",
+        "estado": "cubierta"
+      },
+      {
+        "articulo": "Art. 26.7",
+        "titulo": "Información a trabajadores y representantes",
+        "estado": "carencia"
+      },
+      {
+        "articulo": "Art. 26.11",
+        "titulo": "Información a personas afectadas",
+        "estado": "parcial"
+      },
+      {
+        "articulo": "Art. 26.12",
+        "titulo": "Cooperación con autoridades competentes",
+        "estado": "carencia"
+      },
+      {
+        "articulo": "Art. 27",
+        "titulo": "Evaluación de impacto sobre derechos fundamentales",
+        "estado": "no_aplica"
+      },
+      {
+        "articulo": "Art. 49",
+        "titulo": "Registro en la base de datos de la UE",
+        "estado": "no_aplica"
+      }
+    ],
+    "registro_reconstruido": false
+  }
+}

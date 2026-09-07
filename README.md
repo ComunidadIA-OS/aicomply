@@ -101,7 +101,7 @@ El repositorio incluye seis casos de uso representativos de PYMEs industriales �
 | [`00-no-ia`](ejemplos/00-no-ia) | NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA | Hoja de cálculo con reglas deterministas de stock |
 | [`01-riesgo-minimo`](ejemplos/01-riesgo-minimo) | MÍNIMO | Optimización de hornos industriales |
 | [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado) | LIMITADO | Chatbot B2B |
-| [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Filtrado automatizado de CVs |
+| [`03-alto-riesgo`](ejemplos/03-alto-riesgo) | ALTO | Cribado automatizado de candidaturas |
 | [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Vigilancia biométrica laboral (Art. 5) |
 | [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Visión artificial militar — fuera del ámbito (Art. 2) |
 
@@ -145,9 +145,9 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 ![Informe generado con opciones de descarga en PDF y texto plano](assets/08-informe.png)
 
-Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/informe_completo.pdf) para ver el output real antes de instalar la herramienta.
+Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
 
-> **Aviso:** los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+> **Aviso:** salvo el caso [`03-alto-riesgo`](ejemplos/03-alto-riesgo), regenerado con la versión actual, los informes y transcripciones de [`ejemplos/`](ejemplos/README.md) se generaron en mayo de 2026 con la versión v0.1.0 y **contienen afirmaciones normativas ya corregidas** — entre otras, el Ómnibus descrito como todavía no adoptado y las fechas del Art. 50. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 
@@ -390,7 +390,7 @@ aicomply/
 │   ├── 00-no-ia/                       # No cumple la definición del Art. 3.1 — hoja de cálculo determinista
 │   ├── 01-riesgo-minimo/               # Riesgo mínimo — optimización de hornos
 │   ├── 02-riesgo-limitado/             # Riesgo limitado — chatbot B2B
-│   ├── 03-alto-riesgo/                 # Alto riesgo — filtrado de CVs
+│   ├── 03-alto-riesgo/                 # Alto riesgo — cribado de candidaturas
 │   ├── 04-prohibido/                   # Práctica prohibida — vigilancia biométrica laboral
 │   └── 05-excluido/                    # Excluido Art. 2 — visión artificial militar
 ├── LICENSE

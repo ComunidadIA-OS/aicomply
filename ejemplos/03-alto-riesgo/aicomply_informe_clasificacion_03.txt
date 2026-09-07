@@ -1,0 +1,44 @@
+AIComply — Informe de clasificación
+
+Sistema evaluado: Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.  
+Sector: Logística y distribución  
+Clasificación: ALTO  
+Rol de la entidad: Implementador  
+Fecha: 07/09/2026 a las 19:51  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como ALTO según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como Implementador.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: ALTO  
+Descripción: Sistema de IA de alto riesgo (Artículos 6-17)
+
+Rol principal de la entidad: Implementador
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA (Art. 4)
+- Usar el sistema conforme a las instrucciones del proveedor (Art. 26)
+- Asignar supervisión humana cualificada (Art. 26)
+- Conservar los registros generados automáticamente (Art. 26)
+- Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)
+- Garantizar la pertinencia de los datos de entrada (Art. 26)
+- Informar a las personas afectadas cuando corresponda (Art. 26)
+- Informar a los trabajadores y sus representantes (Art. 26)
+
+4. Puntos que requieren revisión profesional
+
+No se identificaron puntos específicos que requieran revisión profesional.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 19:51.

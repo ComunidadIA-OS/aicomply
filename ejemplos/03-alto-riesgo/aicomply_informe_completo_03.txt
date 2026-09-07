@@ -1,0 +1,131 @@
+AIComply — Informe completo
+
+Sistema evaluado: Talentia Screening 3.2 es un sistema de cribado automatizado de candidaturas que puntúa y filtra solicitudes de empleo para puestos operativos de almacén en Logística Ebro S.L. El sistema descarta automáticamente las candidaturas que no superan un umbral de 55 puntos sin revisión humana posterior, realizando elaboración de perfiles a partir de datos declarados por el candidato. Opera en modalidad SaaS sobre la infraestructura del proveedor Talentia Software S.L. e integrado mediante API con el portal de empleo de la empresa.  
+Sector: Logística y distribución  
+Clasificación: ALTO  
+Rol de la entidad: Implementador  
+Fecha: 07/09/2026 a las 19:52  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+El sistema evaluado ha sido clasificado como ALTO según el AI Act europeo. La entidad actúa como Implementador.
+
+De las 10 obligaciones legales aplicables, 2 están cubiertas, 4 son parciales y 4 son carencias. La empresa tiene trabajo significativo de adecuación por delante antes del 2 de diciembre de 2027.
+
+2. Clasificación del sistema
+
+Nivel de riesgo: ALTO  
+Descripción: Sistema de IA de alto riesgo (Artículos 6-17)
+
+Rol principal de la entidad: Implementador
+
+3. Obligaciones identificadas durante la evaluación
+
+- Alfabetización en IA (Art. 4)
+- Usar el sistema conforme a las instrucciones del proveedor (Art. 26)
+- Asignar supervisión humana cualificada (Art. 26)
+- Conservar los registros generados automáticamente (Art. 26)
+- Informar al proveedor de incidentes graves o comportamientos inesperados (Art. 26)
+- Garantizar la pertinencia de los datos de entrada (Art. 26)
+- Informar a las personas afectadas cuando corresponda (Art. 26)
+- Informar a los trabajadores y sus representantes (Art. 26)
+
+4. Análisis de obligaciones
+
+Avance de implementación: 40 %  
+Cubiertas: 2   Parciales: 4   No cubiertas: 4   No aplica: 2
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 26.1 — Uso conforme a instrucciones del proveedor  
+El sistema se usa estrictamente conforme al manual del proveedor. El umbral de 55 puntos es una opción prevista por el producto y no se han realizado ajustes al margen de las instrucciones.  
+
+Art. 26.6 — Conservación de registros  
+El contrato con el proveedor garantiza la retención mínima de 6 meses de los registros de funcionamiento.  
+
+Parcialmente cubiertas
+
+Art. 4 — Alfabetización en IA  
+La formación recibida por el equipo de RR. HH. cubre el manejo técnico del producto, pero no las limitaciones del sistema, los posibles sesgos ni el criterio crítico sobre la puntuación.  
+
+Art. 26.4 — Pertinencia de los datos de entrada  
+Se introducen todos los CVs recibidos sin revisión formal de si el formulario recoge la información realmente necesaria para cada puesto.  
+
+Art. 26.5 — Vigilancia del funcionamiento  
+Se realizan revisiones mensuales informales sin procedimiento escrito ni criterios definidos de detección de anomalías.  
+
+Art. 26.11 — Información a personas afectadas  
+El aviso en la oferta de trabajo menciona el uso de IA de forma genérica pero no informa de que el sistema puede descartar candidaturas automáticamente sin revisión humana.  
+
+No cubiertas
+
+Art. 26.2 — Supervisión humana cualificada  
+No existe persona designada con autoridad y procedimiento claro para suspender el sistema si detecta un funcionamiento incorrecto.  
+
+Art. 26.5 — Notificación de incidentes graves  
+No existe procedimiento escrito que defina qué constituye un incidente grave ni cómo notificarlo al proveedor o a la AESIA.  
+
+Art. 26.7 — Información a trabajadores y representantes  
+No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema de IA en los procesos de selección.  
+
+Art. 26.12 — Cooperación con autoridades competentes  
+No existe persona designada como punto de contacto para atender requerimientos de la AESIA u otras autoridades competentes.  
+
+No aplica
+
+Art. 27 — Evaluación de impacto sobre derechos fundamentales  
+Logística Ebro S.L. es una empresa privada que no presta servicios públicos ni opera en los sectores de solvencia crediticia o seguros, por lo que esta obligación no le aplica.  
+
+Art. 49 — Registro en la base de datos de la UE  
+El registro es obligación del proveedor. Logística Ebro S.L. es un implementador privado y no está obligada a registrar.  
+
+5. Áreas de mejora identificadas
+
+- Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.
+- Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.
+- Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.
+- Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.
+
+6. Plan de acción recomendado
+
+Acciones comunes a cualquier rol
+
+- Inmediato: Designar un responsable de cumplimiento del AI Act e iniciar el inventario del sistema.
+- Aplicable actualmente (desde el 2 de febrero de 2025): Garantizar la alfabetización en IA del personal que usa o supervisa el sistema: conocimientos suficientes sobre sus capacidades y limitaciones (Art. 4).
+
+Obligaciones como implementador (Art. 26)
+
+- Inmediato: Obtener del proveedor las instrucciones de uso y verificar que el sistema se utiliza estrictamente conforme a ellas (Art. 26.1).
+- Inmediato: Encomendar la supervisión humana a personas con la competencia, la formación y la autoridad necesarias, y garantizar que pueden intervenir o detener el sistema (Art. 26.2).
+- Preparación (0-6 meses): Comprobar que los datos de entrada que su organización controla son pertinentes y suficientemente representativos en vista de la finalidad prevista (Art. 26.4).
+- Preparación (0-6 meses): Establecer la conservación de los registros generados automáticamente por el sistema durante al menos seis meses, siempre que tenga control técnico sobre ellos (Art. 26.6).
+- Antes del despliegue (2 de diciembre de 2027 para el Anexo III; 2 de agosto de 2028 para el Anexo I, según el Reglamento (UE) 2026/1744): En el ámbito laboral, informar previamente a los trabajadores afectados y a sus representantes de que el sistema se va a utilizar (Art. 26.7).
+- Antes del despliegue: Si el sistema es del Anexo III y toma decisiones o ayuda a tomar decisiones relacionadas con personas físicas, informar a esas personas de que están expuestas a la utilización de un sistema de IA de alto riesgo (Art. 26.11).
+- Antes del despliegue, cuando proceda: Realizar la evaluación de impacto sobre los derechos fundamentales (Art. 27) si su organización es un organismo público, una entidad privada que presta servicios públicos, o responsable del despliegue de un sistema del Anexo III punto 5(b) (scoring crediticio) o 5(c) (precios y evaluación de riesgo en seguros de vida y salud).
+- De forma continua: Vigilar el funcionamiento del sistema conforme a las instrucciones de uso e informar al proveedor; si el sistema presenta un riesgo, suspender su uso e informar al proveedor o distribuidor y a la autoridad de vigilancia del mercado (Art. 26.5).
+- De forma continua: Notificar los incidentes graves al proveedor y, a continuación, al importador o distribuidor y a la autoridad de vigilancia del mercado, conforme al procedimiento del Art. 73 (Art. 26.5).
+- De forma continua: Cooperar con las autoridades nacionales competentes en cualquier medida que estas adopten en relación con el sistema (Art. 26.12).
+
+- Áreas de mejora detectadas (4):
+-   - Art. 26.2 — No existe persona designada con autoridad para suspender el sistema ni procedimiento formal de supervisión humana.
+-   - Art. 26.5 (incidentes) — No existe procedimiento escrito de notificación de incidentes graves al proveedor ni a la AESIA.
+-   - Art. 26.7 — No se ha informado al comité de empresa ni a los trabajadores afectados sobre el uso del sistema.
+-   - Art. 26.12 — No existe persona designada como punto de contacto para atender requerimientos de autoridades competentes.
+
+7. Puntos que requieren revisión profesional
+
+- Verificar si el contrato con Talentia Software cubre expresamente la retención de logs por un mínimo de 6 meses y en qué condiciones.
+- Revisar el alcance exacto del aviso publicado en la oferta de trabajo para determinar qué información adicional debe incorporarse para cumplir el Art. 26.11.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.7 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 07/09/2026 a las 19:52.

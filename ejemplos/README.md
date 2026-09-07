@@ -1,9 +1,11 @@
 # Ejemplos AIComply
 
-> ### ⚠️ Estos ejemplos son de mayo de 2026 y no reflejan la versión actual
+> ### ⚠️ Los ejemplos 00, 01, 02, 04 y 05 son de mayo de 2026 y no reflejan la versión actual
 >
-> Se generaron con la versión v0.1.0 del hackathon. Desde entonces se han corregido varios
-> defectos que **siguen presentes en estas transcripciones e informes**:
+> **El aviso no afecta al [03-alto-riesgo](03-alto-riesgo/), que se regeneró en septiembre de
+> 2026 con la versión actual y sí sirve como referencia del output de hoy.** Los otros cinco se
+> generaron con la versión v0.1.0 del hackathon. Desde entonces se han corregido varios
+> defectos que **siguen presentes en sus transcripciones e informes**:
 >
 > | En los ejemplos aparece | La versión actual dice |
 > |---|---|
@@ -14,8 +16,9 @@
 > | Art. 49 como carencia legal de un implementador privado | Se pregunta por el carácter público antes de etiquetarlo; para una entidad privada, no aplica |
 >
 > Se conservan porque documentan el estado del proyecto en la entrega del hackathon y porque
-> las conversaciones ilustran bien el recorrido del árbol de decisión. **No los use como
-> referencia normativa.** Se regenerarán con la versión actual.
+> las conversaciones ilustran bien el recorrido del árbol de decisión. **No use esos cinco
+> ejemplos como referencia normativa.** Se irán regenerando con la versión actual, como ya se
+> ha hecho con el 03.
 
 
 Esta carpeta contiene seis ejemplos completos de evaluación con AIComply, preparados para revisión en GitHub y uso en demos del hackathon SEDIA 2026.
@@ -29,13 +32,14 @@ Cada ejemplo incluye la conversación completa con el asistente, los informes ge
 | [00-no-ia](00-no-ia/) | Fuera de alcance | Metalmecánica | Hoja Excel con reglas deterministas de stock | Solo evaluación |
 | [01-riesgo-minimo](01-riesgo-minimo/) | Riesgo mínimo | Fundición | Optimización energética de hornos industriales | Evaluación, cumplimiento, completo |
 | [02-riesgo-limitado](02-riesgo-limitado/) | Riesgo limitado | Cartón/Embalaje | CartonAssist B2B — chatbot comercial | Evaluación, cumplimiento, completo |
-| [03-alto-riesgo](03-alto-riesgo/) | Alto riesgo | Automoción | TalentScreen Industrial — filtrado de CVs | Evaluación, cumplimiento, completo |
+| [03-alto-riesgo](03-alto-riesgo/) | Alto riesgo | Logística y distribución | Talentia Screening 3.2 — cribado de candidaturas | Clasificación, cumplimiento, completo |
 | [04-prohibido](04-prohibido/) | Prohibido | Agroindustria | Vigilancia emocional y scoring laboral | Evaluación, cumplimiento, completo |
 | [05-excluido](05-excluido/) | Excluido (Art. 2) | Defensa | Visión artificial para control de calidad de drones militares | Solo evaluación |
 
 ## Notas
 
 - **00-no-ia**: El sistema no cumple la definición de sistema de IA del Art. 3.1 del AI Act. El flujo termina tras la evaluación de clasificación; no se inicia análisis de cumplimiento.
+- **03-alto-riesgo**: Único ejemplo regenerado con la versión actual (septiembre de 2026). La entidad tiene un solo rol —implementador— y la carpeta incluye además la sesión guardada en JSON, que permite recargar el caso en la aplicación y regenerar los informes sin repetir el recorrido.
 - **04-prohibido**: Aunque el sistema es una práctica prohibida (Art. 5), el ejemplo incluye análisis de cumplimiento para documentar las medidas de cese, retirada, rediseño y remediación requeridas.
 - **05-excluido**: El sistema SÍ es IA (cumple el Art. 3.1), pero queda fuera del Reglamento por la exclusión explícita del Art. 2 para uso militar. El flujo termina tras la evaluación; no se inicia análisis de cumplimiento bajo el AI Act.
 - Los informes PDF y TXT son los generados directamente por AIComply durante la evaluación del ejemplo.
