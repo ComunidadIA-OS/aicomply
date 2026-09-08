@@ -17,6 +17,22 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.12 (2026-09-08): la frase de contraste del Art. 99 en el bloque de PROHIBIDO decía que
+#                          «el resto de infracciones van al 3 % por el Art. 99.4». Ni es exacto
+#                          —el Art. 99.5, presentación de información inexacta, incompleta o
+#                          engañosa a organismos notificados o autoridades nacionales
+#                          competentes, va a 7.500.000 EUR o el 1 %— ni menciona el único
+#                          apartado que habla de los destinatarios de esta herramienta: el Art.
+#                          99.6 prevé que para las pymes, incluidas las empresas emergentes,
+#                          cada multa pueda ser el importe o el porcentaje de los apartados 3, 4
+#                          y 5, según cuál de ellos sea MENOR, al revés que la regla del «si esta
+#                          cuantía fuese superior» del apartado 3. La aplicación está hecha para
+#                          pymes: presentar solo el tramo alto sesga la cifra al alza justo ante
+#                          quien la va a leer. El contraste pasa a nombrar la cuantía completa
+#                          del Art. 99.4 —15.000.000 EUR o el 3 %— y el matiz del 99.6 se dice
+#                          como lo que es, una facultad («podrá ser») y no un mandato,
+#                          condicionado a que la organización sea una pyme. La cita literal del
+#                          Art. 99.3 no se toca. Verificado contra data/docs/AIAct.json
 # 2026.09.11 (2026-09-08): PROHIBIDO deja de ser la única clasificación sin catálogo. Eran tres
 #                          líneas de prosa —una prohibición y dos acciones—, sin [clave: …], sin
 #                          tipo= y sin rol, al contrario que ALTO y LIMITADO. Sin lista que
@@ -175,7 +191,7 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.11"
+PROMPT_VERSION = "2026.09.12"
 
 # Huella del contenido de cada prompt en el momento de estampar PROMPT_VERSION.
 #
@@ -192,5 +208,5 @@ PROMPT_VERSION = "2026.09.11"
 PROMPT_HASHES = {
     "system_prompts.py": "448c6b5b9bf13702b923b4d1aafd4cf8f98cd8790627dd92975aef55339f9c64",
     "system_prompts_local.py": "0cfa3b96cc99131e371365587e2917765c7306f7ecf67971791a2b91b10276ef",
-    "system_prompt_cumplimiento.py": "e1fe578fd904c3322d4ad54a9b8b8e7f9f8759e7f8f3b6582fcfc7489b97485c",
+    "system_prompt_cumplimiento.py": "21f85ee48949aacead83e6a95c624c931f30c4efd773c29237861d93268db343",
 }

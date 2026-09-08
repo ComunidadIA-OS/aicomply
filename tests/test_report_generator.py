@@ -1259,3 +1259,142 @@ class TestProhibidoSinPorcentaje:
         y sigue siendo útil (B6)."""
         md = GeneradorInforme().generar_informe_cumplimiento(_CLASIFICACION, _CUMPLIMIENTO)
         assert "**Avance de implementación:**" in md
+
+
+class TestEstadoDeLaProhibicionNoSeConfundeDeArticulo:
+    """El estado de la prohibición se busca por la clave, y el respaldo por artículo no puede
+    capturar el Art. 50.
+
+    La entrada del Art. 5 lleva `[clave: 5-practica-prohibida]` desde el cierre de B34, pero
+    los registros guardados antes no la tienen, y son exactamente aquellos en los que el
+    modelo se traía el Art. 50.3 del bloque de LIMITADO y lo marcaba «cubierta». Un respaldo
+    escrito como `startswith("Art. 5")` acepta «Art. 50.3», «Art. 50.1» y «Art. 54»: en un
+    registro al que le falte la prohibición —omitida por el modelo, o vaciada— el informe
+    publicaba «Estado de la prohibición (Art. 5): Atendida» sobre un sistema prohibido en
+    funcionamiento. Es B34 otra vez, en la dirección peligrosa y sin ruido.
+    """
+
+    def test_un_art_50_3_cubierta_no_ocupa_el_sitio_de_la_prohibicion_ausente(self):
+        """La forma exacta del registro que produjo B34: sin Art. 5 y con el Art. 50.3 que el
+        modelo trajo de LIMITADO, cubierta y sin clave."""
+        cumplimiento = {
+            "obligaciones": [
+                {
+                    "articulo": "Art. 50.3",
+                    "titulo": "Informar del reconocimiento de emociones",
+                    "descripcion": "Se informa a los agentes de que se analiza su voz.",
+                    "estado": "cubierta",
+                    "tipo": "obligacion",
+                },
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "Registro incompleto.",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_PROHIBIDO_CLASIF, cumplimiento)
+        assert "**Estado de la prohibición (Art. 5):** No consta" in md
+        assert "**Estado de la prohibición (Art. 5):** Atendida" not in md
+
+    def test_el_respaldo_por_articulo_sigue_cogiendo_el_art_5_1_f_sin_clave(self):
+        """Acotar el respaldo no puede perder el caso legítimo: el registro antiguo en el que
+        la prohibición está, sin clave, citada por su letra."""
+        cumplimiento = {
+            "obligaciones": [
+                {
+                    "articulo": "Art. 5.1.f",
+                    "titulo": "Práctica de IA prohibida",
+                    "descripcion": "Reconocimiento de emociones en el lugar de trabajo.",
+                    "estado": "carencia",
+                    "tipo": "obligacion",
+                },
+            ],
+            "carencias_detectadas": ["El sistema prohibido sigue en funcionamiento"],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "Incumplimiento de una prohibición.",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_PROHIBIDO_CLASIF, cumplimiento)
+        assert "**Estado de la prohibición (Art. 5):** No atendida" in md
+
+    def test_la_clave_manda_sobre_el_orden_del_registro(self):
+        """El Art. 50.3 va ANTES que la prohibición en la lista. Buscar «la primera entrada
+        que sirva» devolvería la de arriba; la clave es la identidad y no depende del orden."""
+        cumplimiento = _cumplimiento_prohibido("carencia")
+        cumplimiento["obligaciones"].insert(
+            0,
+            {
+                "articulo": "Art. 50.3",
+                "titulo": "Informar del reconocimiento de emociones",
+                "descripcion": "Se informa a los agentes de que se analiza su voz.",
+                "estado": "cubierta",
+                "tipo": "obligacion",
+            },
+        )
+        md = GeneradorInforme().generar_informe_cumplimiento(_PROHIBIDO_CLASIF, cumplimiento)
+        assert "**Estado de la prohibición (Art. 5):** No atendida" in md
+
+    def test_un_prohibido_sin_obligaciones_legales_no_dice_que_no_hay_nada_que_evaluar(self):
+        """Con el registro legal vacío —todo anotado como vigilancia—, la rama de «no se
+        identifican obligaciones legales evaluables» se colaba delante de la de PROHIBIDO y
+        dejaba una frase tranquilizadora sobre un sistema prohibido. PROHIBIDO va primero, y
+        el estado sale «No consta», que es ruidoso a propósito."""
+        cumplimiento = {
+            "obligaciones": [
+                {
+                    "articulo": "Art. 4",
+                    "titulo": "Alfabetización en IA",
+                    "descripcion": "Formación anual del personal.",
+                    "estado": "cubierta",
+                    "tipo": "vigilancia",
+                },
+            ],
+            "carencias_detectadas": [],
+            "puntos_revision_profesional": [],
+            "resumen_cumplimiento": "Registro legal vacío.",
+        }
+        md = GeneradorInforme().generar_informe_cumplimiento(_PROHIBIDO_CLASIF, cumplimiento)
+        assert "No se identifican obligaciones legales evaluables" not in md
+        assert "**Estado de la prohibición (Art. 5):** No consta" in md
+
+
+class TestLaSancionSeCitaComoLaCitaElReglamento:
+    """El Art. 99.3 aparece en dos sitios del informe, y los dos decían «el 7 % de la
+    facturación global», que no es la fórmula del Reglamento. Con el catálogo mandando decir
+    el literal, el mismo documento llevaría dos redacciones de la misma cifra delante de un
+    lector jurídico. Y la segunda de esas redacciones omitía el Art. 99.6, que es el apartado
+    que puede invertir la regla del importe mayor para las pymes: los destinatarios de esta
+    herramienta.
+    """
+
+    def test_las_obligaciones_del_evaluador_citan_el_art_99_3_completo(self):
+        md = GeneradorInforme().generar_informe_clasificacion(_PROHIBIDO_CLASIF)
+        assert "35.000.000 EUR o el 7 % del volumen de negocios mundial total" in md
+        assert "si esta cuantía fuese superior (Art. 99.3)" in md
+        assert "facturación global" not in md
+
+    def test_el_plan_de_accion_nombra_el_matiz_de_las_pymes(self):
+        """El Art. 99.6 es una facultad («podrá ser»), no un mandato, y por eso va como matiz.
+        Sin él, un informe para una pyme presenta solo el tramo alto y sesga la cifra."""
+        md = GeneradorInforme().generar_informe_cumplimiento(
+            _PROHIBIDO_CLASIF, _cumplimiento_prohibido("carencia")
+        )
+        assert "Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR" in md
+        assert "correspondiente al ejercicio financiero anterior, si esta cuantía fuese superior" in md
+        assert "el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje" in md
+        assert "según cuál de ellos sea menor" in md
+        assert "facturación global" not in md
+        assert "Consulte urgentemente con un asesor legal especializado" in md
+
+    def test_las_tildes_de_la_cita_sobreviven_al_pdf(self):
+        """El PDF codifica a latin-1 en _limpiar(): «cuantía», «prevé», «según cuál», la ñ de
+        «pymes». Si algo no cupiera, la exportación reventaría o dejaría el texto mutilado.
+
+        Las aserciones son de trozos cortos porque fpdf2 parte las líneas al ancho de la caja
+        y el texto llega al flujo troceado."""
+        md = GeneradorInforme().generar_informe_cumplimiento(
+            _PROHIBIDO_CLASIF, _cumplimiento_prohibido("carencia")
+        )
+        texto = _texto_del_pdf(GeneradorInforme().exportar_pdf(md))
+        assert "negocios mundial total correspondiente al ejercicio financiero anterior" in texto
+        assert "si esta cuantía fuese superior" in texto
+        assert "En el caso de las pymes, el Art. 99.6 prevé" in texto
+        assert "según cuál de ellos sea" in texto

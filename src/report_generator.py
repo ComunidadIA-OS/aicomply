@@ -172,7 +172,14 @@ def _roles_plan(rol: str, roles_multiples: list[str] | None) -> list[str]:
 
 # La entrada del Art. 5 en el catálogo de PROHIBIDO. La clave es la identidad estable; el
 # artículo es el respaldo para los registros guardados antes de que el bloque la tuviera.
+#
+# El respaldo va acotado al Art. 5 y NUNCA al Art. 50: los registros sin clave son justo
+# aquellos en los que el modelo se traía el Art. 50.3 del bloque de LIMITADO y lo marcaba
+# cubierta (B34). Con un "startswith" sobre "Art. 5", un registro al que le falte la
+# prohibición —omitida o vaciada— se conformaba con ese Art. 50.3 y publicaba «Atendida»
+# sobre un sistema prohibido en funcionamiento.
 _CLAVE_PROHIBICION = "5-practica-prohibida"
+_ARTICULO_PROHIBICION = re.compile(r"Art\.\s*5(?!\d)")
 
 
 def _estado_de_la_prohibicion(legales: list[dict]) -> tuple[str, str]:
@@ -186,15 +193,24 @@ def _estado_de_la_prohibicion(legales: list[dict]) -> tuple[str, str]:
     que la regla se haya seguido. Un «parcial» que llegue igualmente se presenta como no
     atendida y se dice por qué: publicar «parcialmente cubierta» sobre una prohibición es
     justo la lectura que produjo B34.
+
+    La clave manda sobre el orden y sobre el artículo: es la identidad de la entrada. El
+    respaldo por artículo solo entra cuando ninguna entrada la lleva, y se acota al Art. 5
+    para que un Art. 50.3 cubierta —lo que el modelo traía de LIMITADO en B34— no ocupe el
+    sitio de una prohibición ausente.
     """
     prohibicion = next(
-        (
-            o for o in legales
-            if o.get("clave") == _CLAVE_PROHIBICION
-            or str(o.get("articulo", "")).strip().startswith("Art. 5")
-        ),
+        (o for o in legales if o.get("clave") == _CLAVE_PROHIBICION),
         None,
     )
+    if prohibicion is None:
+        prohibicion = next(
+            (
+                o for o in legales
+                if _ARTICULO_PROHIBICION.match(str(o.get("articulo", "")).strip())
+            ),
+            None,
+        )
     if prohibicion is None:
         return (
             "No consta",
@@ -527,7 +543,7 @@ class GeneradorInforme:
             "PROHIBIDO": [
                 "El sistema NO puede desarrollarse ni desplegarse (Art. 5)",
                 "Acción inmediata: detener el proyecto o rediseñar el sistema",
-                "Posibles sanciones de hasta 35.000.000 EUR o el 7 % de la facturación global",
+                "Posibles sanciones de hasta 35.000.000 EUR o el 7 % del volumen de negocios mundial total del ejercicio anterior, si esta cuantía fuese superior (Art. 99.3)",
                 "Consulte urgentemente con un asesor legal especializado",
             ],
             "EXCLUIDO": [
@@ -751,13 +767,14 @@ class GeneradorInforme:
 
         texto = f"## {num}. Análisis de obligaciones\n\n"
 
-        if total_leg == 0:
-            texto += (
-                "**Cumplimiento legal:** No aplicable  \n"
-                "No se identifican obligaciones legales evaluables del AI Act para este caso. "
-                "Se incluyen recomendaciones voluntarias y medidas prudenciales."
-            )
-        elif clas_norm == "PROHIBIDO":
+        if clas_norm == "PROHIBIDO":
+            # Esta rama va DELANTE de la de «sin obligaciones legales»: un informe PROHIBIDO
+            # cuyo registro legal quede vacío —todo anotado como vigilancia o recomendación, o
+            # el registro perdido— imprimía «No se identifican obligaciones legales evaluables»,
+            # que es una frase tranquilizadora sobre un sistema prohibido.
+            # _estado_de_la_prohibicion ya devuelve «No consta» cuando la prohibición no está
+            # en el registro, así que ese caso queda cubierto y ruidoso.
+            #
             # Sin cifra, pero por un motivo distinto del de las incoherencias: aquí el registro
             # sí es fiable y la magnitud es la que no mide nada. Una prohibición no tiene grados
             # —o el sistema está detenido o no lo está—, así que promediarla con las demás
@@ -770,6 +787,12 @@ class GeneradorInforme:
                 f"No cubiertas: {len(car_leg)} | No aplica: {len(no_ap_leg)}  \n"
                 f"*{explicacion} No se publica un grado de avance: una prohibición no admite "
                 "cumplimiento parcial, de modo que un porcentaje no mediría nada.*"
+            )
+        elif total_leg == 0:
+            texto += (
+                "**Cumplimiento legal:** No aplicable  \n"
+                "No se identifican obligaciones legales evaluables del AI Act para este caso. "
+                "Se incluyen recomendaciones voluntarias y medidas prudenciales."
             )
         elif incoherencias:
             # Sin cifra: el porcentaje se calcularía sobre un registro que la aplicación tiene
@@ -878,7 +901,8 @@ class GeneradorInforme:
         if clas_norm == "PROHIBIDO":
             texto += (
                 "\n> ⚠️ **Este sistema está clasificado como práctica prohibida (Art. 5 AI Act).**  \n"
-                "> Las sanciones pueden alcanzar 35.000.000 EUR o el 7 % de la facturación global.  \n"
+                "> Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR o, si el infractor es una empresa, el 7 % de su volumen de negocios mundial total correspondiente al ejercicio financiero anterior, si esta cuantía fuese superior.  \n"
+                "> En el caso de las pymes, el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje, según cuál de ellos sea menor.  \n"
                 "> Consulte urgentemente con un asesor legal especializado.\n\n"
                 "**Pasos de remediación recomendados:**"
             )

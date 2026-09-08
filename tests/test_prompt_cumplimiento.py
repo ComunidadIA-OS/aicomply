@@ -331,8 +331,27 @@ class TestCatalogoDeProhibido:
         assert "7 % de su volumen de negocios mundial total" in bloque
         assert "ejercicio financiero anterior" in bloque
         assert "si esta cuantía fuese superior" in bloque
-        # El contraste con el resto de infracciones es lo que convierte la cifra en una medida.
-        assert "3 % por el Art. 99.4" in bloque
+        # El contraste con las demás infracciones es lo que convierte la cifra en una medida.
+        # Va con su cuantía completa: decir solo «el 3 % por el Art. 99.4» dejaba fuera el
+        # importe y, sobre todo, el Art. 99.5 —información inexacta a organismos notificados o
+        # autoridades, 7.500.000 EUR o el 1 %—, así que «el resto» no era «el resto».
+        assert "15.000.000 EUR" in bloque
+        assert "3 %" in bloque
+        assert "Art. 99.4" in bloque
+
+    def test_nombra_el_matiz_del_art_99_6_para_las_pymes(self):
+        """Esta herramienta está hecha para pymes, y el Art. 99.6 es el apartado que habla de
+        ellas: para las pymes, incluidas las empresas emergentes, cada multa PODRÁ ser el
+        importe o el porcentaje de los apartados 3, 4 y 5, según cuál de ellos sea MENOR —al
+        revés que la regla del «si esta cuantía fuese superior» del apartado 3. Presentar solo
+        el tramo alto ante quien va a leer el informe sesga la cifra al alza.
+
+        Es una facultad, no un mandato, y por eso el bloque lo manda decir como matiz y
+        condicionado a que la organización sea una pyme."""
+        bloque = _bloque_de_prohibido()
+        assert "Art. 99.6" in bloque
+        assert "según cuál de ellos sea MENOR" in bloque
+        assert "Si la organización es una pyme" in bloque
 
     def test_advierte_de_que_el_ai_act_no_agota_el_derecho_aplicable(self):
         """Sin citar artículos de esas otras normas: están fuera del corpus de la herramienta."""
