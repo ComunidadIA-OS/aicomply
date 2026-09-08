@@ -718,11 +718,11 @@ class TestIncoherenciasEnLasDosRamas:
 
 _RE_CLAVE_CATALOGO = re.compile(r"\[clave:\s*([^\]]+)\]")
 
-# El Art. 4 aparece dos veces en el catálogo —en el bloque transversal y en el de MÍNIMO— y las
-# dos líneas son la MISMA obligación legal, que además coexisten en un análisis de riesgo
-# mínimo. Darles claves distintas produciría dos entradas para una sola obligación, con el
-# denominador inflado y la recalificación sin reconocer. Quien añada otra colisión tiene que
-# ampliar esta constante a conciencia, que es la fricción que se busca.
+# El Art. 4 aparece tres veces en el catálogo —en el bloque transversal, en el de MÍNIMO y en el
+# de PROHIBIDO— y las tres líneas son la MISMA obligación legal, que además coexisten en un
+# mismo análisis. Darles claves distintas produciría varias entradas para una sola obligación,
+# con el denominador inflado y la recalificación sin reconocer. Quien añada otra colisión tiene
+# que ampliar esta constante a conciencia, que es la fricción que se busca.
 _SLUGS_REPETIBLES = {"4-alfabetizacion"}
 
 
@@ -736,13 +736,21 @@ class TestClavesDelCatalogo:
         sin_clave = [ln for ln in entradas if not _RE_CLAVE_CATALOGO.search(ln)]
         assert not sin_clave, f"entradas del implementador sin [clave: …]: {sin_clave}"
 
-    def test_o_las_dos_entradas_del_art_4_declaran_su_clave(self):
-        """No usan la forma de línea del implementador, así que el guardián anterior no las ve."""
+    def test_o_las_entradas_del_art_4_declaran_su_clave(self):
+        """No usan la forma de línea del implementador, así que el guardián anterior no las ve.
+
+        Son tres desde B34: transversal, MÍNIMO y PROHIBIDO. La del bloque de PROHIBIDO es la
+        misma obligación legal que las otras dos —el Art. 4 obliga a la organización por ser
+        responsable del despliegue de sistemas de IA, no por este sistema en concreto—, así que
+        comparte su clave y la regla del punto 11 la registra una sola vez.
+        """
         lineas = [
             ln for ln in SYSTEM_PROMPT_CUMPLIMIENTO.splitlines()
             if ln.startswith("- ") and "(Art. 4)" in ln
         ]
-        assert len(lineas) == 2, "el Art. 4 debería seguir apareciendo en transversal y en MÍNIMO"
+        assert len(lineas) == 3, (
+            "el Art. 4 debería seguir apareciendo en transversal, en MÍNIMO y en PROHIBIDO"
+        )
         for ln in lineas:
             assert _RE_CLAVE_CATALOGO.search(ln), f"el Art. 4 no declara clave: {ln}"
 

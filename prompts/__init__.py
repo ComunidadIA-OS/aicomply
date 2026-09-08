@@ -17,6 +17,54 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.12 (2026-09-08): la frase de contraste del Art. 99 en el bloque de PROHIBIDO decía que
+#                          «el resto de infracciones van al 3 % por el Art. 99.4». Ni es exacto
+#                          —el Art. 99.5, presentación de información inexacta, incompleta o
+#                          engañosa a organismos notificados o autoridades nacionales
+#                          competentes, va a 7.500.000 EUR o el 1 %— ni menciona el único
+#                          apartado que habla de los destinatarios de esta herramienta: el Art.
+#                          99.6 prevé que para las pymes, incluidas las empresas emergentes,
+#                          cada multa pueda ser el importe o el porcentaje de los apartados 3, 4
+#                          y 5, según cuál de ellos sea MENOR, al revés que la regla del «si esta
+#                          cuantía fuese superior» del apartado 3. La aplicación está hecha para
+#                          pymes: presentar solo el tramo alto sesga la cifra al alza justo ante
+#                          quien la va a leer. El contraste pasa a nombrar la cuantía completa
+#                          del Art. 99.4 —15.000.000 EUR o el 3 %— y el matiz del 99.6 se dice
+#                          como lo que es, una facultad («podrá ser») y no un mandato,
+#                          condicionado a que la organización sea una pyme. La cita literal del
+#                          Art. 99.3 no se toca. Verificado contra data/docs/AIAct.json
+# 2026.09.11 (2026-09-08): PROHIBIDO deja de ser la única clasificación sin catálogo. Eran tres
+#                          líneas de prosa —una prohibición y dos acciones—, sin [clave: …], sin
+#                          tipo= y sin rol, al contrario que ALTO y LIMITADO. Sin lista que
+#                          seguir, el modelo compuso la suya: en el recorrido del ejemplo 04
+#                          —contact center que analiza la voz de sus 90 agentes para inferir su
+#                          estado emocional, Art. 5.1.f— anunció tres obligaciones y fue a
+#                          buscar el Art. 50.3 al bloque de LIMITADO, que obliga a informar a las
+#                          personas expuestas a un sistema de reconocimiento de emociones; lo
+#                          registró CUBIERTA, es decir, un visto bueno a quien está incumpliendo
+#                          una prohibición, y sobre un sistema que no puede usarse en absoluto.
+#                          El bloque pasa a tener exactamente dos entradas con la forma de las
+#                          demás: la prohibición del Art. 5 y el Art. 4, que sobrevive porque
+#                          obliga a la organización por ser responsable del despliegue de
+#                          sistemas de IA, no por este sistema, y que conserva la clave
+#                          transversal 4-alfabetizacion para registrarse una sola vez. Ninguna
+#                          otra obligación del AI Act entra en el recorrido: no existe versión
+#                          conforme de un sistema del Art. 5. La prohibición SOLO admite
+#                          "cubierta" (sistema detenido o nunca desplegado) o "carencia" (sistema
+#                          activo), y NUNCA "parcial": el asistente la había registrado parcial
+#                          «porque existe una intención formal de cumplimiento» con el sistema en
+#                          marcha, y de ahí salió un «83 % de avance». Una intención de cumplir,
+#                          una consulta jurídica en curso o una suspensión anunciada y no
+#                          ejecutada se anotan como contexto en la descripción. El bloque nombra
+#                          además las dos cosas que dan la medida del riesgo y que el análisis no
+#                          decía: que el Art. 5 es aplicable desde el 2 feb 2025 y que el Art.
+#                          99.3 somete su incumplimiento a multas de hasta 35.000.000 EUR o el
+#                          7 % del volumen de negocios mundial total del ejercicio anterior —el
+#                          tramo más alto del Reglamento, frente al 3 % del Art. 99.4—, y que el
+#                          AI Act no agota el Derecho aplicable (datos personales, derechos de
+#                          información de la representación de los trabajadores), dicho como
+#                          advertencia de alcance y sin citar artículos de normas que no están en
+#                          el corpus. Los dos datos, verificados contra data/docs/AIAct.json
 # 2026.09.10 (2026-09-08): los tres prompts fijan el trato de USTED. No estaba escrito en
 #                          ninguno, así que lo decidía el modelo turno a turno: el recorrido del
 #                          ejemplo 00 tuteó de principio a fin —«describe», «vosotros»,
@@ -143,7 +191,7 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.10"
+PROMPT_VERSION = "2026.09.12"
 
 # Huella del contenido de cada prompt en el momento de estampar PROMPT_VERSION.
 #
@@ -160,5 +208,5 @@ PROMPT_VERSION = "2026.09.10"
 PROMPT_HASHES = {
     "system_prompts.py": "448c6b5b9bf13702b923b4d1aafd4cf8f98cd8790627dd92975aef55339f9c64",
     "system_prompts_local.py": "0cfa3b96cc99131e371365587e2917765c7306f7ecf67971791a2b91b10276ef",
-    "system_prompt_cumplimiento.py": "2173adf9692fc11d190b1e5dc3e0c7db72865b884d3b9be8a620af3b16dba36b",
+    "system_prompt_cumplimiento.py": "21f85ee48949aacead83e6a95c624c931f30c4efd773c29237861d93268db343",
 }
