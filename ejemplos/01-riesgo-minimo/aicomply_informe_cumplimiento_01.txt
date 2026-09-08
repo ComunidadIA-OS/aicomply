@@ -1,0 +1,65 @@
+AIComply — Informe de cumplimiento
+
+Sistema evaluado: Herramienta de predicción de demanda diaria por producto y tienda adquirida a un proveedor externo. Utiliza como entradas el histórico de ventas, la previsión meteorológica y el calendario laboral para determinar cantidades de producción y compras. No trata datos de clientes ni de empleados, no toma decisiones sobre personas y permite corrección manual por el personal de obrador.  
+Sector: Alimentación / Panadería y obrador  
+Clasificación: MINIMO  
+Rol de la entidad: Implementador  
+Fecha: 08/09/2026 a las 17:09  
+Reglamento de referencia: Reglamento (UE) 2024/1689
+
+---
+
+AVISO LEGAL: Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.
+
+---
+
+1. Resumen ejecutivo
+
+Este informe recoge el análisis de cumplimiento de un sistema clasificado como MINIMO con rol Implementador.
+
+Sistema de riesgo mínimo con la única obligación legal exigible cubierta. No se detectan carencias legales.
+
+2. Análisis de obligaciones
+
+Avance de implementación: 100 %  
+Cubiertas: 1   Parciales: 0   No cubiertas: 0   No aplica: 0  
+Recomendaciones/medidas prudenciales pendientes: 2 (no computan en el porcentaje legal)
+
+A. Obligaciones legales aplicables
+
+Cubiertas
+
+Art. 4 — Alfabetización en IA  
+El personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual.  
+
+B. Recomendaciones voluntarias y buenas prácticas
+
+No computan en el porcentaje de cumplimiento legal.
+
+Art. 95 — Adhesión a códigos de conducta (Recomendación pendiente)  
+La organización no se ha adherido a ningún código de conducta ni marco voluntario de buenas prácticas en IA. Al ser recomendación voluntaria, no computa como incumplimiento legal.  
+
+C. Medidas prudenciales y puntos de vigilancia
+
+No computan en el porcentaje de cumplimiento legal.
+
+Medida prudencial — Vigilancia activa del nivel de riesgo (Medida prudencial pendiente)  
+No existe procedimiento formal de revisión periódica del nivel de riesgo del sistema. La organización ha manifestado la intención de usar AIComply periódicamente para cubrir esta medida.  
+
+3. Áreas de mejora identificadas
+
+No se identificaron áreas de mejora pendientes.
+
+4. Plan de acción recomendado
+
+- [Obligación legal] Art. 4 — Aplicable actualmente: Garantizar que el personal que usa o supervisa el sistema tiene formación suficiente sobre sus capacidades y limitaciones.
+- [Recomendación voluntaria] Art. 95: Considerar la adhesión a códigos de conducta voluntarios. No es obligatorio; no computa como incumplimiento.
+- [Medida prudencial] Documentar internamente las capacidades y limitaciones del sistema y supervisar cambios en el uso que puedan elevar el nivel de riesgo.
+
+5. Puntos que requieren revisión profesional
+
+- Formalizar un procedimiento o calendario de revisión periódica del nivel de riesgo del sistema mediante AIComply u otro mecanismo equivalente.
+
+---
+
+Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.12 · Corpus v2026.09.1 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 17:09.
