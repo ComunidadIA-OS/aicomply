@@ -1,0 +1,49 @@
+{
+  "_version": "1",
+  "_app": "aicomply",
+  "clasificacion_data": {
+    "clasificacion": "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+    "estados_adicionales": [],
+    "rol": "No aplica",
+    "roles_multiples": [
+      "no aplica"
+    ],
+    "nodos_recorridos": [
+      {
+        "pregunta": "Definición de sistema de IA (Art. 3.1)",
+        "respuesta": "El sistema opera mediante una tabla de reglas escrita y actualizada manualmente, sin aprendizaje, sin inferencia automática y sin capacidad de adaptación propia. Siempre muestra lo mismo para el mismo producto.",
+        "origen": "respuesta directa"
+      }
+    ],
+    "puntos_indeterminados": [],
+    "descripcion_sistema": "Sistema de recomendación de productos basado en una tabla de reglas escritas y actualizadas manualmente por el equipo de la tienda. No aprende de los datos de compra, no ajusta sus recomendaciones de forma autónoma y produce siempre el mismo resultado para el mismo producto de entrada. El catálogo de reglas se modifica únicamente por intervención humana directa.",
+    "sector": "Comercio minorista de material de oficina (online)",
+    "obligaciones_preliminares": []
+  },
+  "cumplimiento_data": {},
+  "mensajes_evaluador": [
+    {
+      "role": "user",
+      "content": "Somos una tienda online de material de oficina con 12 empleados. Nuestra plataforma incluye lo que el proveedor llama un «motor de recomendación inteligente»: cuando un cliente añade un producto al carrito, se le muestran otros relacionados. En realidad es una tabla de reglas que escribimos nosotros a mano —quien compra folios ve tóner, quien compra sillas ve reposapiés—, no aprende de las compras, no cambia sola y siempre muestra lo mismo para el mismo producto. La actualizamos a mano cuando cambia el catálogo."
+    },
+    {
+      "role": "assistant",
+      "content": "Antes de comenzar, una nota breve: este análisis es una orientación basada en el Reglamento (UE) 2024/1689, no un asesoramiento jurídico vinculante. Para decisiones con consecuencias legales, le recomiendo contrastar las conclusiones con un profesional especializado.\n\n---\n\nDicho esto, lo que me describe no parece encajar en la definición de sistema de IA del Art. 3.1 del Reglamento. Le explico por qué, con las dos versiones:\n\n**Definición técnica (Art. 3.1):** Un sistema de IA debe inferir de la información de entrada cómo generar sus resultados —predicciones, recomendaciones, decisiones— con algún nivel de autonomía, pudiendo mostrar capacidad de adaptación.\n\n**Definición adaptada:** No basta con que el sistema \"haga cosas automáticamente\". Lo que caracteriza a un sistema de IA es que deduce por su cuenta qué respuesta dar, en lugar de seguir reglas fijas escritas a mano por personas. Un semáforo que cambia cada 60 segundos es automático, pero no es IA.\n\nLo que usted describe —una tabla de correspondencias escrita y actualizada manualmente, sin aprendizaje, sin inferencia, sin adaptación— es exactamente lo que la Ley excluye del concepto de sistema de IA: funciona por **reglas fijas predefinidas por humanos**, no por inferencia automática.\n\n¿Es correcto que el sistema nunca analiza patrones de compra, nunca ajusta las recomendaciones por sí solo y toda la lógica la escriben ustedes a mano? Quiero confirmarlo antes de cerrar la evaluación."
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Con esa confirmación, procedo a cerrar la evaluación y a entregarle el informe.\n\n---\n\n## Informe de evaluación — Reglamento (UE) 2024/1689 (AI Act)\n\n---\n\n### 1. Resumen ejecutivo\n\nEl sistema evaluado —un motor de recomendación basado en una tabla de reglas escrita y actualizada manualmente— no cumple la definición de sistema de IA del Art. 3.1 del Reglamento (UE) 2024/1689. Al funcionar exclusivamente mediante reglas fijas predefinidas por personas, sin inferencia automática ni capacidad de adaptación, el Reglamento no le es aplicable. No se identifican obligaciones bajo esta norma en el estado actual del sistema.\n\n---\n\n### 2. Sus obligaciones\n\n**Ninguna.** El Reglamento (UE) 2024/1689 no es aplicable al sistema descrito, por no cumplir la definición de sistema de IA del Art. 3.1.\n\n---\n\n### 3. Recorrido realizado (traza auditable)\n\n- **Comprobación previa — Definición de sistema de IA (Art. 3.1):** El sistema opera mediante una tabla de reglas escritas y actualizadas manualmente, sin inferencia automática, sin aprendizaje y sin capacidad de adaptación propia. No cumple la condición de inferir resultados con algún nivel de autonomía. Resultado: NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA (respuesta directa confirmada por el usuario).\n\n---\n\n### 4. Puntos que requieren revisión profesional\n\nUn único punto merece atención preventiva, aunque no genera obligación actual:\n\n- **Cambios futuros en el sistema:** Si en algún momento se incorpora al motor de recomendación cualquier componente que aprenda de datos de compra, ajuste las recomendaciones automáticamente o genere predicciones sin intervención humana directa, el sistema pasaría a cumplir la definición del Art. 3.1 y habría que reevaluar su clasificación desde el inicio. Le recomiendo que, antes de aprobar cualquier actualización tecnológica del sistema, verifique si introduce ese tipo de funcionalidad.\n\n---\n\n### 5. Roles múltiples\n\nNo procede. La evaluación se cerró en la comprobación previa a la clasificación por tipo de entidad.\n\n---\n\n### 6. Aviso legal\n\nEste informe es una orientación basada en el Reglamento (UE) 2024/1689 y no constituye asesoramiento jurídico vinculante. Las conclusiones se apoyan exclusivamente en la información facilitada durante esta consulta. Ante cualquier duda sobre la clasificación del sistema —especialmente si se prevén cambios tecnológicos— se recomienda consultar con un profesional especializado en derecho de tecnología o cumplimiento normativo."
+    }
+  ],
+  "mensajes_cumplimiento": [],
+  "evaluacion_completada": true,
+  "cumplimiento_completado": false,
+  "acceso_directo_cumplimiento": false,
+  "informe_md_clasificacion": "# AIComply — Informe de clasificación\n\n**Sistema evaluado:** Sistema de recomendación de productos basado en una tabla de reglas escritas y actualizadas manualmente por el equipo de la tienda. No aprende de los datos de compra, no ajusta sus recomendaciones de forma autónoma y produce siempre el mismo resultado para el mismo producto de entrada. El catálogo de reglas se modifica únicamente por intervención humana directa.  \n**Sector:** Comercio minorista de material de oficina (online)  \n**Clasificación:** NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA  \n**Rol de la entidad:** No aplica  \n**Fecha:** 08/09/2026 a las 11:56  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA** según el Reglamento (UE) 2024/1689 (AI Act europeo).\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA  \n**Descripción:** El sistema evaluado no cumple la definición de sistema de IA del Art. 3.1 — el Reglamento (UE) 2024/1689 no es aplicable\n\n**Rol principal de la entidad:** No aplica\n\n## 3. Conclusión de la evaluación y acciones recomendadas\n\n**Obligaciones del AI Act aplicables:** ninguna.\n\n- El sistema no cumple la definición de sistema de IA del Art. 3.1 del AI Act\n- El Reglamento (UE) 2024/1689 no es aplicable\n- Acción recomendada: documentar esta evaluación para acreditarla si fuera necesario\n- Verificar si aplican otras normativas según el tipo de tecnología utilizada\n- Revisar la clasificación si el sistema evoluciona y adquiere capacidades de inferencia autónoma\n\n## 4. Puntos que requieren revisión profesional\n\nNo se identificaron puntos específicos que requieran revisión profesional.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.10 · Corpus v2026.09.0 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 11:56.*",
+  "informe_md_cumplimiento": null,
+  "informe_md_completo": null
+}

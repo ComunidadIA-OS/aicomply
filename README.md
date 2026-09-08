@@ -44,7 +44,7 @@ AIComply emite una de las **siguientes seis clasificaciones**, según el árbol 
 - **NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA** — el objeto evaluado no encaja en el Art. 3.1 y el Reglamento no le aplica; el informe indica qué característica falta.
 - **EXCLUIDO** — el sistema sí es IA pero queda fuera del ámbito del Art. 2 (uso militar, investigación, código abierto no comercializado como parte de un sistema de alto riesgo, uso personal no profesional, etc.); el informe indica la razón concreta de la exclusión.
 
-**Flujos diferenciados por clasificación.** El sistema adapta el recorrido según el resultado del evaluador: para sistemas clasificados como NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA, el asistente informa de la conclusión y ofrece continuar con la evaluación de otro sistema — no se genera ningún informe ni se accede a las pestañas de Cumplimiento e Informe. Para sistemas clasificados como EXCLUIDO, la pestaña de Cumplimiento se omite (no procede analizar obligaciones del AI Act) y se genera únicamente el informe de clasificación documentando la conclusión. Para sistemas clasificados como PROHIBIDO, el análisis de cumplimiento permite documentar medidas de remediación (cese, rediseño, retirada y revisión profesional).
+**Flujos diferenciados por clasificación.** El sistema adapta el recorrido según el resultado del evaluador. Las dos clasificaciones que cierran sin obligaciones —NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA (Art. 3.1) y EXCLUIDO (Art. 2)— reciben el mismo trato: el análisis de cumplimiento se omite, porque no hay obligaciones del AI Act que recorrer, y se genera únicamente el informe de clasificación, que documenta la conclusión y la razón concreta por la que el Reglamento no le aplica. Para sistemas clasificados como PROHIBIDO, el análisis de cumplimiento permite documentar medidas de remediación (cese, rediseño, retirada y revisión profesional).
 
 ## Características destacadas
 
@@ -94,7 +94,7 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Casos de ejemplo completos
 
-El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y empresas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `05-excluido` el recorrido termina en la clasificación, así que solo hay informe de clasificación; en `00-no-ia` el flujo no genera informe, y el caso documenta la conversación.
+El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y empresas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `00-no-ia` y en `05-excluido` el recorrido termina en la clasificación, porque no hay obligaciones que analizar, así que solo hay informe de clasificación.
 
 | Caso | Clasificación | Empresa | Sistema |
 |------|---------------|---------|---------|
@@ -147,7 +147,7 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
 
-> **Aviso:** los casos [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado), [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros tres todavía no:** las carpetas del `00`, el `01` y el `04` conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+> **Aviso:** los casos [`00-no-ia`](ejemplos/00-no-ia), [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado), [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros dos todavía no:** las carpetas del `01` y el `04` conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
 
 ---
 
