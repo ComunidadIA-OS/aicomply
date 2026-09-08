@@ -17,6 +17,25 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.9 (2026-09-08): las salidas terminales que no son un nodo del árbol cierran también la
+#                          evaluación. La comprobación previa de definición decía «resultado NO
+#                          CUMPLE LA DEFINICIÓN DE SISTEMA DE IA. Explica al usuario…» y ahí
+#                          terminaba: sin FIN, sin informe y sin [EVALUACION_COMPLETA]. Y la
+#                          regla general de la señal la condicionaba a haber alcanzado «un nodo
+#                          FIN», mientras que esa comprobación se declara previa al árbol. El
+#                          modelo obedecía literalmente —explicaba y se detenía— y la aplicación
+#                          se quedaba sin clasificación, sin nodos recorridos, sin informe y con
+#                          una sesión vacía: el recorrido del ejemplo 00 no produjo nada que
+#                          publicar. EXCLUIDO sí funcionaba porque vive en #R2, que es un nodo
+#                          con FIN, y las dos son las clasificaciones sin obligaciones que
+#                          src/clasificaciones.py trata igual desde B1. Auditadas todas las
+#                          salidas que declaran un resultado, había dos más en la misma
+#                          situación: «EXCLUIDO como fabricante de producto» de #E3 y la
+#                          exclusión por ámbito territorial de #S1. Las tres llevan ahora FIN,
+#                          informe con la estructura del punto 6 y señal, la regla general
+#                          reconoce como cierre cualquier salida terminal y no solo los nodos, y
+#                          la de la definición previa recuerda que su traza es corta pero
+#                          existe. Mismo arreglo en el prompt local, que tenía las tres iguales
 # 2026.09.8 (2026-09-08): el árbol conserva el estado ya establecido y deja de convertir en
 #                          proveedor al implementador por el solo hecho de que el sistema sea
 #                          de alto riesgo. El Art. 50 se reparte por rol en el catálogo de
@@ -108,7 +127,7 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.8"
+PROMPT_VERSION = "2026.09.9"
 
 # Huella del contenido de cada prompt en el momento de estampar PROMPT_VERSION.
 #
@@ -123,7 +142,7 @@ PROMPT_VERSION = "2026.09.8"
 # huella nueva, que el test imprime en el mensaje de fallo. No la actualices sola: sin subir
 # la versión, el pie de los informes vuelve a nombrar dos estados distintos con una cadena.
 PROMPT_HASHES = {
-    "system_prompts.py": "55c93f76e4235155d875b1eb280ad4f4a68e862f21cd0448c5c798e9e050a603",
-    "system_prompts_local.py": "86db6ae44fa04b51877b45ffbab297d5bd871f077976ebcd94821da9457aa499",
+    "system_prompts.py": "42080de6b457a346bf7fc1083e7ff5be43a04dad0a189b3dbffdf75f09fb5d97",
+    "system_prompts_local.py": "5da3164126f98c2ffac88c65f4057abd9f7e8c99bd8fe1c515e5bc99da40c95c",
     "system_prompt_cumplimiento.py": "a8073685385eb19a467e53a20e83d608bb2af25080c128793469bcdaa01fff3c",
 }
