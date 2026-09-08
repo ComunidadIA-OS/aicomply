@@ -32,6 +32,9 @@ artículo en dos pestañas consecutivas.
   B26 - la ruta comodín de #R4 salía a FIN sin mirar el alto riesgo, así que una función de
         transparencia de más hacía que el implementador de alto riesgo no llegara a #R5 y se
         saltara la pregunta del Art. 27
+  B32 - la salida «no cumple la definición de sistema de IA» no decía FIN, ni informe, ni señal:
+        el modelo explicaba y se detenía, y la aplicación se quedaba sin clasificación y sin
+        informe. Con ella, la salida de fabricante de #E3 y la exclusión territorial de #S1
 
 Y uno del recorrido manual del 7 de septiembre de 2026, sin número de auditoría todavía: el
 evaluador fechaba el informe en «Junio de 2025», dato que nadie le dio.
@@ -501,6 +504,134 @@ class TestNingunaRutaDelR4SeSaltaElR5:
 
 
 _RE_MENCION = re.compile(r"Transparencia: ([^(→\n]+?) \(Art\. (50\.\d)\)")
+
+
+class TestNingunaSalidaTerminalSeQuedaSinCerrar:
+    """B32. En el recorrido del ejemplo 00 el asistente identificó bien el supuesto —una tabla de
+    reglas escritas a mano no infiere, así que no cumple el Art. 3.1—, lo explicó y se detuvo. La
+    aplicación no se enteró: `clasificacion` None, `nodos_recorridos` vacío,
+    `evaluacion_completada` False, ningún informe y una sesión guardada vacía.
+
+    La causa estaba en una línea. La salida de la comprobación previa de definición decía
+    «resultado NO CUMPLE LA DEFINICIÓN… Explica al usuario…» y ahí terminaba: sin FIN, sin
+    informe y sin [EVALUACION_COMPLETA]. Y la regla general de la señal la condicionaba a haber
+    alcanzado «un nodo FIN», mientras que esa comprobación está declarada como previa al árbol y
+    por tanto no es un nodo. El modelo obedeció al pie de la letra.
+
+    EXCLUIDO sí funcionaba porque vive en #R2, que es un nodo con FIN — y las dos son las
+    clasificaciones sin obligaciones de src/clasificaciones.py, que reciben el mismo trato desde
+    B1. Una llegaba al informe y la otra no.
+
+    El guardián no mira las dos líneas que fallaron: mira TODAS las salidas que declaran un
+    resultado. Fue así como apareció la tercera, la exclusión territorial de #S1, que nadie había
+    señalado y estaba igual de rota.
+    """
+
+    # Los resultados terminales que el árbol puede declarar. Una línea que asigna uno de ellos
+    # es una salida terminal, y toda salida terminal tiene que cerrar la evaluación.
+    _RESULTADOS = (
+        "NO CUMPLE LA DEFINICIÓN",
+        "EXCLUIDO",
+        "Excluido",
+        "estado PROHIBIDO",
+        "Excepción de alto riesgo",
+        "obligaciones de Representante Autorizado",
+    )
+
+    def test_toda_salida_que_declara_un_resultado_nombra_fin(self):
+        """La propiedad general, sobre el árbol entero y no sobre las líneas que fallaron: una
+        conclusión definitiva fuera del mecanismo de FIN es una evaluación que no llega al
+        informe. Da igual qué salida se añada mañana."""
+        sin_fin = [ln for ln in _salidas_terminales() if not _nombra_fin(ln)]
+        assert not sin_fin, (
+            "estas salidas declaran un resultado definitivo y no nombran FIN, así que el modelo "
+            "explica y se detiene sin emitir la señal:\n" + "\n".join(f"  {ln}" for ln in sin_fin)
+        )
+
+    def test_las_salidas_de_fuera_del_arbol_mandan_escribir_el_informe_y_emitir_la_senal(self):
+        """Las tres que fallaron —la definición previa, el fabricante de #E3 y el ámbito
+        territorial de #S1— no pueden apoyarse solo en la regla general: la regla habla de nodos
+        y estas no lo son, o no lo parecen. Lo llevan escrito encima.
+
+        Las anclas son texto que la salida tenía ANTES del arreglo: una que incluyera «→ FIN»
+        dejaría de encontrar la línea al romperla, y el test pasaría por no mirar nada.
+        """
+        for ancla in ("Si NO encaja en la definición",
+                      "Ninguna de las anteriores → EXCLUIDO como fabricante de producto",
+                      "la organización no está establecida en la UE"):
+            linea = _salida_terminal_que_contiene(ancla)
+            assert _nombra_fin(linea), f"sin FIN: {ancla!r}"
+            assert "ESCRIBE EL INFORME FINAL COMPLETO AHORA" in linea, f"sin informe: {ancla!r}"
+            assert "[EVALUACION_COMPLETA]" in linea, f"sin señal: {ancla!r}"
+
+    def test_la_regla_de_la_senal_reconoce_las_salidas_que_no_son_nodos(self):
+        """La otra mitad de B32: aunque la línea lo diga, la regla general seguía definiendo el
+        cierre como «un nodo FIN». Mientras diga solo eso, cualquier salida nueva de fuera del
+        árbol nace rota."""
+        regla = _normalizar(_regla_de_la_senal())
+        assert "SALIDA TERMINAL" in regla
+        assert "NO solo" in regla, "la regla sigue admitiendo únicamente nodos del árbol"
+        assert "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA" in regla
+        assert "EXCLUIDO como fabricante de producto" in regla
+        assert "no son nodos del árbol y aun así producen una clasificación definitiva" in regla
+
+    def test_la_definicion_previa_recuerda_que_su_traza_existe(self):
+        """El motivo por el que se saltaba el informe era que «no hay recorrido que contar». Lo
+        hay, y es corto: la característica que falta y la confirmación del usuario."""
+        linea = _salida_terminal_que_contiene("Si NO encaja en la definición")
+        assert "el recorrido auditable es corto" in linea
+        assert "la confirmación del usuario" in linea
+        assert "sin la señal la aplicación no registra la clasificación" in linea
+
+    def test_el_prompt_local_cierra_tambien_sus_salidas_terminales(self):
+        """El prompt local es el mismo árbol en versión corta y tenía las tres salidas igual de
+        abiertas. Un arreglo que se aplica a uno solo de los dos prompts es la historia de B17,
+        B19 y B21."""
+        arbol = SYSTEM_PROMPT_CHATBOT_LOCAL
+        for ancla in ("- No cumple → resultado: NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA",
+                      "- No → EXCLUIDO como fabricante",
+                      "- Ninguno → EXCLUIDO"):
+            lineas = [ln for ln in arbol.splitlines() if ln.startswith(ancla)]
+            assert len(lineas) == 1, f"se esperaba una sola línea {ancla!r}, hay {len(lineas)}"
+            assert _nombra_fin(lineas[0]), f"sin FIN en el prompt local: {ancla!r}"
+            assert "[EVALUACION_COMPLETA]" in lineas[0], f"sin señal en el prompt local: {ancla!r}"
+        assert "incluidos el PASO 0 y la salida de fabricante" in arbol
+
+
+_RE_SALIDA_TERMINAL = re.compile(
+    r"→\s*(?:resultado:?\s+)?(?:NO CUMPLE LA DEFINICIÓN|EXCLUIDO|Excluido|estado PROHIBIDO"
+    r"|se aplica Excepción de alto riesgo|obligaciones de Representante Autorizado)"
+)
+
+
+def _arbol_completo() -> str:
+    """Desde la comprobación previa de definición hasta el final del árbol. El catálogo de
+    resultados de la sección 5 queda fuera a propósito: describe los estados, no los asigna."""
+    bloque = SYSTEM_PROMPT_CHATBOT.split("3. DEFINICIÓN PREVIA")[1]
+    return bloque.split("5. CATÁLOGO DE RESULTADOS")[0]
+
+
+def _salidas_terminales() -> list[str]:
+    salidas = [ln for ln in _arbol_completo().splitlines() if _RE_SALIDA_TERMINAL.search(ln)]
+    assert len(salidas) >= 7, f"se esperaban al menos siete salidas terminales, hay {len(salidas)}"
+    return salidas
+
+
+def _nombra_fin(linea: str) -> str | None:
+    """FIN como palabra, no como subcadena: «ESCRIBE EL INFORME FINAL» contiene «FIN» y haría
+    pasar por cerrada una salida que no lo está. Es el fallo que tuvo este propio guardián."""
+    return re.search(r"\bFIN\b", linea)
+
+
+def _salida_terminal_que_contiene(ancla: str) -> str:
+    lineas = [ln for ln in _salidas_terminales() if ancla in ln]
+    assert len(lineas) == 1, f"se esperaba una sola salida que contenga {ancla!r}, hay {len(lineas)}"
+    return lineas[0]
+
+
+def _regla_de_la_senal() -> str:
+    bloque = SYSTEM_PROMPT_CHATBOT.split("IMPORTANTE — FLUJO NATURAL DE LA CONVERSACIÓN:")[1]
+    return bloque.split("\n1. ROL Y MISIÓN")[0]
 
 
 def _todas_las_rutas_del_r4() -> list[str]:

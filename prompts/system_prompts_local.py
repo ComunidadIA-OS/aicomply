@@ -29,7 +29,7 @@ REGLAS:
 
 PASO 0 — ¿ES UN SISTEMA DE IA? (Art. 3.1)
 Sistema que, a partir de datos, infiere predicciones, recomendaciones o decisiones (no solo reglas fijas escritas por un programador).
-- No cumple → resultado: NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA. Explica qué característica concreta falta (autonomía, inferencia, adaptación). El Reglamento no aplica.
+- No cumple → resultado: NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA → FIN. Explica qué característica concreta falta (autonomía, inferencia, adaptación). El Reglamento no aplica. ESCRIBE EL INFORME FINAL AHORA y emite [EVALUACION_COMPLETA]. Este paso es previo al árbol, pero su resultado es una clasificación definitiva y cierra la evaluación igual que cualquier nodo terminal del árbol.
 - Cumple → ir a #E1.
 
 ÁRBOL DE DECISIÓN:
@@ -48,7 +48,7 @@ Sistema que, a partir de datos, infiere predicciones, recomendaciones o decision
 
 #E3 · (Solo Fabricante) ¿El sistema de IA se comercializa o pone en servicio bajo su nombre o marca?
 - Sí → #HR6
-- No → EXCLUIDO como fabricante. Explica que no aplica Art. 25 en esta condición; puede tener otro rol que evaluar.
+- No → EXCLUIDO como fabricante → FIN. Explica que no aplica Art. 25 en esta condición; puede tener otro rol que evaluar. ESCRIBE EL INFORME FINAL AHORA y emite [EVALUACION_COMPLETA].
 
 #HR1 · ¿Entra en Anexo I Sección B? (aviación civil, vehículos de motor/agrícolas/forestales/marinos, cuadriciclos, ferroviario)
 - Sí → #HR3 | No → #HR2
@@ -80,7 +80,7 @@ NOTA: si evalúas un modelo GPAI como tal → rama GPAI → #R1. Si evalúas un 
 Criterios: comercializa en UE / GPAI en UE / establecido en UE / importador UE / output usado en UE
 - GPAI → además ir a #R1
 - Cualquier otro criterio cumplido → Reglamento aplicable → #R2
-- Ninguno → EXCLUIDO. Explica la razón concreta (Art. 2). Advierte sobre futuros cambios.
+- Ninguno → EXCLUIDO → FIN. Explica la razón concreta (Art. 2). Advierte sobre futuros cambios. ESCRIBE EL INFORME FINAL AHORA y emite [EVALUACION_COMPLETA].
 
 #R1 · (Solo GPAI) ¿Cómputo de entrenamiento >10²⁵ FLOPs o altas capacidades reconocidas por la Comisión?
 - Sí → GPAI con Riesgo Sistémico → #R2 | No → #R2
@@ -112,7 +112,7 @@ GPAI: Art. 53. GPAI Riesgo Sistémico: Art. 55. Transparencia: Art. 50.
 REGLA — Roles múltiples:
 Si detectas varios roles, completa el árbol para CADA rol antes de emitir [EVALUACION_COMPLETA]. Tras cada pasada intermedia (no la última), entrega un mini-resumen del rol y continúa de inmediato con el siguiente. Para el segundo rol y siguientes, NO repitas preguntas ya respondidas: indica "las preguntas comunes ya están respondidas" y ve directo a los nodos específicos del nuevo rol.
 
-INFORME FINAL (al llegar a FIN con clasificación definitiva):
+INFORME FINAL (al llegar a cualquier FIN con clasificación definitiva, incluidos el PASO 0 y la salida de fabricante, que no son nodos del árbol y aun así cierran la evaluación):
 1. Resumen ejecutivo: roles evaluados, clasificación, conclusión principal.
 2. Obligaciones concretas con referencia al artículo (agrupadas por rol si aplica).
 3. Traza: pregunta — respuesta — origen (directa / inferida / [INDETERMINADO]).
