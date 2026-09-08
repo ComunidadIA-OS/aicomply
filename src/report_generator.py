@@ -106,21 +106,30 @@ def _capitalizar_roles(rol_str: str) -> str:
     return " / ".join(p.strip().capitalize() for p in rol_str.split("/") if p.strip())
 
 
-def _frase_del_rol(clasificacion: str, rol: str) -> str:
+def _frase_del_rol(rol: str) -> str:
     """La frase «La entidad actúa como X» del resumen ejecutivo, o nada si no hay rol.
 
-    En las dos clasificaciones sin obligaciones —NO CUMPLE LA DEFINICIÓN y EXCLUIDO— el
-    recorrido termina antes del Bloque #E, así que no hay rol que declarar: la frase se
-    construía igual y el informe abría con «La entidad actúa como No aplica» (hallazgo B33).
-    Se comprueba además que el rol traiga algo, porque el marcador de ausencia lo pone la
-    aplicación y podría cambiar de nombre sin que este módulo se entere.
+    Se construía siempre, y cuando no hay rol el informe abría con «La entidad actúa como No
+    aplica» (hallazgo B33). Lo decide el ROL, no la clasificación: el único recorrido que
+    termina sin rol es el de NO CUMPLE LA DEFINICIÓN, porque la comprobación del Art. 3.1 es
+    previa al Bloque #E. EXCLUIDO tampoco tiene obligaciones y sin embargo SÍ tiene rol —la
+    exclusión se resuelve en #R2 o en #S1, después del Bloque #E—, y decirlo es correcto y
+    útil: el informe del ejemplo 05 dice «La entidad actúa como Proveedor».
+
+    No se mira `es_sin_obligaciones()` a propósito: es la distinción de otra cosa, y aquí
+    borraría esa frase del 05.
     """
-    if es_sin_obligaciones(clasificacion) or not _hay_rol(rol):
+    if not _hay_rol(rol):
         return ""
     return f" La entidad actúa como **{_capitalizar_roles(rol)}**."
 
 
 def _hay_rol(rol: str) -> bool:
+    """El rol llega vacío o como marcador de ausencia cuando el recorrido no lo determinó.
+
+    El marcador lo pone la aplicación, así que se comprueban también sus variantes: si mañana
+    cambia de nombre, el peor caso es volver a imprimir la frase, no callar un rol real.
+    """
     return bool(rol) and rol.strip().lower() not in {"no aplica", "n/a", "none", "-"}
 
 
@@ -331,7 +340,7 @@ class GeneradorInforme:
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
             f"según el Reglamento (UE) 2024/1689 (AI Act europeo)."
         )
-        texto += _frase_del_rol(clasificacion, rol)
+        texto += _frase_del_rol(rol)
         if estados:
             texto += f" Estados adicionales aplicables: {', '.join(estados)}."
         return texto
@@ -393,7 +402,7 @@ class GeneradorInforme:
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
             f"según el AI Act europeo."
         )
-        texto += _frase_del_rol(clasificacion, rol)
+        texto += _frase_del_rol(rol)
         if estados:
             texto += f" Estados adicionales: {', '.join(estados)}."
         clas_norm = (clasificacion or "").upper().strip()

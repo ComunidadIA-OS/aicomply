@@ -806,14 +806,22 @@ class TestInformeSinObligaciones:
     """B33. El recorrido del ejemplo 00 terminó bien y el documento salió mal en dos sitios.
 
     El informe abría con «La entidad actúa como **No aplica**» —primera línea del resumen
-    ejecutivo— porque la frase se armaba siempre, y en estas dos clasificaciones no hay rol: el
-    recorrido termina antes del Bloque #E. Y titulaba «Obligaciones identificadas durante la
-    evaluación» una sección de la que colgaban una conclusión y tres recomendaciones, ninguna
-    obligación. Misma familia que B28: un título que desmiente lo que tiene debajo.
+    ejecutivo— porque la frase se armaba siempre, y ahí no había rol: la comprobación de la
+    definición del Art. 3.1 es previa al Bloque #E. Y titulaba «Obligaciones identificadas
+    durante la evaluación» una sección de la que colgaban una conclusión y tres
+    recomendaciones, ninguna obligación. Misma familia que B28: un título que desmiente lo que
+    tiene debajo.
 
     Los dos defectos estaban en el informe de clasificación y en el completo, así que todo se
     comprueba en los dos. El informe que el modelo escribe en el chat ya lo hacía mejor —«2. Sus
     obligaciones: Ninguna»—: el documento que se descarga era la versión peor de lo mismo.
+
+    OJO con la condición: lo que decide la frase del rol es el ROL, no la clasificación. Las dos
+    cosas no van juntas. EXCLUIDO tampoco tiene obligaciones y SÍ tiene rol, porque la exclusión
+    se resuelve en #R2 o en #S1, después del Bloque #E. El primer arreglo condicionó la frase a
+    `es_sin_obligaciones()` y con eso borraba «La entidad actúa como Proveedor» del informe del
+    ejemplo 05, que está publicado en el repositorio y es correcto. El título de la sección 3 sí
+    depende de la clasificación, y para EXCLUIDO también es el bueno: tampoco tiene obligaciones.
     """
 
     @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
@@ -868,6 +876,29 @@ class TestInformeSinObligaciones:
             _CUMPLIMIENTO,
         )
         assert "La entidad actúa como **Implementador**." in md
+
+    def test_excluido_con_rol_conserva_la_frase(self):
+        """El caso que el simétrico de arriba NO cubre, porque aquel usa una clasificación CON
+        obligaciones y por tanto pasa aunque la condición mire la clasificación en vez del rol.
+
+        Es el ejemplo 05 tal como está publicado: PYME proveedora de un sistema de imagen
+        térmica de uso exclusivamente militar, EXCLUIDO por el Art. 2.3 y con el rol determinado
+        en el Bloque #E, mucho antes de la exclusión. Su informe dice «La entidad actúa como
+        Proveedor», y regenerarlo no puede quitárselo.
+        """
+        clas = dict(_CLASIFICACION, clasificacion="EXCLUIDO", rol="proveedor",
+                    roles_multiples=["proveedor"], obligaciones_preliminares=[],
+                    estados_adicionales=[])
+        generador = GeneradorInforme()
+        for nombre, md in (("clasificación", generador.generar_informe_clasificacion(clas)),
+                           ("completo", generador.generar_informe_completo(clas, _CUMPLIMIENTO))):
+            assert "La entidad actúa como **Proveedor**." in md, (
+                f"el informe {nombre} de un EXCLUIDO con rol ha perdido la frase"
+            )
+            # Y sigue sin llamar «obligaciones» a lo que no lo es: las dos cosas son
+            # independientes, y este caso es el que lo demuestra.
+            assert "Obligaciones identificadas durante la evaluación" not in md
+            assert "Conclusión de la evaluación y acciones recomendadas" in md
 
     @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
     def test_el_pdf_se_genera_para_las_dos_clasificaciones(self, clasificacion):
