@@ -17,7 +17,12 @@ import base64
 import streamlit as st
 
 from src.chatbot import AIComplyChat, _SENAL_COMPLETA
-from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
+from src.clasificaciones import (
+    TEXTO_CUMPLIMIENTO_PROHIBIDO,
+    es_prohibido,
+    es_sin_obligaciones,
+    texto_sin_obligaciones,
+)
 from src.tabs.avisos import (
     CLAVE_DOC_RECORTADA,
     avisar_si_documentacion_recortada,
@@ -380,7 +385,9 @@ def _aviso_siguiente_paso(clasificacion: str) -> None:
     El texto de por qué no hay obligaciones lo aporta src/clasificaciones.py, no este
     fichero: EXCLUIDO y NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA cierran el recorrido por
     razones distintas —Art. 2 y Art. 3.1— y aquí se daba la segunda para las dos (B1).
-    Lo que sí es propio de esta pestaña es la indicación de a dónde ir.
+    Lo que sí es propio de esta pestaña es la indicación de a dónde ir, salvo en PROHIBIDO:
+    ahí el destino viaja dentro del texto compartido, que es lo que garantiza que las dos
+    pestañas manden al mismo sitio.
     """
     if es_sin_obligaciones(clasificacion):
         st.info(
@@ -389,13 +396,15 @@ def _aviso_siguiente_paso(clasificacion: str) -> None:
             "Puede generar únicamente el **Informe de evaluación** en la pestaña **Informe** "
             "para documentar esta conclusión."
         )
-    elif clasificacion.upper().strip() == "PROHIBIDO":
-        st.warning(
-            "El sistema ha sido clasificado como **práctica prohibida** (Art. 5 AI Act). "
-            "Aun así, puede continuar a la evaluación de cumplimiento para documentar las medidas necesarias: "
-            "cese, rediseño, retirada, remediación y revisión profesional."
-        )
-        st.info("Proceda a la pestaña **Cumplimiento** para documentar las medidas de remediación.")
+    elif es_prohibido(clasificacion):
+        # El mismo texto, literal, que muestra la pestaña Cumplimiento. Hasta que esa pestaña
+        # se cerró para PROHIBIDO, aquí se ofrecía «continuar a la evaluación de cumplimiento
+        # para documentar las medidas necesarias» y se remataba con «proceda a la pestaña
+        # Cumplimiento»: dos líneas seguidas que mandaban al usuario a una pestaña que acto
+        # seguido le respondía que no procede ningún análisis. Se lee así en la transcripción
+        # del ejemplo 04. Con dos literales separados la contradicción vuelve en cuanto
+        # alguien toca uno, de modo que el texto es uno solo y vive en src/clasificaciones.py.
+        st.error(TEXTO_CUMPLIMIENTO_PROHIBIDO)
     else:
         st.info("Proceda a la pestaña **Cumplimiento** para revisar sus obligaciones concretas.")
 

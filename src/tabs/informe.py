@@ -16,7 +16,7 @@ from datetime import date
 
 import streamlit as st
 
-from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
+from src.clasificaciones import es_prohibido, es_sin_obligaciones, texto_sin_obligaciones
 from src.report_generator import GeneradorInforme
 
 _FECHA_HOY = date.today().strftime("%Y-%m-%d")
@@ -26,6 +26,32 @@ _TITULOS_INFORME = {
     "cumplimiento": "Informe de cumplimiento",
     "completo": "Informe completo",
 }
+
+
+#: Lo que se dice cuando un caso PROHIBIDO no trae análisis de cumplimiento. Aquí no se
+#: reutiliza TEXTO_CUMPLIMIENTO_PROHIBIDO —el texto compartido entre el Evaluador y la
+#: pestaña Cumplimiento— porque ese remite a esta pestaña, y quien lee esto ya está en ella.
+_TEXTO_INFORME_PROHIBIDO = (
+    "El sistema está clasificado como **práctica prohibida** del Art. 5 del AI Act. "
+    "No procede un análisis de cumplimiento, así que este informe no aplica. "
+    "Use el **Informe de clasificación**: documenta la prohibición, las sanciones "
+    "aplicables y las medidas que debe adoptar."
+)
+
+
+def _prohibido_sin_analisis(clasificacion: str, cumpl_ok: bool) -> bool:
+    """True si es un caso PROHIBIDO que no trae registro de cumplimiento.
+
+    Un sistema del Art. 5 ya no pasa por la pestaña Cumplimiento, así que los dos informes
+    que dependen de ese análisis no proceden y no se puede decir «pendiente»: eso remitiría
+    a la pestaña que acaba de responder que no hay nada que analizar.
+
+    Se mira `cumpl_ok` y no solo la clasificación porque sí existen registros de PROHIBIDO
+    —sesiones guardadas antes del cierre de la pestaña, o importadas— y con ellos el informe
+    de cumplimiento sí se puede generar: es lo que defienden los guardianes de B34 en
+    src/report_generator.py.
+    """
+    return es_prohibido(clasificacion) and not cumpl_ok
 
 
 def _nombre_fichero(tipo: str, extension: str) -> str:
@@ -128,6 +154,10 @@ def _seccion_informe_cumplimiento(
         )
         return
 
+    if _prohibido_sin_analisis(clasificacion, cumpl_ok):
+        st.info(_TEXTO_INFORME_PROHIBIDO)
+        return
+
     if not cumpl_ok:
         pasos_faltantes = []
         tiene_clasificacion = (
@@ -183,6 +213,10 @@ def _seccion_informe_completo(
         )
         return
 
+    if _prohibido_sin_analisis(clasificacion, cumpl_ok):
+        st.info(_TEXTO_INFORME_PROHIBIDO)
+        return
+
     if not (eval_ok and cumpl_ok):
         faltantes = []
         if not eval_ok:
@@ -234,15 +268,19 @@ def mostrar_tab_informe() -> None:
     )
     cumpl_ok = st.session_state.get("cumplimiento_completado", False)
 
-    # EXCLUIDO y NO CUMPLE LA DEFINICIÓN terminan en evaluación; PROHIBIDO sí pasa a cumplimiento
+    # EXCLUIDO y NO CUMPLE LA DEFINICIÓN terminan en evaluación; PROHIBIDO tampoco pasa ya
+    # por el análisis de cumplimiento, pero por otra razón y con otro texto (`es_prohibido`).
     clasificacion_actual = (st.session_state.get("clasificacion_data") or {}).get("clasificacion", "").upper()
     es_caso_especial = eval_ok and es_sin_obligaciones(clasificacion_actual)
+    sin_cumplimiento = es_caso_especial or _prohibido_sin_analisis(clasificacion_actual, cumpl_ok)
 
-    # Indicadores de progreso
+    # Indicadores de progreso. «Pendiente» es una instrucción encubierta —dice que falta algo
+    # por hacer en la pestaña Cumplimiento—, así que los casos en los que no hay nada que
+    # hacer llevan «No aplica».
     col1, col2, col3 = st.columns(3)
     col1.metric("Evaluación", "Completada" if eval_ok else "Pendiente")
-    col2.metric("Cumplimiento", "No aplica" if es_caso_especial else ("Completado" if cumpl_ok else "Pendiente"))
-    col3.metric("Informe completo", "No aplica" if es_caso_especial else ("Disponible" if (eval_ok and cumpl_ok) else "Pendiente"))
+    col2.metric("Cumplimiento", "No aplica" if sin_cumplimiento else ("Completado" if cumpl_ok else "Pendiente"))
+    col3.metric("Informe completo", "No aplica" if sin_cumplimiento else ("Disponible" if (eval_ok and cumpl_ok) else "Pendiente"))
 
     st.divider()
 

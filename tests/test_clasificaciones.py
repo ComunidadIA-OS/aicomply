@@ -36,6 +36,7 @@ from src.clasificaciones import (
     EXCLUIDO,
     NO_CUMPLE_DEFINICION,
     PROHIBIDO,
+    TEXTO_CUMPLIMIENTO_PROHIBIDO,
     TEXTO_SIN_OBLIGACIONES,
     es_prohibido,
     es_sin_obligaciones,
@@ -345,3 +346,146 @@ class TestProhibidoTienePredicadoPropio:
     def test_prohibido_no_tiene_texto_de_sin_obligaciones(self):
         """Si alguien le diera uno, el informe podría llegar a decir que no hay obligaciones."""
         assert PROHIBIDO not in TEXTO_SIN_OBLIGACIONES
+
+
+# ── PROHIBIDO: las dos pestañas tienen que decir literalmente lo mismo ─────────
+
+
+def _mensaje_del_evaluador() -> str:
+    """El aviso de cierre del Evaluador para PROHIBIDO."""
+    with patch.object(tab_evaluador, "st", MagicMock()) as st:
+        tab_evaluador._aviso_siguiente_paso("PROHIBIDO")
+    assert st.error.call_count == 1, "el aviso de PROHIBIDO debería ser un único mensaje"
+    return st.error.call_args[0][0]
+
+
+def _mensaje_de_cumplimiento(provider) -> str:
+    """El mensaje con el que la pestaña Cumplimiento cierra un caso PROHIBIDO."""
+    with patch.object(tab_cumplimiento, "st", MagicMock()) as st:
+        st.session_state = {
+            "evaluacion_completada": True,
+            "acceso_directo_cumplimiento": False,
+            "clasificacion_data": _datos("PROHIBIDO"),
+        }
+        tab_cumplimiento.mostrar_tab_cumplimiento(provider)
+    assert st.error.call_count == 1
+    return st.error.call_args[0][0]
+
+
+class TestLasDosPestanasDicenLoMismoDeProhibido:
+    """La contradicción concreta que cierra este cambio.
+
+    El Evaluador remataba la clasificación PROHIBIDO con «puede continuar a la evaluación de
+    cumplimiento para documentar las medidas necesarias» y «proceda a la pestaña
+    Cumplimiento», y esa pestaña —desde que se cerró para las prácticas del Art. 5— responde
+    lo contrario: que no procede ningún análisis. Dos líneas seguidas en la transcripción del
+    ejemplo 04, la primera enviando a un sitio que la segunda desmiente.
+
+    Comparar los dos mensajes carácter a carácter, y no por fragmentos, es lo que impide que
+    vuelvan a divergir: con dos literales separados basta con que alguien toque uno.
+    """
+
+    def test_el_evaluador_y_cumplimiento_muestran_el_mismo_texto(self, mock_provider):
+        assert _mensaje_del_evaluador() == _mensaje_de_cumplimiento(mock_provider)
+
+    def test_y_ese_texto_es_el_del_modulo_compartido(self, mock_provider):
+        """La igualdad sola no basta: dos copias idénticas del literal también la cumplirían
+        hasta que alguien editara una."""
+        assert _mensaje_del_evaluador() == TEXTO_CUMPLIMIENTO_PROHIBIDO
+        assert _mensaje_de_cumplimiento(mock_provider) == TEXTO_CUMPLIMIENTO_PROHIBIDO
+
+    def test_el_evaluador_ya_no_manda_a_la_pestana_cumplimiento(self):
+        """El destino del usuario cambia de pestaña: el detalle está en el informe."""
+        mensaje = _mensaje_del_evaluador()
+        assert "pestaña **Cumplimiento**" not in mensaje
+        assert "evaluación de cumplimiento" not in mensaje
+        assert "pestaña **Informe**" in mensaje
+
+    def test_el_evaluador_sigue_mandando_a_cumplimiento_a_las_demas(self):
+        """El control: la rama que sí tiene análisis por delante no se ha tocado."""
+        with patch.object(tab_evaluador, "st", MagicMock()) as st:
+            tab_evaluador._aviso_siguiente_paso("ALTO")
+        assert "pestaña **Cumplimiento**" in st.info.call_args[0][0]
+        assert st.error.call_count == 0
+
+
+class TestLaPestanaInformeTampocoMandaACumplimiento:
+    """El barrido: el mismo envío a una pestaña cerrada estaba en los dos informes que
+    dependen del análisis de cumplimiento. Sin registro, decían «este informe se desbloqueará
+    cuando complete el análisis de cumplimiento (Pestaña 2)», que es la misma instrucción
+    imposible dicha de otra manera."""
+
+    def test_el_informe_de_cumplimiento_no_pide_completar_la_pestana_2(self):
+        with patch.object(tab_informe, "st", MagicMock()) as st:
+            tab_informe._seccion_informe_cumplimiento(
+                cumpl_ok=False, es_caso_especial=False, clasificacion="PROHIBIDO"
+            )
+        mensaje = st.info.call_args[0][0]
+        assert "Pestaña 2" not in mensaje
+        assert "práctica prohibida" in mensaje
+        assert "Informe de clasificación" in mensaje
+
+    def test_el_informe_completo_tampoco(self):
+        with patch.object(tab_informe, "st", MagicMock()) as st:
+            tab_informe._seccion_informe_completo(
+                eval_ok=True, cumpl_ok=False, es_caso_especial=False, clasificacion="PROHIBIDO"
+            )
+        mensaje = st.info.call_args[0][0]
+        assert "Pestaña 2" not in mensaje
+        assert "práctica prohibida" in mensaje
+
+    def test_un_registro_guardado_sigue_pudiendo_generar_su_informe(self):
+        """Los guardianes de B34 defienden las sesiones anteriores al cierre de la pestaña:
+        si traen registro de cumplimiento, el informe se genera como siempre."""
+        with patch.object(tab_informe, "st", MagicMock()) as st:
+            st.session_state = {"informe_md_cumplimiento": None}
+            st.button.return_value = False
+            tab_informe._seccion_informe_cumplimiento(
+                cumpl_ok=True, es_caso_especial=False, clasificacion="PROHIBIDO"
+            )
+        assert st.info.call_count == 0
+        assert st.button.call_count == 1
+
+    def test_las_demas_clasificaciones_conservan_el_aviso_de_pestana_2(self):
+        with patch.object(tab_informe, "st", MagicMock()) as st:
+            st.session_state = {}
+            tab_informe._seccion_informe_cumplimiento(
+                cumpl_ok=False, es_caso_especial=False, clasificacion="ALTO"
+            )
+        assert "Pestaña 2" in st.info.call_args[0][0]
+
+
+def _indicadores_de_progreso(clasificacion: str, cumpl_ok: bool) -> dict[str, str]:
+    """Los tres indicadores de la cabecera de la pestaña Informe, por su etiqueta."""
+    columnas = [MagicMock(), MagicMock(), MagicMock()]
+    with patch.object(tab_informe, "st", MagicMock()) as st:
+        st.session_state = {
+            "evaluacion_completada": True,
+            "acceso_directo_cumplimiento": False,
+            "cumplimiento_completado": cumpl_ok,
+            "clasificacion_data": _datos(clasificacion),
+        }
+        st.columns.return_value = columnas
+        st.button.return_value = False
+        tab_informe.mostrar_tab_informe()
+    return {c.metric.call_args[0][0]: c.metric.call_args[0][1] for c in columnas}
+
+
+class TestLosIndicadoresNoDicenPendiente:
+    """«Pendiente» es una instrucción encubierta: dice que queda trabajo en la pestaña
+    Cumplimiento. Sobre un caso PROHIBIDO es la misma contradicción de las dos líneas del
+    ejemplo 04, reducida a una palabra en la cabecera."""
+
+    def test_prohibido_sin_analisis_marca_no_aplica(self):
+        indicadores = _indicadores_de_progreso("PROHIBIDO", cumpl_ok=False)
+        assert indicadores["Cumplimiento"] == "No aplica"
+        assert indicadores["Informe completo"] == "No aplica"
+
+    def test_un_registro_guardado_de_prohibido_sigue_contando_como_completado(self):
+        indicadores = _indicadores_de_progreso("PROHIBIDO", cumpl_ok=True)
+        assert indicadores["Cumplimiento"] == "Completado"
+
+    def test_alto_sin_analisis_sigue_pendiente(self):
+        """Ahí sí queda algo por hacer, y decirlo es correcto."""
+        indicadores = _indicadores_de_progreso("ALTO", cumpl_ok=False)
+        assert indicadores["Cumplimiento"] == "Pendiente"
