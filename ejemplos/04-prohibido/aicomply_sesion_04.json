@@ -1,0 +1,136 @@
+{
+  "_version": "1",
+  "_app": "aicomply",
+  "clasificacion_data": {
+    "clasificacion": "PROHIBIDO",
+    "estados_adicionales": [],
+    "rol": "proveedor / implementador",
+    "roles_multiples": [
+      "proveedor",
+      "implementador"
+    ],
+    "nodos_recorridos": [
+      {
+        "pregunta": "Definición de sistema de IA (Art. 3.1)",
+        "respuesta": "Así es",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Tipo de entidad",
+        "respuesta": "La a, la queremos encargar para usarla",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Agentes posteriores que modifiquen o rebranden el sistema",
+        "respuesta": "No",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "El indicador de engagement influye en decisiones de gestión de desempeño sobre los agentes",
+        "respuesta": "Así es",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Finalidad exclusivamente de gestión de desempeño y clima laboral, sin componente médico ni de seguridad",
+        "respuesta": "Efectivamente",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Práctica prohibida Art. 5 — reconocimiento de emociones en el lugar de trabajo sin finalidad médica ni de seguridad",
+        "respuesta": "Efectivamente (confirmación de ausencia de excepciones)",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Ámbito territorial — organización establecida en España, sistema desplegado en la UE",
+        "respuesta": "Sólo en España",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Funciones adicionales de transparencia (Art. 50)",
+        "respuesta": "No",
+        "origen": "respuesta directa"
+      }
+    ],
+    "puntos_indeterminados": [],
+    "descripcion_sistema": "Sistema de IA que analiza la voz de los agentes de un contact center durante las llamadas para inferir su estado emocional —estrés, frustración, entusiasmo— y genera un indicador de engagement por agente visible para los coordinadores de equipo. Su finalidad declarada es la gestión de desempeño y el clima laboral. La organización encarga su desarrollo a un tercero y lo despliega internamente bajo su propio nombre y autoridad.",
+    "sector": "Contact center / Atención al cliente",
+    "obligaciones_preliminares": [
+      "Abstenerse de encargar, desarrollar y desplegar el sistema (Art. 5)",
+      "Garantizar un nivel suficiente de conocimientos sobre IA en el personal (Art. 4)"
+    ]
+  },
+  "cumplimiento_data": {},
+  "mensajes_evaluador": [
+    {
+      "role": "user",
+      "content": "Somos un contact center español de 90 agentes que da servicio de atención al cliente a varias empresas. Estamos valorando implantar una herramienta que analiza la voz de nuestros agentes durante las llamadas para inferir su estado emocional —estrés, frustración, entusiasmo— y generar un indicador de «engagement» por agente que verían los coordinadores de equipo. La finalidad es de gestión de desempeño y clima laboral. No es un sistema de seguridad ni tiene ninguna finalidad médica."
+    },
+    {
+      "role": "assistant",
+      "content": "Bienvenido. Antes de comenzar, un aviso breve: lo que le ofrezco es una orientación basada en el Reglamento (UE) 2024/1689 (AI Act), no asesoramiento jurídico vinculante. Le recomiendo contrastar las conclusiones con un profesional especializado en derecho de IA o cumplimiento normativo.\n\nDicho esto, la herramienta que describe —análisis de voz para inferir estados emocionales y generar indicadores de desempeño— encaja claramente en la definición de sistema de IA del Art. 3.1: a partir de datos de entrada (la voz del agente), el sistema infiere por sí solo un resultado (el estado emocional y el indicador de engagement) que influye en decisiones de gestión de personas. No se trata de reglas fijas escritas a mano, sino de inferencia automática.\n\n¿Confirma que esa descripción refleja correctamente cómo funciona la herramienta?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Pasamos a la primera pregunta del análisis.\n\nLa herramienta la están valorando implantar, pero ¿quién la desarrolla o desarrollará? Necesito entender el rol de su organización. ¿Cuál de estas situaciones describe mejor su caso?\n\n**a)** Su contact center la está desarrollando internamente o encargando su desarrollo a un tercero, y la pondrá en servicio bajo su propio nombre o marca.\n\n**b)** Van a adquirirla de un proveedor externo (un fabricante de software, por ejemplo) y la usarán tal como viene, sin modificarla sustancialmente ni ponerle su marca.\n\n**c)** Otra situación diferente a las anteriores."
+    },
+    {
+      "role": "user",
+      "content": "La a, la queremos encargar para usarla"
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. Su organización encarga el desarrollo de la herramienta y la pondrá en servicio bajo su nombre o marca, y además la utilizará internamente en su propia actividad de gestión de agentes.\n\nEsto activa un doble rol:\n\n- **Proveedor**: porque encarga el desarrollo del sistema y lo pondrá en servicio bajo su nombre o marca (Art. 3.3).\n- **Implementador**: porque desplegará el sistema bajo su propia autoridad para gestionar el desempeño de sus agentes (Art. 3.4).\n\nEsto significa que haremos un recorrido por cada uno de los dos roles antes de cerrar la evaluación, y el informe final recogerá las obligaciones de ambos. Se lo iré indicando a medida que avancemos.\n\nDicho esto, una primera obligación ya es aplicable desde ahora para ambos roles: **garantizar un nivel suficiente de conocimientos sobre IA en el personal** que trabaje con o en torno a este sistema (Art. 4). Es aplicable actualmente, desde el 2 de febrero de 2025.\n\nAvancemos. ¿Algún agente posterior —distribuidor, otro implementador— pondrá su propia marca en el sistema, modificará su finalidad o realizará una modificación sustancial sobre él una vez esté en servicio?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Pasamos a analizar si el sistema podría clasificarse como de alto riesgo.\n\nLa herramienta analiza la voz de los agentes para inferir su estado emocional y genera un indicador de engagement que los coordinadores usan en la gestión de desempeño. Esto me lleva directamente a una categoría muy relevante del Reglamento: los sistemas de IA usados en el ámbito del **empleo y la gestión de trabajadores**.\n\nConcretamente, quiero confirmar si el indicador de engagement que genera el sistema influye —aunque sea como un insumo más— en decisiones sobre los agentes, como evaluaciones de desempeño, asignación de tareas, supervisión, o decisiones sobre condiciones laborales. ¿Es así como está previsto usarlo?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. El sistema se usará para gestión de desempeño de trabajadores, lo que lo sitúa en la categoría de **empleo y gestión de trabajadores** del Anexo III del Reglamento.\n\nAhora necesito valorar si plantea un riesgo significativo. Hay una circunstancia que en este caso es determinante: el sistema realiza **reconocimiento de emociones** aplicado a trabajadores en su entorno laboral. El Reglamento trata esto de forma específica.\n\nPor un lado, el Art. 5 prohíbe el reconocimiento de emociones en el lugar de trabajo salvo por motivos médicos o de seguridad. Por otro, si el sistema no cayera en esa prohibición, el análisis de emociones en trabajadores combinado con su uso para gestión de desempeño implica elaboración de perfiles de personas físicas, lo que el Reglamento considera siempre de alto riesgo.\n\nAntes de continuar, necesito hacerle una pregunta crítica: ¿la finalidad del sistema es exclusivamente de gestión de desempeño y clima laboral, sin ningún componente médico ni de seguridad en el trabajo? Por lo que me ha descrito, parece que sí, pero quiero confirmarlo expresamente."
+    },
+    {
+      "role": "user",
+      "content": "Efectivamente "
+    },
+    {
+      "role": "assistant",
+      "content": "Gracias por la confirmación. Esto es un punto muy relevante que debo trasladarle con claridad.\n\nEl Art. 5 del Reglamento prohíbe los sistemas de IA que utilizan reconocimiento de emociones en el lugar de trabajo, **salvo que la finalidad sea médica o de seguridad**. Su sistema analiza el estado emocional de los agentes durante las llamadas con fines de gestión de desempeño y clima laboral, sin componente médico ni de seguridad. Por tanto, entra de lleno en esta prohibición.\n\nEsto aplica tanto en su rol de **proveedor** —porque encarga y pone en servicio el sistema— como en su rol de **implementador** —porque lo despliega en su propia actividad—.\n\nEsta prohibición es **aplicable actualmente**, desde el 2 de febrero de 2025.\n\nAntes de cerrar la evaluación, necesito completar dos comprobaciones finales que el árbol exige incluso cuando se ha identificado una práctica prohibida.\n\nLa primera: ¿su organización opera exclusivamente en España y la salida del sistema se usa únicamente en territorio de la UE? Quiero confirmar que el Reglamento es territorialmente aplicable, lo cual en su caso parece evidente dado que es un contact center español, pero necesito su confirmación."
+    },
+    {
+      "role": "user",
+      "content": "Sólo en España"
+    },
+    {
+      "role": "assistant",
+      "content": "Confirmado. El Reglamento es plenamente aplicable.\n\nSegunda y última comprobación: ¿el sistema realiza alguna de estas funciones adicionales?\n\n- Interactuar directamente con personas físicas sin informarles de que hablan con una IA.\n- Generar o manipular imágenes, audio o vídeo que constituya una ultrasuplantación (deep fake).\n- Generar texto publicado para informar al público sobre asuntos de interés público.\n- Generar contenido sintético (audio, imagen, vídeo o texto) destinado al público general.\n\n¿Alguna de estas funciones aplica a su herramienta?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Con esto tenemos toda la información necesaria para cerrar la evaluación de ambos roles. Le entrego el informe final.\n\n---\n\n## Informe de evaluación — AI Act (Reglamento (UE) 2024/1689)\n\n---\n\n### 1. Resumen ejecutivo\n\nSu organización actúa simultáneamente como **proveedor** e **implementador** del sistema de análisis emocional de voz. La evaluación concluye que el sistema, según la información facilitada, **probablemente constituye una práctica prohibida** conforme al Art. 5 del Reglamento, al emplear reconocimiento de emociones en el lugar de trabajo con fines de gestión de desempeño, sin que concurra ninguna de las excepciones previstas (finalidad médica o de seguridad). Esta prohibición es aplicable actualmente y afecta a su organización en ambos roles.\n\n---\n\n### 2. Sus obligaciones\n\n**Aplicables actualmente:**\n\n**a) Abstenerse de encargar, desarrollar, comercializar o desplegar el sistema (Art. 5)**\nEl Reglamento prohíbe los sistemas de IA que utilizan reconocimiento de emociones en el lugar de trabajo salvo por motivos médicos o de seguridad. Su herramienta infiere el estado emocional de los agentes durante las llamadas con fines de gestión de desempeño y clima laboral, lo que encaja en esta prohibición. Esto afecta a su organización tanto como proveedor (que encarga y pone en servicio el sistema) como implementador (que lo despliega en su propia actividad). En la práctica, esto significa que, tal como está concebido el sistema, **no debería encargarse ni ponerse en servicio**.\n\n**b) Garantizar un nivel suficiente de conocimientos sobre IA en el personal (Art. 4)**\nCon independencia de la prohibición anterior, esta obligación de alfabetización en IA ya es exigible y aplica a toda organización que entre en el ámbito del Reglamento, incluida la suya. Deben adoptar medidas para que el personal que trabaje con o en torno a sistemas de IA tenga conocimientos adecuados sobre su funcionamiento, limitaciones y riesgos.\n\n---\n\n### 3. Recorrido realizado (traza auditable)\n\n- **Definición de sistema de IA (Art. 3.1):** Cumple la definición — el sistema infiere estados emocionales a partir de la voz y genera indicadores que influyen en decisiones de gestión (confirmación directa).\n- **Tipo de entidad:** Doble rol — Proveedor (encarga el desarrollo y pondrá en servicio el sistema bajo su nombre) e Implementador (lo desplegará en su propia actividad de gestión de agentes) (respuesta directa).\n- **Modificaciones por agentes posteriores:** Ninguna (respuesta directa).\n- **Categoría Anexo III — Empleo y gestión de trabajadores:** El indicador de engagement influye en decisiones de desempeño sobre los agentes (inferencia confirmada).\n- **Finalidad del reconocimiento de emociones:** Exclusivamente gestión de desempeño y clima laboral, sin componente médico ni de seguridad (confirmación directa).\n- **Práctica prohibida (Art. 5):** El sistema emplea reconocimiento de emociones en el lugar de trabajo sin finalidad médica ni de seguridad — prohibición aplicable (inferencia confirmada).\n- **Ámbito territorial:** Organización establecida en España, sistema desplegado exclusivamente en la UE — Reglamento aplicable (respuesta directa).\n- **Obligaciones de transparencia (Art. 50):** Ninguna de las funciones adicionales aplica (respuesta directa).\n\n---\n\n### 4. Puntos que requieren revisión profesional\n\n**Alcance exacto de la prohibición del Art. 5 en relación con su sistema concreto:**\nLa prohibición del reconocimiento de emociones en el trabajo es clara en su enunciado, pero la delimitación precisa de qué funcionalidades técnicas quedan dentro de su ámbito puede requerir análisis jurídico especializado. En particular, un profesional debería valorar:\n\n- Si una rediseño del sistema que eliminara la inferencia de estados emocionales y se limitara, por ejemplo, a métricas de voz objetivas (volumen, ritmo, pausas) sin atribuirles una etiqueta emocional, podría quedar fuera de la prohibición.\n- Si algún componente del sistema pudiera reconducirse hacia una finalidad de seguridad en el trabajo legítima y documentada, lo que podría activar la excepción del Art. 5.\n\nEstas son cuestiones que afectan directamente a la viabilidad del proyecto y que no deben resolverse sin asesoramiento jurídico cualificado.\n\n---\n\n### 5. Recorridos pendientes\n\nAmbos roles —proveedor e implementador— han sido recorridos en esta evaluación y conducen a la misma conclusión: la práctica prohibida del Art. 5 afecta a su organización en las dos condiciones simultáneamente. No quedan recorridos adicionales.\n\n---\n\n### 6. Aviso legal\n\nEste informe es una orientación basada en el Reglamento (UE) 2024/1689 y no constituye asesoramiento jurídico vinculante. Las conclusiones se basan exclusivamente en la información facilitada durante esta conversación y pueden variar si cambian los hechos descritos o si un análisis jurídico más detallado arroja una interpretación diferente. Se recomienda encarecidamente contrastar este informe con un abogado o consultor especializado en derecho de inteligencia artificial antes de tomar cualquier decisión sobre el proyecto.\n\n---"
+    }
+  ],
+  "mensajes_cumplimiento": [],
+  "evaluacion_completada": true,
+  "cumplimiento_completado": false,
+  "acceso_directo_cumplimiento": false,
+  "informe_md_clasificacion": "# AIComply — Informe de clasificación\n\n**Sistema evaluado:** Sistema de IA que analiza la voz de los agentes de un contact center durante las llamadas para inferir su estado emocional —estrés, frustración, entusiasmo— y genera un indicador de engagement por agente visible para los coordinadores de equipo. Su finalidad declarada es la gestión de desempeño y el clima laboral. La organización encarga su desarrollo a un tercero y lo despliega internamente bajo su propio nombre y autoridad.  \n**Sector:** Contact center / Atención al cliente  \n**Clasificación:** PROHIBIDO  \n**Rol de la entidad:** Proveedor / Implementador  \n**Fecha:** 08/09/2026 a las 16:38  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **PROHIBIDO** según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como **Proveedor / Implementador**.\n\n> **ADVERTENCIA — Práctica prohibida (Art. 5 AI Act)**\n>\n> Este sistema está clasificado como una práctica de IA prohibida por el Art. 5 del Reglamento (UE) 2024/1689.\n>\n> Detenga el desarrollo y el uso del sistema: no puede introducirse en el mercado, ponerse en servicio ni utilizarse.\n>\n> Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR o, si el infractor es una empresa, el 7 % de su volumen de negocios mundial total correspondiente al ejercicio financiero anterior, si esta cuantía fuese superior.\n>\n> En el caso de las pymes, el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje, según cuál de ellos sea menor.\n>\n> Consulte urgentemente con un asesor legal especializado.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** PROHIBIDO  \n**Descripción:** Sistema de IA prohibido por el AI Act (Artículo 5)\n\n**Rol principal de la entidad:** Proveedor / Implementador\n\n**Roles identificados:**\n- Proveedor\n- Implementador\n\nSu organización actúa en varios roles bajo el AI Act. Las obligaciones de cada rol se detallan en la sección correspondiente.\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- El sistema NO puede desarrollarse ni desplegarse (Art. 5)\n- Acción inmediata: detener el proyecto o rediseñar el sistema\n- Posibles sanciones de hasta 35.000.000 EUR o el 7 % del volumen de negocios mundial total del ejercicio anterior, si esta cuantía fuese superior (Art. 99.3)\n- El Art. 4 (alfabetización en IA), aplicable desde el 2 de febrero de 2025, sigue obligando a su organización con independencia de este sistema: obliga por ser responsable del despliegue de sistemas de IA, no por este sistema en concreto\n- Consulte urgentemente con un asesor legal especializado\n\n## 4. Puntos que requieren revisión profesional\n\nNo se identificaron puntos específicos que requieran revisión profesional.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.12 · Corpus v2026.09.1 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 16:38.*",
+  "informe_md_cumplimiento": null,
+  "informe_md_completo": null
+}
