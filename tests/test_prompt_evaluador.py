@@ -42,6 +42,7 @@ evaluador fechaba el informe en «Junio de 2025», dato que nadie le dio.
 
 import re
 
+from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from prompts.system_prompts import SYSTEM_PROMPT_CHATBOT
 from prompts.system_prompts_local import SYSTEM_PROMPT_CHATBOT_LOCAL
 
@@ -148,7 +149,7 @@ class TestArt26SinApartados:
         assert "sin añadirle número de apartado" in linea
 
     def test_el_formato_del_informe_prohibe_los_apartados(self):
-        linea = _linea_que_contiene("2. Tus obligaciones:")
+        linea = _linea_que_contiene("2. Sus obligaciones:")
         assert "Para el Art. 26, sin apartado" in linea
         assert '"(Art. 26)"' in linea
 
@@ -168,7 +169,7 @@ class TestArt26SinApartados:
         """
         sancionadas = (
             "- Implementador (Art. 26):",
-            "2. Tus obligaciones:",
+            "2. Sus obligaciones:",
             "El responsable del despliegue solo registra",
         )
         resto = [
@@ -500,7 +501,10 @@ class TestNingunaRutaDelR4SeSaltaElR5:
         ya no lleva a ninguna parte."""
         bloque_r5 = SYSTEM_PROMPT_CHATBOT.split("#R5 · ")[1].split("\n\n")[0]
         assert "Art. 27" in bloque_r5
-        assert "Solo se llega a #R5 si eres Implementador de un sistema de alto riesgo" in bloque_r5
+        assert (
+            "Solo se llega a #R5 si la entidad evaluada es implementador de un sistema de alto "
+            "riesgo"
+        ) in bloque_r5
 
 
 _RE_MENCION = re.compile(r"Transparencia: ([^(→\n]+?) \(Art\. (50\.\d)\)")
@@ -596,6 +600,81 @@ class TestNingunaSalidaTerminalSeQuedaSinCerrar:
             assert _nombra_fin(lineas[0]), f"sin FIN en el prompt local: {ancla!r}"
             assert "[EVALUACION_COMPLETA]" in lineas[0], f"sin señal en el prompt local: {ancla!r}"
         assert "incluidos el PASO 0 y la salida de fabricante" in arbol
+
+
+class TestElTratamientoEsDeUsted:
+    """Observación del recorrido del ejemplo 00: el evaluador tuteó de principio a fin
+    —«describe», «vosotros», «tenéis»— mientras que los recorridos del 02, el 03 y el 05 tratan
+    de usted. El prompt no fijaba el tratamiento, así que lo decidía el modelo turno a turno y
+    los ejemplos publicados salían en dos registros distintos.
+
+    El guardián mira solo el texto que el usuario LEE: las preguntas de los nodos, las opciones
+    y los ejemplos de frase que el prompt pone en boca del asistente. Lo que el prompt le dice
+    AL MODELO usa la segunda persona con toda propiedad —«Explica», «no inventes», «tu
+    respuesta»— y no se toca: confundir las dos cosas convertiría el guardián en ruido.
+    """
+
+    # Formas de tú y de vosotros que, en una línea dirigida al usuario, delatan el registro.
+    _RE_TUTEO = re.compile(
+        r"\b(tus?|tú|ti|contigo|tuyos?|tuyas?|vosotros|vuestr[oa]s?|tenéis|podéis|debéis|"
+        r"hacéis|sois|estáis|cumplís|filtráis|describes|evalúas|actúas|cumples|usas|"
+        r"tendrás|deberás|podrás)\b",
+        re.I,
+    )
+
+    def test_los_nodos_del_arbol_preguntan_de_usted(self):
+        """Las preguntas de los nodos son literalmente lo que aparece en pantalla."""
+        for linea in _lineas_de_nodo():
+            assert not self._RE_TUTEO.search(linea), f"nodo en tú: {linea[:110]!r}"
+
+    def test_las_opciones_del_r5_hablan_de_usted(self):
+        """Eran «Eres un organismo…», que es la forma más visible del tuteo: encabeza cada
+        opción que el usuario marca."""
+        bloque = SYSTEM_PROMPT_CHATBOT.split("#R5 · ")[1].split("\n\n")[0]
+        for opcion in (ln for ln in bloque.splitlines() if ln.startswith("- ")):
+            assert not opcion.startswith("- Eres "), f"opción en tú: {opcion[:90]!r}"
+        assert "- Su organización es un organismo regido por el 'derecho público'." in bloque
+
+    def test_los_ejemplos_de_frase_del_asistente_estan_en_usted(self):
+        """El de la sección 2.1 decía «Por lo que describes, entiendo que filtráis…». Un ejemplo
+        enseña el registro con más fuerza que una regla."""
+        assert "Por lo que describe, entiendo que filtran candidatos" in SYSTEM_PROMPT_CHATBOT
+        assert "lo que me ha contado" in SYSTEM_PROMPT_CHATBOT
+        assert "¿aplica en su caso?" in SYSTEM_PROMPT_CHATBOT
+        for prohibida in ("describes, entiendo", "me has contado", "en tu caso",
+                          '"tendrás que..."', '"deberás cumplir..."'):
+            assert prohibida not in SYSTEM_PROMPT_CHATBOT, f"queda un ejemplo en tú: {prohibida!r}"
+
+    def test_la_regla_de_tratamiento_esta_en_los_tres_prompts(self):
+        """Los tres, porque los tres hablan con el mismo usuario en la misma sesión. Un arreglo
+        que se aplica a uno solo es la historia de B17, B19 y B21."""
+        for nombre, prompt in _LOS_TRES_PROMPTS:
+            assert "TRATAMIENTO:" in prompt, f"{nombre} no fija el tratamiento"
+            assert "de usted" in prompt.lower(), f"{nombre} no nombra el usted"
+            assert "nunca de tú ni de vosotros" in prompt, f"{nombre} no prohíbe el tuteo"
+
+    def test_la_regla_aguanta_que_el_usuario_tutee(self):
+        """El caso que lo rompe en la práctica: el usuario tutea y el modelo le sigue el
+        registro. La regla tiene que decir que no cambia por eso."""
+        assert "no cambia porque el usuario tutee" in SYSTEM_PROMPT_CHATBOT
+        assert "no cambia porque el usuario tutee" in SYSTEM_PROMPT_CUMPLIMIENTO
+        assert "tampoco si él tutea" in SYSTEM_PROMPT_CHATBOT_LOCAL
+
+
+_LOS_TRES_PROMPTS = (
+    ("evaluador", SYSTEM_PROMPT_CHATBOT),
+    ("local", SYSTEM_PROMPT_CHATBOT_LOCAL),
+    ("cumplimiento", SYSTEM_PROMPT_CUMPLIMIENTO),
+)
+
+_RE_NODO = re.compile(r"^#(E|HR|S|R)\d+ · ")
+
+
+def _lineas_de_nodo() -> list[str]:
+    """Las cabeceras de nodo de los dos prompts con árbol: son las preguntas que se muestran."""
+    lineas = [ln for _, p in _LOS_TRES_PROMPTS for ln in p.splitlines() if _RE_NODO.match(ln)]
+    assert len(lineas) >= 20, f"se esperaban al menos veinte nodos, hay {len(lineas)}"
+    return lineas
 
 
 _RE_SALIDA_TERMINAL = re.compile(
