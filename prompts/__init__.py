@@ -17,6 +17,22 @@
 # o system_prompt_cumplimiento.py.
 #
 # Historial:
+# 2026.09.10 (2026-09-08): los tres prompts fijan el trato de USTED. No estaba escrito en
+#                          ninguno, así que lo decidía el modelo turno a turno: el recorrido del
+#                          ejemplo 00 tuteó de principio a fin —«describe», «vosotros»,
+#                          «tenéis»— mientras que los del 02, el 03 y el 05 tratan de usted, y
+#                          los ejemplos publicados salían en dos registros distintos. El usted
+#                          es el registro que corresponde a un documento de cumplimiento
+#                          normativo, y la regla dice además que no cambia porque el usuario
+#                          tutee, que es el caso que lo rompe en la práctica. Reescritas las
+#                          preguntas de los dieciséis nodos del árbol —«¿Su sistema de IA
+#                          entra…?», no «¿Tu sistema…?»—, las tres opciones de #R5, que
+#                          empezaban por «Eres un organismo…», el catálogo de resultados y
+#                          estados, el encabezado «Sus obligaciones» del informe y los ejemplos
+#                          de frase que el prompt pone en boca del asistente, empezando por el
+#                          de la sección 2.1: «Por lo que describes, entiendo que filtráis
+#                          candidatos». Un ejemplo enseña el registro con más fuerza que una
+#                          regla. Los mensajes fijos de la interfaz ya estaban en usted
 # 2026.09.9 (2026-09-08): las salidas terminales que no son un nodo del árbol cierran también la
 #                          evaluación. La comprobación previa de definición decía «resultado NO
 #                          CUMPLE LA DEFINICIÓN DE SISTEMA DE IA. Explica al usuario…» y ahí
@@ -127,7 +143,7 @@
 #                          fórmula MÍNIMO, exclusividad Art. 26, Anexo IV detallado)
 # 2026.05.0 (baseline)  : Prompts iniciales v0.1.0
 
-PROMPT_VERSION = "2026.09.9"
+PROMPT_VERSION = "2026.09.10"
 
 # Huella del contenido de cada prompt en el momento de estampar PROMPT_VERSION.
 #
@@ -142,7 +158,7 @@ PROMPT_VERSION = "2026.09.9"
 # huella nueva, que el test imprime en el mensaje de fallo. No la actualices sola: sin subir
 # la versión, el pie de los informes vuelve a nombrar dos estados distintos con una cadena.
 PROMPT_HASHES = {
-    "system_prompts.py": "42080de6b457a346bf7fc1083e7ff5be43a04dad0a189b3dbffdf75f09fb5d97",
-    "system_prompts_local.py": "5da3164126f98c2ffac88c65f4057abd9f7e8c99bd8fe1c515e5bc99da40c95c",
-    "system_prompt_cumplimiento.py": "a8073685385eb19a467e53a20e83d608bb2af25080c128793469bcdaa01fff3c",
+    "system_prompts.py": "448c6b5b9bf13702b923b4d1aafd4cf8f98cd8790627dd92975aef55339f9c64",
+    "system_prompts_local.py": "0cfa3b96cc99131e371365587e2917765c7306f7ecf67971791a2b91b10276ef",
+    "system_prompt_cumplimiento.py": "2173adf9692fc11d190b1e5dc3e0c7db72865b884d3b9be8a620af3b16dba36b",
 }
