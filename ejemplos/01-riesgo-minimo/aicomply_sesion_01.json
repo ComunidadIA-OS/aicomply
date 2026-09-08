@@ -1,0 +1,246 @@
+{
+  "_version": "1",
+  "_app": "aicomply",
+  "clasificacion_data": {
+    "clasificacion": "MINIMO",
+    "estados_adicionales": [],
+    "rol": "implementador",
+    "roles_multiples": [
+      "implementador"
+    ],
+    "nodos_recorridos": [
+      {
+        "pregunta": "¿El sistema cumple la definición de sistema de IA del Art. 3.1?",
+        "respuesta": "Sí, la herramienta infiere predicciones a partir de datos de entrada (histórico de ventas, meteorología, calendario)",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "Tipo de entidad",
+        "respuesta": "La herramienta fue adquirida de un proveedor externo y se usa tal cual, sin modificarla ni recomercializarla",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Modificaciones o cambio de finalidad (Art. 25)",
+        "respuesta": "No se modifica el sistema ni se cambia su finalidad; se usa como herramienta adquirida a tercero",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "¿El sistema es componente de seguridad de un producto regulado o envía señales de control a maquinaria (Anexo I)?",
+        "respuesta": "No aplica; la herramienta predice demanda de panadería y no controla maquinaria ni es componente de producto regulado",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "¿El sistema entra en alguna categoría del Anexo III (alto riesgo)?",
+        "respuesta": "Ninguna de las ocho categorías aplica",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿El sistema realiza alguna práctica prohibida (Art. 5)?",
+        "respuesta": "Nada",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "¿El sistema está sujeto a obligaciones de transparencia (Art. 50)?",
+        "respuesta": "Nada",
+        "origen": "respuesta directa"
+      },
+      {
+        "pregunta": "Ámbito territorial (Art. 2)",
+        "respuesta": "Organización establecida en la UE que usa el sistema en territorio europeo",
+        "origen": "inferencia confirmada"
+      },
+      {
+        "pregunta": "¿Aplica alguna exclusión del Art. 2?",
+        "respuesta": "No aplica ninguna exclusión; uso comercial, no militar, no investigación, no código abierto",
+        "origen": "inferencia confirmada"
+      }
+    ],
+    "puntos_indeterminados": [],
+    "descripcion_sistema": "Herramienta de predicción de demanda diaria por producto y tienda adquirida a un proveedor externo. Utiliza como entradas el histórico de ventas, la previsión meteorológica y el calendario laboral para determinar cantidades de producción y compras. No trata datos de clientes ni de empleados, no toma decisiones sobre personas y permite corrección manual por el personal de obrador.",
+    "sector": "Alimentación / Panadería y obrador",
+    "obligaciones_preliminares": [
+      "Alfabetización en IA (Art. 4)"
+    ]
+  },
+  "cumplimiento_data": {
+    "obligaciones": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "El personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual."
+      },
+      {
+        "articulo": "Art. 95",
+        "titulo": "Adhesión a códigos de conducta",
+        "clave": "",
+        "estado": "carencia",
+        "tipo": "recomendacion",
+        "rol": "implementador",
+        "descripcion": "La organización no se ha adherido a ningún código de conducta ni marco voluntario de buenas prácticas en IA. Al ser recomendación voluntaria, no computa como incumplimiento legal."
+      },
+      {
+        "articulo": "Medida prudencial",
+        "titulo": "Vigilancia activa del nivel de riesgo",
+        "clave": "",
+        "estado": "carencia",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "No existe procedimiento formal de revisión periódica del nivel de riesgo del sistema. La organización ha manifestado la intención de usar AIComply periódicamente para cubrir esta medida."
+      }
+    ],
+    "carencias_detectadas": [],
+    "puntos_revision_profesional": [
+      "Formalizar un procedimiento o calendario de revisión periódica del nivel de riesgo del sistema mediante AIComply u otro mecanismo equivalente."
+    ],
+    "resumen_cumplimiento": "Sistema de riesgo mínimo con la única obligación legal exigible cubierta. No se detectan carencias legales.",
+    "incoherencias": []
+  },
+  "mensajes_evaluador": [
+    {
+      "role": "user",
+      "content": "Somos una cadena de cuatro panaderías con obrador propio y 30 empleados. Usamos una herramienta que predice la demanda diaria de cada producto en cada tienda a partir del histórico de ventas, la previsión meteorológica y el calendario laboral, y con eso decidimos cuánto producir y qué comprar. No trata datos de clientes ni de empleados, no toma ninguna decisión sobre personas y el personal de obrador puede corregir la previsión a mano."
+    },
+    {
+      "role": "assistant",
+      "content": "Bienvenido. Antes de comenzar, un aviso breve: este análisis es una orientación basada en el Reglamento (UE) 2024/1689 (Ley de IA de la UE) y no constituye asesoramiento jurídico vinculante. Le recomiendo contrastar las conclusiones con un profesional especializado.\n\nDicho esto, la herramienta que describe —predicción de demanda a partir de histórico de ventas, meteorología y calendario, para decidir producción y compras— encaja perfectamente en la definición de sistema de IA del Art. 3.1: recibe datos de entrada e infiere por su cuenta una predicción, en lugar de seguir reglas fijas escritas a mano. Damos por confirmado ese punto y pasamos directamente a clasificar su caso.\n\n**Una primera pregunta sobre el rol de su organización:**\n\n¿Cómo han obtenido esta herramienta? Necesito saber cuál de estas situaciones describe mejor su caso:\n\n- **a)** Su organización la ha desarrollado (internamente o encargándosela a un proveedor externo) y la usa en sus propias panaderías bajo su nombre o marca.\n- **b)** Su organización la ha adquirido de un proveedor externo (un software comercial, una plataforma SaaS, etc.) y la usa tal cual, sin modificarla ni recomercializarla.\n- **c)** Otro caso distinto."
+    },
+    {
+      "role": "user",
+      "content": "b"
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. Su organización adquirió la herramienta de un proveedor externo y la utiliza en sus propias panaderías. Eso la sitúa en el rol de **implementador** (responsable del despliegue) según el Reglamento.\n\nPasemos ahora a evaluar si la herramienta entra en alguna categoría de alto riesgo.\n\nLa herramienta trabaja con previsión de demanda de productos de panadería: no toca datos de clientes, no toca datos de empleados, y sus decisiones afectan únicamente a cantidades de producción y compras. Con ese perfil, las categorías relacionadas con productos regulados industriales, vehículos, aviación o maquinaria de seguridad claramente no encajan.\n\nLa pregunta relevante es si entra en alguna de las categorías del **Anexo III** de la Ley. Le presento las ocho categorías para que confirme si alguna podría aplicar:\n\n1. **Biometría** — reconocimiento facial, identificación de personas por rasgos físicos.\n2. **Infraestructuras críticas** — agua, gas, electricidad, transporte.\n3. **Educación y formación profesional** — acceso a centros, evaluación de estudiantes.\n4. **Empleo y gestión de trabajadores** — selección de personal, evaluación del rendimiento, asignación de tareas.\n5. **Servicios esenciales** — crédito bancario, seguros, prestaciones sociales, servicios públicos esenciales.\n6. **Aplicación de la ley** — predicción de delitos, evaluación de pruebas.\n7. **Migración y control fronterizo** — solicitudes de asilo, control de fronteras.\n8. **Administración de justicia** — resolución de litigios, procesos democráticos.\n\nPor lo que me ha descrito, ninguna de estas categorías parece aplicar a una herramienta de previsión de demanda de panadería. ¿Es correcto?"
+    },
+    {
+      "role": "user",
+      "content": "Correcto"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Con eso confirmado, la herramienta no es un sistema de alto riesgo según el Reglamento.\n\nUna última comprobación: ¿su herramienta realiza alguna de estas funciones?\n\n- Genera imágenes, audio o vídeo falsos de personas reales (*deep fake*).\n- Interactúa directamente con clientes o empleados haciéndose pasar por una persona.\n- Genera texto publicado para informar al público sobre asuntos de interés general.\n- Reconoce emociones o clasifica a personas por rasgos biométricos.\n- Genera contenido sintético (imágenes, audio, vídeo o texto) destinado al público general."
+    },
+    {
+      "role": "user",
+      "content": "Nada"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Tengo todo lo que necesito para cerrar la evaluación. Aquí tiene su informe.\n\n---\n\n## Informe de evaluación — Ley de IA de la UE (Reglamento (UE) 2024/1689)\n\n---\n\n### 1. Resumen ejecutivo\n\nSu organización actúa como **implementadora** (responsable del despliegue) de un sistema de IA adquirido a un proveedor externo. La herramienta de previsión de demanda de panadería **no es un sistema de alto riesgo** y no realiza ninguna función sujeta a obligaciones de transparencia. Su carga regulatoria bajo el Reglamento es, por tanto, mínima.\n\n---\n\n### 2. Sus obligaciones\n\n**Obligación aplicable actualmente (desde el 2 de febrero de 2025):**\n\n**Alfabetización en IA (Art. 4)**\nDebe garantizar que el personal que opera o usa la herramienta —tanto el equipo de obrador que puede corregir las previsiones como cualquier otra persona que interactúe con el sistema— tiene un nivel suficiente de conocimiento sobre qué es la herramienta, cómo funciona y cuáles son sus limitaciones. No se exige una formación técnica avanzada: basta con que el personal entienda que trabaja con una predicción automática, no con una certeza, y sepa cuándo y cómo aplicar su criterio propio. Dado que ya disponen de corrección manual, el punto de partida es bueno; conviene documentar que esa formación básica existe.\n\n---\n\n### 3. Recorrido realizado (traza auditable)\n\n- **Definición de sistema de IA (Art. 3.1):** Cumple la definición — la herramienta infiere predicciones a partir de datos de entrada (respuesta directa confirmada por descripción inicial).\n- **Tipo de entidad:** Implementador / responsable del despliegue — la herramienta fue adquirida a un proveedor externo y se usa en las propias panaderías (respuesta directa).\n- **Modificaciones del sistema (Art. 25):** No se pone nombre propio, no se modifica la finalidad ni se realiza modificación sustancial (inferencia confirmada implícitamente por el rol de adquirente).\n- **Alto riesgo — Anexo I, productos regulados y maquinaria:** No aplica — la herramienta no es componente de seguridad de ningún producto regulado ni envía señales de control a maquinaria (inferencia confirmada por descripción del sistema).\n- **Alto riesgo — Anexo I, transporte y vehículos:** No aplica (inferencia confirmada por descripción del sistema).\n- **Alto riesgo — Anexo III:** Ninguna de las ocho categorías aplica (respuesta directa).\n- **Ámbito territorial (Art. 2):** Reglamento aplicable — organización establecida en la UE que usa el sistema en territorio europeo (inferencia confirmada por descripción inicial).\n- **Exclusiones (Art. 2):** No aplica ninguna exclusión — uso comercial, no militar, no investigación, no código abierto (inferencia confirmada por descripción inicial).\n- **Prácticas prohibidas (Art. 5):** Ninguna (respuesta directa).\n- **Obligaciones de transparencia (Art. 50):** Ninguna función sujeta a transparencia (respuesta directa).\n- **Evaluación de impacto sobre derechos fundamentales (Art. 27):** No aplica — el sistema no es de alto riesgo.\n\n---\n\n### 4. Puntos que requieren revisión profesional\n\nNo se han identificado nodos indeterminados en este recorrido. La clasificación es clara con la información facilitada.\n\nUn punto de atención práctica, aunque no genera obligación directa: conviene revisar el contrato con el proveedor de la herramienta para verificar que este cumple sus propias obligaciones como proveedor bajo el Reglamento (documentación técnica, instrucciones de uso, etc.). Esto protege a su organización en caso de incidente.\n\n---\n\n### 5. Aviso legal\n\nEste informe es una orientación basada en el Reglamento (UE) 2024/1689 y no constituye asesoramiento jurídico vinculante. Las conclusiones se basan exclusivamente en la información facilitada durante esta conversación. Se recomienda contrastar este análisis con un profesional especializado, especialmente si las características o el uso de la herramienta cambian en el futuro.\n\n---"
+    }
+  ],
+  "mensajes_cumplimiento": [
+    {
+      "role": "user",
+      "content": "Adelante"
+    },
+    {
+      "role": "assistant",
+      "content": "**Aviso legal.** Las respuestas de AIComply tienen carácter informativo y orientador. No constituyen asesoramiento jurídico vinculante. Para decisiones con impacto legal, consulte a un profesional cualificado.\n\n---\n\n**Clasificación confirmada: RIESGO MÍNIMO — Rol: Implementador**\n\nSu herramienta de predicción de demanda por tienda y producto ha sido clasificada como sistema de riesgo mínimo. No le aplican las obligaciones del Art. 26 ni del Art. 16 del AI Act, reservadas a sistemas de alto riesgo. Las obligaciones que vamos a revisar son tres: una obligación legal, una recomendación voluntaria y una medida prudencial.\n\nComenzamos.\n\n---\n\n**Obligación 1 de 3:** Alfabetización en IA del personal — Art. 4\n\n[Obligación legal] [Aplicable actualmente — desde 2 feb 2025]\n\n**Qué significa para su empresa:** Las personas que usan o supervisan el sistema de predicción de demanda deben entender, al menos a nivel básico, cómo funciona, qué puede hacer y qué no puede hacer, para tomar decisiones informadas y detectar errores.\n\n**Definición técnica:** «Los proveedores y los responsables del despliegue de sistemas de IA adoptarán medidas para garantizar, en la medida de lo posible, un nivel suficiente de alfabetización en IA de su personal y de otras personas que se ocupen del funcionamiento y la utilización de sistemas de IA en su nombre» (Art. 4).\n\n**Pregunta directa:** ¿El personal del obrador que utiliza o supervisa el sistema ha recibido algún tipo de formación o información estructurada sobre cómo funciona la herramienta, sus limitaciones y cuándo conviene corregir sus predicciones manualmente?"
+    },
+    {
+      "role": "user",
+      "content": "Así es"
+    },
+    {
+      "role": "assistant",
+      "content": "Perfecto. Quedo registro de que la obligación de alfabetización en IA está cubierta.\n\n---\n\n**Obligación 2 de 3:** Adhesión a códigos de conducta — Art. 95\n\n[Recomendación voluntaria]\n\n**Qué significa para su empresa:** El AI Act anima a las organizaciones que usan sistemas de riesgo mínimo a adherirse voluntariamente a códigos de buenas prácticas en IA. No es obligatorio, pero puede reforzar la confianza de clientes y socios y preparar a la organización ante futuros cambios normativos.\n\n**Pregunta directa:** ¿Su organización se ha adherido a algún código de conducta, guía de buenas prácticas o marco voluntario relacionado con el uso responsable de la inteligencia artificial?"
+    },
+    {
+      "role": "user",
+      "content": "No"
+    },
+    {
+      "role": "assistant",
+      "content": "Anotado. Al tratarse de una recomendación voluntaria, no computa como incumplimiento legal.\n\n---\n\n**Obligación 3 de 3:** Vigilancia activa del nivel de riesgo — Medida prudencial\n\n[Medida prudencial]\n\n**Qué significa para su empresa:** Si el uso del sistema cambia —por ejemplo, si en el futuro se emplea para tomar decisiones sobre personas o se integra en procesos más críticos—, podría reclasificarse como sistema de alto riesgo y generar nuevas obligaciones. Conviene tener un procedimiento mínimo para detectar ese momento.\n\n**Pregunta directa:** ¿Existe en su organización algún procedimiento o responsable designado para revisar periódicamente si el uso del sistema ha cambiado de forma que pueda elevar su nivel de riesgo regulatorio?"
+    },
+    {
+      "role": "user",
+      "content": "No, pero podríamos usar esta herramienta periódicamente para ver si cambia la valoración "
+    },
+    {
+      "role": "assistant",
+      "content": "Entendido. Es una aproximación razonable y precisamente para eso está diseñada esta herramienta. Lo registro como medida prudencial pendiente de formalizar, con la intención declarada de cubrirla mediante revisiones periódicas con AIComply.\n\n---\n\n**Análisis completo.** A continuación el resumen final.\n\n---\n\n**RESUMEN DE OBLIGACIONES EVALUADAS**\n\n**Obligaciones legales aplicables**\n\n- Art. 4 — Alfabetización en IA del personal: CUBIERTA\n\n**Recomendaciones y medidas prudenciales**\n\n- Art. 95 — Adhesión a códigos de conducta: RECOMENDACIÓN NO ADOPTADA\n- Vigilancia activa del nivel de riesgo: MEDIDA PRUDENCIAL PENDIENTE\n\n---\n\n**Valoración global**\n\nSu organización cumple la única obligación legal exigible en este momento para un sistema de riesgo mínimo. La ausencia de adhesión a códigos de conducta no genera ningún incumplimiento. La medida prudencial pendiente —la vigilancia del nivel de riesgo— puede cubrirse de forma sencilla mediante revisiones periódicas con esta herramienta, tal como ha indicado.\n\nEl análisis está completo. Puede generar el informe definitivo en la pestaña **Informe**."
+    }
+  ],
+  "evaluacion_completada": true,
+  "cumplimiento_completado": true,
+  "acceso_directo_cumplimiento": false,
+  "informe_md_clasificacion": "# AIComply — Informe de clasificación\n\n**Sistema evaluado:** Herramienta de predicción de demanda diaria por producto y tienda adquirida a un proveedor externo. Utiliza como entradas el histórico de ventas, la previsión meteorológica y el calendario laboral para determinar cantidades de producción y compras. No trata datos de clientes ni de empleados, no toma decisiones sobre personas y permite corrección manual por el personal de obrador.  \n**Sector:** Alimentación / Panadería y obrador  \n**Clasificación:** MINIMO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 17:09  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **MINIMO** según el Reglamento (UE) 2024/1689 (AI Act europeo). La entidad actúa como **Implementador**.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** MINIMO  \n**Descripción:** Sistema de IA de riesgo mínimo — no se identifican obligaciones propias de sistemas de alto riesgo; pueden aplicar obligaciones horizontales (Art. 4, transparencia, normativa sectorial)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA (Art. 4)\n\n## 4. Puntos que requieren revisión profesional\n\nNo se identificaron puntos específicos que requieran revisión profesional.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.12 · Corpus v2026.09.1 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 17:09.*",
+  "informe_md_cumplimiento": "# AIComply — Informe de cumplimiento\n\n**Sistema evaluado:** Herramienta de predicción de demanda diaria por producto y tienda adquirida a un proveedor externo. Utiliza como entradas el histórico de ventas, la previsión meteorológica y el calendario laboral para determinar cantidades de producción y compras. No trata datos de clientes ni de empleados, no toma decisiones sobre personas y permite corrección manual por el personal de obrador.  \n**Sector:** Alimentación / Panadería y obrador  \n**Clasificación:** MINIMO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 17:09  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEste informe recoge el análisis de cumplimiento de un sistema clasificado como **MINIMO** con rol **Implementador**.\n\nSistema de riesgo mínimo con la única obligación legal exigible cubierta. No se detectan carencias legales.\n\n## 2. Análisis de obligaciones\n\n**Avance de implementación:** 100 %  \nCubiertas: 1 | Parciales: 0 | No cubiertas: 0 | No aplica: 0  \n*Recomendaciones/medidas prudenciales pendientes: 2 (no computan en el porcentaje legal)*\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nEl personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual.  \n\n\n### B. Recomendaciones voluntarias y buenas prácticas\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Art. 95 — Adhesión a códigos de conducta** (Recomendación pendiente)  \nLa organización no se ha adherido a ningún código de conducta ni marco voluntario de buenas prácticas en IA. Al ser recomendación voluntaria, no computa como incumplimiento legal.  \n\n\n### C. Medidas prudenciales y puntos de vigilancia\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Medida prudencial — Vigilancia activa del nivel de riesgo** (Medida prudencial pendiente)  \nNo existe procedimiento formal de revisión periódica del nivel de riesgo del sistema. La organización ha manifestado la intención de usar AIComply periódicamente para cubrir esta medida.  \n\n\n## 3. Áreas de mejora identificadas\n\nNo se identificaron áreas de mejora pendientes.\n\n## 4. Plan de acción recomendado\n\n- **[Obligación legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal que usa o supervisa el sistema tiene formación suficiente sobre sus capacidades y limitaciones.\n- **[Recomendación voluntaria] Art. 95:** Considerar la adhesión a códigos de conducta voluntarios. No es obligatorio; no computa como incumplimiento.\n- **[Medida prudencial]** Documentar internamente las capacidades y limitaciones del sistema y supervisar cambios en el uso que puedan elevar el nivel de riesgo.\n\n## 5. Puntos que requieren revisión profesional\n\n- Formalizar un procedimiento o calendario de revisión periódica del nivel de riesgo del sistema mediante AIComply u otro mecanismo equivalente.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.12 · Corpus v2026.09.1 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 17:09.*",
+  "informe_md_completo": "# AIComply — Informe completo\n\n**Sistema evaluado:** Herramienta de predicción de demanda diaria por producto y tienda adquirida a un proveedor externo. Utiliza como entradas el histórico de ventas, la previsión meteorológica y el calendario laboral para determinar cantidades de producción y compras. No trata datos de clientes ni de empleados, no toma decisiones sobre personas y permite corrección manual por el personal de obrador.  \n**Sector:** Alimentación / Panadería y obrador  \n**Clasificación:** MINIMO  \n**Rol de la entidad:** Implementador  \n**Fecha:** 08/09/2026 a las 17:09  \n**Reglamento de referencia:** Reglamento (UE) 2024/1689\n\n---\n\n> **AVISO LEGAL:** Este informe es una herramienta auxiliar de orientación. Los resultados no constituyen asesoramiento jurídico vinculante. Se recomienda consultar con especialistas antes de tomar decisiones de cumplimiento normativo.\n\n---\n\n## 1. Resumen ejecutivo\n\nEl sistema evaluado ha sido clasificado como **MINIMO** según el AI Act europeo. La entidad actúa como **Implementador**.\n\nSistema de riesgo mínimo con la única obligación legal exigible cubierta. No se detectan carencias legales.\n\n## 2. Clasificación del sistema\n\n**Nivel de riesgo:** MINIMO  \n**Descripción:** Sistema de IA de riesgo mínimo — no se identifican obligaciones propias de sistemas de alto riesgo; pueden aplicar obligaciones horizontales (Art. 4, transparencia, normativa sectorial)\n\n**Rol principal de la entidad:** Implementador\n\n## 3. Obligaciones identificadas durante la evaluación\n\n- Alfabetización en IA (Art. 4)\n\n## 4. Análisis de obligaciones\n\n**Avance de implementación:** 100 %  \nCubiertas: 1 | Parciales: 0 | No cubiertas: 0 | No aplica: 0  \n*Recomendaciones/medidas prudenciales pendientes: 2 (no computan en el porcentaje legal)*\n\n### A. Obligaciones legales aplicables\n\n### Cubiertas\n\n**Art. 4 — Alfabetización en IA**  \nEl personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual.  \n\n\n### B. Recomendaciones voluntarias y buenas prácticas\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Art. 95 — Adhesión a códigos de conducta** (Recomendación pendiente)  \nLa organización no se ha adherido a ningún código de conducta ni marco voluntario de buenas prácticas en IA. Al ser recomendación voluntaria, no computa como incumplimiento legal.  \n\n\n### C. Medidas prudenciales y puntos de vigilancia\n\n*No computan en el porcentaje de cumplimiento legal.*\n\n**Medida prudencial — Vigilancia activa del nivel de riesgo** (Medida prudencial pendiente)  \nNo existe procedimiento formal de revisión periódica del nivel de riesgo del sistema. La organización ha manifestado la intención de usar AIComply periódicamente para cubrir esta medida.  \n\n\n## 5. Áreas de mejora identificadas\n\nNo se identificaron áreas de mejora pendientes.\n\n## 6. Plan de acción recomendado\n\n- **[Obligación legal] Art. 4 — Aplicable actualmente:** Garantizar que el personal que usa o supervisa el sistema tiene formación suficiente sobre sus capacidades y limitaciones.\n- **[Recomendación voluntaria] Art. 95:** Considerar la adhesión a códigos de conducta voluntarios. No es obligatorio; no computa como incumplimiento.\n- **[Medida prudencial]** Documentar internamente las capacidades y limitaciones del sistema y supervisar cambios en el uso que puedan elevar el nivel de riesgo.\n\n## 7. Puntos que requieren revisión profesional\n\n- Formalizar un procedimiento o calendario de revisión periódica del nivel de riesgo del sistema mediante AIComply u otro mecanismo equivalente.\n\n---\n\n*Generado por AIComply — Herramienta auxiliar de orientación. No constituye asesoramiento jurídico. Contenido sintético generado con asistencia de IA — Art. 50.2 del Reglamento (UE) 2024/1689. Prompt v2026.09.12 · Corpus v2026.09.1 · Calendario v2026.09.0 · Fecha de generación: 08/09/2026 a las 17:09.*",
+  "cumplimiento_registro": {
+    "obligaciones_registradas": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA",
+        "clave": "4-alfabetizacion",
+        "estado": "cubierta",
+        "tipo": "obligacion",
+        "rol": "transversal",
+        "descripcion": "El personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual."
+      },
+      {
+        "articulo": "Art. 95",
+        "titulo": "Adhesión a códigos de conducta",
+        "clave": "",
+        "estado": "carencia",
+        "tipo": "recomendacion",
+        "rol": "implementador",
+        "descripcion": "La organización no se ha adherido a ningún código de conducta ni marco voluntario de buenas prácticas en IA. Al ser recomendación voluntaria, no computa como incumplimiento legal."
+      },
+      {
+        "articulo": "Medida prudencial",
+        "titulo": "Vigilancia activa del nivel de riesgo",
+        "clave": "",
+        "estado": "carencia",
+        "tipo": "vigilancia",
+        "rol": "implementador",
+        "descripcion": "No existe procedimiento formal de revisión periódica del nivel de riesgo del sistema. La organización ha manifestado la intención de usar AIComply periódicamente para cubrir esta medida."
+      }
+    ],
+    "carencias_registradas": [],
+    "puntos_revision_registrados": [
+      "Formalizar un procedimiento o calendario de revisión periódica del nivel de riesgo del sistema mediante AIComply u otro mecanismo equivalente."
+    ],
+    "conflictos_registrados": [],
+    "resumen_cumplimiento_registrado": "Sistema de riesgo mínimo con la única obligación legal exigible cubierta. No se detectan carencias legales.",
+    "obligaciones_desplazadas": [
+      {
+        "previa": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "cubierta",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "El personal del obrador que utiliza y supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y uso de la corrección manual."
+        },
+        "nueva": {
+          "articulo": "Art. 4",
+          "titulo": "Alfabetización en IA",
+          "clave": "4-alfabetizacion",
+          "estado": "cubierta",
+          "tipo": "obligacion",
+          "rol": "transversal",
+          "descripcion": "El personal del obrador que utiliza o supervisa el sistema ha recibido formación o información estructurada sobre su funcionamiento, limitaciones y criterios de corrección manual."
+        },
+        "turno": 4
+      }
+    ],
+    "total_narrado": 3,
+    "ordinal_narrado_max": 3,
+    "resumen_final_narrado": [
+      {
+        "articulo": "Art. 4",
+        "titulo": "Alfabetización en IA del personal",
+        "estado": "cubierta"
+      }
+    ],
+    "registro_reconstruido": false
+  }
+}

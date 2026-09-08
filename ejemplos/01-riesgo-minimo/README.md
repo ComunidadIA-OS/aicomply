@@ -1,28 +1,63 @@
 # Ejemplo: 01 — Riesgo mínimo
 
 ## Tipo de resultado
-Riesgo mínimo
+Riesgo mínimo — sin obligaciones propias de alto riesgo; sí la obligación horizontal del Art. 4
 
 ## Sector
-Fundición industrial
+Alimentación / Panadería y obrador
 
 ## Sistema evaluado
-Sistema de recomendación de ciclos de calentamiento para hornos industriales en una PYME de fundición metálica. Toma como entrada el precio de la electricidad, la previsión de demanda, los costes de materias primas y el calendario de producción, y genera recomendaciones mediante modelos de aprendizaje automático u optimización basada en datos. No ejecuta cambios automáticos sobre el horno ni el SCADA; la decisión final siempre corresponde al supervisor de turno.
+PanDemanda 3, en una cadena de cuatro panaderías con obrador propio y 30 empleados. Es una
+herramienta comercial **adquirida a un proveedor externo** que predice la demanda diaria de cada
+producto en cada tienda a partir del histórico de ventas, la previsión meteorológica y el
+calendario laboral, y con esa previsión la empresa decide cuánto producir y qué comprar.
 
-## Resultado esperado
-Clasificación: Riesgo mínimo | Rol: Proveedor / Implementador
+No trata datos de clientes ni de empleados, no toma ninguna decisión sobre personas, y el
+personal de obrador puede corregir la previsión a mano. La empresa la usa tal como se la
+entregaron: sin marca propia, sin modificar y sin cambiar su finalidad, así que su rol es el de
+**responsable del despliegue** (implementador).
 
 ## Archivos incluidos
 
-- `conversacion_original.txt` — Conversación completa exportada del asistente AIComply
-- `conversacion_evaluacion_clasificacion.md` — Conversación de evaluación y clasificación
-- `conversacion_cumplimiento.md` — Conversación de análisis de cumplimiento
-- `informe_evaluacion.txt` — Informe de evaluación en texto plano generado por AIComply
-- `informe_evaluacion.pdf` — Informe de evaluación en PDF
-- `informe_cumplimiento.txt` — Informe de cumplimiento en texto plano
-- `informe_cumplimiento.pdf` — Informe de cumplimiento en PDF
-- `informe_completo.txt` — Informe completo (evaluación + cumplimiento) en texto plano
-- `informe_completo.pdf` — Informe completo en PDF
+- `README_sistema.md` — Ficha técnica del sistema. Es el documento que se sube a la aplicación si se prefiere la vía de la documentación técnica
+- `descripcion.md` — El mismo caso en un párrafo, que es la vía usada en este recorrido
+- `respuestas.md` — Los hechos del caso para responder al árbol, y qué había que comprobar
+- `conversacion_01.rtf` — Conversación completa: evaluación, clasificación y análisis de cumplimiento
+- `aicomply_informe_clasificacion_01.txt` / `.pdf` — Informe de clasificación
+- `aicomply_informe_cumplimiento_01.txt` / `.pdf` — Informe de cumplimiento
+- `aicomply_informe_completo_01.txt` / `.pdf` — Informe completo
+- `aicomply_sesion_01.json` — Sesión guardada. Cargándola se recuperan la clasificación, el rol y el registro de obligaciones, y se pueden regenerar los informes sin repetir el recorrido
 
 ## Uso del ejemplo
-Este ejemplo muestra el caso más frecuente para una PYME industrial que ha desarrollado internamente una herramienta de optimización basada en IA: carga regulatoria mínima, con una sola obligación legal vigente (alfabetización en IA del personal, Art. 4). Es útil para demostrar que el AI Act no impone una burocracia pesada a todos los sistemas de IA, y que muchas herramientas industriales quedan en la categoría de riesgo mínimo. También ilustra el doble rol proveedor/implementador cuando la misma empresa desarrolla y usa el sistema.
+
+Es el caso **más frecuente y menos alarmante** de los seis, y por eso es el que mejor enseña una
+cosa que se malinterpreta a menudo: **riesgo mínimo no es «no le aplica nada»**.
+
+El sistema es un sistema de IA del Art. 3.1 —infiere una predicción a partir de datos, no sigue
+reglas fijas, a diferencia del ejemplo [`00-no-ia`](../00-no-ia/)—, pero no está en el Anexo I ni
+en el Anexo III, no es práctica prohibida y no realiza ninguna de las funciones del Art. 50. De
+ahí que el análisis distinga tres cosas que el informe nunca mezcla:
+
+- **Una obligación legal**: la alfabetización en IA del **Art. 4**, aplicable desde el **2 de
+  febrero de 2025**. Obliga a proveedores y responsables del despliegue por igual, y no depende
+  del nivel de riesgo del sistema.
+- **Una recomendación voluntaria**: la adhesión a códigos de conducta del **Art. 95**. Si no se ha
+  adoptado se etiqueta «RECOMENDACIÓN NO ADOPTADA», **nunca «carencia»**, y no computa como
+  incumplimiento.
+- **Una medida prudencial**: vigilar los cambios de uso que puedan elevar el nivel de riesgo. Se
+  etiqueta «MEDIDA PRUDENCIAL PENDIENTE», tampoco es una carencia.
+
+El informe cierra con **100 % de avance de implementación** sobre una única obligación legal, y
+las otras dos aparecen aparte, contadas como «recomendaciones/medidas prudenciales pendientes» y
+declaradas fuera del porcentaje. Un ejemplo que las metiera en el mismo saco daría un 33 % y
+diría que esta panadería incumple, que es falso.
+
+Merece atención el tratamiento del **Art. 4**: es la única obligación que aparece tanto en el
+bloque transversal del catálogo como en el de riesgo mínimo, y comparte clave (`4-alfabetizacion`)
+en los dos sitios a propósito. En el registro de la sesión figura **una sola vez**. Si apareciera
+dos, sería la misma obligación contada dos veces y el porcentaje saldría mal.
+
+Y una nota sobre el final del recorrido, que es el que corresponde a este nivel: la conclusión no
+es «ya está», sino que el nivel de riesgo puede cambiar. Si la herramienta pasara a decidir sobre
+personas —turnos, rendimiento, selección—, entraría en el Anexo III y habría que reevaluarla
+desde el inicio. Por eso la medida prudencial no es un adorno.
