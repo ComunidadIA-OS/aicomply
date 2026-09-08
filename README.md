@@ -17,7 +17,7 @@ Compatible con **Anthropic Claude**, **OpenAI**, **Ollama** (modelos locales) y 
 
 ## El problema
 
-El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente con un calendario escalonado. Las prácticas prohibidas (Art. 5) y la alfabetización en IA (Art. 4) aplican desde el **2 de febrero de 2025**; las reglas para modelos de IA de propósito general (GPAI, Arts. 51-55), desde el **2 de agosto de 2025**; las obligaciones de transparencia del **Art. 50** (chatbots, contenido sintético, deep fakes), desde el **2 de agosto de 2026**. El Ómnibus digital se adoptó como **Reglamento (UE) 2026/1744** y está en vigor desde el **27 de julio de 2026**: traslada las obligaciones de **alto riesgo del Anexo III** (empleo, servicios esenciales, biometría…) al **2 de diciembre de 2027** y las del **Anexo I** (productos regulados: maquinaria, vehículos, dispositivos médicos…) al **2 de agosto de 2028**. Son fechas firmes, no un calendario provisional. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7% de la facturación global** (para una PYME con 2 M€ de facturación, el tope práctico son 140.000 €).
+El AI Act europeo (Reglamento UE 2024/1689) es ya derecho vigente con un calendario escalonado. Las prácticas prohibidas (Art. 5) y la alfabetización en IA (Art. 4) aplican desde el **2 de febrero de 2025**; las reglas para modelos de IA de propósito general (GPAI, Arts. 51-55), desde el **2 de agosto de 2025**; las obligaciones de transparencia del **Art. 50** (chatbots, contenido sintético, deep fakes), desde el **2 de agosto de 2026**. El Ómnibus digital se adoptó como **Reglamento (UE) 2026/1744** y está en vigor desde el **27 de julio de 2026**: traslada las obligaciones de **alto riesgo del Anexo III** (empleo, servicios esenciales, biometría…) al **2 de diciembre de 2027** y las del **Anexo I** (productos regulados: maquinaria, vehículos, dispositivos médicos…) al **2 de agosto de 2028**. Son fechas firmes, no un calendario provisional. Las sanciones por incumplimiento alcanzan hasta **35 M€ o el 7 % del volumen de negocios mundial total correspondiente al ejercicio financiero anterior, si esta cuantía fuese superior** (Art. 99.3); para las pymes, el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje, el menor de los dos —para una PYME con 2 M€ de facturación, del orden de 140.000 €—.
 
 Con la entrada en vigor del Ómnibus se actualizan tanto las fechas que maneja la herramienta —centralizadas en [`data/calendario.json`](data/calendario.json)— como el corpus del RAG.
 
@@ -94,7 +94,7 @@ AIComply es, que sepamos, la única herramienta open source conversacional en es
 
 ## Casos de ejemplo completos
 
-El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y empresas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los cuatro que llegan al análisis de cumplimiento (`01` a `04`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. En `00-no-ia` y en `05-excluido` el recorrido termina en la clasificación, porque no hay obligaciones que analizar, así que solo hay informe de clasificación.
+El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y empresas ficticios— evaluados con AIComply, uno por cada clasificación posible del AI Act. Cada caso incluye la descripción del sistema y la conversación completa con el evaluador. Los tres que llegan al análisis de cumplimiento (`01`, `02` y `03`) incluyen además esa conversación y los tres tipos de informe —clasificación, cumplimiento e informe completo— en PDF y texto plano. Los otros tres terminan en la clasificación y solo tienen ese informe, por razones distintas: en `00-no-ia` y en `05-excluido` porque no hay obligaciones del AI Act que analizar —el objeto evaluado no llega a ser un sistema de IA (Art. 3.1) en el primero, y sí lo es pero queda fuera del ámbito (Art. 2.3) en el segundo—; y en `04-prohibido` porque una prohibición no admite análisis de cumplimiento: no existe una versión conforme de un sistema del Art. 5.
 
 | Caso | Clasificación | Empresa | Sistema |
 |------|---------------|---------|---------|
@@ -105,7 +105,7 @@ El repositorio incluye seis casos de uso representativos de PYMEs —sistemas y 
 | [`04-prohibido`](ejemplos/04-prohibido) | PROHIBIDO | Contact center | Análisis de voz para inferir el estado emocional de los agentes (Art. 5.1.f) |
 | [`05-excluido`](ejemplos/05-excluido) | EXCLUIDO | Fabricante de sistemas de imagen térmica | Detección de presencias sobre vídeo térmico, de uso exclusivamente militar — fuera del ámbito (Art. 2.3) |
 
-Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para el aviso sobre su antigüedad**.
+Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo y las notas de cada caso.
 
 ## Capturas de pantalla
 
@@ -145,9 +145,7 @@ Ver [`ejemplos/README.md`](ejemplos/README.md) para el índice completo **y para
 
 ![Informe generado con opciones de descarga en PDF y texto plano](assets/08-informe.png)
 
-Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/03-alto-riesgo/aicomply_informe_completo_03.pdf) para ver el output real antes de instalar la herramienta.
-
-> **Aviso:** los casos [`00-no-ia`](ejemplos/00-no-ia), [`02-riesgo-limitado`](ejemplos/02-riesgo-limitado), [`03-alto-riesgo`](ejemplos/03-alto-riesgo) y [`05-excluido`](ejemplos/05-excluido) están regenerados con la versión actual y se corresponden con los perfiles de la tabla de arriba. **Los otros dos todavía no:** las carpetas del `01` y el `04` conservan los casos de mayo de 2026 —otros sistemas y otras empresas que los descritos— generados con la versión v0.1.0, que **contienen afirmaciones normativas ya corregidas**, entre otras el Ómnibus descrito como todavía no adoptado. Sirven para ver el formato del output, no como referencia normativa. El detalle de qué cambió está en [`ejemplos/README.md`](ejemplos/README.md).
+Puede descargar un [informe de ejemplo generado con AIComply](ejemplos/01-riesgo-minimo/aicomply_informe_completo_01.pdf) para ver el output real antes de instalar la herramienta.
 
 ---
 
@@ -446,7 +444,7 @@ AIComply se construye sobre librerías de código abierto preexistentes. La sigu
 - [x] Soporte de múltiples roles simultáneos
 - [x] 25 artículos del AI Act estructurados en el RAG
 - [x] Corpus normativo completo: AESIA, Anteproyecto de Ley ES, GDPR/AEPD, directrices Comisión Europea
-- [x] Suite de 410 tests unitarios: guardianes de texto sobre los prompts del evaluador y de cumplimiento, calendario normativo, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento y su reconciliación, módulo de clasificaciones, seguridad (SSRF + rate limiting) y vectorstore RAG. Los guardianes comprueban que las reglas del árbol de decisión siguen escritas en el prompt; que el modelo las obedezca se valida a mano contra los casos de [`ejemplos/`](ejemplos/README.md)
+- [x] Suite de más de 600 tests unitarios: guardianes de texto sobre los prompts del evaluador y de cumplimiento, calendario normativo, abstracción multi-provider LLM, generación de informes PDF, roles múltiples, registro estructurado de cumplimiento y su reconciliación, módulo de clasificaciones, seguridad (SSRF + rate limiting) y vectorstore RAG. Los guardianes comprueban que las reglas del árbol de decisión siguen escritas en el prompt; que el modelo las obedezca se valida a mano contra los casos de [`ejemplos/`](ejemplos/README.md)
 - [x] Bloques machine-readable para el registro estructurado del análisis de cumplimiento
 - [x] Reconciliación del registro de cumplimiento: las incoherencias se declaran en el informe y el grado de cumplimiento se retira cuando el registro no se sostiene
 - [x] Flujos diferenciados para clasificaciones especiales (NO IA, EXCLUIDO, PROHIBIDO)
