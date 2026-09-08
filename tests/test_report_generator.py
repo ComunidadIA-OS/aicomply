@@ -19,6 +19,7 @@ import pytest
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
 from src.calendario import obtener_version
+from src.clasificaciones import CLASIFICACIONES_SIN_OBLIGACIONES
 from src.report_generator import GeneradorInforme, _limpiar
 
 # ── Fixtures de datos ──────────────────────────────────────────────────────────
@@ -776,6 +777,102 @@ class TestPlanLimitadoPorRol:
             _CUMPLIMIENTO,
         )
         assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
+
+
+# ── Informe de una clasificación sin obligaciones (regresión B33) ────────────
+
+# Las dos clasificaciones que cierran el recorrido sin obligaciones del AI Act. Se toman de
+# src/clasificaciones.py y no se escriben aquí a mano: si alguien añade una tercera, estos
+# tests la cubren solos, que es justo lo que no pasó cuando se añadió la segunda.
+_SIN_OBLIGACIONES = sorted(CLASIFICACIONES_SIN_OBLIGACIONES)
+
+
+def _informes_sin_obligaciones(clasificacion: str) -> dict[str, str]:
+    """Los dos informes que la aplicación genera para esa clasificación.
+
+    'rol' llega como «No aplica» a propósito: es lo que la aplicación pone cuando el recorrido
+    termina antes del Bloque #E, y es el valor que producía la frase rota.
+    """
+    clas = dict(_CLASIFICACION, clasificacion=clasificacion, rol="No aplica",
+                roles_multiples=[], obligaciones_preliminares=[], estados_adicionales=[])
+    generador = GeneradorInforme()
+    return {
+        "clasificación": generador.generar_informe_clasificacion(clas),
+        "completo": generador.generar_informe_completo(clas, _CUMPLIMIENTO),
+    }
+
+
+class TestInformeSinObligaciones:
+    """B33. El recorrido del ejemplo 00 terminó bien y el documento salió mal en dos sitios.
+
+    El informe abría con «La entidad actúa como **No aplica**» —primera línea del resumen
+    ejecutivo— porque la frase se armaba siempre, y en estas dos clasificaciones no hay rol: el
+    recorrido termina antes del Bloque #E. Y titulaba «Obligaciones identificadas durante la
+    evaluación» una sección de la que colgaban una conclusión y tres recomendaciones, ninguna
+    obligación. Misma familia que B28: un título que desmiente lo que tiene debajo.
+
+    Los dos defectos estaban en el informe de clasificación y en el completo, así que todo se
+    comprueba en los dos. El informe que el modelo escribe en el chat ya lo hacía mejor —«2. Sus
+    obligaciones: Ninguna»—: el documento que se descarga era la versión peor de lo mismo.
+    """
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_no_dice_que_la_entidad_actua_como_no_aplica(self, clasificacion):
+        for nombre, md in _informes_sin_obligaciones(clasificacion).items():
+            assert "actúa como" not in md, (
+                f"el informe {nombre} de {clasificacion} sigue construyendo la frase del rol"
+            )
+            assert "No aplica**" not in md
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_no_titula_obligaciones_una_seccion_sin_obligaciones(self, clasificacion):
+        for nombre, md in _informes_sin_obligaciones(clasificacion).items():
+            assert "Obligaciones identificadas durante la evaluación" not in md, (
+                f"el informe {nombre} de {clasificacion} conserva el título que desmiente"
+            )
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_el_titulo_describe_lo_que_cuelga_de_el(self, clasificacion):
+        for md in _informes_sin_obligaciones(clasificacion).values():
+            assert "Conclusión de la evaluación y acciones recomendadas" in md
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_responde_explicitamente_que_no_hay_obligaciones(self, clasificacion):
+        """Lo que hacía bien el informe del chat y no el descargable: decirlo, no solo omitirlo."""
+        for md in _informes_sin_obligaciones(clasificacion).values():
+            assert "**Obligaciones del AI Act aplicables:** ninguna." in md
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_conserva_la_razon_y_la_clasificacion(self, clasificacion):
+        """El guardián de la dirección del error: quitar la frase del rol y renombrar el título
+        no puede llevarse por delante el contenido que sí era correcto."""
+        for md in _informes_sin_obligaciones(clasificacion).values():
+            assert clasificacion in md
+            assert "Reglamento (UE) 2024/1689" in md
+            assert "documentar esta evaluación" in md
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_los_dos_informes_coinciden_en_las_dos_secciones(self, clasificacion):
+        """El defecto estaba en los dos y el arreglo tiene que estarlo también: si alguien
+        corrige uno solo, vuelve la incoherencia entre el documento corto y el largo."""
+        informes = _informes_sin_obligaciones(clasificacion)
+        for marca in ("Conclusión de la evaluación y acciones recomendadas",
+                      "**Obligaciones del AI Act aplicables:** ninguna."):
+            faltan = [n for n, md in informes.items() if marca not in md]
+            assert not faltan, f"{marca!r} falta en el informe {faltan}"
+
+    def test_una_clasificacion_con_rol_conserva_la_frase(self):
+        """La mitad simétrica: el arreglo no puede callar el rol cuando sí lo hay."""
+        md = GeneradorInforme().generar_informe_completo(
+            dict(_CLASIFICACION, rol="implementador", roles_multiples=["implementador"]),
+            _CUMPLIMIENTO,
+        )
+        assert "La entidad actúa como **Implementador**." in md
+
+    @pytest.mark.parametrize("clasificacion", _SIN_OBLIGACIONES)
+    def test_el_pdf_se_genera_para_las_dos_clasificaciones(self, clasificacion):
+        for md in _informes_sin_obligaciones(clasificacion).values():
+            assert GeneradorInforme().exportar_pdf(md).startswith(b"%PDF")
 
 
 # ── Obligaciones preliminares de ALTO por rol (regresión B14) ─────────────────
