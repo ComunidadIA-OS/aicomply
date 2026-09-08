@@ -35,7 +35,9 @@ from src.clasificaciones import (
     CLASIFICACIONES_SIN_OBLIGACIONES,
     EXCLUIDO,
     NO_CUMPLE_DEFINICION,
+    PROHIBIDO,
     TEXTO_SIN_OBLIGACIONES,
+    es_prohibido,
     es_sin_obligaciones,
     normalizar_clasificacion,
     texto_sin_obligaciones,
@@ -316,3 +318,30 @@ def test_informe_de_clasificacion_dice_lo_mismo_que_la_interfaz(
     md = GeneradorInforme().generar_informe_clasificacion(_datos(clasificacion))
     assert presente in md
     assert ausente not in md
+
+
+class TestProhibidoTienePredicadoPropio:
+    """PROHIBIDO cierra la pestaña Cumplimiento, pero no por lo mismo que EXCLUIDO.
+
+    Meterlo en CLASIFICACIONES_SIN_OBLIGACIONES habría salido más corto y habría afirmado
+    algo falso: ese conjunto significa «ninguna obligación del AI Act», y un sistema del
+    Art. 5 sí deja obligaciones en pie —el Art. 4, que obliga a la organización por ser
+    responsable del despliegue de sistemas de IA—. Lo que no procede es el análisis de
+    cumplimiento, que es otra cosa.
+    """
+
+    def test_prohibido_no_esta_entre_las_clasificaciones_sin_obligaciones(self):
+        assert PROHIBIDO not in CLASIFICACIONES_SIN_OBLIGACIONES
+        assert not es_sin_obligaciones(PROHIBIDO)
+
+    def test_el_predicado_reconoce_la_clasificacion(self):
+        assert es_prohibido("PROHIBIDO")
+        assert es_prohibido(" prohibido ")
+
+    def test_no_reconoce_ninguna_otra(self):
+        for valor in ("ALTO", "LIMITADO", "MINIMO", EXCLUIDO, NO_CUMPLE_DEFINICION, "", None):
+            assert not es_prohibido(valor)
+
+    def test_prohibido_no_tiene_texto_de_sin_obligaciones(self):
+        """Si alguien le diera uno, el informe podría llegar a decir que no hay obligaciones."""
+        assert PROHIBIDO not in TEXTO_SIN_OBLIGACIONES

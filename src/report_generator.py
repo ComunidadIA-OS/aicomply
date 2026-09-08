@@ -17,11 +17,12 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 from config import NIVELES_RIESGO
 from prompts import PROMPT_VERSION as _PROMPT_VERSION
 from src.calendario import cargar_calendario, obtener_obligacion, obtener_version
-from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
+from src.clasificaciones import es_prohibido, es_sin_obligaciones, texto_sin_obligaciones
 from src.reconciliacion import GRAVEDAD_BLOQUEANTE, motivo_no_calculable
 
 _CORPUS_VERSION_FILE = Path(__file__).parent.parent / "data" / "CORPUS_VERSION"
@@ -42,6 +43,37 @@ _AVISO_LEGAL_MD = (
     "---"
 )
 
+# ── Recuadro de advertencia de PROHIBIDO ───────────────────────────────────────
+#
+# Sustituye al blockquote que abría el plan de acción con el emoji ⚠️. En el PDF ese aviso
+# salía como «?? **Este sistema está clasificado...**»: el emoji no cabe en latin-1 y
+# _limpiar() lo convertía en «??», y los asteriscos se imprimían en crudo porque la rama de
+# blockquote del parser no deshace el marcado. Aquí no hay ningún emoji, y el PDF lo dibuja
+# como recuadro (ver `_recuadro_advertencia` en exportar_pdf) en vez de escribir la línea.
+#
+# El bloque es un blockquote contiguo y su primera línea es la etiqueta: así lo reconoce el
+# parser del PDF, y el generador de texto plano ya sabe quitar «> » y «**».
+_MARCA_ADVERTENCIA = "> **ADVERTENCIA"
+
+_ADVERTENCIA_PROHIBIDO_MD = (
+    "> **ADVERTENCIA — Práctica prohibida (Art. 5 AI Act)**\n"
+    ">\n"
+    "> Este sistema está clasificado como una práctica de IA prohibida por el Art. 5 del "
+    "Reglamento (UE) 2024/1689.\n"
+    ">\n"
+    "> Detenga el desarrollo y el uso del sistema: no puede introducirse en el mercado, "
+    "ponerse en servicio ni utilizarse.\n"
+    ">\n"
+    "> Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR o, si el infractor es una empresa, "
+    "el 7 % de su volumen de negocios mundial total correspondiente al ejercicio financiero "
+    "anterior, si esta cuantía fuese superior.\n"
+    ">\n"
+    "> En el caso de las pymes, el Art. 99.6 prevé que la multa pueda ser el importe o el "
+    "porcentaje, según cuál de ellos sea menor.\n"
+    ">\n"
+    "> Consulte urgentemente con un asesor legal especializado."
+)
+
 _TEXTO_PIE = (
     "Generado por AIComply — Herramienta auxiliar de orientación. "
     "No constituye asesoramiento jurídico. "
@@ -57,6 +89,12 @@ _C_AZUL      = (13, 43, 94)
 _C_AZUL_BG   = (245, 247, 252)
 _C_BADGE     = (232, 238, 248)
 _C_BADGE2    = (220, 230, 245)
+
+# Rojo del recuadro de advertencia de PROHIBIDO: el mismo borde y el mismo color de texto
+# que la paleta de «carencia», sobre un fondo algo más saturado que el de sus tarjetas.
+_C_ADV_BORDE = (176, 32, 32)
+_C_ADV_BG    = (253, 235, 235)
+_C_ADV_TEXTO = (106, 16, 16)
 
 _PALETA: dict[str, dict] = {
     "cubierta": {
@@ -185,6 +223,11 @@ _ARTICULO_PROHIBICION = re.compile(r"Art\.\s*5(?!\d)")
 def _estado_de_la_prohibicion(legales: list[dict]) -> tuple[str, str]:
     """Estado de la prohibición del Art. 5 y la frase que lo explica.
 
+    El camino normal ya no pasa por aquí: PROHIBIDO no llega a la pestaña Cumplimiento y no
+    produce registro de obligaciones. Se conserva porque sí llegan por otra vía las sesiones
+    guardadas antes de ese cambio y cualquier registro de cumplimiento importado, y sin esta
+    función el informe volvería a publicar el «83 % de avance» de B34 sobre ellas.
+
     Sustituye a la cifra en los informes de PROHIBIDO, así que el valor es corto a
     propósito: lo reutiliza la tarjeta del PDF, que no tiene ancho para una frase.
 
@@ -288,6 +331,7 @@ class GeneradorInforme:
             self._cabecera("Informe de clasificación", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_clasificacion(descripcion, clasificacion, rol, roles_multiples, estados),
+            *self._advertencia_prohibido(clasificacion),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
             self._seccion_obligaciones_preliminares(
                 3, obligaciones_prev, clasificacion, rol, roles_multiples
@@ -322,6 +366,7 @@ class GeneradorInforme:
             self._cabecera("Informe de cumplimiento", descripcion, sector, clasificacion, rol),
             _AVISO_LEGAL_MD,
             self._resumen_ejecutivo_cumplimiento(resumen, clasificacion, rol, incoherencias),
+            *self._advertencia_prohibido(clasificacion),
             self._seccion_obligaciones_detalladas(
                 2, obligaciones, roles_multiples, clasificacion, incoherencias
             ),
@@ -363,6 +408,7 @@ class GeneradorInforme:
                 descripcion, clasificacion, rol, roles_multiples, estados, resumen_cumpl,
                 incoherencias,
             ),
+            *self._advertencia_prohibido(clasificacion),
             self._seccion_clasificacion(2, clasificacion, rol, roles_multiples, estados, info_nivel),
             self._seccion_obligaciones_preliminares(
                 3, obligaciones_prev, clasificacion, rol, roles_multiples
@@ -380,6 +426,17 @@ class GeneradorInforme:
     # ══════════════════════════════════════════════════════════════════════════
     # SECCIONES REUTILIZABLES
     # ══════════════════════════════════════════════════════════════════════════
+
+    @staticmethod
+    def _advertencia_prohibido(clasificacion: str) -> list[str]:
+        """El recuadro de advertencia, como sección suelta, o nada si no es PROHIBIDO.
+
+        Devuelve una lista para poder desempaquetarla en la lista de secciones sin un
+        condicional por informe. Va detrás del resumen ejecutivo y no antes: el parser del
+        PDF descarta todo lo anterior al primer «## », que es la portada, y un recuadro
+        colocado ahí desaparecería del PDF sin que nada avisara.
+        """
+        return [_ADVERTENCIA_PROHIBIDO_MD] if es_prohibido(clasificacion) else []
 
     def _cabecera(
         self,
@@ -544,6 +601,14 @@ class GeneradorInforme:
                 "El sistema NO puede desarrollarse ni desplegarse (Art. 5)",
                 "Acción inmediata: detener el proyecto o rediseñar el sistema",
                 "Posibles sanciones de hasta 35.000.000 EUR o el 7 % del volumen de negocios mundial total del ejercicio anterior, si esta cuantía fuese superior (Art. 99.3)",
+                # La única obligación que sobrevive a la prohibición, y va redactada como
+                # aviso: no es una tarea del sistema prohibido —un sistema del Art. 5 no
+                # tiene tareas de cumplimiento—, sino algo que ya obliga a la organización
+                # por lo que es. Misma redacción que la entrada del catálogo de prompts.
+                "El Art. 4 (alfabetización en IA), aplicable desde el "
+                f"{obtener_obligacion('art_5_art_4')['fecha_legible']}, sigue obligando a su "
+                "organización con independencia de este sistema: obliga por ser responsable "
+                "del despliegue de sistemas de IA, no por este sistema en concreto",
                 "Consulte urgentemente con un asesor legal especializado",
             ],
             "EXCLUIDO": [
@@ -575,7 +640,15 @@ class GeneradorInforme:
             ],
         }
 
-        if obligaciones:
+        # PROHIBIDO ignora la lista del modelo y usa SIEMPRE la del catálogo. Misma doctrina
+        # que B14 y B9: la lista de obligaciones la construye la aplicación, no la narración.
+        # En el recorrido del 8 de septiembre de 2026 el modelo mandó en
+        # `obligaciones_preliminares` las catorce obligaciones de alto riesgo —Arts. 9, 10,
+        # 11, 13, 14, 15, 17, 18, 20, 26 (tres veces), 47 y 49— y esta sección las imprimió
+        # tal cual: el informe le pedía el marcado CE y el registro en la base de datos de la
+        # UE a un sistema que no puede usarse. No existe una versión conforme de un sistema
+        # del Art. 5, así que ninguna lista suya puede ser correcta.
+        if obligaciones and not es_prohibido(clasificacion):
             for ob in obligaciones:
                 texto += f"\n- {ob}"
             return texto
@@ -768,6 +841,11 @@ class GeneradorInforme:
         texto = f"## {num}. Análisis de obligaciones\n\n"
 
         if clas_norm == "PROHIBIDO":
+            # El camino normal ya no pasa por aquí: sin análisis de cumplimiento no hay
+            # `obligaciones` que detallar. La rama se conserva para los registros que sí
+            # llegan —sesiones guardadas antes del cierre de la pestaña, o importadas—,
+            # porque es lo único que impide que a esos les vuelva a salir el porcentaje.
+            #
             # Esta rama va DELANTE de la de «sin obligaciones legales»: un informe PROHIBIDO
             # cuyo registro legal quede vacío —todo anotado como vigilancia o recomendación, o
             # el registro perdido— imprimía «No se identifican obligaciones legales evaluables»,
@@ -899,13 +977,11 @@ class GeneradorInforme:
         clas_norm = (clasificacion or "").upper().strip()
 
         if clas_norm == "PROHIBIDO":
-            texto += (
-                "\n> ⚠️ **Este sistema está clasificado como práctica prohibida (Art. 5 AI Act).**  \n"
-                "> Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR o, si el infractor es una empresa, el 7 % de su volumen de negocios mundial total correspondiente al ejercicio financiero anterior, si esta cuantía fuese superior.  \n"
-                "> En el caso de las pymes, el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje, según cuál de ellos sea menor.  \n"
-                "> Consulte urgentemente con un asesor legal especializado.\n\n"
-                "**Pasos de remediación recomendados:**"
-            )
+            # El aviso que abría este bloque —clasificación, sanciones y consulta jurídica—
+            # se ha convertido en el recuadro de advertencia, que va detrás del resumen
+            # ejecutivo y sale en los tres formatos. Aquí no se repite: en el informe
+            # completo aparecería dos veces en el mismo documento.
+            texto += "\n**Pasos de remediación recomendados:**"
             pasos_prohibido = [
                 "**Inmediato:** Suspender el desarrollo y despliegue del sistema hasta recibir asesoramiento legal.",
                 "**Cese / retirada:** Documentar el proceso de cese de operaciones o retirada del sistema del mercado.",
@@ -1787,6 +1863,8 @@ class GeneradorInforme:
             # el sitio de la cifra en su informe.
             _metricas_etiqueta = "Grado de cumplimiento legal"
             _metricas_valor = "No calculable"
+            # Líneas del recuadro de advertencia mientras se acumula; None fuera de él.
+            _adv_lineas: list[str] | None = None
 
             def _flush_obl() -> None:
                 nonlocal _obl_art, _obl_desc
@@ -1918,6 +1996,68 @@ class GeneradorInforme:
                 pdf.set_y(bar_y + 7)
                 pdf.set_text_color(30, 30, 30)
 
+            def _recuadro_advertencia(lineas: list[str]) -> None:
+                """Dibuja el recuadro rojo de ADVERTENCIA a partir del blockquote del markdown.
+
+                Se dibuja en vez de escribirse por lo mismo que la barra de porcentaje: la
+                rama de blockquote del parser escribe la línea tal cual, y eso dejaba en el
+                PDF los asteriscos en crudo y un «??» donde iba el emoji. Aquí el marcado se
+                deshace antes de escribir y no hay ningún carácter fuera de latin-1.
+
+                La altura se mide con `dry_run` en vez de estimarse: el recuadro lleva borde
+                por los cuatro lados, y una estimación corta lo cerraría por encima del texto.
+                """
+                parrafos = [re.sub(r"\*+", "", ln).strip() for ln in lineas]
+                parrafos = [p for p in parrafos if p]
+                if not parrafos:
+                    return
+
+                etiqueta, cuerpo = _limpiar(parrafos[0]), [_limpiar(p) for p in parrafos[1:]]
+                PAD_A = 3.0
+                H_A = 4.6
+                SEP_A = 1.6
+                tw = CW - 2 * PAD_A
+
+                def _n_lineas(texto: str) -> int:
+                    # fpdf2 tipa el retorno de multi_cell como la unión de todo lo que puede
+                    # devolver según `output`; con LINES es la lista de líneas ya partidas.
+                    lineas_txt = pdf.multi_cell(tw, H_A, texto, dry_run=True, output="LINES")
+                    return len(cast(list, lineas_txt))
+
+                pdf.set_xy(LM + PAD_A, pdf.get_y())
+                pdf.set_font("Helvetica", "B", 9)
+                n_tit = _n_lineas(etiqueta)
+                pdf.set_font("Helvetica", "", 9)
+                n_cuerpo = [_n_lineas(p) for p in cuerpo]
+                alto = PAD_A * 2 + (n_tit + sum(n_cuerpo)) * H_A + SEP_A * len(cuerpo)
+
+                if pdf.get_y() + alto > pdf.h - pdf.b_margin - 3:
+                    pdf.add_page()
+
+                y0 = pdf.get_y()
+                pdf.set_fill_color(*_C_ADV_BG)
+                pdf.set_draw_color(*_C_ADV_BORDE)
+                pdf.set_line_width(0.6)
+                pdf.rect(LM, y0, CW, alto, style="FD")
+                pdf.set_line_width(0.2)
+
+                pdf.set_xy(LM + PAD_A, y0 + PAD_A)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(*_C_ADV_BORDE)
+                pdf.multi_cell(tw, H_A, etiqueta, align="L",
+                               new_x="LMARGIN", new_y="NEXT")
+
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(*_C_ADV_TEXTO)
+                for p in cuerpo:
+                    pdf.set_xy(LM + PAD_A, pdf.get_y() + SEP_A)
+                    pdf.multi_cell(tw, H_A, p, align="J",
+                                   new_x="LMARGIN", new_y="NEXT")
+
+                pdf.set_y(y0 + alto + 3)
+                pdf.set_text_color(30, 30, 30)
+                pdf.set_draw_color(180, 180, 180)
+
             def _item_plan(texto: str) -> None:
                 m = re.match(r"^\*\*([^*]+)\*\*:?\s*(.*)", texto, re.DOTALL)
                 badge_txt = _limpiar(m.group(1).strip()) if m else "Accion"
@@ -2037,6 +2177,19 @@ class GeneradorInforme:
                         or linea_s.startswith("*Fecha de generaci")):
                     continue
 
+                # El recuadro de advertencia se acumula entero antes de dibujarse: hay que
+                # conocer todas sus líneas para saber qué altura tiene el rectángulo.
+                if _adv_lineas is not None:
+                    if linea_s.startswith(">"):
+                        _adv_lineas.append(linea_s.lstrip(">").strip())
+                        continue
+                    _recuadro_advertencia(_adv_lineas)
+                    _adv_lineas = None
+
+                if linea_s.startswith(_MARCA_ADVERTENCIA):
+                    _adv_lineas = [linea_s.lstrip(">").strip()]
+                    continue
+
                 if not linea_s or linea_s == "---":
                     if not (_obl_estado and _obl_art):
                         pdf.ln(2)
@@ -2142,6 +2295,9 @@ class GeneradorInforme:
                                    new_x="LMARGIN", new_y="NEXT")
                     pdf.ln(1)
 
+            if _adv_lineas is not None:
+                _recuadro_advertencia(_adv_lineas)
+                _adv_lineas = None
             _flush_obl()
 
             # Recuadro de generación

@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 from prompts.system_prompt_cumplimiento import SYSTEM_PROMPT_CUMPLIMIENTO
-from src.calendario import obtener_version
+from src.calendario import obtener_obligacion, obtener_version
 from src.clasificaciones import CLASIFICACIONES_SIN_OBLIGACIONES
 from src.report_generator import GeneradorInforme, _limpiar
 
@@ -1178,6 +1178,10 @@ class TestProhibidoSinPorcentaje:
     En PROHIBIDO la cifra no es que esté mal calculada: es que no mide nada. Una prohibición
     no tiene grados. Se suprime con el mismo mecanismo que ya la suprime cuando el registro
     es incoherente, y en su lugar va el estado de la prohibición.
+
+    El camino normal ya no pasa por aquí —PROHIBIDO no llega a la pestaña Cumplimiento y no
+    produce registro—, pero la clase se conserva: sí llegan las sesiones guardadas antes de
+    ese cambio y cualquier registro importado, y sin esta defensa el 83 % vuelve por ahí.
     """
 
     def test_el_informe_no_publica_porcentaje_con_la_prohibicion_incumplida(self):
@@ -1272,6 +1276,9 @@ class TestEstadoDeLaProhibicionNoSeConfundeDeArticulo:
     registro al que le falte la prohibición —omitida por el modelo, o vaciada— el informe
     publicaba «Estado de la prohibición (Art. 5): Atendida» sobre un sistema prohibido en
     funcionamiento. Es B34 otra vez, en la dirección peligrosa y sin ruido.
+
+    Como la clase anterior: el camino normal ya no produce estos registros, pero los que
+    llegan de una sesión guardada o importada siguen entrando por aquí.
     """
 
     def test_un_art_50_3_cubierta_no_ocupa_el_sitio_de_la_prohibicion_ausente(self):
@@ -1371,9 +1378,12 @@ class TestLaSancionSeCitaComoLaCitaElReglamento:
         assert "si esta cuantía fuese superior (Art. 99.3)" in md
         assert "facturación global" not in md
 
-    def test_el_plan_de_accion_nombra_el_matiz_de_las_pymes(self):
+    def test_el_recuadro_nombra_el_matiz_de_las_pymes(self):
         """El Art. 99.6 es una facultad («podrá ser»), no un mandato, y por eso va como matiz.
-        Sin él, un informe para una pyme presenta solo el tramo alto y sesga la cifra."""
+        Sin él, un informe para una pyme presenta solo el tramo alto y sesga la cifra.
+
+        La cita estaba en el blockquote que abría el plan de acción; ahora está en el recuadro
+        de advertencia, que es el mismo texto en un sitio donde se ve en los tres formatos."""
         md = GeneradorInforme().generar_informe_cumplimiento(
             _PROHIBIDO_CLASIF, _cumplimiento_prohibido("carencia")
         )
@@ -1398,3 +1408,220 @@ class TestLaSancionSeCitaComoLaCitaElReglamento:
         assert "si esta cuantía fuese superior" in texto
         assert "En el caso de las pymes, el Art. 99.6 prevé" in texto
         assert "según cuál de ellos sea" in texto
+
+
+# ── PROHIBIDO: la lista la construye la aplicación, no el modelo ───────────────
+
+#: Las catorce obligaciones de alto riesgo que el modelo mandó en
+#: `obligaciones_preliminares` en el recorrido del 8 de septiembre de 2026 sobre un sistema
+#: clasificado PROHIBIDO. Se conservan literales: el caso de prueba es este, no uno parecido.
+_PRELIMINARES_DEL_MODELO_8_SEP = [
+    "Sistema de gestión de riesgos documentado (Art. 9)",
+    "Gobernanza de datos de entrenamiento, validación y prueba (Art. 10)",
+    "Documentación técnica completa según el Anexo IV (Art. 11)",
+    "Instrucciones de uso para el implementador (Art. 13)",
+    "Supervisión humana efectiva (Art. 14)",
+    "Exactitud, solidez y ciberseguridad (Art. 15)",
+    "Sistema de gestión de la calidad (Art. 17)",
+    "Conservación de la documentación técnica (Art. 18)",
+    "Conservación de los archivos de registro generados automáticamente (Art. 20)",
+    "Uso del sistema conforme a las instrucciones del proveedor (Art. 26.1)",
+    "Supervisión humana encomendada a personas con la competencia necesaria (Art. 26.2)",
+    "Conservación de los registros durante al menos seis meses (Art. 26.6)",
+    "Declaración UE de conformidad y marcado CE (Art. 47)",
+    "Registro del sistema en la base de datos de la UE (Art. 49)",
+]
+
+
+def _clasif_prohibida_con_preliminares(preliminares: list[str]) -> dict:
+    datos = dict(_PROHIBIDO_CLASIF)
+    datos["obligaciones_preliminares"] = preliminares
+    return datos
+
+
+class TestLaListaPreliminarDeProhibidoNoLaEscribeElModelo:
+    """B14 y B9, otra vez: la lista de obligaciones la construye la aplicación.
+
+    En el recorrido del 8 de septiembre de 2026 el modelo mandó catorce obligaciones de alto
+    riesgo para un sistema del Art. 5 y la sección las imprimió tal cual, porque el bloque del
+    catálogo solo entraba si la lista venía vacía. El informe le pedía el marcado CE y el
+    registro en la base de datos de la UE a un sistema que no puede usarse. No existe una
+    versión conforme de un sistema del Art. 5: ninguna lista suya puede ser correcta.
+    """
+
+    def test_ninguna_obligacion_de_alto_riesgo_del_modelo_llega_al_informe(self):
+        md = GeneradorInforme().generar_informe_clasificacion(
+            _clasif_prohibida_con_preliminares(_PRELIMINARES_DEL_MODELO_8_SEP)
+        )
+        for obligacion in _PRELIMINARES_DEL_MODELO_8_SEP:
+            assert obligacion not in md, f"el informe sigue imprimiendo: {obligacion}"
+
+    def test_no_le_pide_el_marcado_ce_ni_el_registro_en_la_base_de_datos_de_la_ue(self):
+        """Las dos peticiones que hacían el disparate visible a simple vista."""
+        md = GeneradorInforme().generar_informe_clasificacion(
+            _clasif_prohibida_con_preliminares(_PRELIMINARES_DEL_MODELO_8_SEP)
+        )
+        assert "marcado CE" not in md
+        assert "base de datos de la UE" not in md
+
+    def test_en_su_lugar_va_el_bloque_del_catalogo(self):
+        """Ignorar la lista del modelo no puede dejar la sección vacía."""
+        md = GeneradorInforme().generar_informe_clasificacion(
+            _clasif_prohibida_con_preliminares(_PRELIMINARES_DEL_MODELO_8_SEP)
+        )
+        assert "El sistema NO puede desarrollarse ni desplegarse (Art. 5)" in md
+        assert "Acción inmediata: detener el proyecto o rediseñar el sistema" in md
+        assert "Consulte urgentemente con un asesor legal especializado" in md
+
+    def test_el_informe_completo_tampoco_las_lleva(self):
+        """La sección es la misma en los dos informes que la usan."""
+        md = GeneradorInforme().generar_informe_completo(
+            _clasif_prohibida_con_preliminares(_PRELIMINARES_DEL_MODELO_8_SEP),
+            _cumplimiento_prohibido("carencia"),
+        )
+        for obligacion in _PRELIMINARES_DEL_MODELO_8_SEP:
+            assert obligacion not in md, f"el informe completo sigue imprimiendo: {obligacion}"
+
+    def test_las_demas_clasificaciones_conservan_la_lista_del_modelo(self):
+        """La regla es de PROHIBIDO, no general: en ALTO la lista preliminar sale del recorrido
+        del árbol y es la que el usuario acaba de ver en la pestaña Evaluador."""
+        # Redactadas como las redacta el modelo tras el recorrido, y distintas de las del
+        # catálogo: con las líneas del catálogo, el test pasaría también si la lista se
+        # tirara a la basura y el bloque de ALTO ocupara su sitio.
+        preliminares = [
+            "Registro de actividad conservado seis meses en el sistema de tickets (Art. 12)",
+            "Instrucciones de uso entregadas al implementador y firmadas (Art. 13)",
+        ]
+        datos = dict(_CLASIFICACION)
+        datos["obligaciones_preliminares"] = preliminares
+        md = GeneradorInforme().generar_informe_clasificacion(datos)
+        for obligacion in preliminares:
+            assert obligacion in md
+        assert "Evaluación de conformidad antes de la comercialización (Art. 43)" not in md
+
+    def test_limitado_tambien_la_conserva(self):
+        datos = dict(_CLASIFICACION)
+        datos["clasificacion"] = "LIMITADO"
+        datos["obligaciones_preliminares"] = ["Etiquetar el contenido generado (Art. 50.2)"]
+        md = GeneradorInforme().generar_informe_clasificacion(datos)
+        assert "Etiquetar el contenido generado (Art. 50.2)" in md
+
+
+class TestElArt4SobreviveALaProhibicion:
+    """La alfabetización en IA es lo único que queda en pie cuando el sistema es del Art. 5, y
+    queda en pie por una razón que hay que decir: obliga a la organización por ser responsable
+    del despliegue de sistemas de IA, no por este sistema. Redactada como tarea del sistema
+    prohibido sería contradictoria —un sistema que no puede usarse no tiene tareas—."""
+
+    def test_el_informe_del_evaluador_nombra_el_art_4(self):
+        md = GeneradorInforme().generar_informe_clasificacion(_PROHIBIDO_CLASIF)
+        assert "Art. 4" in md
+        assert "alfabetización en IA" in md
+
+    def test_dice_que_obliga_a_la_organizacion_y_no_al_sistema(self):
+        md = GeneradorInforme().generar_informe_clasificacion(_PROHIBIDO_CLASIF)
+        assert "sigue obligando a su organización" in md
+        assert "responsable del despliegue de sistemas de IA" in md
+        assert "no por este sistema en concreto" in md
+
+    def test_la_fecha_sale_del_calendario(self):
+        """Como todas las del informe: nunca un literal en este fichero (ver CLAUDE.md)."""
+        md = GeneradorInforme().generar_informe_clasificacion(_PROHIBIDO_CLASIF)
+        assert obtener_obligacion("art_5_art_4")["fecha_legible"] in md
+
+    def test_sobrevive_aunque_el_modelo_mande_su_propia_lista(self):
+        """Es el mismo bloque del catálogo: si la lista del modelo lo desplazara, el Art. 4 se
+        perdería justo en el informe donde es la única obligación que queda."""
+        md = GeneradorInforme().generar_informe_clasificacion(
+            _clasif_prohibida_con_preliminares(_PRELIMINARES_DEL_MODELO_8_SEP)
+        )
+        assert "sigue obligando a su organización" in md
+
+
+class TestRecuadroDeAdvertenciaDeProhibido:
+    """El aviso del plan de acción empezaba con ⚠️ y llevaba los ** dentro de un blockquote.
+    En el PDF salía «?? **Este sistema está clasificado como práctica prohibida...**»: el emoji
+    no cabe en latin-1 y _limpiar() lo sustituye por «?», y la rama de blockquote del parser
+    escribe la línea sin deshacer el marcado.
+
+    Ahora es un recuadro dibujado, y tiene que verse en los tres formatos.
+    """
+
+    def _md(self) -> str:
+        return GeneradorInforme().generar_informe_clasificacion(_PROHIBIDO_CLASIF)
+
+    def test_el_recuadro_sale_en_markdown(self):
+        md = self._md()
+        assert "**ADVERTENCIA — Práctica prohibida (Art. 5 AI Act)**" in md
+        assert "Este sistema está clasificado como una práctica de IA prohibida" in md
+        assert "Detenga el desarrollo y el uso del sistema" in md
+        assert "Las sanciones del Art. 99.3 alcanzan 35.000.000 EUR" in md
+        assert "el Art. 99.6 prevé que la multa pueda ser el importe o el porcentaje" in md
+        assert "Consulte urgentemente con un asesor legal especializado" in md
+
+    def test_el_orden_del_recuadro_es_el_del_razonamiento(self):
+        """Qué es, qué hay que hacer, qué cuesta no hacerlo y a quién preguntar."""
+        md = self._md()
+        posiciones = [
+            md.index("una práctica de IA prohibida"),
+            md.index("Detenga el desarrollo"),
+            md.index("Las sanciones del Art. 99.3"),
+            md.index("Consulte urgentemente"),
+        ]
+        assert posiciones == sorted(posiciones)
+
+    def test_el_recuadro_sale_en_texto_plano(self):
+        txt = GeneradorInforme().exportar_texto_plano(self._md())
+        assert "ADVERTENCIA" in txt
+        assert "Detenga el desarrollo y el uso del sistema" in txt
+        assert "Consulte urgentemente con un asesor legal especializado" in txt
+        assert "*" not in txt.split("ADVERTENCIA")[1][:900]
+
+    def test_el_recuadro_sale_en_el_pdf(self):
+        texto = _texto_del_pdf(GeneradorInforme().exportar_pdf(self._md()))
+        assert "ADVERTENCIA" in texto
+        assert "Detenga el desarrollo y el uso del sistema" in texto
+        assert "Consulte urgentemente con un asesor legal especializado." in texto
+
+    def test_el_pdf_no_lleva_asteriscos_en_crudo_ni_emojis(self):
+        """Las dos mitades del defecto. El «?» es lo que _limpiar() deja donde había un emoji:
+        se comprueba sobre el recuadro, porque el resto del documento sí usa «?» en preguntas."""
+        texto = _texto_del_pdf(GeneradorInforme().exportar_pdf(self._md()))
+        inicio = texto.index("ADVERTENCIA")
+        recuadro = texto[inicio:texto.index("Consulte urgentemente con un asesor legal", inicio)]
+        assert "*" not in recuadro, f"el PDF imprime marcado en crudo:\n{recuadro}"
+        assert "?" not in recuadro, f"el PDF imprime un carácter sustituido:\n{recuadro}"
+
+    def test_el_recuadro_no_lleva_ningun_caracter_fuera_de_latin_1(self):
+        """La comprobación en origen: si el markdown del recuadro llevara un emoji, _limpiar()
+        lo sustituiría por «?» y el PDF lo publicaría sin que nada fallara. La raya y las
+        comillas tipográficas sí valen: _limpiar() las traduce, no las sustituye."""
+        from src.report_generator import _ADVERTENCIA_PROHIBIDO_MD
+
+        limpio = _limpiar(_ADVERTENCIA_PROHIBIDO_MD)
+        assert "?" not in limpio, f"algún carácter no ha sobrevivido a latin-1:\n{limpio}"
+        assert "—" not in limpio, "la raya se traduce a guion, no se deja pasar"
+
+    def test_el_pdf_lo_dibuja_como_recuadro_y_no_como_linea_de_texto(self):
+        """Un rectángulo relleno y con borde («re B») en el rojo del aviso. Sin él, el aviso
+        sería otra vez una línea de texto en cursiva gris entre dos párrafos."""
+        texto = _texto_del_pdf(GeneradorInforme().exportar_pdf(self._md()))
+        antes = texto[: texto.index("ADVERTENCIA")]
+        assert re.search(
+            r"0\.6902 0\.1255 0\.1255 RG\n[\d.]+ w\n[\d.]+ [\d.]+ [\d.]+ -[\d.]+ re B", antes
+        ), "el recuadro no se dibuja como rectángulo relleno y con borde"
+
+    def test_las_demas_clasificaciones_no_llevan_recuadro(self):
+        md = GeneradorInforme().generar_informe_clasificacion(_CLASIFICACION)
+        assert "ADVERTENCIA" not in md
+
+    def test_el_informe_de_cumplimiento_no_lo_repite(self):
+        """El recuadro va una vez por documento: en el informe completo, el plan de acción lo
+        habría duplicado a media página de distancia."""
+        md = GeneradorInforme().generar_informe_completo(
+            _PROHIBIDO_CLASIF, _cumplimiento_prohibido("carencia")
+        )
+        assert md.count("ADVERTENCIA") == 1
+        assert md.count("Consulte urgentemente con un asesor legal especializado") == 2, (
+            "una vez en el recuadro y otra en la lista preliminar del catálogo"
+        )

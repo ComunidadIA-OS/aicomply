@@ -27,6 +27,12 @@ Los dos casos NO son el mismo, y confundirlos afirma algo falso (hallazgo B1):
 Hasta B1 los cuatro puntos de la interfaz mostraban el segundo texto también para el
 primero. El informe PDF sí los distinguía, y de ahí salen estos textos: son los suyos,
 movidos aquí, para que la interfaz no pueda volver a desincronizarse del documento.
+
+``PROHIBIDO`` vive aquí desde que cerró la pestaña Cumplimiento, pero NO en el conjunto:
+un sistema del Art. 5 no pasa por el análisis de cumplimiento —no hay nada que graduar—
+y sin embargo sí tiene obligaciones, empezando por el Art. 4. Tiene predicado propio
+(``es_prohibido``) y texto propio (``TEXTO_CUMPLIMIENTO_PROHIBIDO``) justamente para que
+las dos cosas no se confundan.
 """
 
 from __future__ import annotations
@@ -37,6 +43,7 @@ logger = logging.getLogger(__name__)
 
 EXCLUIDO = "EXCLUIDO"
 NO_CUMPLE_DEFINICION = "NO CUMPLE LA DEFINICIÓN DE SISTEMA DE IA"
+PROHIBIDO = "PROHIBIDO"
 
 #: Las dos clasificaciones que el evaluador emite de verdad y que cierran el recorrido.
 #: Son exactamente las que enumera ``_PROMPT_EXTRAER_CLASIFICACION`` (``src/chatbot.py``),
@@ -77,6 +84,39 @@ _TEXTO_MOTIVO_DESCONOCIDO = (
     "pero no ha sido posible determinar el motivo concreto. "
     "Consulte con un profesional antes de actuar sobre esta conclusión."
 )
+
+
+#: Lo que la pestaña Cumplimiento dice cuando el sistema es una práctica prohibida. Los
+#: cuatro puntos van en este orden porque es el del razonamiento: qué es, por qué no hay
+#: análisis, qué sigue obligando pese a todo, y dónde está el detalle.
+TEXTO_CUMPLIMIENTO_PROHIBIDO = (
+    "El sistema evaluado está clasificado como **práctica prohibida** del Art. 5 del "
+    "Reglamento (UE) 2024/1689. "
+    "No procede un análisis de cumplimiento: una prohibición no admite grados y no existe "
+    "una versión conforme de un sistema del Art. 5. "
+    "La alfabetización en IA del Art. 4 sí sigue obligando a su organización, por ser "
+    "responsable del despliegue de sistemas de IA, no por este sistema en concreto. "
+    "Genere el **Informe de evaluación** en la pestaña **Informe**: allí encontrará el "
+    "detalle, las sanciones aplicables y las medidas que debe adoptar."
+)
+
+
+def es_prohibido(clasificacion: str | None) -> bool:
+    """True si el sistema es una práctica prohibida del Art. 5.
+
+    Predicado propio, y PROHIBIDO deliberadamente fuera de
+    ``CLASIFICACIONES_SIN_OBLIGACIONES``: ese conjunto significa «ninguna obligación del
+    AI Act», y aquí no es el caso —el Art. 4 sigue obligando a la organización por ser
+    responsable del despliegue de sistemas de IA—. Lo que no procede es el análisis de
+    cumplimiento, que es otra cosa y por eso tiene su propio texto
+    (``TEXTO_CUMPLIMIENTO_PROHIBIDO``).
+
+    Como ``es_sin_obligaciones()``, no aplica alias: la canonización ya ocurrió en la
+    frontera, y un valor sin canonizar sigue el camino ordinario.
+    """
+    if not isinstance(clasificacion, str):
+        return False
+    return clasificacion.upper().strip() == PROHIBIDO
 
 
 def normalizar_clasificacion(valor: str | None) -> str:

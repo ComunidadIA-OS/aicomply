@@ -22,7 +22,12 @@ from src.tabs.avisos import (
     avisar_si_truncada,
     marcar_truncada,
 )
-from src.clasificaciones import es_sin_obligaciones, texto_sin_obligaciones
+from src.clasificaciones import (
+    TEXTO_CUMPLIMIENTO_PROHIBIDO,
+    es_prohibido,
+    es_sin_obligaciones,
+    texto_sin_obligaciones,
+)
 from src.llm.provider import LLMProvider
 from src.reconciliacion import GRAVEDAD_BLOQUEANTE
 from src.security import envolver_contenido_no_confiable, mensaje_error_seguro, rate_limiter
@@ -322,12 +327,16 @@ def _mostrar_formulario_acceso_directo() -> None:
     )
 
     nivel_interno = _NIVELES_OPCIONES[nivel_label]
-    if nivel_interno == "PROHIBIDO":
+    if es_prohibido(nivel_interno):
+        # El texto anterior ofrecía «continuar el análisis para identificar qué características
+        # lo hacen prohibido»: ese análisis ya no se hace por este camino ni por ninguno, así
+        # que prometerlo aquí dejaría al usuario esperando una pantalla que no va a aparecer.
         st.error(
             "Ha seleccionado un sistema **prohibido** por el AI Act. "
             "Estos sistemas no pueden desplegarse legalmente en la UE (Art. 5). "
-            "Puede continuar el análisis para identificar qué características lo hacen prohibido "
-            "y cómo podría rediseñarlo."
+            "No procede un análisis de cumplimiento: al continuar obtendrá directamente las "
+            "medidas que debe adoptar y podrá generar el **Informe de evaluación** en la "
+            "pestaña **Informe**."
         )
 
     puede_continuar = bool(descripcion.strip() and roles_labels)
@@ -374,6 +383,17 @@ def mostrar_tab_cumplimiento(provider: LLMProvider) -> None:
             "No procede iniciar una evaluación de cumplimiento. "
             "Genere el **Informe de evaluación** en la pestaña **Informe** para documentar esta conclusión."
         )
+        return
+
+    # ── PROHIBIDO: no hay cumplimiento que analizar ────────────────────────────
+    # Va ANTES de _inicializar_estado a propósito: ahí se crea el chatbot de cumplimiento,
+    # y crearlo para un sistema del Art. 5 gasta una llamada al modelo en recorrer
+    # obligaciones sobre un sistema que no puede existir. Eso es lo que produjo B34.
+    #
+    # No se exige `evaluacion_completada`: cubre igual la vía del acceso directo, donde el
+    # formulario escribe la clasificación en session_state y no hay evaluación previa.
+    if es_prohibido(clasificacion_actual):
+        st.error(TEXTO_CUMPLIMIENTO_PROHIBIDO)
         return
 
     _inicializar_estado(provider)
