@@ -106,6 +106,33 @@ def _capitalizar_roles(rol_str: str) -> str:
     return " / ".join(p.strip().capitalize() for p in rol_str.split("/") if p.strip())
 
 
+def _frase_del_rol(rol: str) -> str:
+    """La frase «La entidad actúa como X» del resumen ejecutivo, o nada si no hay rol.
+
+    Se construía siempre, y cuando no hay rol el informe abría con «La entidad actúa como No
+    aplica» (hallazgo B33). Lo decide el ROL, no la clasificación: el único recorrido que
+    termina sin rol es el de NO CUMPLE LA DEFINICIÓN, porque la comprobación del Art. 3.1 es
+    previa al Bloque #E. EXCLUIDO tampoco tiene obligaciones y sin embargo SÍ tiene rol —la
+    exclusión se resuelve en #R2 o en #S1, después del Bloque #E—, y decirlo es correcto y
+    útil: el informe del ejemplo 05 dice «La entidad actúa como Proveedor».
+
+    No se mira `es_sin_obligaciones()` a propósito: es la distinción de otra cosa, y aquí
+    borraría esa frase del 05.
+    """
+    if not _hay_rol(rol):
+        return ""
+    return f" La entidad actúa como **{_capitalizar_roles(rol)}**."
+
+
+def _hay_rol(rol: str) -> bool:
+    """El rol llega vacío o como marcador de ausencia cuando el recorrido no lo determinó.
+
+    El marcador lo pone la aplicación, así que se comprueban también sus variantes: si mañana
+    cambia de nombre, el peor caso es volver a imprimir la frase, no callar un rol real.
+    """
+    return bool(rol) and rol.strip().lower() not in {"no aplica", "n/a", "none", "-"}
+
+
 # Roles con bloque propio en el catálogo de prompts/system_prompt_cumplimiento.py.
 # El orden es el del catálogo y fija el orden de los bloques del plan de acción.
 _ROLES_PLAN = (
@@ -308,13 +335,12 @@ class GeneradorInforme:
         roles_multiples: list[str],
         estados: list[str],
     ) -> str:
-        texto = f"## 1. Resumen ejecutivo\n\n"
-        rol_display = _capitalizar_roles(rol)
+        texto = "## 1. Resumen ejecutivo\n\n"
         texto += (
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
-            f"según el Reglamento (UE) 2024/1689 (AI Act europeo). "
-            f"La entidad actúa como **{rol_display}**."
+            f"según el Reglamento (UE) 2024/1689 (AI Act europeo)."
         )
+        texto += _frase_del_rol(rol)
         if estados:
             texto += f" Estados adicionales aplicables: {', '.join(estados)}."
         return texto
@@ -340,7 +366,7 @@ class GeneradorInforme:
         self, resumen: str, clasificacion: str, rol: str,
         incoherencias: list[dict] | None = None,
     ) -> str:
-        texto = f"## 1. Resumen ejecutivo\n\n"
+        texto = "## 1. Resumen ejecutivo\n\n"
         clas_norm = (clasificacion or "").upper().strip()
         if clas_norm == "PROHIBIDO":
             texto += (
@@ -371,12 +397,12 @@ class GeneradorInforme:
         resumen_cumpl: str,
         incoherencias: list[dict] | None = None,
     ) -> str:
-        texto = f"## 1. Resumen ejecutivo\n\n"
-        rol_display = _capitalizar_roles(rol)
+        texto = "## 1. Resumen ejecutivo\n\n"
         texto += (
             f"El sistema evaluado ha sido clasificado como **{clasificacion}** "
-            f"según el AI Act europeo. La entidad actúa como **{rol_display}**."
+            f"según el AI Act europeo."
         )
+        texto += _frase_del_rol(rol)
         if estados:
             texto += f" Estados adicionales: {', '.join(estados)}."
         clas_norm = (clasificacion or "").upper().strip()
@@ -428,7 +454,17 @@ class GeneradorInforme:
         rol: str = "",
         roles_multiples: list[str] | None = None,
     ) -> str:
-        texto = f"## {num}. Obligaciones identificadas durante la evaluación\n"
+        # Para las dos clasificaciones sin obligaciones lo que cuelga de esta sección no son
+        # obligaciones: son la conclusión y las acciones recomendadas. El título tiene que
+        # describir lo que hay debajo (hallazgo B33, misma familia que B28).
+        if es_sin_obligaciones(clasificacion):
+            texto = f"## {num}. Conclusión de la evaluación y acciones recomendadas\n"
+            # La respuesta explícita que faltaba, en la forma en que la da el informe del chat.
+            # La razón NO se repite aquí: la dan los puntos de abajo, y en el informe completo
+            # este párrafo ya sale en el resumen ejecutivo y en el análisis de obligaciones.
+            texto += "\n**Obligaciones del AI Act aplicables:** ninguna.\n"
+        else:
+            texto = f"## {num}. Obligaciones identificadas durante la evaluación\n"
 
         _OBLIGACIONES_POR_NIVEL = {
             "PROHIBIDO": [
