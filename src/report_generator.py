@@ -170,6 +170,63 @@ def _roles_plan(rol: str, roles_multiples: list[str] | None) -> list[str]:
     return [r for r in _ROLES_PLAN if r in reconocidos]
 
 
+# La entrada del Art. 5 en el catálogo de PROHIBIDO. La clave es la identidad estable; el
+# artículo es el respaldo para los registros guardados antes de que el bloque la tuviera.
+_CLAVE_PROHIBICION = "5-practica-prohibida"
+
+
+def _estado_de_la_prohibicion(legales: list[dict]) -> tuple[str, str]:
+    """Estado de la prohibición del Art. 5 y la frase que lo explica.
+
+    Sustituye a la cifra en los informes de PROHIBIDO, así que el valor es corto a
+    propósito: lo reutiliza la tarjeta del PDF, que no tiene ancho para una frase.
+
+    El catálogo prohíbe registrar la prohibición como «parcial» —o el sistema está detenido
+    o no lo está—, pero el estado lo escribe el modelo y esta función no puede confiar en
+    que la regla se haya seguido. Un «parcial» que llegue igualmente se presenta como no
+    atendida y se dice por qué: publicar «parcialmente cubierta» sobre una prohibición es
+    justo la lectura que produjo B34.
+    """
+    prohibicion = next(
+        (
+            o for o in legales
+            if o.get("clave") == _CLAVE_PROHIBICION
+            or str(o.get("articulo", "")).strip().startswith("Art. 5")
+        ),
+        None,
+    )
+    if prohibicion is None:
+        return (
+            "No consta",
+            "La prohibición del Art. 5 no figura en el registro de obligaciones evaluadas; "
+            "revise el análisis de la pestaña Cumplimiento antes de usar este informe.",
+        )
+
+    estado = str(prohibicion.get("estado", "")).strip().lower()
+    if estado == "cubierta":
+        return (
+            "Atendida",
+            "El sistema consta detenido, retirado o nunca desplegado.",
+        )
+    if estado == "carencia":
+        return (
+            "No atendida",
+            "El sistema sigue en funcionamiento: la organización se encuentra en situación de "
+            "incumplimiento de una prohibición exigible.",
+        )
+    if estado == "parcial":
+        return (
+            "No atendida",
+            "La prohibición se registró como parcial, estado que no admite: mientras el sistema "
+            "no esté detenido, la prohibición está incumplida.",
+        )
+    return (
+        "No consta",
+        "La prohibición del Art. 5 figura en el registro sin un estado definitivo; revise el "
+        "análisis de la pestaña Cumplimiento antes de usar este informe.",
+    )
+
+
 def _extraer_meta_md(markdown: str) -> dict[str, str]:
     """Extrae los metadatos del encabezado Markdown del informe."""
     meta: dict[str, str] = {}
@@ -699,6 +756,20 @@ class GeneradorInforme:
                 "**Cumplimiento legal:** No aplicable  \n"
                 "No se identifican obligaciones legales evaluables del AI Act para este caso. "
                 "Se incluyen recomendaciones voluntarias y medidas prudenciales."
+            )
+        elif clas_norm == "PROHIBIDO":
+            # Sin cifra, pero por un motivo distinto del de las incoherencias: aquí el registro
+            # sí es fiable y la magnitud es la que no mide nada. Una prohibición no tiene grados
+            # —o el sistema está detenido o no lo está—, así que promediarla con las demás
+            # obligaciones produjo un «83 % de avance» en un informe sobre un sistema ilegal en
+            # funcionamiento (hallazgo B34). En su sitio va el único dato que sí es un estado.
+            estado, explicacion = _estado_de_la_prohibicion(legales)
+            texto += (
+                f"**Estado de la prohibición (Art. 5):** {estado}  \n"
+                f"Cubiertas: {len(cub_leg)} | Parciales: {len(par_leg)} | "
+                f"No cubiertas: {len(car_leg)} | No aplica: {len(no_ap_leg)}  \n"
+                f"*{explicacion} No se publica un grado de avance: una prohibición no admite "
+                "cumplimiento parcial, de modo que un porcentaje no mediría nada.*"
             )
         elif incoherencias:
             # Sin cifra: el porcentaje se calcularía sobre un registro que la aplicación tiene
@@ -1687,6 +1758,11 @@ class GeneradorInforme:
             _metricas_pct: int | None = 0
             _metricas_counts: list[int] = []
             _metricas_emitidas = False
+            # Etiqueta y valor del caso sin cifra. Por defecto los del registro incoherente;
+            # PROHIBIDO los reemplaza por el estado de la prohibición, que es lo que ocupa
+            # el sitio de la cifra en su informe.
+            _metricas_etiqueta = "Grado de cumplimiento legal"
+            _metricas_valor = "No calculable"
 
             def _flush_obl() -> None:
                 nonlocal _obl_art, _obl_desc
@@ -1752,7 +1828,12 @@ class GeneradorInforme:
                 pdf.ln(1)
                 pdf.set_text_color(30, 30, 30)
 
-            def _render_metricas(pct: int | None, counts: list[int]) -> None:
+            def _render_metricas(
+                pct: int | None,
+                counts: list[int],
+                etiqueta: str = "Grado de cumplimiento legal",
+                valor: str = "No calculable",
+            ) -> None:
                 if len(counts) < 4:
                     return
                 cub, par, mej, sin = counts[0], counts[1], counts[2], counts[3]
@@ -1789,10 +1870,10 @@ class GeneradorInforme:
                 pdf.set_font("Helvetica", "", 9)
                 pdf.set_text_color(60, 60, 60)
                 if pct is None:
-                    pdf.cell(CW * 0.72, 5, "Grado de cumplimiento legal", align="L")
+                    pdf.cell(CW * 0.72, 5, _limpiar(etiqueta), align="L")
                     pdf.set_font("Helvetica", "B", 9)
                     pdf.set_text_color(150, 150, 150)
-                    pdf.cell(CW * 0.28, 5, _limpiar("No calculable"), align="R",
+                    pdf.cell(CW * 0.28, 5, _limpiar(valor), align="R",
                              new_x="LMARGIN", new_y="NEXT")
                     pdf.ln(3)
                     pdf.set_text_color(30, 30, 30)
@@ -1963,21 +2044,35 @@ class GeneradorInforme:
                     pdf.ln(1)
 
                 elif (
-                    ("Avance de implementación" in linea_s or "Grado de cumplimiento" in linea_s)
+                    (
+                        "Avance de implementación" in linea_s
+                        or "Grado de cumplimiento" in linea_s
+                        or "Estado de la prohibición" in linea_s
+                    )
                     and _seccion == "obligaciones"
                 ):
-                    # Las dos etiquetas: «Avance de implementación» es la del caso con cifra;
+                    # Las tres etiquetas: «Avance de implementación» es la del caso con cifra;
                     # «Grado de cumplimiento legal» sigue siendo la del «No calculable» —y la
-                    # de los informes en markdown guardados antes de este cambio.
+                    # de los informes en markdown guardados antes de este cambio—; «Estado de
+                    # la prohibición» es la de PROHIBIDO, que tampoco lleva cifra. Sin esta
+                    # tercera, el porcentaje sobrevivía en el PDF: sin línea que lo fijara,
+                    # _metricas_pct se quedaba en su 0 inicial y la barra dibujaba un 0 %.
                     m_pct = re.search(r"(\d+)\s*%", linea_s)
                     _metricas_pct = int(m_pct.group(1)) if m_pct else None
+                    if "Estado de la prohibición" in linea_s:
+                        _metricas_etiqueta = "Estado de la prohibición (Art. 5)"
+                        m_val = re.search(r":\*\*\s*(.+?)\s*$", linea_s)
+                        _metricas_valor = m_val.group(1) if m_val else "No consta"
 
                 elif linea_s.startswith("Cubiertas:") and _seccion == "obligaciones":
                     nums = re.findall(r"\d+", linea_s)
                     if len(nums) >= 4:
                         _metricas_counts = [int(n) for n in nums[:4]]
                     if not _metricas_emitidas and _metricas_counts:
-                        _render_metricas(_metricas_pct, _metricas_counts)
+                        _render_metricas(
+                            _metricas_pct, _metricas_counts,
+                            _metricas_etiqueta, _metricas_valor,
+                        )
                         _metricas_emitidas = True
 
                 elif _obl_estado is not None and linea_s.startswith("**"):

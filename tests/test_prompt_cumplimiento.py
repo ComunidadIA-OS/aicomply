@@ -31,6 +31,9 @@ los recorridos funcionó.
   B25 - el bloque de LIMITADO listaba los cuatro apartados del Art. 50 sin rol y sin clave, y el
         modelo los atribuyó a quien tenía delante: a una agencia de viajes implementadora se le
         declaró carencia legal el Art. 50.2, que obliga al proveedor
+  B34 - PROHIBIDO era la única clasificación sin catálogo, y el modelo compuso el suyo: trajo el
+        Art. 50.3 del bloque de LIMITADO y registró como PARCIAL la prohibición del Art. 5 de un
+        sistema que seguía en funcionamiento
 """
 
 import re
@@ -240,6 +243,123 @@ class TestArt50PartidoPorRol:
             )
             assert "[Aplicable próximamente — 2 dic 2026]" in linea
             assert "[Aplicable actualmente — desde 2 ago 2026]" in linea
+
+
+class TestCatalogoDeProhibido:
+    """B34. PROHIBIDO era la única clasificación sin catálogo: tres líneas de prosa —una
+    prohibición y dos acciones—, sin clave, sin tipo y sin reparto por rol. Sin lista que
+    seguir, el modelo compuso la suya y trajo el Art. 50.3 del bloque de LIMITADO, que obliga
+    a informar a las personas expuestas a un sistema de reconocimiento de emociones; lo
+    registró CUBIERTA en el informe de un sistema que no puede usarse en absoluto. Y registró
+    la prohibición del Art. 5 como PARCIAL —«existe una intención formal de cumplimiento»—
+    con el sistema en funcionamiento.
+
+    Como el resto del fichero: esto no prueba que el modelo obedezca, solo que el bloque
+    conserva la forma que hace posible obedecerlo.
+    """
+
+    def test_tiene_exactamente_dos_entradas(self):
+        """Ninguna otra obligación del AI Act entra en el recorrido de un sistema prohibido:
+        no existe versión conforme de un sistema del Art. 5."""
+        entradas = _entradas_de_prohibido()
+        assert len(entradas) == 2, f"PROHIBIDO debería tener dos entradas, tiene {len(entradas)}"
+
+    def test_cada_entrada_lleva_clave_y_tipo_como_las_demas(self):
+        """Sin clave la aplicación no puede reconciliar la obligación con el registro, y sin
+        tipo el bloque <<<OBLIGACION>>> se rellena a ojo."""
+        for entrada in _entradas_de_prohibido():
+            assert re.search(r"\[clave: [^\]]+\]", entrada), f"sin clave: {entrada!r}"
+            assert 'tipo="obligacion"' in entrada, f"sin tipo: {entrada!r}"
+            assert re.search(r'rol="[a-z_]+"', entrada), f"sin rol: {entrada!r}"
+
+    def test_las_dos_entradas_son_el_art_5_y_el_art_4(self):
+        claves = {
+            re.search(r"\[clave: ([^\]]+)\]", e).group(1) for e in _entradas_de_prohibido()
+        }
+        assert claves == {"5-practica-prohibida", "4-alfabetizacion"}
+
+    def test_el_art_4_conserva_la_clave_transversal_que_ya_existia(self):
+        """El Art. 4 aparece también en el bloque transversal y en MÍNIMO: es la MISMA
+        obligación legal, y la regla del punto 11 la registra una sola vez por la clave. Una
+        clave propia aquí la convertiría en una obligación distinta."""
+        assert SYSTEM_PROMPT_CUMPLIMIENTO.count("[clave: 4-alfabetizacion]") == 3
+
+    def test_la_prohibicion_solo_admite_cubierta_o_carencia(self):
+        linea = _entrada_de_prohibido("- Art. 5:")
+        assert "PREGUNTA si el sistema está detenido" in linea
+        assert '"estado": "cubierta"' in linea and '"estado": "carencia"' in linea
+
+    def test_la_prohibicion_nunca_es_parcial(self):
+        """El fallo exacto de B34: «Registro esto como PARCIAL: existe una intención formal de
+        cumplimiento». Una prohibición es binaria."""
+        linea = _entrada_de_prohibido("- Art. 5:")
+        assert 'NUNCA "parcial"' in linea
+        assert "una prohibición es binaria" in linea
+
+    def test_la_intencion_de_cumplir_es_contexto_y_no_estado(self):
+        """Los tres casos que el recorrido produjo: intención formal, consulta jurídica en
+        curso y suspensión anunciada. Ninguno detiene el sistema."""
+        linea = _entrada_de_prohibido("- Art. 5:")
+        assert "intención formal de cumplir" in linea
+        assert "consulta jurídica en curso" in linea
+        assert "suspensión anunciada pero no ejecutada" in linea
+        assert 'como contexto en "descripcion"' in linea
+        assert "NO cambian el estado ni entran como obligación aparte" in linea
+
+    def test_prohibe_traer_obligaciones_de_otros_bloques(self):
+        """Y nombra el Art. 50.3, que es el que se trajo: enunciar la regla en abstracto no
+        bastó en B22 ni en B25."""
+        bloque = _bloque_de_prohibido()
+        assert "EXACTAMENTE DOS entradas" in bloque
+        assert "No existe una versión conforme de un sistema del Art. 5" in bloque
+        assert "Art. 50.3" in bloque
+
+    def test_nombra_la_fecha_de_aplicabilidad_del_art_5(self):
+        """La prohibición no es derecho futuro: es exigible desde el 2 feb 2025 (Art. 113,
+        letra a: los capítulos I y II). La etiqueta va en formato de catálogo para que
+        tests/test_calendario.py la contraste con data/calendario.json."""
+        bloque = _bloque_de_prohibido()
+        assert "[Aplicable actualmente — desde 2 feb 2025]" in bloque
+        assert "el Art. 5 es aplicable desde el 2 feb 2025" in bloque
+
+    def test_nombra_la_cuantia_del_art_99_3(self):
+        """Es el tramo más alto del Reglamento y lo que da la medida del riesgo. Literal del
+        Art. 99.3 verificado contra data/docs/AIAct.json."""
+        bloque = _bloque_de_prohibido()
+        assert "Art. 99.3" in bloque
+        assert "35.000.000 EUR" in bloque
+        assert "7 % de su volumen de negocios mundial total" in bloque
+        assert "ejercicio financiero anterior" in bloque
+        assert "si esta cuantía fuese superior" in bloque
+        # El contraste con el resto de infracciones es lo que convierte la cifra en una medida.
+        assert "3 % por el Art. 99.4" in bloque
+
+    def test_advierte_de_que_el_ai_act_no_agota_el_derecho_aplicable(self):
+        """Sin citar artículos de esas otras normas: están fuera del corpus de la herramienta."""
+        bloque = _bloque_de_prohibido()
+        assert "el AI Act no agota el Derecho aplicable" in bloque
+        assert "tratamiento de datos personales" in bloque
+        assert "representación de los trabajadores" in bloque
+        assert "no cites artículos concretos de esas otras normas" in bloque
+
+
+def _bloque_de_prohibido() -> str:
+    """El bloque de PROHIBIDO entero. Termina donde empieza la siguiente clasificación."""
+    bloque = SYSTEM_PROMPT_CUMPLIMIENTO.split("\nPROHIBIDO (Art. 5):")[1]
+    return bloque.split("\nALTO RIESGO — Rol Proveedor")[0]
+
+
+def _entradas_de_prohibido() -> list[str]:
+    """Las entradas del catálogo, que son las líneas de primer nivel. Las dos advertencias
+    que el bloque manda decir al presentar la prohibición van sangradas con '*' justamente
+    para no confundirse con obligaciones que evaluar."""
+    return [ln for ln in _bloque_de_prohibido().splitlines() if ln.startswith("- ")]
+
+
+def _entrada_de_prohibido(prefijo: str) -> str:
+    lineas = [ln for ln in _entradas_de_prohibido() if ln.startswith(prefijo)]
+    assert len(lineas) == 1, f"se esperaba una sola entrada {prefijo!r}, hay {len(lineas)}"
+    return lineas[0]
 
 
 def _bloque_de_limitado(cabecera_rol: str = "") -> str:
